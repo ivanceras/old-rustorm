@@ -1,0 +1,13 @@
+[package]
+
+name = "rustorm"
+version = "0.0.1"
+authors = [ "Jovansonlee Cesar <ivanceras@gmail.com>" ]
+
+[lib]
+name = "rustorm"
+
+[[bin]]
+
+name = "rustorm"
+
