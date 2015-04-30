@@ -1,15 +1,14 @@
 use filter::Filter;
 use query::Query;
-use model::ModelDef;
+use table::Table;
 use dao::DAO;
 use meta::ModelMetaData;
-use sql::SQL;
+
+pub trait Database{
 
 /// Generic Database interface
 /// This is the database interface which will should be implemented to you the specifics of each database platform
 /// At least all methods on this trait should be implemented for target deployment database
-
-pub trait Database{
 
 	/// begin database transaction
 	fn begin(&self);
@@ -24,7 +23,7 @@ pub trait Database{
 	fn is_transacted(&self)->bool;
 	
 	/// determine if the database connection closed
-	fn is_closed(&self)->usize; 
+	fn is_closed(&self)->bool; 
 	
 	/// check if the database is still connected
 	fn is_connected(&self)->bool;
@@ -33,35 +32,26 @@ pub trait Database{
 	fn close(&self);
 	
 	/// determine if the database connection is still valid
-	fn is_valid(&self)->usize;
+	fn is_valid(&self)->bool;
 
 	/// reset the database connection
-	fn reset(&self)->usize;
+	fn reset(&self);
 	
 
 	/// execute a select statement defined by the query object
-	fn select(&self, meta: &ModelMetaData , query:&Query)->Vec<DAO>;
+	fn retrieve(&self, query:&Query)->Vec<DAO>;
 	
-	/// execute a select SQL statement and set which columns have been renamed to
-	fn select_with_renamed_columns(&self, sql:&SQL, renamedColumns:Vec<(String, Vec<String>)>)->Vec<DAO>;
-	
-	/// execute a select statement with the parameters
-	fn select_sql<T>(&self, sql:String, parameters:&Vec<T>)->Vec<DAO>;
-
-	/// execute an update statement with parameters
-	fn update_sql<T>(&self, sql:String, parameters:&Vec<T>)->Vec<DAO>;
-
 	/// update a certain DAO object with the model definition and filter
-	fn update(&self, dao:DAO, model:&ModelDef, filters:&Vec<Filter>)->DAO;
+	fn update(&self, dao:DAO, model:&Table, filters:&Vec<Filter>)->DAO;
 
 	/// delete records
-	fn delete(&self, model:&ModelDef, filters:&Vec<Filter>)->usize;
+	fn delete(&self, model:&Table, filters:&Vec<Filter>)->usize;
 	
 	/// empty the table
-	fn empty(&self, model:&ModelDef, forced:bool)->usize;
+	fn empty(&self, model:&Table, forced:bool)->usize;
 
 	/// write a binary large object to the database
-	fn write_to_blob(&self, buffer:Vec<u8>)->u64;
+	fn write_to_blob(&self, buffer:Vec<u8>)->usize;
 	
 	/// write the blob to a file
 	fn write_to_file(&self, filename:&String);
@@ -71,18 +61,11 @@ pub trait Database{
 
 
 	///
-	/// Colnverts the Query object into a SQL object that will be readily executed by the Database platform
-	///
-	fn build_sql(&self, meta: &ModelMetaData ,query:&Query, use_cursor:bool)->SQL;
-	
-
-	
-	///
 	/// Insert a DAO object with the definition defined in the model argument
 	/// Query when inserting a data that is coming from a Query
 	/// meta is a lookup for the query building to be used
 	
-	fn insert(&self, dao:&DAO, meta:&ModelMetaData, model:&ModelDef, query:&Query)->DAO;
+	fn insert(&self, dao:&DAO, meta:&ModelMetaData, model:&Table, query:&Query)->DAO;
 	
 	 ///
 	 /// Search a set of record from the base Query that would have been returned by the base query
@@ -90,16 +73,17 @@ pub trait Database{
 	fn search(&self, query:&Query, keyword:String);
 
 	/// Actually converting the from whatever JDBC converts the object to the correct type that we intend to be using
-	fn correct_data_types(&self, dao_list:Vec<DAO>, model:&ModelDef);
+	fn correct_data_types(&self, dao_list:Vec<DAO>, model:&Table);
 
-	///execute a generic SQL statement
-	fn execute(&self, sql:&SQL)->usize;
+	fn execute(&self, query:Query)->usize;
 
 }
 
-/// This methods involves DDL(Data definition language) operation
 pub trait DatabaseDDL{
-	
+	//////////////////////////////////////////
+	/// The following methods involves DDL(Data definition language) operation
+	////////////////////////////////////////	
+
 	/// create a database schema
 	fn create_schema(&self, schema:&String);
 	
@@ -107,7 +91,7 @@ pub trait DatabaseDDL{
 	fn drop_schema(&self, schema:&String, forced:bool);
 	
 	/// create a database table based on the Model Definition
-	fn create_table(&self, model:&ModelDef);
+	fn create_table(&self, model:&Table);
 	
 	/// rename table
 	fn rename_table(&self, schema:String, table:String, new_tablename:String);
@@ -116,14 +100,17 @@ pub trait DatabaseDDL{
 	fn drop_table(&self, schema:String, table:String, forced:bool);
 	
 	/// set the foreign key constraint of a table
-	fn set_foreign_constraint(&self, model:&ModelDef);
+	fn set_foreign_constraint(&self, model:&Table);
 
 	/// set the primary key constraint of a table	
-	fn set_primary_constraint(&self, model:&ModelDef);
+	fn set_primary_constraint(&self, model:&Table);
 }
 
-/// Database interface use for the development process
 pub trait DatabaseDev{
+
+////////////////////////////////////////
+/// Database interface use for the development process
+////////////////////////////////////////////
 	
 	/// determine if the table exist
 	fn exist_table(&self, schema:String, table:String)->bool;
@@ -134,10 +121,10 @@ pub trait DatabaseDev{
 	fn get_superclass(&self, schema:String, table:String)->String;
 	
 	////
-	/// Build the ModelDef object based on the extracted meta data info from database
+	/// Build the Table object based on the extracted meta data info from database
 	/// This is queries directly from the database, so this will be costly. Only used this on initialization processes
 	///
-	fn get_table_metadata(&self, schema:String, table:String)->ModelDef;
+	fn get_table_metadata(&self, schema:String, table:String)->Table;
 	
 	/// get all the tables in this database
 	fn get_all_tablenames(&self)->Vec<(String, String)>;

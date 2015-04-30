@@ -19,11 +19,46 @@ macro_rules! keyword {
     }
 }
 
+
+macro_rules! one_keyword {
+    ($t:tt) => {
+        fn one_keyword() -> String {
+           return format!("{}",stringify!($t));
+        }
+    }
+}
+
+macro_rules! all {
+    ($t:tt $u: tt) => {
+        fn get_all() -> String {
+           return format!("{}",stringify!($t $u));
+        }
+    }
+}
+
+/*
+macro_rules! all_repeat {
+    ($t:tt $($u:tt)*) => {
+        fn get_all_repeat() -> String {
+           return format!("{}",stringify!($t));
+        }
+    }
+}
+*/
+
+macro_rules! sql { 
+		($($x:tt)*) => { stringify!($($x)*) }
+ 	}
+
+
+
 keyword!(SELECT);
 keyword!(FROM);
+one_keyword!(FROM);
 
 create_function!(foo);
 create_function!(bar);
+all!(of *);
 
 macro_rules! print_result {
     // the `expr` designator is used for expressions
@@ -50,6 +85,9 @@ fn get_type<T>(t:T){
 
 
 fn main() {
+	println!("{}", sql!(SELECT * FROM table));
+	println!("{}",get_all());
+	println!("1kw: {}", one_keyword());
 	let mut q =  SELECT();
 	q.push_str(&format!(" {}", FROM()));
 	println!("-->{}",q);

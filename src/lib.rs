@@ -1,8 +1,13 @@
+extern crate postgres;
+
 pub mod em;
 pub mod filter;
 pub mod query;
-pub mod model;
+pub mod table;
 pub mod dao;
-pub mod db;
+pub mod database;
 pub mod meta;
-pub mod sql;
+pub mod join;
+pub mod lookup;
+pub mod sample_lookup;
+pub mod db;
