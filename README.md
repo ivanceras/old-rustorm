@@ -18,7 +18,9 @@ A fork of my previous, very simple ORM (http://github.com/ivanceras/orm) for jav
 Configure the url to your postgres database.
 If you don't have a sample database schema, use the provide schema_dump in `./scripts/bazaar_v5_dump_schema.sql`
 
-hint: `psql -U postgres -h localhost -W -d <bazaar_v5> -f ./scripts/bazaar_v5_dump_schema.sql`
+```bash
+psql -U postgres -h localhost -W -d <bazaar_v5> -f ./scripts/bazaar_v5_dump_schema.sql
+```
 
 ```rust
 ///examples/generate_model_code.rs
@@ -42,7 +44,7 @@ fn main(){
 
 ```
 
-```
+```bash
 cargo run --release --example generate_model_code
 cat ./examples/gen.rs
 ```
