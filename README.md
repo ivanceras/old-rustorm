@@ -202,6 +202,8 @@ Take notice of these last members of the struct here
 * It also knows that product:categories has 1:M relationship hinted by the linker table product_category, and so with the Photos and Reviews.
 
 
+##Documentation
+(http://ivanceras.github.io/rustorm/rustorm)
 
 ##Roadmap
 * implement all the features in ivanceras/orm
