@@ -185,6 +185,22 @@ pub struct Product {
 }
 ```
 
+Take notice of these last members of the struct here
+
+```
+	/// has one, extension table
+	pub product_availability:Option<Box<ProductAvailability>>,
+	/// has many, indirect referring table, derived from linker table: product_category
+	pub category:Option<Vec<Category>>,
+	/// has many, indirect referring table, derived from linker table: product_photo
+	pub photo:Option<Vec<Photo>>,
+	/// has many, indirect referring table, derived from linker table: product_review
+	pub review:Option<Vec<Review>>,
+```
+
+* The code generator can figure out that product_availability is just an extension table of the product table.
+* It also knows that product:categories has 1:M relationship hinted by the linker table product_category, and so with the Photos and Reviews.
+
 
 
 ##Roadmap
