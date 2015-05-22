@@ -1,7 +1,7 @@
 use filter::Filter;
 use query::Query;
 use table::Table;
-use dao::DAO;
+use types::Dao;
 
 pub trait EntityManager{
 
@@ -39,34 +39,34 @@ pub trait EntityManager{
 	fn exist_schema(&self, schema: String)->bool;
 
 	/// get all the records of this table
-	fn get_all(&self, table:String)->Vec<DAO>;
+	fn get_all(&self, table:String)->Vec<Dao>;
 
 	/// get all the distinct records of this table
-	fn get_all_distinct(&self, table:String)->Vec<DAO>;
+	fn get_all_distinct(&self, table:String)->Vec<Dao>;
 
 	/// get all the records on this table which passed thru the filters
-	fn get_all_with_filter(&self, table:String, filters:Vec<Filter>)->Vec<DAO>;
+	fn get_all_with_filter(&self, table:String, filters:Vec<Filter>)->Vec<Dao>;
 
 	/// get the first records of this table that passed thru the filters
-	fn get_one(&self, table:String, Vec<Filter>)->DAO;
+	fn get_one(&self, table:String, Vec<Filter>)->Dao;
 
 	/// insert this records to the database
-	fn insert(&self, dao:DAO);
+	fn insert(&self, dao:Dao);
 	
 	/// this is called when there is a problem with the transaction
 	fn reset(&self);
 
 	/// retrieve records from query object
-	fn retrieve(&self, query:&Query)->Vec<DAO>;
+	fn retrieve(&self, query:&Query)->Vec<Dao>;
 
 	/// when there is a problem with the transaction process, this can be called
 	fn rollback(&self, );
 	
-	/// update the DAO, return the updated DAO
-	fn update(&self, dao:&DAO)->DAO;
+	/// update the Dao, return the updated Dao
+	fn update(&self, dao:&Dao)->Dao;
 
-	/// update the DAO with filter, return the updated DAO
-	fn update_with_filter(&self, dao:&DAO, filter:Vec<Filter>)->DAO;
+	/// update the Dao with filter, return the updated Dao
+	fn update_with_filter(&self, dao:&Dao, filter:Vec<Filter>)->Dao;
 
 	
 }

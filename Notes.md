@@ -31,3 +31,57 @@ select
 from 
   pg_tables  
 where schemaname = 'public'
+
+
+A simple Good resource for reading about lifetimes
+http://hermanradtke.com/2015/05/03/string-vs-str-in-rust-functions.html
+
+
+##Select the parent table
+```
+select relname,  
+( select relname from pg_class where oid = pg_inherits.inhparent ) as parent 
+					 from pg_class  
+					 left join pg_inherits  
+					 on pg_class.oid = pg_inherits.inhrelid 
+					 where relname = 'product'
+```
+
+
+##Select the subclass
+
+```
+select relname, 
+( select relname from pg_class where oid = pg_inherits.inhrelid ) as subclass 
+					 from pg_inherits 
+					 left join pg_class on pg_class.oid = pg_inherits.inhparent 
+					 where relname = 'base' ;
+```
+
+
+##Useful projects:
+
+### text editor
+https://github.com/gchp/iota
+
+## csv parsing
+https://github.com/BurntSushi/rust-csv
+
+## window tiling for the win
+https://github.com/Kintaro/wtftw
+
+## for text base interface, a wrapper for termbox
+
+https://github.com/gchp/rustbox
+
+
+##How to deal with nullable columns in the database
+*Most database columns has null values, can be optional
+*If nullable make the field Optional
+
+
+##Check to see if extension are already installed in the database
+select * from pg_extension
+
+You may need to create the schema before installing the extensions
+

@@ -12,4 +12,10 @@ name = "app_rustorm"
 
 
 [dependencies]
+rustc-serialize = "*"
 postgres = "*"
+uuid = "*"
+log = "*"
+env_logger = "*"
+chrono = "*"
+regex = "*"
