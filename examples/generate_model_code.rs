@@ -1,12 +1,6 @@
 extern crate rustorm;
-extern crate uuid;
 
 use rustorm::db::postgres::Postgres;
-use rustorm::database::DatabaseDev;
-use rustorm::table;
-use uuid::Uuid;
-use std::fs::File;
-use std::io::Write;
 use rustorm::codegen;
 
 fn main(){
