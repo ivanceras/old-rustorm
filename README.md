@@ -187,7 +187,7 @@ pub struct Product {
 
 Take notice of these last members of the struct here
 
-```
+```rust
 	/// has one, extension table
 	pub product_availability:Option<Box<ProductAvailability>>,
 	/// has many, indirect referring table, derived from linker table: product_category
