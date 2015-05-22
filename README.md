@@ -1,5 +1,8 @@
 # rustorm
-A fork on my previous, very simple ORM (http://github.com/ivanceras/orm) for java
+A Work in Progress ORM for postgresql
+
+A fork of my previous, very simple ORM (http://github.com/ivanceras/orm) for java
+
 
 ##Dependency
 * rust-postgres
@@ -7,9 +10,42 @@ A fork on my previous, very simple ORM (http://github.com/ivanceras/orm) for jav
 ##Features
 
 * intelligent model code generation (The only functional part for now)
-	The ability to figure out linker tables, 
-	then build 1:M relation with the tables
-	The ability to figure out extension tables
+   * Can figure out linker tables, then build 1:M relation with the tables on the generated code
+   * Can figure out extension tables, which is just 1:1 relation with another table
+
+###To see it in action:
+
+Configure the url to your postgres database.
+If you don't have a sample database schema, use the provide schema_dump in `./scripts/bazaar_v5_dump_schema.sql`
+
+hint: `psql -U postgres -h localhost -W -d <bazaar_v5> -f ./scripts/bazaar_v5_dump_schema.sql`
+
+```rust
+///examples/generate_model_code.rs
+
+extern crate rustorm;
+
+use rustorm::db::postgres::Postgres;
+use rustorm::codegen;
+
+fn main(){
+	let pg:Result<Postgres,&str> = Postgres::new("postgres://postgres:p0stgr3s@localhost/bazaar_v5");
+	match pg{
+		Ok(pg) => {
+			codegen::generate_all_tables(pg,"./examples/gen.rs");
+		}
+		Err(error) =>{
+			println!("{}",error);
+		}
+	}
+}
+
+```
+
+```
+cargo run --release --example generate_model_code
+cat ./examples/gen.rs
+```
 
 
 
@@ -152,5 +188,10 @@ pub struct Product {
 
 
 ##Roadmap
+* implement all the features in ivanceras/orm
 * become a full blown ORM for rust
+ 
+
+# For Updates
+Follow me on twitter: [@ivanceras](https://twitter.com/ivanceras)
 
