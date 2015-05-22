@@ -1,22 +1,21 @@
 # rustorm
-A simple ORM for rust
+A fork on my previous, very simple ORM (http://github.com/ivanceras/orm) for java
 
 ##Dependency
-*rust-postgres
+* rust-postgres
 
 ##Features
 
-*intelligent model code generation
+* intelligent model code generation (The only functional part for now)
 	The ability to figure out linker tables, 
 	then build 1:M relation with the tables
 	The ability to figure out extension tables
 
+
+
 ###example:	 
 
-```
--- Table: bazaar.product
-
--- DROP TABLE bazaar.product;
+```sql
 
 CREATE TABLE bazaar.product
 (
@@ -150,8 +149,8 @@ pub struct Product {
 }
 ```
 
-```
+
 
 ##Roadmap
-*become a full blown ORM
+* become a full blown ORM for rust
 
