@@ -7,7 +7,8 @@ https://aturon.github.io/ownership/builders.html
 *This is needed because information_schema is a lot slower
 
 http://stackoverflow.com/questions/1152260/postgres-sql-to-list-table-foreign-keys
-```
+
+```sql
 SELECT
   o.conname AS constraint_name,
   (SELECT nspname FROM pg_namespace WHERE oid=m.relnamespace) AS source_schema,
@@ -26,11 +27,13 @@ WHERE
   
 ##Show tables in postgresql
 
+```sql
 select 
   tablename as table 
 from 
   pg_tables  
 where schemaname = 'public'
+```
 
 
 A simple Good resource for reading about lifetimes
@@ -38,7 +41,7 @@ http://hermanradtke.com/2015/05/03/string-vs-str-in-rust-functions.html
 
 
 ##Select the parent table
-```
+```sql
 select relname,  
 ( select relname from pg_class where oid = pg_inherits.inhparent ) as parent 
 					 from pg_class  
@@ -50,7 +53,7 @@ select relname,
 
 ##Select the subclass
 
-```
+```sql
 select relname, 
 ( select relname from pg_class where oid = pg_inherits.inhrelid ) as subclass 
 					 from pg_inherits 
@@ -84,4 +87,29 @@ https://github.com/gchp/rustbox
 select * from pg_extension
 
 You may need to create the schema before installing the extensions
+
+
+##releasing:
+```
+cargo publish
+```
+
+Make sure license, github code, documentation is properly linked in the Cargo.toml file
+
+##Publishing the documents
+
+```
+cargo doc
+cd target/doc
+git init
+git add . -A
+git commit -m "Commiting docs to github pages"
+git remote add origin https://github.com/ivanceras/rustorm
+git checkout -b gh-pages
+git push origin gh-pages
+git push origin gh-pages
+
+```
+
+
 
