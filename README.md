@@ -202,6 +202,8 @@ Take notice of these last members of the struct here
 
 * The code generator can figure out that product_availability is just an extension table of the product table.
 * It also knows that product:categories has 1:M relationship hinted by the linker table product_category, and so with the Photos and Reviews.
+* The `created` column has a data type `DateTime<UTC>`, since it is not nullable, while nullable columns such as `createdby` will be wrapped with `Option<Uuid>`,
+
 
 
 ##Documentation
