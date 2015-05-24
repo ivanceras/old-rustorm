@@ -1,6 +1,6 @@
 [package]
 name = "rustorm"
-version = "0.0.1"
+version = "0.0.2"
 authors = [ "Jovansonlee Cesar <ivanceras@gmail.com>" ]
 license = "MIT"
 description = "A simple ORM for rust"
