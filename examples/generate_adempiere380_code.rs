@@ -10,14 +10,14 @@ use std::io::Write;
 use rustorm::codegen;
 
 fn main(){
-	let pg = Postgres::new("postgres://postgres:p0stgr3s@localhost/adempiere380");
-	match pg{
-		Ok(pg) => {
-			codegen::generate_all_tables(pg,"./examples/adempiere.rs");
-		},
-		Err(err) => {
-			println!("{}",err);
-		},
-	};
+    let pg = Postgres::new("postgres://postgres:p0stgr3s@localhost/adempiere380");
+    match pg{
+        Ok(pg) => {
+            codegen::generate_all_tables(pg,"./examples/adempiere.rs");
+        },
+        Err(err) => {
+            println!("{}",err);
+        },
+    };
 }
 

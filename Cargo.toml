@@ -11,9 +11,6 @@ documentation = "http://ivanceras.github.io/rustorm/rustorm/"
 [lib]
 name = "rustorm"
 
-[[bin]]
-name = "rustorm"
-
 [dependencies]
 rustc-serialize = "*"
 postgres = "*"
