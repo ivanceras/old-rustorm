@@ -1,5 +1,4 @@
 [package]
-
 name = "rustorm"
 version = "0.0.1"
 authors = [ "Jovansonlee Cesar <ivanceras@gmail.com>" ]
@@ -12,6 +11,8 @@ documentation = "http://ivanceras.github.io/rustorm/rustorm/"
 [lib]
 name = "rustorm"
 
+[[bin]]
+name = "rustorm"
 
 [dependencies]
 rustc-serialize = "*"

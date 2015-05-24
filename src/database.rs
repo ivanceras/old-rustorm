@@ -155,7 +155,7 @@ pub trait DatabaseDev{
 		imports.dedup();
 		
 		//struct
-		let struct_name = table.get_struct_name();
+		let struct_name = table.struct_name();
 		w.ln();
 		if table.comment.is_some(){
 			w.append("///");
@@ -166,11 +166,13 @@ pub trait DatabaseDev{
 			w.append("///");
 			w.ln();
 		}
+		w.append("#[derive(Debug)]");
+		w.ln();
 		w.append("pub struct ").append(&struct_name).appendln(" {");
 		
 		let mut included_columns = Vec::new();
 		//primary columns
-		for p in table.get_primary_columns(){
+		for p in table.primary_columns(){
 			if !included_columns.contains(&&p.name){
 				w.tab();
 				w.append("/// primary");
@@ -180,7 +182,7 @@ pub trait DatabaseDev{
 			}
 		}
 		//unique columns
-		for u in table.get_unique_columns(){
+		for u in table.unique_columns(){
 			if !included_columns.contains(&&u.name){
 				w.tab();
 				w.append("/// unique");
@@ -191,7 +193,7 @@ pub trait DatabaseDev{
 		}
 		
 		// uninherited columns
-		for uc in &table.get_uninherited_columns(){
+		for uc in &table.uninherited_columns(){
 			if !included_columns.contains(&&uc.name){
 				self.write_column(&mut w, uc);
 				included_columns.push(&uc.name);
@@ -199,7 +201,7 @@ pub trait DatabaseDev{
 		}
 		
 		// inherited columns
-		for ic in &table.get_inherited_columns(){
+		for ic in &table.inherited_columns(){
 			if !included_columns.contains(&&ic.name){
 				self.write_column(&mut w, ic);
 				included_columns.push(&ic.name);
@@ -207,7 +209,7 @@ pub trait DatabaseDev{
 		}
 		
 		// foreign columns, has_one
-		let foreign_tables = table.get_referred_tables(all_tables);
+		let foreign_tables = table.referred_tables(all_tables);
 		for (column, ft) in foreign_tables{
 			if ft.name != table.name { //do not include self referencial table
 				w.tab();
@@ -215,11 +217,13 @@ pub trait DatabaseDev{
 				w.ln();
 				w.tab();
 				w.append("pub ");
-				let member_name = format!("{}_{}",column.name, ft.name);
-				w.append(&member_name);
+				//let member_name = format!("{}_{}",column.name, ft.name);
+				//w.append(&member_name);
+				//using condense name #FIXME: make it configurable
+				w.append(&column.condense_name());
 				w.append(":");
 				w.append("Option<");
-				w.append(&ft.get_struct_name());
+				w.append(&ft.struct_name());
 				w.append(">");
 				w.comma();
 				w.ln();
@@ -229,12 +233,15 @@ pub trait DatabaseDev{
 				w.ln();
 				w.tab();
 				w.append("pub ");
-				let member_name = format!("{}_{}",column.name, ft.name);
-				w.append(&member_name);
+				
+				//let member_name = format!("{}_{}",column.name, ft.name);
+				//w.append(&member_name);
+				//using condense name #FIXME: make it configurable
+				w.append(&column.condense_name());
 				w.append(":");
 				w.append("Option<");
 				w.append("Box<");
-				w.append(&ft.get_struct_name());
+				w.append(&ft.struct_name());
 				w.append(">");
 				w.append(">");
 				w.comma();
@@ -244,7 +251,7 @@ pub trait DatabaseDev{
 		
 		//extension tables
 		let mut included_has_many = Vec::new();
-		for ext in table.get_extension_tables(all_tables){
+		for ext in table.extension_tables(all_tables){
 				w.tab();
 				w.append("/// has one, extension table");
 				w.ln();
@@ -254,7 +261,7 @@ pub trait DatabaseDev{
 				w.append(":");
 				w.append("Option<");
 				w.append("Box<");//put it inside the box to get rid of illegal recursive struct
-				w.append(&ext.get_struct_name());
+				w.append(&ext.struct_name());
 				w.append(">");
 				w.append(">");
 				w.comma();
@@ -262,7 +269,9 @@ pub trait DatabaseDev{
 				included_has_many.push(&ext.name);//put to included in hasMany to prevent it from putting it there
 		}
 		//indirect referring table
-		for (indirect, linker_table) in table.get_indirect_referring_tables(all_tables){
+		let mut linker_tables = Vec::new();
+		for (indirect, linker_table) in table.indirect_referring_tables(all_tables){
+				linker_tables.push(linker_table);
 				w.tab();
 				w.append("/// has many, indirect referring table, derived from linker table: ");
 				w.append(&linker_table.name);
@@ -275,7 +284,7 @@ pub trait DatabaseDev{
 				w.append(":");
 				w.append("Option<");
 				w.append("Vec<");//put it inside the box to get rid of illegal recursive struct
-				w.append(&indirect.get_struct_name());
+				w.append(&indirect.struct_name());
 				w.append(">");
 				w.append(">");
 				w.comma();
@@ -284,10 +293,9 @@ pub trait DatabaseDev{
 		}
 		
 		// referring table, has_many
-		let linker_tables = table.get_linker_tables(all_tables);
-		for (ref_table, column) in table.get_referring_tables(all_tables){
+		for (ref_table, _) in table.referring_tables(all_tables){
 			if !included_has_many.contains(&&ref_table.name) &&
-			 !Table::in_tables(ref_table, &linker_tables) {
+			 !linker_tables.contains(&ref_table) {
 				w.tab();
 				w.append("/// has many");
 				w.ln();
@@ -298,7 +306,7 @@ pub trait DatabaseDev{
 				w.append(&ref_table.name);
 				w.append(":");
 				w.append("Option<Vec<");
-				w.append(&ref_table.get_struct_name());
+				w.append(&ref_table.struct_name());
 				w.append(">>");
 				w.comma();
 				w.ln();
@@ -342,7 +350,7 @@ pub trait DatabaseDev{
 		}
 		w.tab();
 		w.append("pub ");
-		w.append(&c.get_corrected_name());
+		w.append(&c.corrected_name());
 		w.append(":");
 		let (_, data_type) = self.get_rust_data_type(&c.data_type);
 		if c.not_null{

@@ -1,6 +1,8 @@
+extern crate chrono;
 use chrono::naive::date::NaiveDate;
 use chrono::naive::datetime::NaiveDateTime;
 
+#[derive(Debug)]
 pub struct AAsset {
 	/// primary
 	/// not nullable 
@@ -158,6 +160,7 @@ pub struct AAsset {
 	pub r_requestaction:Option<Vec<RRequestaction>>,
 }
 
+#[derive(Debug)]
 pub struct AAssetAcct {
 	/// primary
 	/// not nullable 
@@ -233,6 +236,7 @@ pub struct AAssetAcct {
 	pub a_asset_spread_id_a_asset_spread:Option<AAssetSpread>,
 }
 
+#[derive(Debug)]
 pub struct AAssetAddition {
 	/// primary
 	/// not nullable 
@@ -278,6 +282,7 @@ pub struct AAssetAddition {
 	pub a_asset_change:Option<Vec<AAssetChange>>,
 }
 
+#[derive(Debug)]
 pub struct AAssetChange {
 	/// primary
 	/// not nullable 
@@ -384,6 +389,7 @@ pub struct AAssetChange {
 	pub a_asset_change_amt:Option<Vec<AAssetChangeAmt>>,
 }
 
+#[derive(Debug)]
 pub struct AAssetChangeAmt {
 	/// primary
 	/// not nullable 
@@ -426,6 +432,7 @@ pub struct AAssetChangeAmt {
 	pub c_acctschema_id_c_acctschema:Option<CAcctschema>,
 }
 
+#[derive(Debug)]
 pub struct AAssetDelivery {
 	/// primary
 	/// not nullable 
@@ -475,6 +482,7 @@ pub struct AAssetDelivery {
 	pub m_productdownload_id_m_productdownload:Option<MProductdownload>,
 }
 
+#[derive(Debug)]
 pub struct AAssetDisposed {
 	/// primary
 	/// not nullable 
@@ -519,6 +527,7 @@ pub struct AAssetDisposed {
 	pub a_asset_trade_id_a_asset:Option<AAsset>,
 }
 
+#[derive(Debug)]
 pub struct AAssetGroup {
 	/// primary
 	/// not nullable 
@@ -572,6 +581,7 @@ pub struct AAssetGroup {
 	pub m_product_category:Option<Vec<MProductCategory>>,
 }
 
+#[derive(Debug)]
 pub struct AAssetGroupAcct {
 	/// primary
 	/// not nullable 
@@ -634,6 +644,7 @@ pub struct AAssetGroupAcct {
 	pub a_depreciation_table_header_id_a_depreciation_table_header:Option<ADepreciationTableHeader>,
 }
 
+#[derive(Debug)]
 pub struct AAssetInfoFin {
 	/// primary
 	/// not nullable 
@@ -667,6 +678,7 @@ pub struct AAssetInfoFin {
 	pub updatedby:f64,
 }
 
+#[derive(Debug)]
 pub struct AAssetInfoIns {
 	/// primary
 	/// not nullable 
@@ -696,6 +708,7 @@ pub struct AAssetInfoIns {
 	pub updatedby:f64,
 }
 
+#[derive(Debug)]
 pub struct AAssetInfoLic {
 	/// primary
 	/// not nullable 
@@ -724,6 +737,7 @@ pub struct AAssetInfoLic {
 	pub updatedby:f64,
 }
 
+#[derive(Debug)]
 pub struct AAssetInfoOth {
 	/// primary
 	/// not nullable 
@@ -762,6 +776,7 @@ pub struct AAssetInfoOth {
 	pub updatedby:f64,
 }
 
+#[derive(Debug)]
 pub struct AAssetInfoTax {
 	/// primary
 	/// not nullable 
@@ -790,6 +805,7 @@ pub struct AAssetInfoTax {
 	pub updatedby:f64,
 }
 
+#[derive(Debug)]
 pub struct AAssetRetirement {
 	/// primary
 	/// not nullable 
@@ -828,6 +844,7 @@ pub struct AAssetRetirement {
 	pub a_asset_change:Option<Vec<AAssetChange>>,
 }
 
+#[derive(Debug)]
 pub struct AAssetRevalEntry {
 	/// primary
 	/// not nullable 
@@ -886,6 +903,7 @@ pub struct AAssetRevalEntry {
 	pub c_acctschema_id_c_acctschema:Option<CAcctschema>,
 }
 
+#[derive(Debug)]
 pub struct AAssetRevalIndex {
 	/// primary
 	/// not nullable 
@@ -914,6 +932,7 @@ pub struct AAssetRevalIndex {
 	pub updatedby:f64,
 }
 
+#[derive(Debug)]
 pub struct AAssetSplit {
 	/// primary
 	/// not nullable 
@@ -964,6 +983,7 @@ pub struct AAssetSplit {
 	pub c_period_id_c_period:Option<CPeriod>,
 }
 
+#[derive(Debug)]
 pub struct AAssetSpread {
 	/// primary
 	/// not nullable 
@@ -1016,6 +1036,7 @@ pub struct AAssetSpread {
 	pub a_asset_acct:Option<Vec<AAssetAcct>>,
 }
 
+#[derive(Debug)]
 pub struct AAssetTransfer {
 	/// primary
 	/// not nullable 
@@ -1080,6 +1101,7 @@ pub struct AAssetTransfer {
 	pub c_acctschema_id_c_acctschema:Option<CAcctschema>,
 }
 
+#[derive(Debug)]
 pub struct AAssetUse {
 	/// primary
 	/// not nullable 
@@ -1109,6 +1131,7 @@ pub struct AAssetUse {
 	pub a_asset_id_a_asset:Option<AAsset>,
 }
 
+#[derive(Debug)]
 pub struct ADepreciation {
 	/// primary
 	/// not nullable 
@@ -1143,6 +1166,7 @@ pub struct ADepreciation {
 	pub a_asset_group_acct:Option<Vec<AAssetGroupAcct>>,
 }
 
+#[derive(Debug)]
 pub struct ADepreciationBuild {
 	/// primary
 	/// not nullable 
@@ -1172,6 +1196,7 @@ pub struct ADepreciationBuild {
 	pub a_start_asset_id_a_asset:Option<AAsset>,
 }
 
+#[derive(Debug)]
 pub struct ADepreciationConvention {
 	/// primary
 	/// not nullable 
@@ -1200,6 +1225,7 @@ pub struct ADepreciationConvention {
 	pub a_asset_acct:Option<Vec<AAssetAcct>>,
 }
 
+#[derive(Debug)]
 pub struct ADepreciationEntry {
 	/// primary
 	/// not nullable 
@@ -1258,6 +1284,7 @@ pub struct ADepreciationEntry {
 	pub c_acctschema_id_c_acctschema:Option<CAcctschema>,
 }
 
+#[derive(Debug)]
 pub struct ADepreciationExp {
 	/// primary
 	/// not nullable 
@@ -1296,6 +1323,7 @@ pub struct ADepreciationExp {
 	pub updatedby:f64,
 }
 
+#[derive(Debug)]
 pub struct ADepreciationForecast {
 	/// primary
 	/// not nullable 
@@ -1330,6 +1358,7 @@ pub struct ADepreciationForecast {
 	pub a_start_asset_id_a_asset:Option<AAsset>,
 }
 
+#[derive(Debug)]
 pub struct ADepreciationMethod {
 	/// primary
 	/// not nullable 
@@ -1359,6 +1388,7 @@ pub struct ADepreciationMethod {
 	pub a_asset_acct:Option<Vec<AAssetAcct>>,
 }
 
+#[derive(Debug)]
 pub struct ADepreciationTableDetail {
 	/// primary
 	/// not nullable 
@@ -1389,6 +1419,7 @@ pub struct ADepreciationTableDetail {
 	pub updatedby:f64,
 }
 
+#[derive(Debug)]
 pub struct ADepreciationTableHeader {
 	/// primary
 	/// not nullable 
@@ -1427,6 +1458,7 @@ pub struct ADepreciationTableHeader {
 	pub i_asset:Option<Vec<IAsset>>,
 }
 
+#[derive(Debug)]
 pub struct ADepreciationWorkfile {
 	/// primary
 	/// not nullable 
@@ -1473,6 +1505,7 @@ pub struct ADepreciationWorkfile {
 	pub updatedby:f64,
 }
 
+#[derive(Debug)]
 pub struct ARegistration {
 	/// primary
 	/// not nullable 
@@ -1528,6 +1561,7 @@ pub struct ARegistration {
 	pub a_registrationvalue:Option<Vec<ARegistrationvalue>>,
 }
 
+#[derive(Debug)]
 pub struct ARegistrationattribute {
 	/// primary
 	/// not nullable 
@@ -1572,6 +1606,7 @@ pub struct ARegistrationattribute {
 	pub a_registrationvalue:Option<Vec<ARegistrationvalue>>,
 }
 
+#[derive(Debug)]
 pub struct ARegistrationproduct {
 	/// primary
 	/// not nullable 
@@ -1603,6 +1638,7 @@ pub struct ARegistrationproduct {
 	pub m_product_id_m_product:Option<MProduct>,
 }
 
+#[derive(Debug)]
 pub struct ARegistrationvalue {
 	/// primary
 	/// not nullable 
@@ -1636,6 +1672,7 @@ pub struct ARegistrationvalue {
 	pub a_registrationattribute_id_a_registrationattribute:Option<ARegistrationattribute>,
 }
 
+#[derive(Debug)]
 pub struct AdAccesslog {
 	/// primary
 	/// not nullable 
@@ -1671,6 +1708,7 @@ pub struct AdAccesslog {
 	pub ad_column_id_ad_column:Option<AdColumn>,
 }
 
+#[derive(Debug)]
 pub struct AdAlert {
 	/// primary
 	/// not nullable 
@@ -1718,6 +1756,7 @@ pub struct AdAlert {
 	pub ad_alertrule:Option<Vec<AdAlertrule>>,
 }
 
+#[derive(Debug)]
 pub struct AdAlertprocessor {
 	/// primary
 	/// not nullable 
@@ -1761,6 +1800,7 @@ pub struct AdAlertprocessor {
 	pub ad_alertprocessorlog:Option<Vec<AdAlertprocessorlog>>,
 }
 
+#[derive(Debug)]
 pub struct AdAlertprocessorlog {
 	/// primary
 	/// not nullable 
@@ -1797,6 +1837,7 @@ pub struct AdAlertprocessorlog {
 	pub ad_alertprocessor_id_ad_alertprocessor:Option<AdAlertprocessor>,
 }
 
+#[derive(Debug)]
 pub struct AdAlertrecipient {
 	/// primary
 	/// not nullable 
@@ -1830,6 +1871,7 @@ pub struct AdAlertrecipient {
 	pub ad_role_id_ad_role:Option<AdRole>,
 }
 
+#[derive(Debug)]
 pub struct AdAlertrule {
 	/// primary
 	/// not nullable 
@@ -1874,6 +1916,7 @@ pub struct AdAlertrule {
 	pub ad_table_id_ad_table:Option<AdTable>,
 }
 
+#[derive(Debug)]
 pub struct AdArchive {
 	/// primary
 	/// not nullable 
@@ -1915,6 +1958,7 @@ pub struct AdArchive {
 	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
 }
 
+#[derive(Debug)]
 pub struct AdAttachment {
 	/// primary
 	/// not nullable 
@@ -1950,6 +1994,7 @@ pub struct AdAttachment {
 	pub ad_attachmentnote:Option<Vec<AdAttachmentnote>>,
 }
 
+#[derive(Debug)]
 pub struct AdAttachmentnote {
 	/// primary
 	/// not nullable 
@@ -1985,6 +2030,7 @@ pub struct AdAttachmentnote {
 	pub ad_user_id_ad_user:Option<AdUser>,
 }
 
+#[derive(Debug)]
 pub struct AdAttribute {
 	/// primary
 	/// not nullable 
@@ -2058,6 +2104,7 @@ pub struct AdAttribute {
 	pub ad_attribute_value:Option<Vec<AdAttributeValue>>,
 }
 
+#[derive(Debug)]
 pub struct AdAttributeValue {
 	/// primary
 	/// not nullable 
@@ -2072,6 +2119,7 @@ pub struct AdAttributeValue {
 	pub ad_attribute_id_ad_attribute:Option<AdAttribute>,
 }
 
+#[derive(Debug)]
 pub struct AdChangelog {
 	/// primary
 	/// not nullable 
@@ -2122,6 +2170,7 @@ pub struct AdChangelog {
 	pub ad_column_id_ad_column:Option<AdColumn>,
 }
 
+#[derive(Debug)]
 pub struct AdClass {
 	/// primary
 	/// not nullable 
@@ -2155,6 +2204,7 @@ pub struct AdClass {
 	pub value:String,
 }
 
+#[derive(Debug)]
 pub struct AdClient {
 	/// primary
 	/// not nullable 
@@ -2365,6 +2415,7 @@ pub struct AdClient {
 	pub w_store:Option<Vec<WStore>>,
 }
 
+#[derive(Debug)]
 pub struct AdClientinfo {
 	/// primary
 	/// not nullable 
@@ -2446,6 +2497,7 @@ pub struct AdClientinfo {
 	pub ad_tree_campaign_id_ad_tree:Option<AdTree>,
 }
 
+#[derive(Debug)]
 pub struct AdClientshare {
 	/// primary
 	/// not nullable 
@@ -2482,6 +2534,7 @@ pub struct AdClientshare {
 	pub ad_table_id_ad_table:Option<AdTable>,
 }
 
+#[derive(Debug)]
 pub struct AdColor {
 	/// primary
 	/// not nullable 
@@ -2539,6 +2592,7 @@ pub struct AdColor {
 	pub ad_workbench:Option<Vec<AdWorkbench>>,
 }
 
+#[derive(Debug)]
 pub struct AdColumn {
 	/// primary
 	/// not nullable 
@@ -2687,6 +2741,7 @@ pub struct AdColumn {
 	pub pp_order_node:Option<Vec<PpOrderNode>>,
 }
 
+#[derive(Debug)]
 pub struct AdColumnAccess {
 	/// primary
 	/// not nullable 
@@ -2726,6 +2781,7 @@ pub struct AdColumnAccess {
 	pub ad_table_id_ad_table:Option<AdTable>,
 }
 
+#[derive(Debug)]
 pub struct AdColumnTrl {
 	/// primary
 	/// not nullable 
@@ -2761,6 +2817,7 @@ pub struct AdColumnTrl {
 	pub ad_language_ad_language:Option<AdLanguage>,
 }
 
+#[derive(Debug)]
 pub struct AdDesktop {
 	/// primary
 	/// not nullable 
@@ -2798,6 +2855,7 @@ pub struct AdDesktop {
 	pub ad_desktopworkbench:Option<Vec<AdDesktopworkbench>>,
 }
 
+#[derive(Debug)]
 pub struct AdDesktopTrl {
 	/// primary
 	/// not nullable 
@@ -2835,6 +2893,7 @@ pub struct AdDesktopTrl {
 	pub ad_language_ad_language:Option<AdLanguage>,
 }
 
+#[derive(Debug)]
 pub struct AdDesktopworkbench {
 	/// primary
 	/// not nullable 
@@ -2868,6 +2927,7 @@ pub struct AdDesktopworkbench {
 	pub ad_desktop_id_ad_desktop:Option<AdDesktop>,
 }
 
+#[derive(Debug)]
 pub struct AdDocumentActionAccess {
 	/// not nullable 
 	pub ad_client_id:f64,
@@ -2900,6 +2960,7 @@ pub struct AdDocumentActionAccess {
 	pub ad_ref_list_id_ad_ref_list:Option<AdRefList>,
 }
 
+#[derive(Debug)]
 pub struct AdElement {
 	/// primary
 	/// not nullable 
@@ -2947,6 +3008,7 @@ pub struct AdElement {
 	pub ad_process_para:Option<Vec<AdProcessPara>>,
 }
 
+#[derive(Debug)]
 pub struct AdElementTrl {
 	/// primary
 	/// not nullable 
@@ -2990,6 +3052,7 @@ pub struct AdElementTrl {
 	pub ad_language_ad_language:Option<AdLanguage>,
 }
 
+#[derive(Debug)]
 pub struct AdEntitytype {
 	/// primary
 	/// defaults to: 'D'::character varying
@@ -3106,6 +3169,7 @@ pub struct AdEntitytype {
 	pub pp_wf_node_product:Option<Vec<PpWfNodeProduct>>,
 }
 
+#[derive(Debug)]
 pub struct AdError {
 	/// primary
 	/// not nullable 
@@ -3135,6 +3199,7 @@ pub struct AdError {
 	pub ad_language_ad_language:Option<AdLanguage>,
 }
 
+#[derive(Debug)]
 pub struct AdField {
 	/// primary
 	/// not nullable 
@@ -3228,6 +3293,7 @@ pub struct AdField {
 	pub asp_field:Option<Vec<AspField>>,
 }
 
+#[derive(Debug)]
 pub struct AdFieldTrl {
 	/// primary
 	/// not nullable 
@@ -3265,6 +3331,7 @@ pub struct AdFieldTrl {
 	pub ad_language_ad_language:Option<AdLanguage>,
 }
 
+#[derive(Debug)]
 pub struct AdFieldgroup {
 	/// primary
 	/// not nullable 
@@ -3302,6 +3369,7 @@ pub struct AdFieldgroup {
 	pub ad_fieldgroup_trl:Option<Vec<AdFieldgroupTrl>>,
 }
 
+#[derive(Debug)]
 pub struct AdFieldgroupTrl {
 	/// primary
 	/// not nullable 
@@ -3337,6 +3405,7 @@ pub struct AdFieldgroupTrl {
 	pub ad_language_ad_language:Option<AdLanguage>,
 }
 
+#[derive(Debug)]
 pub struct AdFind {
 	/// primary
 	/// not nullable 
@@ -3373,6 +3442,7 @@ pub struct AdFind {
 	pub ad_column_id_ad_column:Option<AdColumn>,
 }
 
+#[derive(Debug)]
 pub struct AdForm {
 	/// primary
 	/// not nullable 
@@ -3434,6 +3504,7 @@ pub struct AdForm {
 	pub pp_order_node:Option<Vec<PpOrderNode>>,
 }
 
+#[derive(Debug)]
 pub struct AdFormAccess {
 	/// primary
 	/// not nullable 
@@ -3467,6 +3538,7 @@ pub struct AdFormAccess {
 	pub ad_role_id_ad_role:Option<AdRole>,
 }
 
+#[derive(Debug)]
 pub struct AdFormTrl {
 	/// primary
 	/// not nullable 
@@ -3504,6 +3576,7 @@ pub struct AdFormTrl {
 	pub ad_language_ad_language:Option<AdLanguage>,
 }
 
+#[derive(Debug)]
 pub struct AdHousekeeping {
 	/// primary
 	/// not nullable 
@@ -3542,6 +3615,7 @@ pub struct AdHousekeeping {
 	pub whereclause:Option<String>,
 }
 
+#[derive(Debug)]
 pub struct AdImage {
 	/// primary
 	/// not nullable 
@@ -3589,6 +3663,7 @@ pub struct AdImage {
 	pub pp_order_node:Option<Vec<PpOrderNode>>,
 }
 
+#[derive(Debug)]
 pub struct AdImpformat {
 	/// primary
 	/// not nullable 
@@ -3629,6 +3704,7 @@ pub struct AdImpformat {
 	pub ad_package_exp_detail:Option<Vec<AdPackageExpDetail>>,
 }
 
+#[derive(Debug)]
 pub struct AdImpformatRow {
 	/// primary
 	/// not nullable 
@@ -3677,6 +3753,7 @@ pub struct AdImpformatRow {
 	pub ad_column_id_ad_column:Option<AdColumn>,
 }
 
+#[derive(Debug)]
 pub struct AdInfocolumn {
 	/// primary
 	/// not nullable 
@@ -3733,6 +3810,7 @@ pub struct AdInfocolumn {
 	pub ad_infocolumn_trl:Option<Vec<AdInfocolumnTrl>>,
 }
 
+#[derive(Debug)]
 pub struct AdInfocolumnTrl {
 	/// primary
 	/// not nullable 
@@ -3770,6 +3848,7 @@ pub struct AdInfocolumnTrl {
 	pub ad_language_ad_language:Option<AdLanguage>,
 }
 
+#[derive(Debug)]
 pub struct AdInfowindow {
 	/// primary
 	/// not nullable 
@@ -3814,6 +3893,7 @@ pub struct AdInfowindow {
 	pub ad_infowindow_trl:Option<Vec<AdInfowindowTrl>>,
 }
 
+#[derive(Debug)]
 pub struct AdInfowindowTrl {
 	/// primary
 	/// not nullable 
@@ -3851,6 +3931,7 @@ pub struct AdInfowindowTrl {
 	pub ad_language_ad_language:Option<AdLanguage>,
 }
 
+#[derive(Debug)]
 pub struct AdIssue {
 	/// primary
 	/// not nullable 
@@ -3944,6 +4025,7 @@ pub struct AdIssue {
 	pub ad_form_id_ad_form:Option<AdForm>,
 }
 
+#[derive(Debug)]
 pub struct AdLabelprinter {
 	/// primary
 	/// not nullable 
@@ -3974,6 +4056,7 @@ pub struct AdLabelprinter {
 	pub ad_printlabel:Option<Vec<AdPrintlabel>>,
 }
 
+#[derive(Debug)]
 pub struct AdLabelprinterfunction {
 	/// primary
 	/// not nullable 
@@ -4012,6 +4095,7 @@ pub struct AdLabelprinterfunction {
 	pub ad_printlabelline:Option<Vec<AdPrintlabelline>>,
 }
 
+#[derive(Debug)]
 pub struct AdLanguage {
 	/// primary
 	/// not nullable 
@@ -4153,6 +4237,7 @@ pub struct AdLanguage {
 	pub w_store_trl:Option<Vec<WStoreTrl>>,
 }
 
+#[derive(Debug)]
 pub struct AdLdapaccess {
 	/// primary
 	/// not nullable 
@@ -4191,6 +4276,7 @@ pub struct AdLdapaccess {
 	pub r_interestarea_id_r_interestarea:Option<RInterestarea>,
 }
 
+#[derive(Debug)]
 pub struct AdLdapprocessor {
 	/// primary
 	/// not nullable 
@@ -4234,6 +4320,7 @@ pub struct AdLdapprocessor {
 	pub ad_ldapprocessorlog:Option<Vec<AdLdapprocessorlog>>,
 }
 
+#[derive(Debug)]
 pub struct AdLdapprocessorlog {
 	/// primary
 	/// not nullable 
@@ -4270,6 +4357,7 @@ pub struct AdLdapprocessorlog {
 	pub ad_ldapprocessor_id_ad_ldapprocessor:Option<AdLdapprocessor>,
 }
 
+#[derive(Debug)]
 pub struct AdMenu {
 	/// primary
 	/// not nullable 
@@ -4339,6 +4427,7 @@ pub struct AdMenu {
 	pub ad_package_exp_detail:Option<Vec<AdPackageExpDetail>>,
 }
 
+#[derive(Debug)]
 pub struct AdMenuTrl {
 	/// primary
 	/// not nullable 
@@ -4375,6 +4464,7 @@ pub struct AdMenuTrl {
 	pub ad_language_ad_language:Option<AdLanguage>,
 }
 
+#[derive(Debug)]
 pub struct AdMessage {
 	/// primary
 	/// not nullable 
@@ -4424,6 +4514,7 @@ pub struct AdMessage {
 	pub ad_wf_process:Option<Vec<AdWfProcess>>,
 }
 
+#[derive(Debug)]
 pub struct AdMessageTrl {
 	/// primary
 	/// not nullable 
@@ -4460,6 +4551,7 @@ pub struct AdMessageTrl {
 	pub ad_language_ad_language:Option<AdLanguage>,
 }
 
+#[derive(Debug)]
 pub struct AdMigrationscript {
 	/// primary
 	/// not nullable 
@@ -4498,6 +4590,7 @@ pub struct AdMigrationscript {
 	pub url:Option<String>,
 }
 
+#[derive(Debug)]
 pub struct AdModelvalidator {
 	/// primary
 	/// not nullable 
@@ -4533,6 +4626,7 @@ pub struct AdModelvalidator {
 	pub ad_package_exp_detail:Option<Vec<AdPackageExpDetail>>,
 }
 
+#[derive(Debug)]
 pub struct AdModification {
 	/// primary
 	/// not nullable 
@@ -4569,6 +4663,7 @@ pub struct AdModification {
 	pub entitytype_ad_entitytype:Option<AdEntitytype>,
 }
 
+#[derive(Debug)]
 pub struct AdNote {
 	/// primary
 	/// not nullable 
@@ -4612,6 +4707,7 @@ pub struct AdNote {
 	pub ad_wf_activity_id_ad_wf_activity:Option<AdWfActivity>,
 }
 
+#[derive(Debug)]
 pub struct AdOrg {
 	/// primary
 	/// not nullable 
@@ -4838,6 +4934,7 @@ pub struct AdOrg {
 	pub pp_order:Option<Vec<PpOrder>>,
 }
 
+#[derive(Debug)]
 pub struct AdOrginfo {
 	/// primary
 	/// not nullable 
@@ -4892,6 +4989,7 @@ pub struct AdOrginfo {
 	pub transfercashbook_id_c_cashbook:Option<CCashbook>,
 }
 
+#[derive(Debug)]
 pub struct AdOrgtype {
 	/// primary
 	/// not nullable 
@@ -4925,6 +5023,7 @@ pub struct AdOrgtype {
 	pub c_taxdefinition:Option<Vec<CTaxdefinition>>,
 }
 
+#[derive(Debug)]
 pub struct AdPackageExp {
 	/// primary
 	/// not nullable 
@@ -4970,6 +5069,7 @@ pub struct AdPackageExp {
 	pub version:String,
 }
 
+#[derive(Debug)]
 pub struct AdPackageExpCommon {
 	/// primary
 	/// not nullable 
@@ -5036,6 +5136,7 @@ pub struct AdPackageExpCommon {
 	pub ad_menu_id_ad_menu:Option<AdMenu>,
 }
 
+#[derive(Debug)]
 pub struct AdPackageExpDetail {
 	/// primary
 	/// not nullable 
@@ -5126,6 +5227,7 @@ pub struct AdPackageExpDetail {
 	pub ad_modelvalidator_id_ad_modelvalidator:Option<AdModelvalidator>,
 }
 
+#[derive(Debug)]
 pub struct AdPackageImp {
 	/// primary
 	/// not nullable 
@@ -5168,6 +5270,7 @@ pub struct AdPackageImp {
 	pub version:Option<String>,
 }
 
+#[derive(Debug)]
 pub struct AdPackageImpBackup {
 	/// primary
 	/// not nullable 
@@ -5206,6 +5309,7 @@ pub struct AdPackageImpBackup {
 	pub ad_reference_id_ad_reference:Option<AdReference>,
 }
 
+#[derive(Debug)]
 pub struct AdPackageImpDetail {
 	/// primary
 	/// not nullable 
@@ -5241,6 +5345,7 @@ pub struct AdPackageImpDetail {
 	pub updatedby:f64,
 }
 
+#[derive(Debug)]
 pub struct AdPackageImpInst {
 	/// primary
 	/// not nullable 
@@ -5273,6 +5378,7 @@ pub struct AdPackageImpInst {
 	pub version:Option<String>,
 }
 
+#[derive(Debug)]
 pub struct AdPackageImpProc {
 	/// primary
 	/// not nullable 
@@ -5302,6 +5408,7 @@ pub struct AdPackageImpProc {
 	pub updatedby:f64,
 }
 
+#[derive(Debug)]
 pub struct AdPinstance {
 	/// primary
 	/// not nullable 
@@ -5356,6 +5463,7 @@ pub struct AdPinstance {
 	pub t_trialbalance:Option<Vec<TTrialbalance>>,
 }
 
+#[derive(Debug)]
 pub struct AdPinstanceLog {
 	/// primary
 	/// not nullable 
@@ -5372,6 +5480,7 @@ pub struct AdPinstanceLog {
 	pub ad_pinstance_id_ad_pinstance:Option<AdPinstance>,
 }
 
+#[derive(Debug)]
 pub struct AdPinstancePara {
 	/// primary
 	/// not nullable 
@@ -5402,6 +5511,7 @@ pub struct AdPinstancePara {
 	pub ad_pinstance_id_ad_pinstance:Option<AdPinstance>,
 }
 
+#[derive(Debug)]
 pub struct AdPreference {
 	/// primary
 	/// not nullable 
@@ -5439,6 +5549,7 @@ pub struct AdPreference {
 	pub ad_user_id_ad_user:Option<AdUser>,
 }
 
+#[derive(Debug)]
 pub struct AdPrintcolor {
 	/// primary
 	/// not nullable 
@@ -5487,6 +5598,7 @@ pub struct AdPrintcolor {
 	pub pa_colorschema:Option<Vec<PaColorschema>>,
 }
 
+#[derive(Debug)]
 pub struct AdPrintfont {
 	/// primary
 	/// not nullable 
@@ -5523,6 +5635,7 @@ pub struct AdPrintfont {
 	pub ad_printtableformat:Option<Vec<AdPrinttableformat>>,
 }
 
+#[derive(Debug)]
 pub struct AdPrintform {
 	/// primary
 	/// not nullable 
@@ -5584,6 +5697,7 @@ pub struct AdPrintform {
 	pub project_printformat_id_ad_printformat:Option<AdPrintformat>,
 }
 
+#[derive(Debug)]
 pub struct AdPrintformat {
 	/// primary
 	/// not nullable 
@@ -5681,6 +5795,7 @@ pub struct AdPrintformat {
 	pub pa_report:Option<Vec<PaReport>>,
 }
 
+#[derive(Debug)]
 pub struct AdPrintformatitem {
 	/// primary
 	/// not nullable 
@@ -5835,6 +5950,7 @@ pub struct AdPrintformatitem {
 	pub ad_printgraph:Option<Vec<AdPrintgraph>>,
 }
 
+#[derive(Debug)]
 pub struct AdPrintformatitemTrl {
 	/// primary
 	/// not nullable 
@@ -5870,6 +5986,7 @@ pub struct AdPrintformatitemTrl {
 	pub ad_language_ad_language:Option<AdLanguage>,
 }
 
+#[derive(Debug)]
 pub struct AdPrintgraph {
 	/// primary
 	/// not nullable 
@@ -5924,6 +6041,7 @@ pub struct AdPrintgraph {
 	pub ad_printformatitem:Option<Vec<AdPrintformatitem>>,
 }
 
+#[derive(Debug)]
 pub struct AdPrintlabel {
 	/// primary
 	/// not nullable 
@@ -5968,6 +6086,7 @@ pub struct AdPrintlabel {
 	pub ad_printlabelline:Option<Vec<AdPrintlabelline>>,
 }
 
+#[derive(Debug)]
 pub struct AdPrintlabelline {
 	/// primary
 	/// not nullable 
@@ -6015,6 +6134,7 @@ pub struct AdPrintlabelline {
 	pub ad_printlabelline_trl:Option<Vec<AdPrintlabellineTrl>>,
 }
 
+#[derive(Debug)]
 pub struct AdPrintlabellineTrl {
 	/// primary
 	/// not nullable 
@@ -6049,6 +6169,7 @@ pub struct AdPrintlabellineTrl {
 	pub ad_language_ad_language:Option<AdLanguage>,
 }
 
+#[derive(Debug)]
 pub struct AdPrintpaper {
 	/// primary
 	/// not nullable 
@@ -6101,6 +6222,7 @@ pub struct AdPrintpaper {
 	pub ad_printformat:Option<Vec<AdPrintformat>>,
 }
 
+#[derive(Debug)]
 pub struct AdPrinttableformat {
 	/// primary
 	/// not nullable 
@@ -6188,6 +6310,7 @@ pub struct AdPrinttableformat {
 	pub ad_printformat:Option<Vec<AdPrintformat>>,
 }
 
+#[derive(Debug)]
 pub struct AdPrivateAccess {
 	/// primary
 	/// not nullable 
@@ -6221,6 +6344,7 @@ pub struct AdPrivateAccess {
 	pub ad_table_id_ad_table:Option<AdTable>,
 }
 
+#[derive(Debug)]
 pub struct AdProcess {
 	/// primary
 	/// not nullable 
@@ -6326,6 +6450,7 @@ pub struct AdProcess {
 	pub pp_order_node:Option<Vec<PpOrderNode>>,
 }
 
+#[derive(Debug)]
 pub struct AdProcessAccess {
 	/// primary
 	/// not nullable 
@@ -6363,6 +6488,7 @@ pub struct AdProcessAccess {
 	pub ad_org_id_ad_org:Option<AdOrg>,
 }
 
+#[derive(Debug)]
 pub struct AdProcessPara {
 	/// primary
 	/// not nullable 
@@ -6444,6 +6570,7 @@ pub struct AdProcessPara {
 	pub asp_process_para:Option<Vec<AspProcessPara>>,
 }
 
+#[derive(Debug)]
 pub struct AdProcessParaTrl {
 	/// primary
 	/// not nullable 
@@ -6481,6 +6608,7 @@ pub struct AdProcessParaTrl {
 	pub ad_language_ad_language:Option<AdLanguage>,
 }
 
+#[derive(Debug)]
 pub struct AdProcessTrl {
 	/// primary
 	/// not nullable 
@@ -6518,6 +6646,7 @@ pub struct AdProcessTrl {
 	pub ad_language_ad_language:Option<AdLanguage>,
 }
 
+#[derive(Debug)]
 pub struct AdRecordAccess {
 	/// primary
 	/// not nullable 
@@ -6560,6 +6689,7 @@ pub struct AdRecordAccess {
 	pub ad_table_id_ad_table:Option<AdTable>,
 }
 
+#[derive(Debug)]
 pub struct AdRefList {
 	/// primary
 	/// not nullable 
@@ -6607,6 +6737,7 @@ pub struct AdRefList {
 	pub ad_ref_list_trl:Option<Vec<AdRefListTrl>>,
 }
 
+#[derive(Debug)]
 pub struct AdRefListTrl {
 	/// primary
 	/// not nullable 
@@ -6643,6 +6774,7 @@ pub struct AdRefListTrl {
 	pub ad_language_ad_language:Option<AdLanguage>,
 }
 
+#[derive(Debug)]
 pub struct AdRefTable {
 	/// primary
 	/// not nullable 
@@ -6698,6 +6830,7 @@ pub struct AdRefTable {
 	pub ad_window_id_ad_window:Option<AdWindow>,
 }
 
+#[derive(Debug)]
 pub struct AdReference {
 	/// primary
 	/// not nullable 
@@ -6763,6 +6896,7 @@ pub struct AdReference {
 	pub hr_concept:Option<Vec<HrConcept>>,
 }
 
+#[derive(Debug)]
 pub struct AdReferenceTrl {
 	/// primary
 	/// not nullable 
@@ -6799,6 +6933,7 @@ pub struct AdReferenceTrl {
 	pub ad_language_ad_language:Option<AdLanguage>,
 }
 
+#[derive(Debug)]
 pub struct AdRegistration {
 	/// primary
 	/// not nullable 
@@ -6858,6 +6993,7 @@ pub struct AdRegistration {
 	pub c_currency_id_c_currency:Option<CCurrency>,
 }
 
+#[derive(Debug)]
 pub struct AdReplication {
 	/// primary
 	/// not nullable 
@@ -6910,6 +7046,7 @@ pub struct AdReplication {
 	pub ad_replication_run:Option<Vec<AdReplicationRun>>,
 }
 
+#[derive(Debug)]
 pub struct AdReplicationLog {
 	/// primary
 	/// not nullable 
@@ -6944,6 +7081,7 @@ pub struct AdReplicationLog {
 	pub ad_replicationtable_id_ad_replicationtable:Option<AdReplicationtable>,
 }
 
+#[derive(Debug)]
 pub struct AdReplicationRun {
 	/// primary
 	/// not nullable 
@@ -6979,6 +7117,7 @@ pub struct AdReplicationRun {
 	pub ad_replication_log:Option<Vec<AdReplicationLog>>,
 }
 
+#[derive(Debug)]
 pub struct AdReplicationdocument {
 	/// primary
 	/// not nullable 
@@ -7013,6 +7152,7 @@ pub struct AdReplicationdocument {
 	pub ad_table_id_ad_table:Option<AdTable>,
 }
 
+#[derive(Debug)]
 pub struct AdReplicationstrategy {
 	/// primary
 	/// not nullable 
@@ -7059,6 +7199,7 @@ pub struct AdReplicationstrategy {
 	pub ad_replicationtable:Option<Vec<AdReplicationtable>>,
 }
 
+#[derive(Debug)]
 pub struct AdReplicationtable {
 	/// primary
 	/// not nullable 
@@ -7101,6 +7242,7 @@ pub struct AdReplicationtable {
 	pub ad_replication_log:Option<Vec<AdReplicationLog>>,
 }
 
+#[derive(Debug)]
 pub struct AdReportview {
 	/// primary
 	/// not nullable 
@@ -7148,6 +7290,7 @@ pub struct AdReportview {
 	pub ad_reportview_col:Option<Vec<AdReportviewCol>>,
 }
 
+#[derive(Debug)]
 pub struct AdReportviewCol {
 	/// primary
 	/// not nullable 
@@ -7183,6 +7326,7 @@ pub struct AdReportviewCol {
 	pub ad_column_id_ad_column:Option<AdColumn>,
 }
 
+#[derive(Debug)]
 pub struct AdRole {
 	/// primary
 	/// not nullable 
@@ -7365,6 +7509,7 @@ pub struct AdRole {
 	pub u_rolemenu:Option<Vec<URolemenu>>,
 }
 
+#[derive(Debug)]
 pub struct AdRoleOrgaccess {
 	/// primary
 	/// not nullable 
@@ -7396,6 +7541,7 @@ pub struct AdRoleOrgaccess {
 	pub ad_org_id_ad_org:Option<AdOrg>,
 }
 
+#[derive(Debug)]
 pub struct AdRule {
 	/// primary
 	/// not nullable 
@@ -7441,6 +7587,7 @@ pub struct AdRule {
 	pub hr_payrollconcept:Option<Vec<HrPayrollconcept>>,
 }
 
+#[derive(Debug)]
 pub struct AdScheduler {
 	/// primary
 	/// not nullable 
@@ -7495,6 +7642,7 @@ pub struct AdScheduler {
 	pub ad_schedulerrecipient:Option<Vec<AdSchedulerrecipient>>,
 }
 
+#[derive(Debug)]
 pub struct AdSchedulerPara {
 	/// primary
 	/// not nullable 
@@ -7527,6 +7675,7 @@ pub struct AdSchedulerPara {
 	pub ad_process_para_id_ad_process_para:Option<AdProcessPara>,
 }
 
+#[derive(Debug)]
 pub struct AdSchedulerlog {
 	/// primary
 	/// not nullable 
@@ -7563,6 +7712,7 @@ pub struct AdSchedulerlog {
 	pub ad_scheduler_id_ad_scheduler:Option<AdScheduler>,
 }
 
+#[derive(Debug)]
 pub struct AdSchedulerrecipient {
 	/// primary
 	/// not nullable 
@@ -7596,6 +7746,7 @@ pub struct AdSchedulerrecipient {
 	pub ad_role_id_ad_role:Option<AdRole>,
 }
 
+#[derive(Debug)]
 pub struct AdSearchdefinition {
 	/// primary
 	/// not nullable 
@@ -7634,6 +7785,7 @@ pub struct AdSearchdefinition {
 	pub updatedby:f64,
 }
 
+#[derive(Debug)]
 pub struct AdSequence {
 	/// primary
 	/// not nullable 
@@ -7695,6 +7847,7 @@ pub struct AdSequence {
 	pub c_paymentprocessor:Option<Vec<CPaymentprocessor>>,
 }
 
+#[derive(Debug)]
 pub struct AdSequenceAudit {
 	/// primary
 	/// not nullable 
@@ -7733,6 +7886,7 @@ pub struct AdSequenceAudit {
 	pub ad_table_id_ad_table:Option<AdTable>,
 }
 
+#[derive(Debug)]
 pub struct AdSequenceNo {
 	/// primary
 	/// not nullable 
@@ -7768,6 +7922,7 @@ pub struct AdSequenceNo {
 	pub ad_org_id_ad_org:Option<AdOrg>,
 }
 
+#[derive(Debug)]
 pub struct AdSession {
 	/// primary
 	/// not nullable 
@@ -7808,6 +7963,7 @@ pub struct AdSession {
 	pub k_entry:Option<Vec<KEntry>>,
 }
 
+#[derive(Debug)]
 pub struct AdSysconfig {
 	/// primary
 	/// not nullable 
@@ -7841,6 +7997,7 @@ pub struct AdSysconfig {
 	pub entitytype_ad_entitytype:Option<AdEntitytype>,
 }
 
+#[derive(Debug)]
 pub struct AdSystem {
 	/// primary
 	/// not nullable 
@@ -7916,6 +8073,7 @@ pub struct AdSystem {
 	pub ad_registration:Option<Vec<AdRegistration>>,
 }
 
+#[derive(Debug)]
 pub struct AdTab {
 	/// primary
 	/// not nullable 
@@ -8028,6 +8186,7 @@ pub struct AdTab {
 	pub asp_tab:Option<Vec<AspTab>>,
 }
 
+#[derive(Debug)]
 pub struct AdTabTrl {
 	/// primary
 	/// not nullable 
@@ -8066,6 +8225,7 @@ pub struct AdTabTrl {
 	pub ad_language_ad_language:Option<AdLanguage>,
 }
 
+#[derive(Debug)]
 pub struct AdTable {
 	/// primary
 	/// not nullable 
@@ -8234,6 +8394,7 @@ pub struct AdTable {
 	pub r_request:Option<Vec<RRequest>>,
 }
 
+#[derive(Debug)]
 pub struct AdTableAccess {
 	/// primary
 	/// not nullable 
@@ -8284,6 +8445,7 @@ pub struct AdTableAccess {
 	pub ad_org_id_ad_org:Option<AdOrg>,
 }
 
+#[derive(Debug)]
 pub struct AdTableScriptvalidator {
 	/// primary
 	/// not nullable 
@@ -8318,6 +8480,7 @@ pub struct AdTableScriptvalidator {
 	pub ad_table_id_ad_table:Option<AdTable>,
 }
 
+#[derive(Debug)]
 pub struct AdTableTrl {
 	/// primary
 	/// not nullable 
@@ -8353,6 +8516,7 @@ pub struct AdTableTrl {
 	pub ad_language_ad_language:Option<AdLanguage>,
 }
 
+#[derive(Debug)]
 pub struct AdTask {
 	/// primary
 	/// not nullable 
@@ -8414,6 +8578,7 @@ pub struct AdTask {
 	pub pp_order_node:Option<Vec<PpOrderNode>>,
 }
 
+#[derive(Debug)]
 pub struct AdTaskAccess {
 	/// primary
 	/// not nullable 
@@ -8451,6 +8616,7 @@ pub struct AdTaskAccess {
 	pub ad_org_id_ad_org:Option<AdOrg>,
 }
 
+#[derive(Debug)]
 pub struct AdTaskTrl {
 	/// primary
 	/// not nullable 
@@ -8488,6 +8654,7 @@ pub struct AdTaskTrl {
 	pub ad_language_ad_language:Option<AdLanguage>,
 }
 
+#[derive(Debug)]
 pub struct AdTaskinstance {
 	/// primary
 	/// not nullable 
@@ -8517,6 +8684,7 @@ pub struct AdTaskinstance {
 	pub ad_task_id_ad_task:Option<AdTask>,
 }
 
+#[derive(Debug)]
 pub struct AdTree {
 	/// primary
 	/// not nullable 
@@ -8588,6 +8756,7 @@ pub struct AdTree {
 	pub pa_hierarchy:Option<Vec<PaHierarchy>>,
 }
 
+#[derive(Debug)]
 pub struct AdTreebar {
 	/// primary
 	/// not nullable 
@@ -8621,6 +8790,7 @@ pub struct AdTreebar {
 	pub ad_user_id_ad_user:Option<AdUser>,
 }
 
+#[derive(Debug)]
 pub struct AdTreenode {
 	/// primary
 	/// not nullable 
@@ -8651,6 +8821,7 @@ pub struct AdTreenode {
 	pub ad_tree_id_ad_tree:Option<AdTree>,
 }
 
+#[derive(Debug)]
 pub struct AdTreenodebp {
 	/// primary
 	/// not nullable 
@@ -8681,6 +8852,7 @@ pub struct AdTreenodebp {
 	pub ad_tree_id_ad_tree:Option<AdTree>,
 }
 
+#[derive(Debug)]
 pub struct AdTreenodecmc {
 	/// primary
 	/// not nullable 
@@ -8714,6 +8886,7 @@ pub struct AdTreenodecmc {
 	pub ad_tree_id_ad_tree:Option<AdTree>,
 }
 
+#[derive(Debug)]
 pub struct AdTreenodecmm {
 	/// primary
 	/// not nullable 
@@ -8747,6 +8920,7 @@ pub struct AdTreenodecmm {
 	pub ad_tree_id_ad_tree:Option<AdTree>,
 }
 
+#[derive(Debug)]
 pub struct AdTreenodecms {
 	/// primary
 	/// not nullable 
@@ -8780,6 +8954,7 @@ pub struct AdTreenodecms {
 	pub ad_tree_id_ad_tree:Option<AdTree>,
 }
 
+#[derive(Debug)]
 pub struct AdTreenodecmt {
 	/// primary
 	/// not nullable 
@@ -8813,6 +8988,7 @@ pub struct AdTreenodecmt {
 	pub ad_tree_id_ad_tree:Option<AdTree>,
 }
 
+#[derive(Debug)]
 pub struct AdTreenodemm {
 	/// primary
 	/// not nullable 
@@ -8843,6 +9019,7 @@ pub struct AdTreenodemm {
 	pub ad_tree_id_ad_tree:Option<AdTree>,
 }
 
+#[derive(Debug)]
 pub struct AdTreenodepr {
 	/// primary
 	/// not nullable 
@@ -8873,6 +9050,7 @@ pub struct AdTreenodepr {
 	pub ad_tree_id_ad_tree:Option<AdTree>,
 }
 
+#[derive(Debug)]
 pub struct AdTreenodeu1 {
 	/// primary
 	/// not nullable 
@@ -8906,6 +9084,7 @@ pub struct AdTreenodeu1 {
 	pub ad_tree_id_ad_tree:Option<AdTree>,
 }
 
+#[derive(Debug)]
 pub struct AdTreenodeu2 {
 	/// primary
 	/// not nullable 
@@ -8939,6 +9118,7 @@ pub struct AdTreenodeu2 {
 	pub ad_tree_id_ad_tree:Option<AdTree>,
 }
 
+#[derive(Debug)]
 pub struct AdTreenodeu3 {
 	/// primary
 	/// not nullable 
@@ -8972,6 +9152,7 @@ pub struct AdTreenodeu3 {
 	pub ad_tree_id_ad_tree:Option<AdTree>,
 }
 
+#[derive(Debug)]
 pub struct AdTreenodeu4 {
 	/// primary
 	/// not nullable 
@@ -9005,6 +9186,7 @@ pub struct AdTreenodeu4 {
 	pub ad_tree_id_ad_tree:Option<AdTree>,
 }
 
+#[derive(Debug)]
 pub struct AdUser {
 	/// primary
 	/// not nullable 
@@ -9261,6 +9443,7 @@ pub struct AdUser {
 	pub w_store:Option<Vec<WStore>>,
 }
 
+#[derive(Debug)]
 pub struct AdUserOrgaccess {
 	/// primary
 	/// not nullable 
@@ -9292,6 +9475,7 @@ pub struct AdUserOrgaccess {
 	pub ad_org_id_ad_org:Option<AdOrg>,
 }
 
+#[derive(Debug)]
 pub struct AdUserRoles {
 	/// primary
 	/// not nullable 
@@ -9326,6 +9510,7 @@ pub struct AdUserRoles {
 	pub ad_org_id_ad_org:Option<AdOrg>,
 }
 
+#[derive(Debug)]
 pub struct AdUserSubstitute {
 	/// primary
 	/// not nullable 
@@ -9362,6 +9547,7 @@ pub struct AdUserSubstitute {
 	pub substitute_id_ad_user:Option<AdUser>,
 }
 
+#[derive(Debug)]
 pub struct AdUserbpaccess {
 	/// primary
 	/// not nullable 
@@ -9395,6 +9581,7 @@ pub struct AdUserbpaccess {
 	pub r_requesttype_id_r_requesttype:Option<RRequesttype>,
 }
 
+#[derive(Debug)]
 pub struct AdUserdefField {
 	/// primary
 	/// not nullable 
@@ -9455,6 +9642,7 @@ pub struct AdUserdefField {
 	pub ad_field_id_ad_field:Option<AdField>,
 }
 
+#[derive(Debug)]
 pub struct AdUserdefTab {
 	/// primary
 	/// not nullable 
@@ -9501,6 +9689,7 @@ pub struct AdUserdefTab {
 	pub ad_userdef_field:Option<Vec<AdUserdefField>>,
 }
 
+#[derive(Debug)]
 pub struct AdUserdefWin {
 	/// primary
 	/// not nullable 
@@ -9552,6 +9741,7 @@ pub struct AdUserdefWin {
 	pub ad_userdef_tab:Option<Vec<AdUserdefTab>>,
 }
 
+#[derive(Debug)]
 pub struct AdUsermail {
 	/// primary
 	/// not nullable 
@@ -9590,6 +9780,7 @@ pub struct AdUsermail {
 	pub w_mailmsg_id_w_mailmsg:Option<WMailmsg>,
 }
 
+#[derive(Debug)]
 pub struct AdUserquery {
 	/// primary
 	/// not nullable 
@@ -9627,6 +9818,7 @@ pub struct AdUserquery {
 	pub ad_tab_id_ad_tab:Option<AdTab>,
 }
 
+#[derive(Debug)]
 pub struct AdValRule {
 	/// primary
 	/// not nullable 
@@ -9674,6 +9866,7 @@ pub struct AdValRule {
 	pub ad_table:Option<Vec<AdTable>>,
 }
 
+#[derive(Debug)]
 pub struct AdWfActivity {
 	/// primary
 	/// not nullable 
@@ -9739,6 +9932,7 @@ pub struct AdWfActivity {
 	pub ad_wf_activityresult:Option<Vec<AdWfActivityresult>>,
 }
 
+#[derive(Debug)]
 pub struct AdWfActivityresult {
 	/// primary
 	/// not nullable 
@@ -9771,6 +9965,7 @@ pub struct AdWfActivityresult {
 	pub ad_wf_activity_id_ad_wf_activity:Option<AdWfActivity>,
 }
 
+#[derive(Debug)]
 pub struct AdWfBlock {
 	/// primary
 	/// not nullable 
@@ -9805,6 +10000,7 @@ pub struct AdWfBlock {
 	pub pp_order_node:Option<Vec<PpOrderNode>>,
 }
 
+#[derive(Debug)]
 pub struct AdWfEventaudit {
 	/// primary
 	/// not nullable 
@@ -9860,6 +10056,7 @@ pub struct AdWfEventaudit {
 	pub ad_user_id_ad_user:Option<AdUser>,
 }
 
+#[derive(Debug)]
 pub struct AdWfNextcondition {
 	/// primary
 	/// not nullable 
@@ -9905,6 +10102,7 @@ pub struct AdWfNextcondition {
 	pub ad_column_id_ad_column:Option<AdColumn>,
 }
 
+#[derive(Debug)]
 pub struct AdWfNode {
 	/// primary
 	/// not nullable 
@@ -10061,6 +10259,7 @@ pub struct AdWfNode {
 	pub pp_wf_node_product:Option<Vec<PpWfNodeProduct>>,
 }
 
+#[derive(Debug)]
 pub struct AdWfNodePara {
 	/// primary
 	/// not nullable 
@@ -10099,6 +10298,7 @@ pub struct AdWfNodePara {
 	pub entitytype_ad_entitytype:Option<AdEntitytype>,
 }
 
+#[derive(Debug)]
 pub struct AdWfNodeTrl {
 	/// primary
 	/// not nullable 
@@ -10136,6 +10336,7 @@ pub struct AdWfNodeTrl {
 	pub ad_wf_node_id_ad_wf_node:Option<AdWfNode>,
 }
 
+#[derive(Debug)]
 pub struct AdWfNodenext {
 	/// primary
 	/// not nullable 
@@ -10185,6 +10386,7 @@ pub struct AdWfNodenext {
 	pub ad_wf_nextcondition:Option<Vec<AdWfNextcondition>>,
 }
 
+#[derive(Debug)]
 pub struct AdWfProcess {
 	/// primary
 	/// not nullable 
@@ -10250,6 +10452,7 @@ pub struct AdWfProcess {
 	pub ad_wf_processdata:Option<Vec<AdWfProcessdata>>,
 }
 
+#[derive(Debug)]
 pub struct AdWfProcessdata {
 	/// primary
 	/// not nullable 
@@ -10280,6 +10483,7 @@ pub struct AdWfProcessdata {
 	pub ad_wf_process_id_ad_wf_process:Option<AdWfProcess>,
 }
 
+#[derive(Debug)]
 pub struct AdWfResponsible {
 	/// primary
 	/// not nullable 
@@ -10335,6 +10539,7 @@ pub struct AdWfResponsible {
 	pub pp_order_workflow:Option<Vec<PpOrderWorkflow>>,
 }
 
+#[derive(Debug)]
 pub struct AdWindow {
 	/// primary
 	/// not nullable 
@@ -10424,6 +10629,7 @@ pub struct AdWindow {
 	pub pp_order_node:Option<Vec<PpOrderNode>>,
 }
 
+#[derive(Debug)]
 pub struct AdWindowAccess {
 	/// primary
 	/// not nullable 
@@ -10463,6 +10669,7 @@ pub struct AdWindowAccess {
 	pub ad_org_id_ad_org:Option<AdOrg>,
 }
 
+#[derive(Debug)]
 pub struct AdWindowTrl {
 	/// primary
 	/// not nullable 
@@ -10500,6 +10707,7 @@ pub struct AdWindowTrl {
 	pub ad_language_ad_language:Option<AdLanguage>,
 }
 
+#[derive(Debug)]
 pub struct AdWorkbench {
 	/// primary
 	/// not nullable 
@@ -10554,6 +10762,7 @@ pub struct AdWorkbench {
 	pub ad_workbenchwindow:Option<Vec<AdWorkbenchwindow>>,
 }
 
+#[derive(Debug)]
 pub struct AdWorkbenchTrl {
 	/// primary
 	/// not nullable 
@@ -10591,6 +10800,7 @@ pub struct AdWorkbenchTrl {
 	pub ad_language_ad_language:Option<AdLanguage>,
 }
 
+#[derive(Debug)]
 pub struct AdWorkbenchwindow {
 	/// primary
 	/// not nullable 
@@ -10640,6 +10850,7 @@ pub struct AdWorkbenchwindow {
 	pub entitytype_ad_entitytype:Option<AdEntitytype>,
 }
 
+#[derive(Debug)]
 pub struct AdWorkflow {
 	/// primary
 	/// not nullable 
@@ -10780,6 +10991,7 @@ pub struct AdWorkflow {
 	pub qm_specification:Option<Vec<QmSpecification>>,
 }
 
+#[derive(Debug)]
 pub struct AdWorkflowAccess {
 	/// primary
 	/// not nullable 
@@ -10817,6 +11029,7 @@ pub struct AdWorkflowAccess {
 	pub ad_org_id_ad_org:Option<AdOrg>,
 }
 
+#[derive(Debug)]
 pub struct AdWorkflowTrl {
 	/// primary
 	/// not nullable 
@@ -10854,6 +11067,7 @@ pub struct AdWorkflowTrl {
 	pub ad_language_ad_language:Option<AdLanguage>,
 }
 
+#[derive(Debug)]
 pub struct AdWorkflowprocessor {
 	/// primary
 	/// not nullable 
@@ -10904,6 +11118,7 @@ pub struct AdWorkflowprocessor {
 	pub pp_order_workflow:Option<Vec<PpOrderWorkflow>>,
 }
 
+#[derive(Debug)]
 pub struct AdWorkflowprocessorlog {
 	/// primary
 	/// not nullable 
@@ -10940,6 +11155,7 @@ pub struct AdWorkflowprocessorlog {
 	pub ad_workflowprocessor_id_ad_workflowprocessor:Option<AdWorkflowprocessor>,
 }
 
+#[derive(Debug)]
 pub struct AspClientexception {
 	/// primary
 	/// not nullable 
@@ -10992,6 +11208,7 @@ pub struct AspClientexception {
 	pub ad_workflow_id_ad_workflow:Option<AdWorkflow>,
 }
 
+#[derive(Debug)]
 pub struct AspClientlevel {
 	/// primary
 	/// not nullable 
@@ -11023,6 +11240,7 @@ pub struct AspClientlevel {
 	pub asp_module_id_asp_module:Option<AspModule>,
 }
 
+#[derive(Debug)]
 pub struct AspField {
 	/// primary
 	/// not nullable 
@@ -11054,6 +11272,7 @@ pub struct AspField {
 	pub asp_tab_id_asp_tab:Option<AspTab>,
 }
 
+#[derive(Debug)]
 pub struct AspForm {
 	/// primary
 	/// not nullable 
@@ -11086,6 +11305,7 @@ pub struct AspForm {
 	pub asp_level_id_asp_level:Option<AspLevel>,
 }
 
+#[derive(Debug)]
 pub struct AspLevel {
 	/// primary
 	/// not nullable 
@@ -11130,6 +11350,7 @@ pub struct AspLevel {
 	pub asp_workflow:Option<Vec<AspWorkflow>>,
 }
 
+#[derive(Debug)]
 pub struct AspModule {
 	/// primary
 	/// not nullable 
@@ -11161,6 +11382,7 @@ pub struct AspModule {
 	pub asp_level:Option<Vec<AspLevel>>,
 }
 
+#[derive(Debug)]
 pub struct AspProcess {
 	/// primary
 	/// not nullable 
@@ -11195,6 +11417,7 @@ pub struct AspProcess {
 	pub asp_process_para:Option<Vec<AspProcessPara>>,
 }
 
+#[derive(Debug)]
 pub struct AspProcessPara {
 	/// primary
 	/// not nullable 
@@ -11226,6 +11449,7 @@ pub struct AspProcessPara {
 	pub asp_process_id_asp_process:Option<AspProcess>,
 }
 
+#[derive(Debug)]
 pub struct AspTab {
 	/// primary
 	/// not nullable 
@@ -11262,6 +11486,7 @@ pub struct AspTab {
 	pub asp_field:Option<Vec<AspField>>,
 }
 
+#[derive(Debug)]
 pub struct AspTask {
 	/// primary
 	/// not nullable 
@@ -11294,6 +11519,7 @@ pub struct AspTask {
 	pub asp_level_id_asp_level:Option<AspLevel>,
 }
 
+#[derive(Debug)]
 pub struct AspWindow {
 	/// primary
 	/// not nullable 
@@ -11328,6 +11554,7 @@ pub struct AspWindow {
 	pub asp_tab:Option<Vec<AspTab>>,
 }
 
+#[derive(Debug)]
 pub struct AspWorkflow {
 	/// primary
 	/// not nullable 
@@ -11360,6 +11587,7 @@ pub struct AspWorkflow {
 	pub asp_level_id_asp_level:Option<AspLevel>,
 }
 
+#[derive(Debug)]
 pub struct Attribute {
 	/// primary
 	/// not nullable 
@@ -11395,6 +11623,7 @@ pub struct Attribute {
 	pub value:String,
 }
 
+#[derive(Debug)]
 pub struct AttributeView {
 	/// primary
 	/// not nullable 
@@ -11422,6 +11651,7 @@ pub struct AttributeView {
 	pub view_id:Option<f64>,
 }
 
+#[derive(Debug)]
 pub struct BBid {
 	/// primary
 	/// not nullable 
@@ -11466,6 +11696,7 @@ pub struct BBid {
 	pub b_buyerfunds_id_b_buyerfunds:Option<BBuyerfunds>,
 }
 
+#[derive(Debug)]
 pub struct BBidcomment {
 	/// primary
 	/// not nullable 
@@ -11500,6 +11731,7 @@ pub struct BBidcomment {
 	pub ad_user_id_ad_user:Option<AdUser>,
 }
 
+#[derive(Debug)]
 pub struct BBuyer {
 	/// primary
 	/// not nullable 
@@ -11534,6 +11766,7 @@ pub struct BBuyer {
 	pub b_buyerfunds:Option<Vec<BBuyerfunds>>,
 }
 
+#[derive(Debug)]
 pub struct BBuyerfunds {
 	/// primary
 	/// not nullable 
@@ -11577,6 +11810,7 @@ pub struct BBuyerfunds {
 	pub b_bid:Option<Vec<BBid>>,
 }
 
+#[derive(Debug)]
 pub struct BOffer {
 	/// primary
 	/// not nullable 
@@ -11621,6 +11855,7 @@ pub struct BOffer {
 	pub b_sellerfunds_id_b_sellerfunds:Option<BSellerfunds>,
 }
 
+#[derive(Debug)]
 pub struct BSeller {
 	/// primary
 	/// not nullable 
@@ -11658,6 +11893,7 @@ pub struct BSeller {
 	pub b_sellerfunds:Option<Vec<BSellerfunds>>,
 }
 
+#[derive(Debug)]
 pub struct BSellerfunds {
 	/// primary
 	/// not nullable 
@@ -11701,6 +11937,7 @@ pub struct BSellerfunds {
 	pub b_offer:Option<Vec<BOffer>>,
 }
 
+#[derive(Debug)]
 pub struct BTopic {
 	/// primary
 	/// not nullable 
@@ -11758,6 +11995,7 @@ pub struct BTopic {
 	pub b_offer:Option<Vec<BOffer>>,
 }
 
+#[derive(Debug)]
 pub struct BTopiccategory {
 	/// primary
 	/// not nullable 
@@ -11790,6 +12028,7 @@ pub struct BTopiccategory {
 	pub b_topic:Option<Vec<BTopic>>,
 }
 
+#[derive(Debug)]
 pub struct BTopictype {
 	/// primary
 	/// not nullable 
@@ -11835,6 +12074,7 @@ pub struct BTopictype {
 	pub b_topiccategory:Option<Vec<BTopiccategory>>,
 }
 
+#[derive(Debug)]
 pub struct CAcctprocessor {
 	/// primary
 	/// not nullable 
@@ -11882,6 +12122,7 @@ pub struct CAcctprocessor {
 	pub c_acctprocessorlog:Option<Vec<CAcctprocessorlog>>,
 }
 
+#[derive(Debug)]
 pub struct CAcctprocessorlog {
 	/// primary
 	/// not nullable 
@@ -11918,6 +12159,7 @@ pub struct CAcctprocessorlog {
 	pub c_acctprocessor_id_c_acctprocessor:Option<CAcctprocessor>,
 }
 
+#[derive(Debug)]
 pub struct CAcctschema {
 	/// primary
 	/// not nullable 
@@ -12100,6 +12342,7 @@ pub struct CAcctschema {
 	pub pp_order_cost:Option<Vec<PpOrderCost>>,
 }
 
+#[derive(Debug)]
 pub struct CAcctschemaDefault {
 	/// primary
 	/// not nullable 
@@ -12372,6 +12615,7 @@ pub struct CAcctschemaDefault {
 	pub cb_receipt_acct_c_validcombination:Option<CValidcombination>,
 }
 
+#[derive(Debug)]
 pub struct CAcctschemaElement {
 	/// primary
 	/// not nullable 
@@ -12448,6 +12692,7 @@ pub struct CAcctschemaElement {
 	pub ad_column_id_ad_column:Option<AdColumn>,
 }
 
+#[derive(Debug)]
 pub struct CAcctschemaGl {
 	/// primary
 	/// not nullable 
@@ -12515,6 +12760,7 @@ pub struct CAcctschemaGl {
 	pub ppvoffset_acct_c_validcombination:Option<CValidcombination>,
 }
 
+#[derive(Debug)]
 pub struct CActivity {
 	/// primary
 	/// not nullable 
@@ -12615,6 +12861,7 @@ pub struct CActivity {
 	pub t_aging:Option<Vec<TAging>>,
 }
 
+#[derive(Debug)]
 pub struct CAllocationhdr {
 	/// primary
 	/// not nullable 
@@ -12671,6 +12918,7 @@ pub struct CAllocationhdr {
 	pub c_allocationline:Option<Vec<CAllocationline>>,
 }
 
+#[derive(Debug)]
 pub struct CAllocationline {
 	/// primary
 	/// not nullable 
@@ -12734,6 +12982,7 @@ pub struct CAllocationline {
 	pub c_taxdeclarationline:Option<Vec<CTaxdeclarationline>>,
 }
 
+#[derive(Debug)]
 pub struct CBank {
 	/// primary
 	/// not nullable 
@@ -12775,6 +13024,7 @@ pub struct CBank {
 	pub c_bp_bankaccount:Option<Vec<CBpBankaccount>>,
 }
 
+#[derive(Debug)]
 pub struct CBankaccount {
 	/// primary
 	/// not nullable 
@@ -12846,6 +13096,7 @@ pub struct CBankaccount {
 	pub i_payment:Option<Vec<IPayment>>,
 }
 
+#[derive(Debug)]
 pub struct CBankaccountAcct {
 	/// primary
 	/// not nullable 
@@ -12924,6 +13175,7 @@ pub struct CBankaccountAcct {
 	pub b_revaluationloss_acct_c_validcombination:Option<CValidcombination>,
 }
 
+#[derive(Debug)]
 pub struct CBankaccountdoc {
 	/// primary
 	/// not nullable 
@@ -12961,6 +13213,7 @@ pub struct CBankaccountdoc {
 	pub check_printformat_id_ad_printformat:Option<AdPrintformat>,
 }
 
+#[derive(Debug)]
 pub struct CBankstatement {
 	/// primary
 	/// not nullable 
@@ -13026,6 +13279,7 @@ pub struct CBankstatement {
 	pub i_bankstatement:Option<Vec<IBankstatement>>,
 }
 
+#[derive(Debug)]
 pub struct CBankstatementline {
 	/// primary
 	/// not nullable 
@@ -13117,6 +13371,7 @@ pub struct CBankstatementline {
 	pub i_bankstatement:Option<Vec<IBankstatement>>,
 }
 
+#[derive(Debug)]
 pub struct CBankstatementloader {
 	/// primary
 	/// not nullable 
@@ -13163,6 +13418,7 @@ pub struct CBankstatementloader {
 	pub c_bankaccount_id_c_bankaccount:Option<CBankaccount>,
 }
 
+#[derive(Debug)]
 pub struct CBankstatementmatcher {
 	/// primary
 	/// not nullable 
@@ -13193,6 +13449,7 @@ pub struct CBankstatementmatcher {
 	pub updatedby:f64,
 }
 
+#[derive(Debug)]
 pub struct CBpBankaccount {
 	/// primary
 	/// not nullable 
@@ -13253,6 +13510,7 @@ pub struct CBpBankaccount {
 	pub c_payselectioncheck:Option<Vec<CPayselectioncheck>>,
 }
 
+#[derive(Debug)]
 pub struct CBpCustomerAcct {
 	/// primary
 	/// not nullable 
@@ -13290,6 +13548,7 @@ pub struct CBpCustomerAcct {
 	pub c_prepayment_acct_c_validcombination:Option<CValidcombination>,
 }
 
+#[derive(Debug)]
 pub struct CBpEdi {
 	/// primary
 	/// not nullable 
@@ -13360,6 +13619,7 @@ pub struct CBpEdi {
 	pub m_edi:Option<Vec<MEdi>>,
 }
 
+#[derive(Debug)]
 pub struct CBpEmployeeAcct {
 	/// primary
 	/// not nullable 
@@ -13396,6 +13656,7 @@ pub struct CBpEmployeeAcct {
 	pub e_prepayment_acct_c_validcombination:Option<CValidcombination>,
 }
 
+#[derive(Debug)]
 pub struct CBpGroup {
 	/// primary
 	/// not nullable 
@@ -13469,6 +13730,7 @@ pub struct CBpGroup {
 	pub t_aging:Option<Vec<TAging>>,
 }
 
+#[derive(Debug)]
 pub struct CBpGroupAcct {
 	/// primary
 	/// not nullable 
@@ -13549,6 +13811,7 @@ pub struct CBpGroupAcct {
 	pub notinvoicedreceivables_acct_c_validcombination:Option<CValidcombination>,
 }
 
+#[derive(Debug)]
 pub struct CBpRelation {
 	/// primary
 	/// not nullable 
@@ -13602,6 +13865,7 @@ pub struct CBpRelation {
 	pub c_bpartnerrelation_location_id_c_bpartner_location:Option<CBpartnerLocation>,
 }
 
+#[derive(Debug)]
 pub struct CBpVendorAcct {
 	/// primary
 	/// not nullable 
@@ -13641,6 +13905,7 @@ pub struct CBpVendorAcct {
 	pub v_prepayment_acct_c_validcombination:Option<CValidcombination>,
 }
 
+#[derive(Debug)]
 pub struct CBpWithholding {
 	/// primary
 	/// not nullable 
@@ -13678,6 +13943,7 @@ pub struct CBpWithholding {
 	pub c_withholding_id_c_withholding:Option<CWithholding>,
 }
 
+#[derive(Debug)]
 pub struct CBpartner {
 	/// primary
 	/// not nullable 
@@ -14001,6 +14267,7 @@ pub struct CBpartner {
 	pub w_countercount:Option<Vec<WCountercount>>,
 }
 
+#[derive(Debug)]
 pub struct CBpartnerLocation {
 	/// primary
 	/// not nullable 
@@ -14100,6 +14367,7 @@ pub struct CBpartnerLocation {
 	pub t_distributionrundetail:Option<Vec<TDistributionrundetail>>,
 }
 
+#[derive(Debug)]
 pub struct CBpartnerProduct {
 	/// primary
 	/// not nullable 
@@ -14139,6 +14407,7 @@ pub struct CBpartnerProduct {
 	pub m_product_id_m_product:Option<MProduct>,
 }
 
+#[derive(Debug)]
 pub struct CCalendar {
 	/// primary
 	/// not nullable 
@@ -14181,6 +14450,7 @@ pub struct CCalendar {
 	pub pa_report:Option<Vec<PaReport>>,
 }
 
+#[derive(Debug)]
 pub struct CCampaign {
 	/// primary
 	/// not nullable 
@@ -14284,6 +14554,7 @@ pub struct CCampaign {
 	pub t_aging:Option<Vec<TAging>>,
 }
 
+#[derive(Debug)]
 pub struct CCash {
 	/// primary
 	/// not nullable 
@@ -14362,6 +14633,7 @@ pub struct CCash {
 	pub c_cashline:Option<Vec<CCashline>>,
 }
 
+#[derive(Debug)]
 pub struct CCashbook {
 	/// primary
 	/// not nullable 
@@ -14405,6 +14677,7 @@ pub struct CCashbook {
 	pub c_pos:Option<Vec<CPos>>,
 }
 
+#[derive(Debug)]
 pub struct CCashbookAcct {
 	/// primary
 	/// not nullable 
@@ -14455,6 +14728,7 @@ pub struct CCashbookAcct {
 	pub cb_receipt_acct_c_validcombination:Option<CValidcombination>,
 }
 
+#[derive(Debug)]
 pub struct CCashline {
 	/// primary
 	/// not nullable 
@@ -14520,6 +14794,7 @@ pub struct CCashline {
 	pub c_order:Option<Vec<COrder>>,
 }
 
+#[derive(Debug)]
 pub struct CChannel {
 	/// primary
 	/// not nullable 
@@ -14551,6 +14826,7 @@ pub struct CChannel {
 	pub c_campaign:Option<Vec<CCampaign>>,
 }
 
+#[derive(Debug)]
 pub struct CCharge {
 	/// primary
 	/// not nullable 
@@ -14642,6 +14918,7 @@ pub struct CCharge {
 	pub m_rmaline:Option<Vec<MRmaline>>,
 }
 
+#[derive(Debug)]
 pub struct CChargeAcct {
 	/// primary
 	/// not nullable 
@@ -14680,6 +14957,7 @@ pub struct CChargeAcct {
 	pub ch_revenue_acct_c_validcombination:Option<CValidcombination>,
 }
 
+#[derive(Debug)]
 pub struct CChargeTrl {
 	/// primary
 	/// not nullable 
@@ -14711,6 +14989,7 @@ pub struct CChargeTrl {
 	pub updatedby:f64,
 }
 
+#[derive(Debug)]
 pub struct CChargetype {
 	/// primary
 	/// not nullable 
@@ -14740,6 +15019,7 @@ pub struct CChargetype {
 	pub value:String,
 }
 
+#[derive(Debug)]
 pub struct CChargetypeDoctype {
 	/// primary
 	/// not nullable 
@@ -14772,6 +15052,7 @@ pub struct CChargetypeDoctype {
 	pub updatedby:f64,
 }
 
+#[derive(Debug)]
 pub struct CCity {
 	/// primary
 	/// not nullable 
@@ -14813,6 +15094,7 @@ pub struct CCity {
 	pub c_location:Option<Vec<CLocation>>,
 }
 
+#[derive(Debug)]
 pub struct CCommission {
 	/// primary
 	/// not nullable 
@@ -14865,6 +15147,7 @@ pub struct CCommission {
 	pub c_commissionrun:Option<Vec<CCommissionrun>>,
 }
 
+#[derive(Debug)]
 pub struct CCommissionamt {
 	/// primary
 	/// not nullable 
@@ -14907,6 +15190,7 @@ pub struct CCommissionamt {
 	pub c_commissiondetail:Option<Vec<CCommissiondetail>>,
 }
 
+#[derive(Debug)]
 pub struct CCommissiondetail {
 	/// primary
 	/// not nullable 
@@ -14955,6 +15239,7 @@ pub struct CCommissiondetail {
 	pub c_currency_id_c_currency:Option<CCurrency>,
 }
 
+#[derive(Debug)]
 pub struct CCommissionline {
 	/// primary
 	/// not nullable 
@@ -15020,6 +15305,7 @@ pub struct CCommissionline {
 	pub c_commissionamt:Option<Vec<CCommissionamt>>,
 }
 
+#[derive(Debug)]
 pub struct CCommissionrun {
 	/// primary
 	/// not nullable 
@@ -15061,6 +15347,7 @@ pub struct CCommissionrun {
 	pub c_commissionamt:Option<Vec<CCommissionamt>>,
 }
 
+#[derive(Debug)]
 pub struct CConversionRate {
 	/// primary
 	/// not nullable 
@@ -15111,6 +15398,7 @@ pub struct CConversionRate {
 	pub i_conversion_rate:Option<Vec<IConversionRate>>,
 }
 
+#[derive(Debug)]
 pub struct CConversiontype {
 	/// primary
 	/// not nullable 
@@ -15164,6 +15452,7 @@ pub struct CConversiontype {
 	pub t_invoicegl:Option<Vec<TInvoicegl>>,
 }
 
+#[derive(Debug)]
 pub struct CCountry {
 	/// primary
 	/// not nullable 
@@ -15253,6 +15542,7 @@ pub struct CCountry {
 	pub m_freight:Option<Vec<MFreight>>,
 }
 
+#[derive(Debug)]
 pub struct CCountryTrl {
 	/// primary
 	/// not nullable 
@@ -15290,6 +15580,7 @@ pub struct CCountryTrl {
 	pub ad_language_ad_language:Option<AdLanguage>,
 }
 
+#[derive(Debug)]
 pub struct CCurrency {
 	/// primary
 	/// not nullable 
@@ -15436,6 +15727,7 @@ pub struct CCurrency {
 	pub t_inventoryvalue:Option<Vec<TInventoryvalue>>,
 }
 
+#[derive(Debug)]
 pub struct CCurrencyAcct {
 	/// primary
 	/// not nullable 
@@ -15482,6 +15774,7 @@ pub struct CCurrencyAcct {
 	pub realizedloss_acct_c_validcombination:Option<CValidcombination>,
 }
 
+#[derive(Debug)]
 pub struct CCurrencyTrl {
 	/// primary
 	/// not nullable 
@@ -15518,6 +15811,7 @@ pub struct CCurrencyTrl {
 	pub ad_language_ad_language:Option<AdLanguage>,
 }
 
+#[derive(Debug)]
 pub struct CCycle {
 	/// primary
 	/// not nullable 
@@ -15550,6 +15844,7 @@ pub struct CCycle {
 	pub c_cyclestep:Option<Vec<CCyclestep>>,
 }
 
+#[derive(Debug)]
 pub struct CCyclephase {
 	/// primary
 	/// not nullable 
@@ -15580,6 +15875,7 @@ pub struct CCyclephase {
 	pub c_phase_id_c_phase:Option<CPhase>,
 }
 
+#[derive(Debug)]
 pub struct CCyclestep {
 	/// primary
 	/// not nullable 
@@ -15615,6 +15911,7 @@ pub struct CCyclestep {
 	pub c_cyclephase:Option<Vec<CCyclephase>>,
 }
 
+#[derive(Debug)]
 pub struct CDoctype {
 	/// primary
 	/// not nullable 
@@ -15779,6 +16076,7 @@ pub struct CDoctype {
 	pub t_replenish:Option<Vec<TReplenish>>,
 }
 
+#[derive(Debug)]
 pub struct CDoctypeTrl {
 	/// primary
 	/// not nullable 
@@ -15817,6 +16115,7 @@ pub struct CDoctypeTrl {
 	pub ad_language_ad_language:Option<AdLanguage>,
 }
 
+#[derive(Debug)]
 pub struct CDoctypecounter {
 	/// primary
 	/// not nullable 
@@ -15858,6 +16157,7 @@ pub struct CDoctypecounter {
 	pub counter_c_doctype_id_c_doctype:Option<CDoctype>,
 }
 
+#[derive(Debug)]
 pub struct CDunning {
 	/// primary
 	/// not nullable 
@@ -15899,6 +16199,7 @@ pub struct CDunning {
 	pub c_dunninglevel:Option<Vec<CDunninglevel>>,
 }
 
+#[derive(Debug)]
 pub struct CDunninglevel {
 	/// primary
 	/// not nullable 
@@ -15971,6 +16272,7 @@ pub struct CDunninglevel {
 	pub c_invoice:Option<Vec<CInvoice>>,
 }
 
+#[derive(Debug)]
 pub struct CDunninglevelTrl {
 	/// primary
 	/// not nullable 
@@ -16007,6 +16309,7 @@ pub struct CDunninglevelTrl {
 	pub c_dunninglevel_id_c_dunninglevel:Option<CDunninglevel>,
 }
 
+#[derive(Debug)]
 pub struct CDunningrun {
 	/// primary
 	/// not nullable 
@@ -16044,6 +16347,7 @@ pub struct CDunningrun {
 	pub c_dunningrunentry:Option<Vec<CDunningrunentry>>,
 }
 
+#[derive(Debug)]
 pub struct CDunningrunentry {
 	/// primary
 	/// not nullable 
@@ -16102,6 +16406,7 @@ pub struct CDunningrunentry {
 	pub c_dunningrunline:Option<Vec<CDunningrunline>>,
 }
 
+#[derive(Debug)]
 pub struct CDunningrunline {
 	/// primary
 	/// not nullable 
@@ -16167,6 +16472,7 @@ pub struct CDunningrunline {
 	pub c_invoicepayschedule_id_c_invoicepayschedule:Option<CInvoicepayschedule>,
 }
 
+#[derive(Debug)]
 pub struct CElement {
 	/// primary
 	/// not nullable 
@@ -16215,6 +16521,7 @@ pub struct CElement {
 	pub i_elementvalue:Option<Vec<IElementvalue>>,
 }
 
+#[derive(Debug)]
 pub struct CElementvalue {
 	/// primary
 	/// not nullable 
@@ -16348,6 +16655,7 @@ pub struct CElementvalue {
 	pub pp_order:Option<Vec<PpOrder>>,
 }
 
+#[derive(Debug)]
 pub struct CElementvalueTrl {
 	/// primary
 	/// not nullable 
@@ -16384,6 +16692,7 @@ pub struct CElementvalueTrl {
 	pub ad_language_ad_language:Option<AdLanguage>,
 }
 
+#[derive(Debug)]
 pub struct CGreeting {
 	/// primary
 	/// not nullable 
@@ -16424,6 +16733,7 @@ pub struct CGreeting {
 	pub i_bpartner:Option<Vec<IBpartner>>,
 }
 
+#[derive(Debug)]
 pub struct CGreetingTrl {
 	/// primary
 	/// not nullable 
@@ -16460,6 +16770,7 @@ pub struct CGreetingTrl {
 	pub c_greeting_id_c_greeting:Option<CGreeting>,
 }
 
+#[derive(Debug)]
 pub struct CInterorgAcct {
 	/// primary
 	/// not nullable 
@@ -16501,6 +16812,7 @@ pub struct CInterorgAcct {
 	pub intercompanyduefrom_acct_c_validcombination:Option<CValidcombination>,
 }
 
+#[derive(Debug)]
 pub struct CInvoice {
 	/// primary
 	/// not nullable 
@@ -16724,6 +17036,7 @@ pub struct CInvoice {
 	pub t_invoicegl:Option<Vec<TInvoicegl>>,
 }
 
+#[derive(Debug)]
 pub struct CInvoicebatch {
 	/// primary
 	/// not nullable 
@@ -16778,6 +17091,7 @@ pub struct CInvoicebatch {
 	pub c_invoicebatchline:Option<Vec<CInvoicebatchline>>,
 }
 
+#[derive(Debug)]
 pub struct CInvoicebatchline {
 	/// primary
 	/// not nullable 
@@ -16882,6 +17196,7 @@ pub struct CInvoicebatchline {
 	pub c_invoiceline_id_c_invoiceline:Option<CInvoiceline>,
 }
 
+#[derive(Debug)]
 pub struct CInvoiceline {
 	/// primary
 	/// not nullable 
@@ -17044,6 +17359,7 @@ pub struct CInvoiceline {
 	pub s_timeexpenseline:Option<Vec<STimeexpenseline>>,
 }
 
+#[derive(Debug)]
 pub struct CInvoicepayschedule {
 	/// primary
 	/// not nullable 
@@ -17093,6 +17409,7 @@ pub struct CInvoicepayschedule {
 	pub c_dunningrunline:Option<Vec<CDunningrunline>>,
 }
 
+#[derive(Debug)]
 pub struct CInvoiceschedule {
 	/// primary
 	/// not nullable 
@@ -17137,6 +17454,7 @@ pub struct CInvoiceschedule {
 	pub c_bpartner:Option<Vec<CBpartner>>,
 }
 
+#[derive(Debug)]
 pub struct CInvoicetax {
 	/// primary
 	/// not nullable 
@@ -17179,6 +17497,7 @@ pub struct CInvoicetax {
 	pub c_invoice_id_c_invoice:Option<CInvoice>,
 }
 
+#[derive(Debug)]
 pub struct CJob {
 	/// primary
 	/// not nullable 
@@ -17221,6 +17540,7 @@ pub struct CJob {
 	pub m_operationresource:Option<Vec<MOperationresource>>,
 }
 
+#[derive(Debug)]
 pub struct CJobassignment {
 	/// primary
 	/// not nullable 
@@ -17256,6 +17576,7 @@ pub struct CJobassignment {
 	pub c_job_id_c_job:Option<CJob>,
 }
 
+#[derive(Debug)]
 pub struct CJobcategory {
 	/// primary
 	/// not nullable 
@@ -17285,6 +17606,7 @@ pub struct CJobcategory {
 	pub c_job:Option<Vec<CJob>>,
 }
 
+#[derive(Debug)]
 pub struct CJobremuneration {
 	/// primary
 	/// not nullable 
@@ -17320,6 +17642,7 @@ pub struct CJobremuneration {
 	pub c_remuneration_id_c_remuneration:Option<CRemuneration>,
 }
 
+#[derive(Debug)]
 pub struct CLandedcost {
 	/// primary
 	/// not nullable 
@@ -17361,6 +17684,7 @@ pub struct CLandedcost {
 	pub m_product_id_m_product:Option<MProduct>,
 }
 
+#[derive(Debug)]
 pub struct CLandedcostallocation {
 	/// primary
 	/// not nullable 
@@ -17405,6 +17729,7 @@ pub struct CLandedcostallocation {
 	pub m_costelement_id_m_costelement:Option<MCostelement>,
 }
 
+#[derive(Debug)]
 pub struct CLocation {
 	/// primary
 	/// not nullable 
@@ -17484,6 +17809,7 @@ pub struct CLocation {
 	pub pa_reportsource:Option<Vec<PaReportsource>>,
 }
 
+#[derive(Debug)]
 pub struct CNonbusinessday {
 	/// primary
 	/// not nullable 
@@ -17518,6 +17844,7 @@ pub struct CNonbusinessday {
 	pub c_calendar_id_c_calendar:Option<CCalendar>,
 }
 
+#[derive(Debug)]
 pub struct COrder {
 	/// primary
 	/// not nullable 
@@ -17776,6 +18103,7 @@ pub struct COrder {
 	pub r_requestaction:Option<Vec<RRequestaction>>,
 }
 
+#[derive(Debug)]
 pub struct COrderline {
 	/// primary
 	/// not nullable 
@@ -17951,6 +18279,7 @@ pub struct COrderline {
 	pub s_timeexpenseline:Option<Vec<STimeexpenseline>>,
 }
 
+#[derive(Debug)]
 pub struct COrdertax {
 	/// primary
 	/// not nullable 
@@ -17993,6 +18322,7 @@ pub struct COrdertax {
 	pub c_tax_id_c_tax:Option<CTax>,
 }
 
+#[derive(Debug)]
 pub struct COrgassignment {
 	/// primary
 	/// not nullable 
@@ -18027,6 +18357,7 @@ pub struct COrgassignment {
 	pub ad_user_id_ad_user:Option<AdUser>,
 }
 
+#[derive(Debug)]
 pub struct CPayment {
 	/// primary
 	/// not nullable 
@@ -18240,6 +18571,7 @@ pub struct CPayment {
 	pub r_requestaction:Option<Vec<RRequestaction>>,
 }
 
+#[derive(Debug)]
 pub struct CPaymentallocate {
 	/// primary
 	/// not nullable 
@@ -18288,6 +18620,7 @@ pub struct CPaymentallocate {
 	pub c_allocationline_id_c_allocationline:Option<CAllocationline>,
 }
 
+#[derive(Debug)]
 pub struct CPaymentbatch {
 	/// primary
 	/// not nullable 
@@ -18325,6 +18658,7 @@ pub struct CPaymentbatch {
 	pub c_payment:Option<Vec<CPayment>>,
 }
 
+#[derive(Debug)]
 pub struct CPaymentprocessor {
 	/// primary
 	/// not nullable 
@@ -18414,6 +18748,7 @@ pub struct CPaymentprocessor {
 	pub c_paymentbatch:Option<Vec<CPaymentbatch>>,
 }
 
+#[derive(Debug)]
 pub struct CPaymentterm {
 	/// primary
 	/// not nullable 
@@ -18495,6 +18830,7 @@ pub struct CPaymentterm {
 	pub w_store:Option<Vec<WStore>>,
 }
 
+#[derive(Debug)]
 pub struct CPaymenttermTrl {
 	/// primary
 	/// not nullable 
@@ -18532,6 +18868,7 @@ pub struct CPaymenttermTrl {
 	pub ad_language_ad_language:Option<AdLanguage>,
 }
 
+#[derive(Debug)]
 pub struct CPayschedule {
 	/// primary
 	/// not nullable 
@@ -18575,6 +18912,7 @@ pub struct CPayschedule {
 	pub c_invoicepayschedule:Option<Vec<CInvoicepayschedule>>,
 }
 
+#[derive(Debug)]
 pub struct CPayselection {
 	/// primary
 	/// not nullable 
@@ -18624,6 +18962,7 @@ pub struct CPayselection {
 	pub hr_process:Option<Vec<HrProcess>>,
 }
 
+#[derive(Debug)]
 pub struct CPayselectioncheck {
 	/// primary
 	/// not nullable 
@@ -18687,6 +19026,7 @@ pub struct CPayselectioncheck {
 	pub c_payselectionline:Option<Vec<CPayselectionline>>,
 }
 
+#[derive(Debug)]
 pub struct CPayselectionline {
 	/// primary
 	/// not nullable 
@@ -18747,6 +19087,7 @@ pub struct CPayselectionline {
 	pub c_payselectioncheck_id_c_payselectioncheck:Option<CPayselectioncheck>,
 }
 
+#[derive(Debug)]
 pub struct CPeriod {
 	/// primary
 	/// not nullable 
@@ -18820,6 +19161,7 @@ pub struct CPeriod {
 	pub m_forecastline:Option<Vec<MForecastline>>,
 }
 
+#[derive(Debug)]
 pub struct CPeriodcontrol {
 	/// primary
 	/// not nullable 
@@ -18853,6 +19195,7 @@ pub struct CPeriodcontrol {
 	pub c_period_id_c_period:Option<CPeriod>,
 }
 
+#[derive(Debug)]
 pub struct CPhase {
 	/// primary
 	/// not nullable 
@@ -18900,6 +19243,7 @@ pub struct CPhase {
 	pub c_task:Option<Vec<CTask>>,
 }
 
+#[derive(Debug)]
 pub struct CPos {
 	/// primary
 	/// not nullable 
@@ -18962,6 +19306,7 @@ pub struct CPos {
 	pub c_order:Option<Vec<COrder>>,
 }
 
+#[derive(Debug)]
 pub struct CPoskey {
 	/// primary
 	/// not nullable 
@@ -19004,6 +19349,7 @@ pub struct CPoskey {
 	pub ad_printcolor_id_ad_printcolor:Option<AdPrintcolor>,
 }
 
+#[derive(Debug)]
 pub struct CPoskeylayout {
 	/// primary
 	/// not nullable 
@@ -19035,6 +19381,7 @@ pub struct CPoskeylayout {
 	pub c_poskey:Option<Vec<CPoskey>>,
 }
 
+#[derive(Debug)]
 pub struct CProject {
 	/// primary
 	/// not nullable 
@@ -19237,6 +19584,7 @@ pub struct CProject {
 	pub t_aging:Option<Vec<TAging>>,
 }
 
+#[derive(Debug)]
 pub struct CProjectAcct {
 	/// primary
 	/// not nullable 
@@ -19275,6 +19623,7 @@ pub struct CProjectAcct {
 	pub pj_wip_acct_c_validcombination:Option<CValidcombination>,
 }
 
+#[derive(Debug)]
 pub struct CProjectissue {
 	/// primary
 	/// not nullable 
@@ -19345,6 +19694,7 @@ pub struct CProjectissue {
 	pub t_transaction:Option<Vec<TTransaction>>,
 }
 
+#[derive(Debug)]
 pub struct CProjectissuema {
 	/// primary
 	/// not nullable 
@@ -19378,6 +19728,7 @@ pub struct CProjectissuema {
 	pub m_attributesetinstance_id_m_attributesetinstance:Option<MAttributesetinstance>,
 }
 
+#[derive(Debug)]
 pub struct CProjectline {
 	/// primary
 	/// not nullable 
@@ -19459,6 +19810,7 @@ pub struct CProjectline {
 	pub c_projecttask_id_c_projecttask:Option<CProjecttask>,
 }
 
+#[derive(Debug)]
 pub struct CProjectphase {
 	/// primary
 	/// not nullable 
@@ -19537,6 +19889,7 @@ pub struct CProjectphase {
 	pub s_timeexpenseline:Option<Vec<STimeexpenseline>>,
 }
 
+#[derive(Debug)]
 pub struct CProjecttask {
 	/// primary
 	/// not nullable 
@@ -19599,6 +19952,7 @@ pub struct CProjecttask {
 	pub s_timeexpenseline:Option<Vec<STimeexpenseline>>,
 }
 
+#[derive(Debug)]
 pub struct CProjecttype {
 	/// primary
 	/// not nullable 
@@ -19635,6 +19989,7 @@ pub struct CProjecttype {
 	pub pa_measure:Option<Vec<PaMeasure>>,
 }
 
+#[derive(Debug)]
 pub struct CRecurring {
 	/// primary
 	/// not nullable 
@@ -19691,6 +20046,7 @@ pub struct CRecurring {
 	pub c_recurring_run:Option<Vec<CRecurringRun>>,
 }
 
+#[derive(Debug)]
 pub struct CRecurringRun {
 	/// primary
 	/// not nullable 
@@ -19734,6 +20090,7 @@ pub struct CRecurringRun {
 	pub c_recurring_id_c_recurring:Option<CRecurring>,
 }
 
+#[derive(Debug)]
 pub struct CRegion {
 	/// primary
 	/// not nullable 
@@ -19784,6 +20141,7 @@ pub struct CRegion {
 	pub m_freight:Option<Vec<MFreight>>,
 }
 
+#[derive(Debug)]
 pub struct CRemuneration {
 	/// primary
 	/// not nullable 
@@ -19832,6 +20190,7 @@ pub struct CRemuneration {
 	pub c_userremuneration:Option<Vec<CUserremuneration>>,
 }
 
+#[derive(Debug)]
 pub struct CRevenuerecognition {
 	/// primary
 	/// not nullable 
@@ -19866,6 +20225,7 @@ pub struct CRevenuerecognition {
 	pub m_product:Option<Vec<MProduct>>,
 }
 
+#[derive(Debug)]
 pub struct CRevenuerecognitionPlan {
 	/// primary
 	/// not nullable 
@@ -19923,6 +20283,7 @@ pub struct CRevenuerecognitionPlan {
 	pub c_servicelevel:Option<Vec<CServicelevel>>,
 }
 
+#[derive(Debug)]
 pub struct CRevenuerecognitionRun {
 	/// primary
 	/// not nullable 
@@ -19957,6 +20318,7 @@ pub struct CRevenuerecognitionRun {
 	pub gl_journal_id_gl_journal:Option<GlJournal>,
 }
 
+#[derive(Debug)]
 pub struct CRfq {
 	/// primary
 	/// not nullable 
@@ -20048,6 +20410,7 @@ pub struct CRfq {
 	pub c_rfqresponse:Option<Vec<CRfqresponse>>,
 }
 
+#[derive(Debug)]
 pub struct CRfqTopic {
 	/// primary
 	/// not nullable 
@@ -20084,6 +20447,7 @@ pub struct CRfqTopic {
 	pub c_rfq_topicsubscriber:Option<Vec<CRfqTopicsubscriber>>,
 }
 
+#[derive(Debug)]
 pub struct CRfqTopicsubscriber {
 	/// primary
 	/// not nullable 
@@ -20126,6 +20490,7 @@ pub struct CRfqTopicsubscriber {
 	pub c_rfq_topicsubscriberonly:Option<Vec<CRfqTopicsubscriberonly>>,
 }
 
+#[derive(Debug)]
 pub struct CRfqTopicsubscriberonly {
 	/// primary
 	/// not nullable 
@@ -20160,6 +20525,7 @@ pub struct CRfqTopicsubscriberonly {
 	pub m_product_category_id_m_product_category:Option<MProductCategory>,
 }
 
+#[derive(Debug)]
 pub struct CRfqline {
 	/// primary
 	/// not nullable 
@@ -20207,6 +20573,7 @@ pub struct CRfqline {
 	pub c_rfqresponseline:Option<Vec<CRfqresponseline>>,
 }
 
+#[derive(Debug)]
 pub struct CRfqlineqty {
 	/// primary
 	/// not nullable 
@@ -20260,6 +20627,7 @@ pub struct CRfqlineqty {
 	pub c_rfqresponselineqty:Option<Vec<CRfqresponselineqty>>,
 }
 
+#[derive(Debug)]
 pub struct CRfqresponse {
 	/// primary
 	/// not nullable 
@@ -20336,6 +20704,7 @@ pub struct CRfqresponse {
 	pub c_rfqresponseline:Option<Vec<CRfqresponseline>>,
 }
 
+#[derive(Debug)]
 pub struct CRfqresponseline {
 	/// primary
 	/// not nullable 
@@ -20381,6 +20750,7 @@ pub struct CRfqresponseline {
 	pub c_rfqresponselineqty:Option<Vec<CRfqresponselineqty>>,
 }
 
+#[derive(Debug)]
 pub struct CRfqresponselineqty {
 	/// primary
 	/// not nullable 
@@ -20418,6 +20788,7 @@ pub struct CRfqresponselineqty {
 	pub c_rfqlineqty_id_c_rfqlineqty:Option<CRfqlineqty>,
 }
 
+#[derive(Debug)]
 pub struct CSalesregion {
 	/// primary
 	/// not nullable 
@@ -20477,6 +20848,7 @@ pub struct CSalesregion {
 	pub pa_reportsource:Option<Vec<PaReportsource>>,
 }
 
+#[derive(Debug)]
 pub struct CServicelevel {
 	/// primary
 	/// not nullable 
@@ -20518,6 +20890,7 @@ pub struct CServicelevel {
 	pub c_servicelevelline:Option<Vec<CServicelevelline>>,
 }
 
+#[derive(Debug)]
 pub struct CServicelevelline {
 	/// primary
 	/// not nullable 
@@ -20552,6 +20925,7 @@ pub struct CServicelevelline {
 	pub c_servicelevel_id_c_servicelevel:Option<CServicelevel>,
 }
 
+#[derive(Debug)]
 pub struct CSubacct {
 	/// primary
 	/// not nullable 
@@ -20589,6 +20963,7 @@ pub struct CSubacct {
 	pub fact_acct:Option<Vec<FactAcct>>,
 }
 
+#[derive(Debug)]
 pub struct CSubscription {
 	/// primary
 	/// not nullable 
@@ -20637,6 +21012,7 @@ pub struct CSubscription {
 	pub c_subscription_delivery:Option<Vec<CSubscriptionDelivery>>,
 }
 
+#[derive(Debug)]
 pub struct CSubscriptionDelivery {
 	/// primary
 	/// not nullable 
@@ -20664,6 +21040,7 @@ pub struct CSubscriptionDelivery {
 	pub c_subscription_id_c_subscription:Option<CSubscription>,
 }
 
+#[derive(Debug)]
 pub struct CSubscriptiontype {
 	/// primary
 	/// not nullable 
@@ -20697,6 +21074,7 @@ pub struct CSubscriptiontype {
 	pub m_product:Option<Vec<MProduct>>,
 }
 
+#[derive(Debug)]
 pub struct CTask {
 	/// primary
 	/// not nullable 
@@ -20738,6 +21116,7 @@ pub struct CTask {
 	pub c_projecttask:Option<Vec<CProjecttask>>,
 }
 
+#[derive(Debug)]
 pub struct CTax {
 	/// primary
 	/// not nullable 
@@ -20840,6 +21219,7 @@ pub struct CTax {
 	pub i_order:Option<Vec<IOrder>>,
 }
 
+#[derive(Debug)]
 pub struct CTaxAcct {
 	/// primary
 	/// not nullable 
@@ -20890,6 +21270,7 @@ pub struct CTaxAcct {
 	pub t_expense_acct_c_validcombination:Option<CValidcombination>,
 }
 
+#[derive(Debug)]
 pub struct CTaxTrl {
 	/// primary
 	/// not nullable 
@@ -20927,6 +21308,7 @@ pub struct CTaxTrl {
 	pub ad_language_ad_language:Option<AdLanguage>,
 }
 
+#[derive(Debug)]
 pub struct CTaxbase {
 	/// primary
 	/// not nullable 
@@ -20957,6 +21339,7 @@ pub struct CTaxbase {
 	pub c_taxdefinition:Option<Vec<CTaxdefinition>>,
 }
 
+#[derive(Debug)]
 pub struct CTaxcategory {
 	/// primary
 	/// not nullable 
@@ -21003,6 +21386,7 @@ pub struct CTaxcategory {
 	pub s_training:Option<Vec<STraining>>,
 }
 
+#[derive(Debug)]
 pub struct CTaxcategoryTrl {
 	/// primary
 	/// not nullable 
@@ -21039,6 +21423,7 @@ pub struct CTaxcategoryTrl {
 	pub ad_language_ad_language:Option<AdLanguage>,
 }
 
+#[derive(Debug)]
 pub struct CTaxdeclaration {
 	/// primary
 	/// not nullable 
@@ -21079,6 +21464,7 @@ pub struct CTaxdeclaration {
 	pub c_taxdeclarationline:Option<Vec<CTaxdeclarationline>>,
 }
 
+#[derive(Debug)]
 pub struct CTaxdeclarationacct {
 	/// primary
 	/// not nullable 
@@ -21116,6 +21502,7 @@ pub struct CTaxdeclarationacct {
 	pub c_acctschema_id_c_acctschema:Option<CAcctschema>,
 }
 
+#[derive(Debug)]
 pub struct CTaxdeclarationline {
 	/// primary
 	/// not nullable 
@@ -21179,6 +21566,7 @@ pub struct CTaxdeclarationline {
 	pub c_currency_id_c_currency:Option<CCurrency>,
 }
 
+#[derive(Debug)]
 pub struct CTaxdefinition {
 	/// primary
 	/// not nullable 
@@ -21241,6 +21629,7 @@ pub struct CTaxdefinition {
 	pub ad_orgtype_id_ad_orgtype:Option<AdOrgtype>,
 }
 
+#[derive(Debug)]
 pub struct CTaxgroup {
 	/// primary
 	/// not nullable 
@@ -21271,6 +21660,7 @@ pub struct CTaxgroup {
 	pub c_taxdefinition:Option<Vec<CTaxdefinition>>,
 }
 
+#[derive(Debug)]
 pub struct CTaxpostal {
 	/// primary
 	/// not nullable 
@@ -21301,6 +21691,7 @@ pub struct CTaxpostal {
 	pub c_tax_id_c_tax:Option<CTax>,
 }
 
+#[derive(Debug)]
 pub struct CTaxtype {
 	/// primary
 	/// not nullable 
@@ -21329,6 +21720,7 @@ pub struct CTaxtype {
 	pub c_taxdefinition:Option<Vec<CTaxdefinition>>,
 }
 
+#[derive(Debug)]
 pub struct CUom {
 	/// primary
 	/// not nullable 
@@ -21423,6 +21815,7 @@ pub struct CUom {
 	pub s_training:Option<Vec<STraining>>,
 }
 
+#[derive(Debug)]
 pub struct CUomConversion {
 	/// primary
 	/// not nullable 
@@ -21467,6 +21860,7 @@ pub struct CUomConversion {
 	pub m_product_id_m_product:Option<MProduct>,
 }
 
+#[derive(Debug)]
 pub struct CUomTrl {
 	/// primary
 	/// not nullable 
@@ -21504,6 +21898,7 @@ pub struct CUomTrl {
 	pub ad_language_ad_language:Option<AdLanguage>,
 }
 
+#[derive(Debug)]
 pub struct CUserremuneration {
 	/// primary
 	/// not nullable 
@@ -21551,6 +21946,7 @@ pub struct CUserremuneration {
 	pub c_remuneration_id_c_remuneration:Option<CRemuneration>,
 }
 
+#[derive(Debug)]
 pub struct CValidcombination {
 	/// primary
 	/// not nullable 
@@ -21674,6 +22070,7 @@ pub struct CValidcombination {
 	pub test:Option<Vec<Test>>,
 }
 
+#[derive(Debug)]
 pub struct CWithholding {
 	/// primary
 	/// not nullable 
@@ -21735,6 +22132,7 @@ pub struct CWithholding {
 	pub c_withholding_acct:Option<Vec<CWithholdingAcct>>,
 }
 
+#[derive(Debug)]
 pub struct CWithholdingAcct {
 	/// primary
 	/// not nullable 
@@ -21769,6 +22167,7 @@ pub struct CWithholdingAcct {
 	pub withholding_acct_c_validcombination:Option<CValidcombination>,
 }
 
+#[derive(Debug)]
 pub struct CYear {
 	/// primary
 	/// not nullable 
@@ -21814,6 +22213,7 @@ pub struct CYear {
 	pub m_forecast:Option<Vec<MForecast>>,
 }
 
+#[derive(Debug)]
 pub struct Classpackage {
 	/// primary
 	/// not nullable 
@@ -21843,6 +22243,7 @@ pub struct Classpackage {
 	pub value:String,
 }
 
+#[derive(Debug)]
 pub struct CmAccesscontainer {
 	/// primary
 	/// not nullable 
@@ -21873,6 +22274,7 @@ pub struct CmAccesscontainer {
 	pub cm_container_id_cm_container:Option<CmContainer>,
 }
 
+#[derive(Debug)]
 pub struct CmAccesslistbpgroup {
 	/// primary
 	/// not nullable 
@@ -21903,6 +22305,7 @@ pub struct CmAccesslistbpgroup {
 	pub c_bp_group_id_c_bp_group:Option<CBpGroup>,
 }
 
+#[derive(Debug)]
 pub struct CmAccesslistrole {
 	/// primary
 	/// not nullable 
@@ -21933,6 +22336,7 @@ pub struct CmAccesslistrole {
 	pub ad_role_id_ad_role:Option<AdRole>,
 }
 
+#[derive(Debug)]
 pub struct CmAccessmedia {
 	/// primary
 	/// not nullable 
@@ -21963,6 +22367,7 @@ pub struct CmAccessmedia {
 	pub cm_accessprofile_id_cm_accessprofile:Option<CmAccessprofile>,
 }
 
+#[derive(Debug)]
 pub struct CmAccessnewschannel {
 	/// primary
 	/// not nullable 
@@ -21993,6 +22398,7 @@ pub struct CmAccessnewschannel {
 	pub cm_newschannel_id_cm_newschannel:Option<CmNewschannel>,
 }
 
+#[derive(Debug)]
 pub struct CmAccessprofile {
 	/// primary
 	/// not nullable 
@@ -22035,6 +22441,7 @@ pub struct CmAccessprofile {
 	pub cm_accessstage:Option<Vec<CmAccessstage>>,
 }
 
+#[derive(Debug)]
 pub struct CmAccessstage {
 	/// primary
 	/// not nullable 
@@ -22065,6 +22472,7 @@ pub struct CmAccessstage {
 	pub cm_cstage_id_cm_cstage:Option<CmCstage>,
 }
 
+#[derive(Debug)]
 pub struct CmAd {
 	/// primary
 	/// not nullable 
@@ -22128,6 +22536,7 @@ pub struct CmAd {
 	pub cm_media_id_cm_media:Option<CmMedia>,
 }
 
+#[derive(Debug)]
 pub struct CmAdCat {
 	/// primary
 	/// not nullable 
@@ -22163,6 +22572,7 @@ pub struct CmAdCat {
 	pub cm_template_ad_cat:Option<Vec<CmTemplateAdCat>>,
 }
 
+#[derive(Debug)]
 pub struct CmBroadcastserver {
 	/// primary
 	/// not nullable 
@@ -22198,6 +22608,7 @@ pub struct CmBroadcastserver {
 	pub cm_webaccesslog:Option<Vec<CmWebaccesslog>>,
 }
 
+#[derive(Debug)]
 pub struct CmChat {
 	/// primary
 	/// not nullable 
@@ -22239,6 +22650,7 @@ pub struct CmChat {
 	pub cm_chatupdate:Option<Vec<CmChatupdate>>,
 }
 
+#[derive(Debug)]
 pub struct CmChatentry {
 	/// primary
 	/// not nullable 
@@ -22284,6 +22696,7 @@ pub struct CmChatentry {
 	pub cm_chatentry:Option<Vec<CmChatentry>>,
 }
 
+#[derive(Debug)]
 pub struct CmChattype {
 	/// primary
 	/// not nullable 
@@ -22319,6 +22732,7 @@ pub struct CmChattype {
 	pub cm_chattypeupdate:Option<Vec<CmChattypeupdate>>,
 }
 
+#[derive(Debug)]
 pub struct CmChattypeupdate {
 	/// primary
 	/// not nullable 
@@ -22352,6 +22766,7 @@ pub struct CmChattypeupdate {
 	pub ad_user_id_ad_user:Option<AdUser>,
 }
 
+#[derive(Debug)]
 pub struct CmChatupdate {
 	/// primary
 	/// not nullable 
@@ -22385,6 +22800,7 @@ pub struct CmChatupdate {
 	pub ad_user_id_ad_user:Option<AdUser>,
 }
 
+#[derive(Debug)]
 pub struct CmContainer {
 	/// primary
 	/// not nullable 
@@ -22465,6 +22881,7 @@ pub struct CmContainer {
 	pub cm_webproject_domain:Option<Vec<CmWebprojectDomain>>,
 }
 
+#[derive(Debug)]
 pub struct CmContainerElement {
 	/// primary
 	/// not nullable 
@@ -22502,6 +22919,7 @@ pub struct CmContainerElement {
 	pub cm_container_element_trl:Option<Vec<CmContainerElementTrl>>,
 }
 
+#[derive(Debug)]
 pub struct CmContainerElementTrl {
 	/// primary
 	/// not nullable 
@@ -22540,6 +22958,7 @@ pub struct CmContainerElementTrl {
 	pub ad_language_ad_language:Option<AdLanguage>,
 }
 
+#[derive(Debug)]
 pub struct CmContainerTrl {
 	/// primary
 	/// not nullable 
@@ -22580,6 +22999,7 @@ pub struct CmContainerTrl {
 	pub ad_language_ad_language:Option<AdLanguage>,
 }
 
+#[derive(Debug)]
 pub struct CmContainerUrl {
 	/// primary
 	/// not nullable 
@@ -22613,6 +23033,7 @@ pub struct CmContainerUrl {
 	pub cm_container_id_cm_container:Option<CmContainer>,
 }
 
+#[derive(Debug)]
 pub struct CmContainerttable {
 	/// primary
 	/// not nullable 
@@ -22650,6 +23071,7 @@ pub struct CmContainerttable {
 	pub cm_templatetable_id_cm_templatetable:Option<CmTemplatetable>,
 }
 
+#[derive(Debug)]
 pub struct CmCstage {
 	/// primary
 	/// not nullable 
@@ -22728,6 +23150,7 @@ pub struct CmCstage {
 	pub cm_cstagettable:Option<Vec<CmCstagettable>>,
 }
 
+#[derive(Debug)]
 pub struct CmCstageElement {
 	/// primary
 	/// not nullable 
@@ -22765,6 +23188,7 @@ pub struct CmCstageElement {
 	pub cm_cstage_element_trl:Option<Vec<CmCstageElementTrl>>,
 }
 
+#[derive(Debug)]
 pub struct CmCstageElementTrl {
 	/// primary
 	/// not nullable 
@@ -22803,6 +23227,7 @@ pub struct CmCstageElementTrl {
 	pub ad_language_ad_language:Option<AdLanguage>,
 }
 
+#[derive(Debug)]
 pub struct CmCstageTrl {
 	/// primary
 	/// not nullable 
@@ -22843,6 +23268,7 @@ pub struct CmCstageTrl {
 	pub ad_language_ad_language:Option<AdLanguage>,
 }
 
+#[derive(Debug)]
 pub struct CmCstagettable {
 	/// primary
 	/// not nullable 
@@ -22880,6 +23306,7 @@ pub struct CmCstagettable {
 	pub cm_templatetable_id_cm_templatetable:Option<CmTemplatetable>,
 }
 
+#[derive(Debug)]
 pub struct CmMedia {
 	/// primary
 	/// not nullable 
@@ -22926,6 +23353,7 @@ pub struct CmMedia {
 	pub cm_webaccesslog:Option<Vec<CmWebaccesslog>>,
 }
 
+#[derive(Debug)]
 pub struct CmMediaServer {
 	/// primary
 	/// not nullable 
@@ -22967,6 +23395,7 @@ pub struct CmMediaServer {
 	pub cm_mediadeploy:Option<Vec<CmMediadeploy>>,
 }
 
+#[derive(Debug)]
 pub struct CmMediadeploy {
 	/// primary
 	/// not nullable 
@@ -23003,6 +23432,7 @@ pub struct CmMediadeploy {
 	pub cm_media_id_cm_media:Option<CmMedia>,
 }
 
+#[derive(Debug)]
 pub struct CmNewschannel {
 	/// primary
 	/// not nullable 
@@ -23043,6 +23473,7 @@ pub struct CmNewschannel {
 	pub cm_newsitem:Option<Vec<CmNewsitem>>,
 }
 
+#[derive(Debug)]
 pub struct CmNewsitem {
 	/// primary
 	/// not nullable 
@@ -23076,6 +23507,7 @@ pub struct CmNewsitem {
 	pub cm_newschannel_id_cm_newschannel:Option<CmNewschannel>,
 }
 
+#[derive(Debug)]
 pub struct CmTemplate {
 	/// primary
 	/// not nullable 
@@ -23134,6 +23566,7 @@ pub struct CmTemplate {
 	pub cm_templatetable:Option<Vec<CmTemplatetable>>,
 }
 
+#[derive(Debug)]
 pub struct CmTemplateAdCat {
 	/// primary
 	/// not nullable 
@@ -23167,6 +23600,7 @@ pub struct CmTemplateAdCat {
 	pub cm_template_id_cm_template:Option<CmTemplate>,
 }
 
+#[derive(Debug)]
 pub struct CmTemplatetable {
 	/// primary
 	/// not nullable 
@@ -23207,6 +23641,7 @@ pub struct CmTemplatetable {
 	pub cm_cstagettable:Option<Vec<CmCstagettable>>,
 }
 
+#[derive(Debug)]
 pub struct CmWebaccesslog {
 	/// primary
 	/// not nullable 
@@ -23261,6 +23696,7 @@ pub struct CmWebaccesslog {
 	pub cm_media_id_cm_media:Option<CmMedia>,
 }
 
+#[derive(Debug)]
 pub struct CmWebproject {
 	/// primary
 	/// not nullable 
@@ -23338,6 +23774,7 @@ pub struct CmWebproject {
 	pub k_indexstop:Option<Vec<KIndexstop>>,
 }
 
+#[derive(Debug)]
 pub struct CmWebprojectDomain {
 	/// primary
 	/// not nullable 
@@ -23374,6 +23811,7 @@ pub struct CmWebprojectDomain {
 	pub cm_container_id_cm_container:Option<CmContainer>,
 }
 
+#[derive(Debug)]
 pub struct CmWikitoken {
 	/// primary
 	/// not nullable 
@@ -23392,7 +23830,7 @@ pub struct CmWikitoken {
 	/// defaults to: 'Y'::bpchar
 	/// not nullable 
 	pub isactive:String,
-	pub macro:Option<String>,
+	pub macro_:Option<String>,
 	/// not nullable 
 	pub name:String,
 	pub selectclause:Option<String>,
@@ -23408,6 +23846,7 @@ pub struct CmWikitoken {
 	pub ad_table_id_ad_table:Option<AdTable>,
 }
 
+#[derive(Debug)]
 pub struct Company {
 	/// primary
 	/// not nullable 
@@ -23437,6 +23876,7 @@ pub struct Company {
 	pub value:String,
 }
 
+#[derive(Debug)]
 pub struct Datatype {
 	/// primary
 	/// not nullable 
@@ -23468,6 +23908,7 @@ pub struct Datatype {
 	pub value:String,
 }
 
+#[derive(Debug)]
 pub struct DatatypeView {
 	/// primary
 	/// not nullable 
@@ -23499,6 +23940,7 @@ pub struct DatatypeView {
 	pub view_id:Option<f64>,
 }
 
+#[derive(Debug)]
 pub struct DdNetworkdistribution {
 	/// primary
 	/// not nullable 
@@ -23536,6 +23978,7 @@ pub struct DdNetworkdistribution {
 	pub dd_networkdistributionline:Option<Vec<DdNetworkdistributionline>>,
 }
 
+#[derive(Debug)]
 pub struct DdNetworkdistributionline {
 	/// primary
 	/// not nullable 
@@ -23577,6 +24020,7 @@ pub struct DdNetworkdistributionline {
 	pub m_warehouse_id_m_warehouse:Option<MWarehouse>,
 }
 
+#[derive(Debug)]
 pub struct DdOrder {
 	/// primary
 	/// not nullable 
@@ -23715,6 +24159,7 @@ pub struct DdOrder {
 	pub pp_mrp:Option<Vec<PpMrp>>,
 }
 
+#[derive(Debug)]
 pub struct DdOrderline {
 	/// primary
 	/// not nullable 
@@ -23812,6 +24257,7 @@ pub struct DdOrderline {
 	pub pp_mrp:Option<Vec<PpMrp>>,
 }
 
+#[derive(Debug)]
 pub struct EdChoice {
 	/// primary
 	/// not nullable 
@@ -23845,6 +24291,7 @@ pub struct EdChoice {
 	pub value:String,
 }
 
+#[derive(Debug)]
 pub struct EdQuestion {
 	/// primary
 	/// not nullable 
@@ -23875,6 +24322,7 @@ pub struct EdQuestion {
 	pub value:String,
 }
 
+#[derive(Debug)]
 pub struct EdQuestionnaire {
 	/// primary
 	/// not nullable 
@@ -23904,6 +24352,7 @@ pub struct EdQuestionnaire {
 	pub value:String,
 }
 
+#[derive(Debug)]
 pub struct EduCourse {
 	/// primary
 	/// not nullable 
@@ -23932,6 +24381,7 @@ pub struct EduCourse {
 	pub value:String,
 }
 
+#[derive(Debug)]
 pub struct EduCourseSubject {
 	/// primary
 	/// not nullable 
@@ -23969,6 +24419,7 @@ pub struct EduCourseSubject {
 	pub value:String,
 }
 
+#[derive(Debug)]
 pub struct EduCurriculum {
 	/// primary
 	/// not nullable 
@@ -24002,6 +24453,7 @@ pub struct EduCurriculum {
 	pub value:String,
 }
 
+#[derive(Debug)]
 pub struct EduDepartment {
 	/// primary
 	/// not nullable 
@@ -24032,6 +24484,7 @@ pub struct EduDepartment {
 	pub value:String,
 }
 
+#[derive(Debug)]
 pub struct EduSchedule {
 	/// primary
 	/// not nullable 
@@ -24067,6 +24520,7 @@ pub struct EduSchedule {
 	pub value:String,
 }
 
+#[derive(Debug)]
 pub struct EduScheduleBreakdown {
 	/// primary
 	/// not nullable 
@@ -24106,6 +24560,7 @@ pub struct EduScheduleBreakdown {
 	pub weekday:Option<String>,
 }
 
+#[derive(Debug)]
 pub struct EduSemester {
 	/// primary
 	/// not nullable 
@@ -24135,6 +24590,7 @@ pub struct EduSemester {
 	pub value:String,
 }
 
+#[derive(Debug)]
 pub struct EduSubject {
 	/// primary
 	/// not nullable 
@@ -24174,6 +24630,7 @@ pub struct EduSubject {
 	pub value:String,
 }
 
+#[derive(Debug)]
 pub struct EduSubjectOfferring {
 	/// primary
 	/// not nullable 
@@ -24206,6 +24663,7 @@ pub struct EduSubjectOfferring {
 	pub value:String,
 }
 
+#[derive(Debug)]
 pub struct EduSubjectRequisite {
 	/// primary
 	/// not nullable 
@@ -24239,6 +24697,7 @@ pub struct EduSubjectRequisite {
 	pub value:String,
 }
 
+#[derive(Debug)]
 pub struct EduSubjectsOffered {
 	/// primary
 	/// not nullable 
@@ -24279,6 +24738,7 @@ pub struct EduSubjectsOffered {
 	pub value:String,
 }
 
+#[derive(Debug)]
 pub struct EduYearlevel {
 	/// primary
 	/// not nullable 
@@ -24308,6 +24768,7 @@ pub struct EduYearlevel {
 	pub value:String,
 }
 
+#[derive(Debug)]
 pub struct Entity {
 	/// primary
 	/// not nullable 
@@ -24337,6 +24798,7 @@ pub struct Entity {
 	pub value:String,
 }
 
+#[derive(Debug)]
 pub struct ExpFormat {
 	/// primary
 	/// not nullable 
@@ -24376,6 +24838,7 @@ pub struct ExpFormat {
 	pub exp_formatline:Option<Vec<ExpFormatline>>,
 }
 
+#[derive(Debug)]
 pub struct ExpFormatline {
 	/// primary
 	/// not nullable 
@@ -24420,6 +24883,7 @@ pub struct ExpFormatline {
 	pub exp_embeddedformat_id_exp_format:Option<ExpFormat>,
 }
 
+#[derive(Debug)]
 pub struct ExpProcessor {
 	/// primary
 	/// not nullable 
@@ -24459,6 +24923,7 @@ pub struct ExpProcessor {
 	pub exp_processorparameter:Option<Vec<ExpProcessorparameter>>,
 }
 
+#[derive(Debug)]
 pub struct ExpProcessorType {
 	/// primary
 	/// not nullable 
@@ -24490,6 +24955,7 @@ pub struct ExpProcessorType {
 	pub exp_processor:Option<Vec<ExpProcessor>>,
 }
 
+#[derive(Debug)]
 pub struct ExpProcessorparameter {
 	/// primary
 	/// not nullable 
@@ -24522,6 +24988,7 @@ pub struct ExpProcessorparameter {
 	pub exp_processor_id_exp_processor:Option<ExpProcessor>,
 }
 
+#[derive(Debug)]
 pub struct FactAcct {
 	/// primary
 	/// not nullable 
@@ -24658,6 +25125,7 @@ pub struct FactAcct {
 	pub t_invoicegl:Option<Vec<TInvoicegl>>,
 }
 
+#[derive(Debug)]
 pub struct FactAcctSummary {
 	/// not nullable 
 	pub account_id:f64,
@@ -24726,6 +25194,7 @@ pub struct FactAcctSummary {
 	pub userelement2_id:Option<f64>,
 }
 
+#[derive(Debug)]
 pub struct GlBudget {
 	/// primary
 	/// not nullable 
@@ -24770,6 +25239,7 @@ pub struct GlBudget {
 	pub pa_reportline:Option<Vec<PaReportline>>,
 }
 
+#[derive(Debug)]
 pub struct GlBudgetcontrol {
 	/// primary
 	/// not nullable 
@@ -24812,6 +25282,7 @@ pub struct GlBudgetcontrol {
 	pub gl_budget_id_gl_budget:Option<GlBudget>,
 }
 
+#[derive(Debug)]
 pub struct GlCategory {
 	/// primary
 	/// not nullable 
@@ -24860,6 +25331,7 @@ pub struct GlCategory {
 	pub i_gljournal:Option<Vec<IGljournal>>,
 }
 
+#[derive(Debug)]
 pub struct GlDistribution {
 	/// primary
 	/// not nullable 
@@ -24986,6 +25458,7 @@ pub struct GlDistribution {
 	pub gl_distributionline:Option<Vec<GlDistributionline>>,
 }
 
+#[derive(Debug)]
 pub struct GlDistributionline {
 	/// primary
 	/// not nullable 
@@ -25099,6 +25572,7 @@ pub struct GlDistributionline {
 	pub user2_id_c_elementvalue:Option<CElementvalue>,
 }
 
+#[derive(Debug)]
 pub struct GlFund {
 	/// primary
 	/// not nullable 
@@ -25137,6 +25611,7 @@ pub struct GlFund {
 	pub gl_fundrestriction:Option<Vec<GlFundrestriction>>,
 }
 
+#[derive(Debug)]
 pub struct GlFundrestriction {
 	/// primary
 	/// not nullable 
@@ -25171,6 +25646,7 @@ pub struct GlFundrestriction {
 	pub c_elementvalue_id_c_elementvalue:Option<CElementvalue>,
 }
 
+#[derive(Debug)]
 pub struct GlJournal {
 	/// primary
 	/// not nullable 
@@ -25273,6 +25749,7 @@ pub struct GlJournal {
 	pub i_gljournal:Option<Vec<IGljournal>>,
 }
 
+#[derive(Debug)]
 pub struct GlJournalbatch {
 	/// primary
 	/// not nullable 
@@ -25354,6 +25831,7 @@ pub struct GlJournalbatch {
 	pub i_gljournal:Option<Vec<IGljournal>>,
 }
 
+#[derive(Debug)]
 pub struct GlJournalline {
 	/// primary
 	/// not nullable 
@@ -25442,6 +25920,7 @@ pub struct GlJournalline {
 	pub i_gljournal:Option<Vec<IGljournal>>,
 }
 
+#[derive(Debug)]
 pub struct HrAttribute {
 	/// primary
 	/// not nullable 
@@ -25497,6 +25976,7 @@ pub struct HrAttribute {
 	pub hr_payroll_id_hr_payroll:Option<HrPayroll>,
 }
 
+#[derive(Debug)]
 pub struct HrConcept {
 	/// primary
 	/// not nullable 
@@ -25561,6 +26041,7 @@ pub struct HrConcept {
 	pub hr_payrollconcept:Option<Vec<HrPayrollconcept>>,
 }
 
+#[derive(Debug)]
 pub struct HrConceptAcct {
 	/// primary
 	/// not nullable 
@@ -25601,6 +26082,7 @@ pub struct HrConceptAcct {
 	pub c_acctschema_id_c_acctschema:Option<CAcctschema>,
 }
 
+#[derive(Debug)]
 pub struct HrConceptCategory {
 	/// primary
 	/// not nullable 
@@ -25631,6 +26113,7 @@ pub struct HrConceptCategory {
 	pub hr_movement:Option<Vec<HrMovement>>,
 }
 
+#[derive(Debug)]
 pub struct HrContract {
 	/// primary
 	/// not nullable 
@@ -25669,6 +26152,7 @@ pub struct HrContract {
 	pub hr_payroll:Option<Vec<HrPayroll>>,
 }
 
+#[derive(Debug)]
 pub struct HrDepartment {
 	/// primary
 	/// not nullable 
@@ -25710,6 +26194,7 @@ pub struct HrDepartment {
 	pub hr_process:Option<Vec<HrProcess>>,
 }
 
+#[derive(Debug)]
 pub struct HrEmployee {
 	/// primary
 	/// not nullable 
@@ -25764,6 +26249,7 @@ pub struct HrEmployee {
 	pub hr_process:Option<Vec<HrProcess>>,
 }
 
+#[derive(Debug)]
 pub struct HrJob {
 	/// primary
 	/// not nullable 
@@ -25811,6 +26297,7 @@ pub struct HrJob {
 	pub hr_process:Option<Vec<HrProcess>>,
 }
 
+#[derive(Debug)]
 pub struct HrList {
 	/// primary
 	/// not nullable 
@@ -25851,6 +26338,7 @@ pub struct HrList {
 	pub hr_listversion:Option<Vec<HrListversion>>,
 }
 
+#[derive(Debug)]
 pub struct HrListline {
 	/// primary
 	/// not nullable 
@@ -25887,6 +26375,7 @@ pub struct HrListline {
 	pub hr_listversion_id_hr_listversion:Option<HrListversion>,
 }
 
+#[derive(Debug)]
 pub struct HrListtype {
 	/// primary
 	/// not nullable 
@@ -25913,6 +26402,7 @@ pub struct HrListtype {
 	pub hr_list:Option<Vec<HrList>>,
 }
 
+#[derive(Debug)]
 pub struct HrListversion {
 	/// primary
 	/// not nullable 
@@ -25949,6 +26439,7 @@ pub struct HrListversion {
 	pub hr_listline:Option<Vec<HrListline>>,
 }
 
+#[derive(Debug)]
 pub struct HrMovement {
 	/// primary
 	/// not nullable 
@@ -26031,6 +26522,7 @@ pub struct HrMovement {
 	pub pp_cost_collector_id_pp_cost_collector:Option<PpCostCollector>,
 }
 
+#[derive(Debug)]
 pub struct HrPayroll {
 	/// primary
 	/// not nullable 
@@ -26085,6 +26577,7 @@ pub struct HrPayroll {
 	pub hr_year:Option<Vec<HrYear>>,
 }
 
+#[derive(Debug)]
 pub struct HrPayrollconcept {
 	/// primary
 	/// not nullable 
@@ -26124,6 +26617,7 @@ pub struct HrPayrollconcept {
 	pub hr_payroll_id_hr_payroll:Option<HrPayroll>,
 }
 
+#[derive(Debug)]
 pub struct HrPeriod {
 	/// primary
 	/// not nullable 
@@ -26175,6 +26669,7 @@ pub struct HrPeriod {
 	pub hr_process:Option<Vec<HrProcess>>,
 }
 
+#[derive(Debug)]
 pub struct HrProcess {
 	/// primary
 	/// defaults to: (- (1)::numeric)
@@ -26259,6 +26754,7 @@ pub struct HrProcess {
 	pub hr_process:Option<Vec<HrProcess>>,
 }
 
+#[derive(Debug)]
 pub struct HrYear {
 	/// primary
 	/// not nullable 
@@ -26297,6 +26793,7 @@ pub struct HrYear {
 	pub hr_period:Option<Vec<HrPeriod>>,
 }
 
+#[derive(Debug)]
 pub struct IAsset {
 	/// primary
 	/// not nullable 
@@ -26405,6 +26902,7 @@ pub struct IAsset {
 	pub c_location_id_c_location:Option<CLocation>,
 }
 
+#[derive(Debug)]
 pub struct IBankstatement {
 	/// primary
 	/// not nullable 
@@ -26496,6 +26994,7 @@ pub struct IBankstatement {
 	pub c_bankstatementline_id_c_bankstatementline:Option<CBankstatementline>,
 }
 
+#[derive(Debug)]
 pub struct IBpartner {
 	/// primary
 	/// not nullable 
@@ -26570,6 +27069,7 @@ pub struct IBpartner {
 	pub r_interestarea_id_r_interestarea:Option<RInterestarea>,
 }
 
+#[derive(Debug)]
 pub struct IConversionRate {
 	/// primary
 	/// not nullable 
@@ -26613,6 +27113,7 @@ pub struct IConversionRate {
 	pub c_conversiontype_id_c_conversiontype:Option<CConversiontype>,
 }
 
+#[derive(Debug)]
 pub struct IElementvalue {
 	/// primary
 	/// not nullable 
@@ -26668,6 +27169,7 @@ pub struct IElementvalue {
 	pub ad_column_id_ad_column:Option<AdColumn>,
 }
 
+#[derive(Debug)]
 pub struct IFajournal {
 	/// primary
 	/// not nullable 
@@ -26790,6 +27292,7 @@ pub struct IFajournal {
 	pub c_salesregion_id_c_salesregion:Option<CSalesregion>,
 }
 
+#[derive(Debug)]
 pub struct IGljournal {
 	/// primary
 	/// not nullable 
@@ -26925,6 +27428,7 @@ pub struct IGljournal {
 	pub user2_id_c_elementvalue:Option<CElementvalue>,
 }
 
+#[derive(Debug)]
 pub struct IInoutlineconfirm {
 	/// primary
 	/// not nullable 
@@ -26967,6 +27471,7 @@ pub struct IInoutlineconfirm {
 	pub m_inoutlineconfirm_id_m_inoutlineconfirm:Option<MInoutlineconfirm>,
 }
 
+#[derive(Debug)]
 pub struct IInventory {
 	/// primary
 	/// not nullable 
@@ -27020,6 +27525,7 @@ pub struct IInventory {
 	pub m_inventoryline_id_m_inventoryline:Option<MInventoryline>,
 }
 
+#[derive(Debug)]
 pub struct IInvoice {
 	/// primary
 	/// not nullable 
@@ -27138,6 +27644,7 @@ pub struct IInvoice {
 	pub c_charge_id_c_charge:Option<CCharge>,
 }
 
+#[derive(Debug)]
 pub struct IOrder {
 	/// primary
 	/// not nullable 
@@ -27266,6 +27773,7 @@ pub struct IOrder {
 	pub c_campaign_id_c_campaign:Option<CCampaign>,
 }
 
+#[derive(Debug)]
 pub struct IPayment {
 	/// primary
 	/// not nullable 
@@ -27370,6 +27878,7 @@ pub struct IPayment {
 	pub c_charge_id_c_charge:Option<CCharge>,
 }
 
+#[derive(Debug)]
 pub struct IPricelist {
 	/// primary
 	/// not nullable 
@@ -27414,6 +27923,7 @@ pub struct IPricelist {
 	pub x12de355:Option<String>,
 }
 
+#[derive(Debug)]
 pub struct IProduct {
 	/// primary
 	/// not nullable 
@@ -27498,6 +28008,7 @@ pub struct IProduct {
 	pub c_currency_id_c_currency:Option<CCurrency>,
 }
 
+#[derive(Debug)]
 pub struct IReportline {
 	/// primary
 	/// not nullable 
@@ -27546,6 +28057,7 @@ pub struct IReportline {
 	pub c_elementvalue_id_c_elementvalue:Option<CElementvalue>,
 }
 
+#[derive(Debug)]
 pub struct ImpProcessor {
 	/// primary
 	/// not nullable 
@@ -27595,6 +28107,7 @@ pub struct ImpProcessor {
 	pub imp_processorparameter:Option<Vec<ImpProcessorparameter>>,
 }
 
+#[derive(Debug)]
 pub struct ImpProcessorType {
 	/// primary
 	/// not nullable 
@@ -27626,6 +28139,7 @@ pub struct ImpProcessorType {
 	pub imp_processor:Option<Vec<ImpProcessor>>,
 }
 
+#[derive(Debug)]
 pub struct ImpProcessorlog {
 	/// primary
 	/// not nullable 
@@ -27660,6 +28174,7 @@ pub struct ImpProcessorlog {
 	pub imp_processor_id_imp_processor:Option<ImpProcessor>,
 }
 
+#[derive(Debug)]
 pub struct ImpProcessorparameter {
 	/// primary
 	/// not nullable 
@@ -27692,6 +28207,7 @@ pub struct ImpProcessorparameter {
 	pub imp_processor_id_imp_processor:Option<ImpProcessor>,
 }
 
+#[derive(Debug)]
 pub struct KCategory {
 	/// primary
 	/// not nullable 
@@ -27723,6 +28239,7 @@ pub struct KCategory {
 	pub k_entrycategory:Option<Vec<KEntrycategory>>,
 }
 
+#[derive(Debug)]
 pub struct KCategoryvalue {
 	/// primary
 	/// not nullable 
@@ -27755,6 +28272,7 @@ pub struct KCategoryvalue {
 	pub k_entrycategory:Option<Vec<KEntrycategory>>,
 }
 
+#[derive(Debug)]
 pub struct KComment {
 	/// primary
 	/// not nullable 
@@ -27792,6 +28310,7 @@ pub struct KComment {
 	pub ad_session_id_ad_session:Option<AdSession>,
 }
 
+#[derive(Debug)]
 pub struct KEntry {
 	/// primary
 	/// not nullable 
@@ -27845,6 +28364,7 @@ pub struct KEntry {
 	pub k_entrycategory:Option<Vec<KEntrycategory>>,
 }
 
+#[derive(Debug)]
 pub struct KEntrycategory {
 	/// primary
 	/// not nullable 
@@ -27879,6 +28399,7 @@ pub struct KEntrycategory {
 	pub k_categoryvalue_id_k_categoryvalue:Option<KCategoryvalue>,
 }
 
+#[derive(Debug)]
 pub struct KEntryrelated {
 	/// primary
 	/// not nullable 
@@ -27910,6 +28431,7 @@ pub struct KEntryrelated {
 	pub k_entryrelated_id_k_entry:Option<KEntry>,
 }
 
+#[derive(Debug)]
 pub struct KIndex {
 	/// primary
 	/// not nullable 
@@ -27954,6 +28476,7 @@ pub struct KIndex {
 	pub c_doctype_id_c_doctype:Option<CDoctype>,
 }
 
+#[derive(Debug)]
 pub struct KIndexlog {
 	/// primary
 	/// not nullable 
@@ -27984,6 +28507,7 @@ pub struct KIndexlog {
 	pub updatedby:f64,
 }
 
+#[derive(Debug)]
 pub struct KIndexstop {
 	/// primary
 	/// not nullable 
@@ -28021,6 +28545,7 @@ pub struct KIndexstop {
 	pub c_doctype_id_c_doctype:Option<CDoctype>,
 }
 
+#[derive(Debug)]
 pub struct KSource {
 	/// primary
 	/// not nullable 
@@ -28049,6 +28574,7 @@ pub struct KSource {
 	pub k_entry:Option<Vec<KEntry>>,
 }
 
+#[derive(Debug)]
 pub struct KSynonym {
 	/// primary
 	/// not nullable 
@@ -28080,6 +28606,7 @@ pub struct KSynonym {
 	pub ad_language_ad_language:Option<AdLanguage>,
 }
 
+#[derive(Debug)]
 pub struct KTopic {
 	/// primary
 	/// not nullable 
@@ -28119,6 +28646,7 @@ pub struct KTopic {
 	pub k_entry:Option<Vec<KEntry>>,
 }
 
+#[derive(Debug)]
 pub struct KType {
 	/// primary
 	/// not nullable 
@@ -28154,6 +28682,7 @@ pub struct KType {
 	pub k_topic:Option<Vec<KTopic>>,
 }
 
+#[derive(Debug)]
 pub struct Length {
 	/// primary
 	/// not nullable 
@@ -28186,6 +28715,7 @@ pub struct Length {
 	pub value:String,
 }
 
+#[derive(Debug)]
 pub struct MAttribute {
 	/// primary
 	/// not nullable 
@@ -28232,6 +28762,7 @@ pub struct MAttribute {
 	pub qm_specificationline:Option<Vec<QmSpecificationline>>,
 }
 
+#[derive(Debug)]
 pub struct MAttributeinstance {
 	/// primary
 	/// defaults to: 0
@@ -28268,6 +28799,7 @@ pub struct MAttributeinstance {
 	pub m_attributevalue_id_m_attributevalue:Option<MAttributevalue>,
 }
 
+#[derive(Debug)]
 pub struct MAttributesearch {
 	/// primary
 	/// not nullable 
@@ -28296,6 +28828,7 @@ pub struct MAttributesearch {
 	pub m_attribute:Option<Vec<MAttribute>>,
 }
 
+#[derive(Debug)]
 pub struct MAttributeset {
 	/// primary
 	/// not nullable 
@@ -28367,6 +28900,7 @@ pub struct MAttributeset {
 	pub qm_specification:Option<Vec<QmSpecification>>,
 }
 
+#[derive(Debug)]
 pub struct MAttributesetexclude {
 	/// primary
 	/// not nullable 
@@ -28401,6 +28935,7 @@ pub struct MAttributesetexclude {
 	pub ad_table_id_ad_table:Option<AdTable>,
 }
 
+#[derive(Debug)]
 pub struct MAttributesetinstance {
 	/// primary
 	/// not nullable 
@@ -28486,6 +29021,7 @@ pub struct MAttributesetinstance {
 	pub t_transaction:Option<Vec<TTransaction>>,
 }
 
+#[derive(Debug)]
 pub struct MAttributeuse {
 	/// primary
 	/// not nullable 
@@ -28518,6 +29054,7 @@ pub struct MAttributeuse {
 	pub m_attributeset_id_m_attributeset:Option<MAttributeset>,
 }
 
+#[derive(Debug)]
 pub struct MAttributevalue {
 	/// primary
 	/// not nullable 
@@ -28552,6 +29089,7 @@ pub struct MAttributevalue {
 	pub m_attributeinstance:Option<Vec<MAttributeinstance>>,
 }
 
+#[derive(Debug)]
 pub struct MBom {
 	/// primary
 	/// not nullable 
@@ -28595,6 +29133,7 @@ pub struct MBom {
 	pub r_group:Option<Vec<RGroup>>,
 }
 
+#[derive(Debug)]
 pub struct MBomalternative {
 	/// primary
 	/// not nullable 
@@ -28627,6 +29166,7 @@ pub struct MBomalternative {
 	pub m_bomproduct:Option<Vec<MBomproduct>>,
 }
 
+#[derive(Debug)]
 pub struct MBomproduct {
 	/// primary
 	/// not nullable 
@@ -28687,6 +29227,7 @@ pub struct MBomproduct {
 	pub m_productoperation_id_m_productoperation:Option<MProductoperation>,
 }
 
+#[derive(Debug)]
 pub struct MChangenotice {
 	/// primary
 	/// not nullable 
@@ -28742,6 +29283,7 @@ pub struct MChangenotice {
 	pub r_request:Option<Vec<RRequest>>,
 }
 
+#[derive(Debug)]
 pub struct MChangerequest {
 	/// primary
 	/// not nullable 
@@ -28787,6 +29329,7 @@ pub struct MChangerequest {
 	pub r_request:Option<Vec<RRequest>>,
 }
 
+#[derive(Debug)]
 pub struct MCost {
 	/// primary
 	/// not nullable 
@@ -28856,6 +29399,7 @@ pub struct MCost {
 	pub m_attributesetinstance_id_m_attributesetinstance:Option<MAttributesetinstance>,
 }
 
+#[derive(Debug)]
 pub struct MCostdetail {
 	/// primary
 	/// not nullable 
@@ -28937,6 +29481,7 @@ pub struct MCostdetail {
 	pub c_projectissue_id_c_projectissue:Option<CProjectissue>,
 }
 
+#[derive(Debug)]
 pub struct MCostelement {
 	/// primary
 	/// not nullable 
@@ -28983,6 +29528,7 @@ pub struct MCostelement {
 	pub t_inventoryvalue:Option<Vec<TInventoryvalue>>,
 }
 
+#[derive(Debug)]
 pub struct MCostqueue {
 	/// primary
 	/// not nullable 
@@ -29032,6 +29578,7 @@ pub struct MCostqueue {
 	pub m_costelement_id_m_costelement:Option<MCostelement>,
 }
 
+#[derive(Debug)]
 pub struct MCosttype {
 	/// primary
 	/// not nullable 
@@ -29067,6 +29614,7 @@ pub struct MCosttype {
 	pub pp_order_cost:Option<Vec<PpOrderCost>>,
 }
 
+#[derive(Debug)]
 pub struct MDemand {
 	/// primary
 	/// not nullable 
@@ -29108,6 +29656,7 @@ pub struct MDemand {
 	pub m_demandline:Option<Vec<MDemandline>>,
 }
 
+#[derive(Debug)]
 pub struct MDemanddetail {
 	/// primary
 	/// not nullable 
@@ -29144,6 +29693,7 @@ pub struct MDemanddetail {
 	pub c_orderline_id_c_orderline:Option<COrderline>,
 }
 
+#[derive(Debug)]
 pub struct MDemandline {
 	/// primary
 	/// not nullable 
@@ -29187,6 +29737,7 @@ pub struct MDemandline {
 	pub m_demanddetail:Option<Vec<MDemanddetail>>,
 }
 
+#[derive(Debug)]
 pub struct MDiscountschema {
 	/// primary
 	/// not nullable 
@@ -29237,6 +29788,7 @@ pub struct MDiscountschema {
 	pub m_pricelist_version:Option<Vec<MPricelistVersion>>,
 }
 
+#[derive(Debug)]
 pub struct MDiscountschemabreak {
 	/// primary
 	/// not nullable 
@@ -29279,6 +29831,7 @@ pub struct MDiscountschemabreak {
 	pub m_product_id_m_product:Option<MProduct>,
 }
 
+#[derive(Debug)]
 pub struct MDiscountschemaline {
 	/// primary
 	/// not nullable 
@@ -29377,6 +29930,7 @@ pub struct MDiscountschemaline {
 	pub c_conversiontype_id_c_conversiontype:Option<CConversiontype>,
 }
 
+#[derive(Debug)]
 pub struct MDistributionlist {
 	/// primary
 	/// not nullable 
@@ -29412,6 +29966,7 @@ pub struct MDistributionlist {
 	pub t_distributionrundetail:Option<Vec<TDistributionrundetail>>,
 }
 
+#[derive(Debug)]
 pub struct MDistributionlistline {
 	/// primary
 	/// not nullable 
@@ -29454,6 +30009,7 @@ pub struct MDistributionlistline {
 	pub t_distributionrundetail:Option<Vec<TDistributionrundetail>>,
 }
 
+#[derive(Debug)]
 pub struct MDistributionrun {
 	/// primary
 	/// not nullable 
@@ -29494,6 +30050,7 @@ pub struct MDistributionrun {
 	pub t_distributionrundetail:Option<Vec<TDistributionrundetail>>,
 }
 
+#[derive(Debug)]
 pub struct MDistributionrunline {
 	/// primary
 	/// not nullable 
@@ -29540,6 +30097,7 @@ pub struct MDistributionrunline {
 	pub t_distributionrundetail:Option<Vec<TDistributionrundetail>>,
 }
 
+#[derive(Debug)]
 pub struct MEdi {
 	/// primary
 	/// not nullable 
@@ -29607,6 +30165,7 @@ pub struct MEdi {
 	pub m_edi_info:Option<Vec<MEdiInfo>>,
 }
 
+#[derive(Debug)]
 pub struct MEdiInfo {
 	/// primary
 	/// not nullable 
@@ -29636,6 +30195,7 @@ pub struct MEdiInfo {
 	pub m_edi_id_m_edi:Option<MEdi>,
 }
 
+#[derive(Debug)]
 pub struct MForecast {
 	/// primary
 	/// not nullable 
@@ -29680,6 +30240,7 @@ pub struct MForecast {
 	pub pp_mrp:Option<Vec<PpMrp>>,
 }
 
+#[derive(Debug)]
 pub struct MForecastline {
 	/// primary
 	/// not nullable 
@@ -29732,6 +30293,7 @@ pub struct MForecastline {
 	pub pp_mrp:Option<Vec<PpMrp>>,
 }
 
+#[derive(Debug)]
 pub struct MFreight {
 	/// primary
 	/// not nullable 
@@ -29784,6 +30346,7 @@ pub struct MFreight {
 	pub c_currency_id_c_currency:Option<CCurrency>,
 }
 
+#[derive(Debug)]
 pub struct MFreightcategory {
 	/// primary
 	/// not nullable 
@@ -29821,6 +30384,7 @@ pub struct MFreightcategory {
 	pub m_product:Option<Vec<MProduct>>,
 }
 
+#[derive(Debug)]
 pub struct MInout {
 	/// primary
 	/// not nullable 
@@ -29992,6 +30556,7 @@ pub struct MInout {
 	pub r_requestaction:Option<Vec<RRequestaction>>,
 }
 
+#[derive(Debug)]
 pub struct MInoutconfirm {
 	/// primary
 	/// not nullable 
@@ -30052,6 +30617,7 @@ pub struct MInoutconfirm {
 	pub m_inoutlineconfirm:Option<Vec<MInoutlineconfirm>>,
 }
 
+#[derive(Debug)]
 pub struct MInoutline {
 	/// primary
 	/// not nullable 
@@ -30189,6 +30755,7 @@ pub struct MInoutline {
 	pub t_transaction:Option<Vec<TTransaction>>,
 }
 
+#[derive(Debug)]
 pub struct MInoutlineconfirm {
 	/// primary
 	/// not nullable 
@@ -30241,6 +30808,7 @@ pub struct MInoutlineconfirm {
 	pub i_inoutlineconfirm:Option<Vec<IInoutlineconfirm>>,
 }
 
+#[derive(Debug)]
 pub struct MInoutlinema {
 	/// primary
 	/// not nullable 
@@ -30274,6 +30842,7 @@ pub struct MInoutlinema {
 	pub m_attributesetinstance_id_m_attributesetinstance:Option<MAttributesetinstance>,
 }
 
+#[derive(Debug)]
 pub struct MInventory {
 	/// primary
 	/// not nullable 
@@ -30365,6 +30934,7 @@ pub struct MInventory {
 	pub m_movementconfirm:Option<Vec<MMovementconfirm>>,
 }
 
+#[derive(Debug)]
 pub struct MInventoryline {
 	/// primary
 	/// not nullable 
@@ -30442,6 +31012,7 @@ pub struct MInventoryline {
 	pub t_transaction:Option<Vec<TTransaction>>,
 }
 
+#[derive(Debug)]
 pub struct MInventorylinema {
 	/// primary
 	/// not nullable 
@@ -30475,6 +31046,7 @@ pub struct MInventorylinema {
 	pub m_attributesetinstance_id_m_attributesetinstance:Option<MAttributesetinstance>,
 }
 
+#[derive(Debug)]
 pub struct MLocator {
 	/// primary
 	/// not nullable 
@@ -30546,6 +31118,7 @@ pub struct MLocator {
 	pub t_transaction:Option<Vec<TTransaction>>,
 }
 
+#[derive(Debug)]
 pub struct MLot {
 	/// primary
 	/// not nullable 
@@ -30584,6 +31157,7 @@ pub struct MLot {
 	pub m_attributesetinstance:Option<Vec<MAttributesetinstance>>,
 }
 
+#[derive(Debug)]
 pub struct MLotctl {
 	/// primary
 	/// not nullable 
@@ -30624,6 +31198,7 @@ pub struct MLotctl {
 	pub m_lotctlexclude:Option<Vec<MLotctlexclude>>,
 }
 
+#[derive(Debug)]
 pub struct MLotctlexclude {
 	/// primary
 	/// not nullable 
@@ -30658,6 +31233,7 @@ pub struct MLotctlexclude {
 	pub ad_table_id_ad_table:Option<AdTable>,
 }
 
+#[derive(Debug)]
 pub struct MMatchinv {
 	/// primary
 	/// not nullable 
@@ -30709,6 +31285,7 @@ pub struct MMatchinv {
 	pub m_product_id_m_product:Option<MProduct>,
 }
 
+#[derive(Debug)]
 pub struct MMatchpo {
 	/// primary
 	/// not nullable 
@@ -30765,6 +31342,7 @@ pub struct MMatchpo {
 	pub c_invoiceline_id_c_invoiceline:Option<CInvoiceline>,
 }
 
+#[derive(Debug)]
 pub struct MMovement {
 	/// primary
 	/// not nullable 
@@ -30872,6 +31450,7 @@ pub struct MMovement {
 	pub m_movementline:Option<Vec<MMovementline>>,
 }
 
+#[derive(Debug)]
 pub struct MMovementconfirm {
 	/// primary
 	/// not nullable 
@@ -30920,6 +31499,7 @@ pub struct MMovementconfirm {
 	pub m_movementlineconfirm:Option<Vec<MMovementlineconfirm>>,
 }
 
+#[derive(Debug)]
 pub struct MMovementline {
 	/// primary
 	/// not nullable 
@@ -30991,6 +31571,7 @@ pub struct MMovementline {
 	pub t_transaction:Option<Vec<TTransaction>>,
 }
 
+#[derive(Debug)]
 pub struct MMovementlineconfirm {
 	/// primary
 	/// not nullable 
@@ -31041,6 +31622,7 @@ pub struct MMovementlineconfirm {
 	pub m_inventoryline_id_m_inventoryline:Option<MInventoryline>,
 }
 
+#[derive(Debug)]
 pub struct MMovementlinema {
 	/// primary
 	/// not nullable 
@@ -31072,6 +31654,7 @@ pub struct MMovementlinema {
 	pub m_attributesetinstance_id_m_attributesetinstance:Option<MAttributesetinstance>,
 }
 
+#[derive(Debug)]
 pub struct MOperationresource {
 	/// primary
 	/// not nullable 
@@ -31118,6 +31701,7 @@ pub struct MOperationresource {
 	pub c_job_id_c_job:Option<CJob>,
 }
 
+#[derive(Debug)]
 pub struct MPackage {
 	/// primary
 	/// not nullable 
@@ -31158,6 +31742,7 @@ pub struct MPackage {
 	pub m_packageline:Option<Vec<MPackageline>>,
 }
 
+#[derive(Debug)]
 pub struct MPackageline {
 	/// primary
 	/// not nullable 
@@ -31193,6 +31778,7 @@ pub struct MPackageline {
 	pub m_inoutline_id_m_inoutline:Option<MInoutline>,
 }
 
+#[derive(Debug)]
 pub struct MPerpetualinv {
 	/// primary
 	/// not nullable 
@@ -31240,6 +31826,7 @@ pub struct MPerpetualinv {
 	pub m_inventory:Option<Vec<MInventory>>,
 }
 
+#[derive(Debug)]
 pub struct MPricelist {
 	/// primary
 	/// not nullable 
@@ -31320,6 +31907,7 @@ pub struct MPricelist {
 	pub w_store:Option<Vec<WStore>>,
 }
 
+#[derive(Debug)]
 pub struct MPricelistVersion {
 	/// primary
 	/// not nullable 
@@ -31368,6 +31956,7 @@ pub struct MPricelistVersion {
 	pub t_inventoryvalue:Option<Vec<TInventoryvalue>>,
 }
 
+#[derive(Debug)]
 pub struct MProduct {
 	/// primary
 	/// not nullable 
@@ -31710,6 +32299,7 @@ pub struct MProduct {
 	pub w_basketline:Option<Vec<WBasketline>>,
 }
 
+#[derive(Debug)]
 pub struct MProductAcct {
 	/// primary
 	/// not nullable 
@@ -31786,6 +32376,7 @@ pub struct MProductAcct {
 	pub p_tradediscountgrant_acct_c_validcombination:Option<CValidcombination>,
 }
 
+#[derive(Debug)]
 pub struct MProductBom {
 	/// primary
 	/// not nullable 
@@ -31824,6 +32415,7 @@ pub struct MProductBom {
 	pub m_productbom_id_m_product:Option<MProduct>,
 }
 
+#[derive(Debug)]
 pub struct MProductCategory {
 	/// primary
 	/// not nullable 
@@ -31902,6 +32494,7 @@ pub struct MProductCategory {
 	pub s_training:Option<Vec<STraining>>,
 }
 
+#[derive(Debug)]
 pub struct MProductCategoryAcct {
 	/// primary
 	/// not nullable 
@@ -31981,6 +32574,7 @@ pub struct MProductCategoryAcct {
 	pub p_tradediscountgrant_acct_c_validcombination:Option<CValidcombination>,
 }
 
+#[derive(Debug)]
 pub struct MProductCosting {
 	/// primary
 	/// not nullable 
@@ -32053,6 +32647,7 @@ pub struct MProductCosting {
 	pub c_acctschema_id_c_acctschema:Option<CAcctschema>,
 }
 
+#[derive(Debug)]
 pub struct MProductPo {
 	/// primary
 	/// not nullable 
@@ -32124,6 +32719,7 @@ pub struct MProductPo {
 	pub c_currency_id_c_currency:Option<CCurrency>,
 }
 
+#[derive(Debug)]
 pub struct MProductTrl {
 	/// primary
 	/// not nullable 
@@ -32161,6 +32757,7 @@ pub struct MProductTrl {
 	pub ad_language_ad_language:Option<AdLanguage>,
 }
 
+#[derive(Debug)]
 pub struct MProductdownload {
 	/// primary
 	/// not nullable 
@@ -32194,6 +32791,7 @@ pub struct MProductdownload {
 	pub a_asset_delivery:Option<Vec<AAssetDelivery>>,
 }
 
+#[derive(Debug)]
 pub struct MProduction {
 	/// primary
 	/// not nullable 
@@ -32254,6 +32852,7 @@ pub struct MProduction {
 	pub m_productionplan:Option<Vec<MProductionplan>>,
 }
 
+#[derive(Debug)]
 pub struct MProductionline {
 	/// primary
 	/// not nullable 
@@ -32312,6 +32911,7 @@ pub struct MProductionline {
 	pub t_transaction:Option<Vec<TTransaction>>,
 }
 
+#[derive(Debug)]
 pub struct MProductionlinema {
 	/// primary
 	/// not nullable 
@@ -32345,6 +32945,7 @@ pub struct MProductionlinema {
 	pub m_attributesetinstance_id_m_attributesetinstance:Option<MAttributesetinstance>,
 }
 
+#[derive(Debug)]
 pub struct MProductionplan {
 	/// primary
 	/// not nullable 
@@ -32391,6 +32992,7 @@ pub struct MProductionplan {
 	pub m_productionline:Option<Vec<MProductionline>>,
 }
 
+#[derive(Debug)]
 pub struct MProductoperation {
 	/// primary
 	/// not nullable 
@@ -32432,6 +33034,7 @@ pub struct MProductoperation {
 	pub m_operationresource:Option<Vec<MOperationresource>>,
 }
 
+#[derive(Debug)]
 pub struct MProductprice {
 	/// primary
 	/// not nullable 
@@ -32471,6 +33074,7 @@ pub struct MProductprice {
 	pub m_product_id_m_product:Option<MProduct>,
 }
 
+#[derive(Debug)]
 pub struct MProductpricevendorbreak {
 	/// primary
 	/// not nullable 
@@ -32506,6 +33110,7 @@ pub struct MProductpricevendorbreak {
 	pub updatedby:f64,
 }
 
+#[derive(Debug)]
 pub struct MPromotion {
 	/// primary
 	/// not nullable 
@@ -32537,6 +33142,7 @@ pub struct MPromotion {
 	pub updatedby:f64,
 }
 
+#[derive(Debug)]
 pub struct MPromotiondistribution {
 	/// primary
 	/// not nullable 
@@ -32575,6 +33181,7 @@ pub struct MPromotiondistribution {
 	pub updatedby:f64,
 }
 
+#[derive(Debug)]
 pub struct MPromotiongroup {
 	/// primary
 	/// not nullable 
@@ -32601,6 +33208,7 @@ pub struct MPromotiongroup {
 	pub updatedby:f64,
 }
 
+#[derive(Debug)]
 pub struct MPromotiongroupline {
 	/// primary
 	/// not nullable 
@@ -32628,6 +33236,7 @@ pub struct MPromotiongroupline {
 	pub updatedby:f64,
 }
 
+#[derive(Debug)]
 pub struct MPromotionline {
 	/// primary
 	/// not nullable 
@@ -32658,6 +33267,7 @@ pub struct MPromotionline {
 	pub updatedby:f64,
 }
 
+#[derive(Debug)]
 pub struct MPromotionprecondition {
 	/// primary
 	/// not nullable 
@@ -32700,6 +33310,7 @@ pub struct MPromotionprecondition {
 	pub updatedby:f64,
 }
 
+#[derive(Debug)]
 pub struct MPromotionreward {
 	/// primary
 	/// not nullable 
@@ -32741,6 +33352,7 @@ pub struct MPromotionreward {
 	pub updatedby:f64,
 }
 
+#[derive(Debug)]
 pub struct MRelatedproduct {
 	/// primary
 	/// not nullable 
@@ -32777,6 +33389,7 @@ pub struct MRelatedproduct {
 	pub relatedproduct_id_m_product:Option<MProduct>,
 }
 
+#[derive(Debug)]
 pub struct MReplenish {
 	/// primary
 	/// not nullable 
@@ -32819,6 +33432,7 @@ pub struct MReplenish {
 	pub m_warehousesource_id_m_warehouse:Option<MWarehouse>,
 }
 
+#[derive(Debug)]
 pub struct MRequisition {
 	/// primary
 	/// not nullable 
@@ -32890,6 +33504,7 @@ pub struct MRequisition {
 	pub pp_mrp:Option<Vec<PpMrp>>,
 }
 
+#[derive(Debug)]
 pub struct MRequisitionline {
 	/// primary
 	/// not nullable 
@@ -32947,6 +33562,7 @@ pub struct MRequisitionline {
 	pub pp_mrp:Option<Vec<PpMrp>>,
 }
 
+#[derive(Debug)]
 pub struct MRma {
 	/// primary
 	/// not nullable 
@@ -33028,6 +33644,7 @@ pub struct MRma {
 	pub r_requestaction:Option<Vec<RRequestaction>>,
 }
 
+#[derive(Debug)]
 pub struct MRmaline {
 	/// primary
 	/// not nullable 
@@ -33081,6 +33698,7 @@ pub struct MRmaline {
 	pub m_inoutline:Option<Vec<MInoutline>>,
 }
 
+#[derive(Debug)]
 pub struct MRmatype {
 	/// primary
 	/// not nullable 
@@ -33110,6 +33728,7 @@ pub struct MRmatype {
 	pub m_rma:Option<Vec<MRma>>,
 }
 
+#[derive(Debug)]
 pub struct MSernoctl {
 	/// primary
 	/// not nullable 
@@ -33148,6 +33767,7 @@ pub struct MSernoctl {
 	pub m_sernoctlexclude:Option<Vec<MSernoctlexclude>>,
 }
 
+#[derive(Debug)]
 pub struct MSernoctlexclude {
 	/// primary
 	/// not nullable 
@@ -33182,6 +33802,7 @@ pub struct MSernoctlexclude {
 	pub ad_table_id_ad_table:Option<AdTable>,
 }
 
+#[derive(Debug)]
 pub struct MShipper {
 	/// primary
 	/// not nullable 
@@ -33230,6 +33851,7 @@ pub struct MShipper {
 	pub m_package:Option<Vec<MPackage>>,
 }
 
+#[derive(Debug)]
 pub struct MStorage {
 	/// primary
 	/// not nullable 
@@ -33280,6 +33902,7 @@ pub struct MStorage {
 	pub m_attributesetinstance_id_m_attributesetinstance:Option<MAttributesetinstance>,
 }
 
+#[derive(Debug)]
 pub struct MSubstitute {
 	/// primary
 	/// not nullable 
@@ -33316,6 +33939,7 @@ pub struct MSubstitute {
 	pub ad_org_id_ad_org:Option<AdOrg>,
 }
 
+#[derive(Debug)]
 pub struct MTransaction {
 	/// primary
 	/// not nullable 
@@ -33379,6 +34003,7 @@ pub struct MTransaction {
 	pub t_transaction:Option<Vec<TTransaction>>,
 }
 
+#[derive(Debug)]
 pub struct MTransactionallocation {
 	/// primary
 	/// not nullable 
@@ -33446,6 +34071,7 @@ pub struct MTransactionallocation {
 	pub out_m_inventoryline_id_m_inventoryline:Option<MInventoryline>,
 }
 
+#[derive(Debug)]
 pub struct MWarehouse {
 	/// primary
 	/// not nullable 
@@ -33548,6 +34174,7 @@ pub struct MWarehouse {
 	pub w_store:Option<Vec<WStore>>,
 }
 
+#[derive(Debug)]
 pub struct MWarehouseAcct {
 	/// primary
 	/// not nullable 
@@ -33594,6 +34221,7 @@ pub struct MWarehouseAcct {
 	pub w_revaluation_acct_c_validcombination:Option<CValidcombination>,
 }
 
+#[derive(Debug)]
 pub struct Name {
 	/// primary
 	/// not nullable 
@@ -33626,6 +34254,7 @@ pub struct Name {
 	pub value:String,
 }
 
+#[derive(Debug)]
 pub struct Object {
 	/// primary
 	/// not nullable 
@@ -33657,6 +34286,7 @@ pub struct Object {
 	pub value:String,
 }
 
+#[derive(Debug)]
 pub struct ObjectAttribute {
 	/// primary
 	/// not nullable 
@@ -33692,6 +34322,7 @@ pub struct ObjectAttribute {
 	pub value:String,
 }
 
+#[derive(Debug)]
 pub struct ObjectDiscriminatedAttribute {
 	/// primary
 	/// not nullable 
@@ -33723,6 +34354,7 @@ pub struct ObjectDiscriminatedAttribute {
 	pub value:String,
 }
 
+#[derive(Debug)]
 pub struct ObjectObject {
 	/// primary
 	/// not nullable 
@@ -33758,6 +34390,7 @@ pub struct ObjectObject {
 	pub value:String,
 }
 
+#[derive(Debug)]
 pub struct ObjectView {
 	/// primary
 	/// not nullable 
@@ -33785,6 +34418,7 @@ pub struct ObjectView {
 	pub view_id:Option<f64>,
 }
 
+#[derive(Debug)]
 pub struct PaAchievement {
 	/// primary
 	/// not nullable 
@@ -33825,6 +34459,7 @@ pub struct PaAchievement {
 	pub pa_measure_id_pa_measure:Option<PaMeasure>,
 }
 
+#[derive(Debug)]
 pub struct PaBenchmark {
 	/// primary
 	/// not nullable 
@@ -33858,6 +34493,7 @@ pub struct PaBenchmark {
 	pub pa_measure:Option<Vec<PaMeasure>>,
 }
 
+#[derive(Debug)]
 pub struct PaBenchmarkdata {
 	/// primary
 	/// not nullable 
@@ -33892,6 +34528,7 @@ pub struct PaBenchmarkdata {
 	pub pa_benchmark_id_pa_benchmark:Option<PaBenchmark>,
 }
 
+#[derive(Debug)]
 pub struct PaColorschema {
 	/// primary
 	/// not nullable 
@@ -33948,6 +34585,7 @@ pub struct PaColorschema {
 	pub pa_goal:Option<Vec<PaGoal>>,
 }
 
+#[derive(Debug)]
 pub struct PaDashboardcontent {
 	/// primary
 	/// not nullable 
@@ -33987,6 +34625,7 @@ pub struct PaDashboardcontent {
 	pub pa_goal_id_pa_goal:Option<PaGoal>,
 }
 
+#[derive(Debug)]
 pub struct PaGoal {
 	/// primary
 	/// not nullable 
@@ -34058,6 +34697,7 @@ pub struct PaGoal {
 	pub pa_goalrestriction:Option<Vec<PaGoalrestriction>>,
 }
 
+#[derive(Debug)]
 pub struct PaGoalrestriction {
 	/// primary
 	/// not nullable 
@@ -34106,6 +34746,7 @@ pub struct PaGoalrestriction {
 	pub m_product_category_id_m_product_category:Option<MProductCategory>,
 }
 
+#[derive(Debug)]
 pub struct PaHierarchy {
 	/// primary
 	/// not nullable 
@@ -34167,6 +34808,7 @@ pub struct PaHierarchy {
 	pub pa_measure:Option<Vec<PaMeasure>>,
 }
 
+#[derive(Debug)]
 pub struct PaMeasure {
 	/// primary
 	/// not nullable 
@@ -34222,6 +34864,7 @@ pub struct PaMeasure {
 	pub pa_goal:Option<Vec<PaGoal>>,
 }
 
+#[derive(Debug)]
 pub struct PaMeasurecalc {
 	/// primary
 	/// not nullable 
@@ -34271,6 +34914,7 @@ pub struct PaMeasurecalc {
 	pub pa_ratioelement:Option<Vec<PaRatioelement>>,
 }
 
+#[derive(Debug)]
 pub struct PaRatio {
 	/// primary
 	/// not nullable 
@@ -34306,6 +34950,7 @@ pub struct PaRatio {
 	pub pa_ratioelement:Option<Vec<PaRatioelement>>,
 }
 
+#[derive(Debug)]
 pub struct PaRatioelement {
 	/// primary
 	/// not nullable 
@@ -34353,6 +34998,7 @@ pub struct PaRatioelement {
 	pub pa_measurecalc_id_pa_measurecalc:Option<PaMeasurecalc>,
 }
 
+#[derive(Debug)]
 pub struct PaReport {
 	/// primary
 	/// not nullable 
@@ -34413,6 +35059,7 @@ pub struct PaReport {
 	pub jasperprocess_id_ad_process:Option<AdProcess>,
 }
 
+#[derive(Debug)]
 pub struct PaReportcolumn {
 	/// primary
 	/// not nullable 
@@ -34541,6 +35188,7 @@ pub struct PaReportcolumn {
 	pub pa_reportcolumn:Option<Vec<PaReportcolumn>>,
 }
 
+#[derive(Debug)]
 pub struct PaReportcolumnset {
 	/// primary
 	/// not nullable 
@@ -34573,6 +35221,7 @@ pub struct PaReportcolumnset {
 	pub pa_reportcolumn:Option<Vec<PaReportcolumn>>,
 }
 
+#[derive(Debug)]
 pub struct PaReportcube {
 	/// primary
 	/// not nullable 
@@ -34637,6 +35286,7 @@ pub struct PaReportcube {
 	pub updatedby:f64,
 }
 
+#[derive(Debug)]
 pub struct PaReportline {
 	/// primary
 	/// not nullable 
@@ -34700,6 +35350,7 @@ pub struct PaReportline {
 	pub t_report:Option<Vec<TReport>>,
 }
 
+#[derive(Debug)]
 pub struct PaReportlineset {
 	/// primary
 	/// not nullable 
@@ -34734,6 +35385,7 @@ pub struct PaReportlineset {
 	pub pa_reportline:Option<Vec<PaReportline>>,
 }
 
+#[derive(Debug)]
 pub struct PaReportsource {
 	/// primary
 	/// not nullable 
@@ -34832,6 +35484,7 @@ pub struct PaReportsource {
 	pub i_reportline:Option<Vec<IReportline>>,
 }
 
+#[derive(Debug)]
 pub struct PaSlaCriteria {
 	/// primary
 	/// not nullable 
@@ -34865,6 +35518,7 @@ pub struct PaSlaCriteria {
 	pub pa_sla_goal:Option<Vec<PaSlaGoal>>,
 }
 
+#[derive(Debug)]
 pub struct PaSlaGoal {
 	/// primary
 	/// not nullable 
@@ -34915,6 +35569,7 @@ pub struct PaSlaGoal {
 	pub pa_sla_measure:Option<Vec<PaSlaMeasure>>,
 }
 
+#[derive(Debug)]
 pub struct PaSlaMeasure {
 	/// primary
 	/// not nullable 
@@ -34956,6 +35611,7 @@ pub struct PaSlaMeasure {
 	pub ad_table_id_ad_table:Option<AdTable>,
 }
 
+#[derive(Debug)]
 pub struct Person {
 	/// primary
 	/// not nullable 
@@ -34991,6 +35647,7 @@ pub struct Person {
 	pub value:String,
 }
 
+#[derive(Debug)]
 pub struct PpCostCollector {
 	/// primary
 	/// not nullable 
@@ -35111,6 +35768,7 @@ pub struct PpCostCollector {
 	pub pp_cost_collectorma:Option<Vec<PpCostCollectorma>>,
 }
 
+#[derive(Debug)]
 pub struct PpCostCollectorma {
 	/// primary
 	/// not nullable 
@@ -35139,6 +35797,7 @@ pub struct PpCostCollectorma {
 	pub pp_cost_collector_id_pp_cost_collector:Option<PpCostCollector>,
 }
 
+#[derive(Debug)]
 pub struct PpMrp {
 	/// primary
 	/// not nullable 
@@ -35225,6 +35884,7 @@ pub struct PpMrp {
 	pub dd_orderline_id_dd_orderline:Option<DdOrderline>,
 }
 
+#[derive(Debug)]
 pub struct PpOrder {
 	/// primary
 	/// not nullable 
@@ -35397,6 +36057,7 @@ pub struct PpOrder {
 	pub pp_order_workflow:Option<Vec<PpOrderWorkflow>>,
 }
 
+#[derive(Debug)]
 pub struct PpOrderBom {
 	/// primary
 	/// not nullable 
@@ -35450,6 +36111,7 @@ pub struct PpOrderBom {
 	pub pp_order_bomline:Option<Vec<PpOrderBomline>>,
 }
 
+#[derive(Debug)]
 pub struct PpOrderBomTrl {
 	/// primary
 	/// not nullable 
@@ -35484,6 +36146,7 @@ pub struct PpOrderBomTrl {
 	pub updatedby:f64,
 }
 
+#[derive(Debug)]
 pub struct PpOrderBomline {
 	/// primary
 	/// not nullable 
@@ -35574,6 +36237,7 @@ pub struct PpOrderBomline {
 	pub pp_mrp:Option<Vec<PpMrp>>,
 }
 
+#[derive(Debug)]
 pub struct PpOrderBomlineTrl {
 	/// primary
 	/// not nullable 
@@ -35606,6 +36270,7 @@ pub struct PpOrderBomlineTrl {
 	pub updatedby:f64,
 }
 
+#[derive(Debug)]
 pub struct PpOrderCost {
 	/// primary
 	/// not nullable 
@@ -35658,6 +36323,7 @@ pub struct PpOrderCost {
 	pub pp_order_id_pp_order:Option<PpOrder>,
 }
 
+#[derive(Debug)]
 pub struct PpOrderNode {
 	/// primary
 	/// not nullable 
@@ -35805,6 +36471,7 @@ pub struct PpOrderNode {
 	pub pp_order_workflow:Option<Vec<PpOrderWorkflow>>,
 }
 
+#[derive(Debug)]
 pub struct PpOrderNodeAsset {
 	/// primary
 	/// not nullable 
@@ -35841,6 +36508,7 @@ pub struct PpOrderNodeAsset {
 	pub pp_order_workflow_id_pp_order_workflow:Option<PpOrderWorkflow>,
 }
 
+#[derive(Debug)]
 pub struct PpOrderNodeProduct {
 	/// primary
 	/// not nullable 
@@ -35881,6 +36549,7 @@ pub struct PpOrderNodeProduct {
 	pub pp_order_workflow_id_pp_order_workflow:Option<PpOrderWorkflow>,
 }
 
+#[derive(Debug)]
 pub struct PpOrderNodeTrl {
 	/// primary
 	/// not nullable 
@@ -35915,6 +36584,7 @@ pub struct PpOrderNodeTrl {
 	pub updatedby:f64,
 }
 
+#[derive(Debug)]
 pub struct PpOrderNodenext {
 	/// primary
 	/// not nullable 
@@ -35961,6 +36631,7 @@ pub struct PpOrderNodenext {
 	pub pp_order_node_id_pp_order_node:Option<PpOrderNode>,
 }
 
+#[derive(Debug)]
 pub struct PpOrderWorkflow {
 	/// primary
 	/// not nullable 
@@ -36065,6 +36736,7 @@ pub struct PpOrderWorkflow {
 	pub pp_order_node_product:Option<Vec<PpOrderNodeProduct>>,
 }
 
+#[derive(Debug)]
 pub struct PpOrderWorkflowTrl {
 	/// primary
 	/// not nullable 
@@ -36099,6 +36771,7 @@ pub struct PpOrderWorkflowTrl {
 	pub updatedby:f64,
 }
 
+#[derive(Debug)]
 pub struct PpProductBom {
 	/// primary
 	/// not nullable 
@@ -36155,6 +36828,7 @@ pub struct PpProductBom {
 	pub r_group:Option<Vec<RGroup>>,
 }
 
+#[derive(Debug)]
 pub struct PpProductBomTrl {
 	/// primary
 	/// not nullable 
@@ -36189,6 +36863,7 @@ pub struct PpProductBomTrl {
 	pub updatedby:f64,
 }
 
+#[derive(Debug)]
 pub struct PpProductBomline {
 	/// primary
 	/// not nullable 
@@ -36247,6 +36922,7 @@ pub struct PpProductBomline {
 	pub pp_product_bom_id_pp_product_bom:Option<PpProductBom>,
 }
 
+#[derive(Debug)]
 pub struct PpProductBomlineTrl {
 	/// primary
 	/// not nullable 
@@ -36279,6 +36955,7 @@ pub struct PpProductBomlineTrl {
 	pub updatedby:f64,
 }
 
+#[derive(Debug)]
 pub struct PpProductPlanning {
 	/// primary
 	/// not nullable 
@@ -36338,6 +37015,7 @@ pub struct PpProductPlanning {
 	pub m_product_id_m_product:Option<MProduct>,
 }
 
+#[derive(Debug)]
 pub struct PpWfNodeAsset {
 	/// primary
 	/// not nullable 
@@ -36368,6 +37046,7 @@ pub struct PpWfNodeAsset {
 	pub a_asset_id_a_asset:Option<AAsset>,
 }
 
+#[derive(Debug)]
 pub struct PpWfNodeProduct {
 	/// primary
 	/// not nullable 
@@ -36408,6 +37087,7 @@ pub struct PpWfNodeProduct {
 	pub m_product_id_m_product:Option<MProduct>,
 }
 
+#[derive(Debug)]
 pub struct QmSpecification {
 	/// primary
 	/// not nullable 
@@ -36449,6 +37129,7 @@ pub struct QmSpecification {
 	pub qm_specificationline:Option<Vec<QmSpecificationline>>,
 }
 
+#[derive(Debug)]
 pub struct QmSpecificationline {
 	/// primary
 	/// not nullable 
@@ -36484,6 +37165,7 @@ pub struct QmSpecificationline {
 	pub qm_specification_id_qm_specification:Option<QmSpecification>,
 }
 
+#[derive(Debug)]
 pub struct RCategory {
 	/// primary
 	/// not nullable 
@@ -36520,6 +37202,7 @@ pub struct RCategory {
 	pub r_requestaction:Option<Vec<RRequestaction>>,
 }
 
+#[derive(Debug)]
 pub struct RCategoryupdates {
 	/// primary
 	/// not nullable 
@@ -36553,6 +37236,7 @@ pub struct RCategoryupdates {
 	pub r_category_id_r_category:Option<RCategory>,
 }
 
+#[derive(Debug)]
 pub struct RContactinterest {
 	/// not nullable 
 	pub ad_client_id:f64,
@@ -36583,6 +37267,7 @@ pub struct RContactinterest {
 	pub ad_user_id_ad_user:Option<AdUser>,
 }
 
+#[derive(Debug)]
 pub struct RGroup {
 	/// primary
 	/// not nullable 
@@ -36625,6 +37310,7 @@ pub struct RGroup {
 	pub r_requestaction:Option<Vec<RRequestaction>>,
 }
 
+#[derive(Debug)]
 pub struct RGroupupdates {
 	/// primary
 	/// not nullable 
@@ -36658,6 +37344,7 @@ pub struct RGroupupdates {
 	pub r_group_id_r_group:Option<RGroup>,
 }
 
+#[derive(Debug)]
 pub struct RInterestarea {
 	/// primary
 	/// not nullable 
@@ -36695,6 +37382,7 @@ pub struct RInterestarea {
 	pub r_contactinterest:Option<Vec<RContactinterest>>,
 }
 
+#[derive(Debug)]
 pub struct RIssueknown {
 	/// primary
 	/// not nullable 
@@ -36741,6 +37429,7 @@ pub struct RIssueknown {
 	pub ad_issue:Option<Vec<AdIssue>>,
 }
 
+#[derive(Debug)]
 pub struct RIssueproject {
 	/// primary
 	/// not nullable 
@@ -36781,6 +37470,7 @@ pub struct RIssueproject {
 	pub r_issuesource:Option<Vec<RIssuesource>>,
 }
 
+#[derive(Debug)]
 pub struct RIssuerecommendation {
 	/// primary
 	/// not nullable 
@@ -36810,6 +37500,7 @@ pub struct RIssuerecommendation {
 	pub r_issueknown:Option<Vec<RIssueknown>>,
 }
 
+#[derive(Debug)]
 pub struct RIssuesource {
 	/// primary
 	/// not nullable 
@@ -36847,6 +37538,7 @@ pub struct RIssuesource {
 	pub r_issueuser_id_r_issueuser:Option<RIssueuser>,
 }
 
+#[derive(Debug)]
 pub struct RIssuestatus {
 	/// primary
 	/// not nullable 
@@ -36875,6 +37567,7 @@ pub struct RIssuestatus {
 	pub r_issueknown:Option<Vec<RIssueknown>>,
 }
 
+#[derive(Debug)]
 pub struct RIssuesystem {
 	/// primary
 	/// not nullable 
@@ -36911,6 +37604,7 @@ pub struct RIssuesystem {
 	pub r_issuesource:Option<Vec<RIssuesource>>,
 }
 
+#[derive(Debug)]
 pub struct RIssueuser {
 	/// primary
 	/// not nullable 
@@ -36944,6 +37638,7 @@ pub struct RIssueuser {
 	pub r_issuesource:Option<Vec<RIssuesource>>,
 }
 
+#[derive(Debug)]
 pub struct RMailtext {
 	/// primary
 	/// not nullable 
@@ -36989,6 +37684,7 @@ pub struct RMailtext {
 	pub r_request:Option<Vec<RRequest>>,
 }
 
+#[derive(Debug)]
 pub struct RMailtextTrl {
 	/// primary
 	/// not nullable 
@@ -37029,6 +37725,7 @@ pub struct RMailtextTrl {
 	pub ad_language_ad_language:Option<AdLanguage>,
 }
 
+#[derive(Debug)]
 pub struct RRequest {
 	/// primary
 	/// not nullable 
@@ -37195,6 +37892,7 @@ pub struct RRequest {
 	pub r_requestupdates:Option<Vec<RRequestupdates>>,
 }
 
+#[derive(Debug)]
 pub struct RRequestaction {
 	/// primary
 	/// not nullable 
@@ -37296,6 +37994,7 @@ pub struct RRequestaction {
 	pub m_productspent_id_m_product:Option<MProduct>,
 }
 
+#[derive(Debug)]
 pub struct RRequestprocessor {
 	/// primary
 	/// not nullable 
@@ -37352,6 +38051,7 @@ pub struct RRequestprocessor {
 	pub r_requestprocessorlog:Option<Vec<RRequestprocessorlog>>,
 }
 
+#[derive(Debug)]
 pub struct RRequestprocessorRoute {
 	/// primary
 	/// not nullable 
@@ -37389,6 +38089,7 @@ pub struct RRequestprocessorRoute {
 	pub r_requesttype_id_r_requesttype:Option<RRequesttype>,
 }
 
+#[derive(Debug)]
 pub struct RRequestprocessorlog {
 	/// primary
 	/// not nullable 
@@ -37425,6 +38126,7 @@ pub struct RRequestprocessorlog {
 	pub r_requestprocessor_id_r_requestprocessor:Option<RRequestprocessor>,
 }
 
+#[derive(Debug)]
 pub struct RRequesttype {
 	/// primary
 	/// not nullable 
@@ -37502,6 +38204,7 @@ pub struct RRequesttype {
 	pub r_requesttypeupdates:Option<Vec<RRequesttypeupdates>>,
 }
 
+#[derive(Debug)]
 pub struct RRequesttypeupdates {
 	/// primary
 	/// not nullable 
@@ -37535,6 +38238,7 @@ pub struct RRequesttypeupdates {
 	pub r_requesttype_id_r_requesttype:Option<RRequesttype>,
 }
 
+#[derive(Debug)]
 pub struct RRequestupdate {
 	/// primary
 	/// not nullable 
@@ -37574,6 +38278,7 @@ pub struct RRequestupdate {
 	pub m_productspent_id_m_product:Option<MProduct>,
 }
 
+#[derive(Debug)]
 pub struct RRequestupdates {
 	/// primary
 	/// not nullable 
@@ -37607,6 +38312,7 @@ pub struct RRequestupdates {
 	pub r_request_id_r_request:Option<RRequest>,
 }
 
+#[derive(Debug)]
 pub struct RResolution {
 	/// primary
 	/// not nullable 
@@ -37638,6 +38344,7 @@ pub struct RResolution {
 	pub r_requestaction:Option<Vec<RRequestaction>>,
 }
 
+#[derive(Debug)]
 pub struct RStandardresponse {
 	/// primary
 	/// not nullable 
@@ -37667,6 +38374,7 @@ pub struct RStandardresponse {
 	pub r_request:Option<Vec<RRequest>>,
 }
 
+#[derive(Debug)]
 pub struct RStatus {
 	/// primary
 	/// not nullable 
@@ -37731,6 +38439,7 @@ pub struct RStatus {
 	pub r_status:Option<Vec<RStatus>>,
 }
 
+#[derive(Debug)]
 pub struct RStatuscategory {
 	/// primary
 	/// not nullable 
@@ -37765,6 +38474,7 @@ pub struct RStatuscategory {
 	pub r_status:Option<Vec<RStatus>>,
 }
 
+#[derive(Debug)]
 pub struct Relationship {
 	/// primary
 	/// not nullable 
@@ -37794,6 +38504,7 @@ pub struct Relationship {
 	pub value:String,
 }
 
+#[derive(Debug)]
 pub struct SExpensetype {
 	/// primary
 	/// not nullable 
@@ -37839,6 +38550,7 @@ pub struct SExpensetype {
 	pub m_product:Option<Vec<MProduct>>,
 }
 
+#[derive(Debug)]
 pub struct SResource {
 	/// primary
 	/// not nullable 
@@ -37914,6 +38626,7 @@ pub struct SResource {
 	pub s_resourceunavailable:Option<Vec<SResourceunavailable>>,
 }
 
+#[derive(Debug)]
 pub struct SResourceassignment {
 	/// primary
 	/// not nullable 
@@ -37958,6 +38671,7 @@ pub struct SResourceassignment {
 	pub s_timeexpenseline:Option<Vec<STimeexpenseline>>,
 }
 
+#[derive(Debug)]
 pub struct SResourcetype {
 	/// primary
 	/// not nullable 
@@ -38037,6 +38751,7 @@ pub struct SResourcetype {
 	pub s_resource:Option<Vec<SResource>>,
 }
 
+#[derive(Debug)]
 pub struct SResourceunavailable {
 	/// primary
 	/// not nullable 
@@ -38068,6 +38783,7 @@ pub struct SResourceunavailable {
 	pub s_resource_id_s_resource:Option<SResource>,
 }
 
+#[derive(Debug)]
 pub struct STimeexpense {
 	/// primary
 	/// not nullable 
@@ -38122,6 +38838,7 @@ pub struct STimeexpense {
 	pub s_timeexpenseline:Option<Vec<STimeexpenseline>>,
 }
 
+#[derive(Debug)]
 pub struct STimeexpenseline {
 	/// primary
 	/// not nullable 
@@ -38216,6 +38933,7 @@ pub struct STimeexpenseline {
 	pub c_projectissue:Option<Vec<CProjectissue>>,
 }
 
+#[derive(Debug)]
 pub struct STimetype {
 	/// primary
 	/// not nullable 
@@ -38245,6 +38963,7 @@ pub struct STimetype {
 	pub s_timeexpenseline:Option<Vec<STimeexpenseline>>,
 }
 
+#[derive(Debug)]
 pub struct STraining {
 	/// primary
 	/// not nullable 
@@ -38290,6 +39009,7 @@ pub struct STraining {
 	pub s_training_class:Option<Vec<STrainingClass>>,
 }
 
+#[derive(Debug)]
 pub struct STrainingClass {
 	/// primary
 	/// not nullable 
@@ -38325,6 +39045,7 @@ pub struct STrainingClass {
 	pub m_product_id_m_product:Option<MProduct>,
 }
 
+#[derive(Debug)]
 pub struct TAging {
 	/// primary
 	/// not nullable 
@@ -38459,6 +39180,7 @@ pub struct TAging {
 	pub c_activity_id_c_activity:Option<CActivity>,
 }
 
+#[derive(Debug)]
 pub struct TAlterColumn {
 	pub columnname:Option<String>,
 	pub datatype:Option<String>,
@@ -38467,6 +39189,7 @@ pub struct TAlterColumn {
 	pub tablename:Option<String>,
 }
 
+#[derive(Debug)]
 pub struct TBomline {
 	/// primary
 	/// not nullable 
@@ -38512,6 +39235,7 @@ pub struct TBomline {
 	pub updatedby:f64,
 }
 
+#[derive(Debug)]
 pub struct TDistributionrundetail {
 	/// primary
 	/// not nullable 
@@ -38572,6 +39296,7 @@ pub struct TDistributionrundetail {
 	pub c_bpartner_location_id_c_bpartner_location:Option<CBpartnerLocation>,
 }
 
+#[derive(Debug)]
 pub struct TInventoryvalue {
 	/// primary
 	/// not nullable 
@@ -38633,6 +39358,7 @@ pub struct TInventoryvalue {
 	pub m_costelement_id_m_costelement:Option<MCostelement>,
 }
 
+#[derive(Debug)]
 pub struct TInvoicegl {
 	/// primary
 	/// not nullable 
@@ -38706,6 +39432,7 @@ pub struct TInvoicegl {
 	pub c_doctypereval_id_c_doctype:Option<CDoctype>,
 }
 
+#[derive(Debug)]
 pub struct TMrpCrp {
 	/// primary
 	/// not nullable 
@@ -38728,6 +39455,7 @@ pub struct TMrpCrp {
 	pub updatedby:f64,
 }
 
+#[derive(Debug)]
 pub struct TReplenish {
 	/// primary
 	/// not nullable 
@@ -38787,6 +39515,7 @@ pub struct TReplenish {
 	pub c_doctype_id_c_doctype:Option<CDoctype>,
 }
 
+#[derive(Debug)]
 pub struct TReport {
 	/// primary
 	/// not nullable 
@@ -38832,6 +39561,7 @@ pub struct TReport {
 	pub pa_reportline_id_pa_reportline:Option<PaReportline>,
 }
 
+#[derive(Debug)]
 pub struct TReportstatement {
 	/// primary
 	/// not nullable 
@@ -38857,6 +39587,7 @@ pub struct TReportstatement {
 	pub ad_pinstance_id_ad_pinstance:Option<AdPinstance>,
 }
 
+#[derive(Debug)]
 pub struct TSelection {
 	/// primary
 	/// not nullable 
@@ -38866,6 +39597,7 @@ pub struct TSelection {
 	pub t_selection_id:f64,
 }
 
+#[derive(Debug)]
 pub struct TSelection2 {
 	/// primary
 	/// not nullable 
@@ -38878,6 +39610,7 @@ pub struct TSelection2 {
 	pub t_selection_id:f64,
 }
 
+#[derive(Debug)]
 pub struct TSpool {
 	/// primary
 	/// not nullable 
@@ -38891,6 +39624,7 @@ pub struct TSpool {
 	pub ad_pinstance_id_ad_pinstance:Option<AdPinstance>,
 }
 
+#[derive(Debug)]
 pub struct TTransaction {
 	/// primary
 	/// not nullable 
@@ -38963,6 +39697,7 @@ pub struct TTransaction {
 	pub c_projectissue_id_c_projectissue:Option<CProjectissue>,
 }
 
+#[derive(Debug)]
 pub struct TTrialbalance {
 	/// primary
 	/// not nullable 
@@ -39027,6 +39762,7 @@ pub struct TTrialbalance {
 	pub ad_pinstance_id_ad_pinstance:Option<AdPinstance>,
 }
 
+#[derive(Debug)]
 pub struct Test {
 	/// primary
 	/// not nullable 
@@ -39078,6 +39814,7 @@ pub struct Test {
 	pub account_acct_c_validcombination:Option<CValidcombination>,
 }
 
+#[derive(Debug)]
 pub struct Text {
 	/// primary
 	/// not nullable 
@@ -39110,6 +39847,7 @@ pub struct Text {
 	pub value:String,
 }
 
+#[derive(Debug)]
 pub struct Timestamp {
 	/// primary
 	/// not nullable 
@@ -39142,6 +39880,7 @@ pub struct Timestamp {
 	pub value:String,
 }
 
+#[derive(Debug)]
 pub struct UBlacklistcheque {
 	/// primary
 	/// not nullable 
@@ -39169,6 +39908,7 @@ pub struct UBlacklistcheque {
 	pub updatedby:f64,
 }
 
+#[derive(Debug)]
 pub struct UPosterminal {
 	/// primary
 	/// not nullable 
@@ -39226,6 +39966,7 @@ pub struct UPosterminal {
 	pub updatedby:Option<f64>,
 }
 
+#[derive(Debug)]
 pub struct URolemenu {
 	/// primary
 	/// not nullable 
@@ -39257,6 +39998,7 @@ pub struct URolemenu {
 	pub u_webmenu_id_u_webmenu:Option<UWebmenu>,
 }
 
+#[derive(Debug)]
 pub struct UWebProperties {
 	/// primary
 	/// not nullable 
@@ -39284,6 +40026,7 @@ pub struct UWebProperties {
 	pub updatedby:i32,
 }
 
+#[derive(Debug)]
 pub struct UWebmenu {
 	/// primary
 	/// not nullable 
@@ -39329,6 +40072,7 @@ pub struct UWebmenu {
 	pub u_webmenu:Option<Vec<UWebmenu>>,
 }
 
+#[derive(Debug)]
 pub struct Users {
 	/// primary
 	/// defaults to: (0)::numeric
@@ -39369,6 +40113,7 @@ pub struct Users {
 	pub value:String,
 }
 
+#[derive(Debug)]
 pub struct View {
 	/// primary
 	/// not nullable 
@@ -39400,6 +40145,7 @@ pub struct View {
 	pub value:String,
 }
 
+#[derive(Debug)]
 pub struct ViewAdClass {
 	/// primary
 	/// not nullable 
@@ -39433,6 +40179,7 @@ pub struct ViewAdClass {
 	pub view_id:Option<f64>,
 }
 
+#[derive(Debug)]
 pub struct WAdvertisement {
 	/// primary
 	/// not nullable 
@@ -39488,6 +40235,7 @@ pub struct WAdvertisement {
 	pub w_countercount_id_w_countercount:Option<WCountercount>,
 }
 
+#[derive(Debug)]
 pub struct WBasket {
 	/// primary
 	/// not nullable 
@@ -39526,6 +40274,7 @@ pub struct WBasket {
 	pub w_basketline:Option<Vec<WBasketline>>,
 }
 
+#[derive(Debug)]
 pub struct WBasketline {
 	/// primary
 	/// not nullable 
@@ -39568,6 +40317,7 @@ pub struct WBasketline {
 	pub m_product_id_m_product:Option<MProduct>,
 }
 
+#[derive(Debug)]
 pub struct WClick {
 	/// primary
 	/// not nullable 
@@ -39607,6 +40357,7 @@ pub struct WClick {
 	pub ad_user_id_ad_user:Option<AdUser>,
 }
 
+#[derive(Debug)]
 pub struct WClickcount {
 	/// primary
 	/// not nullable 
@@ -39642,6 +40393,7 @@ pub struct WClickcount {
 	pub w_click:Option<Vec<WClick>>,
 }
 
+#[derive(Debug)]
 pub struct WCounter {
 	/// primary
 	/// not nullable 
@@ -39682,6 +40434,7 @@ pub struct WCounter {
 	pub ad_user_id_ad_user:Option<AdUser>,
 }
 
+#[derive(Debug)]
 pub struct WCountercount {
 	/// primary
 	/// not nullable 
@@ -39717,6 +40470,7 @@ pub struct WCountercount {
 	pub w_counter:Option<Vec<WCounter>>,
 }
 
+#[derive(Debug)]
 pub struct WMailmsg {
 	/// primary
 	/// not nullable 
@@ -39759,6 +40513,7 @@ pub struct WMailmsg {
 	pub w_mailmsg_trl:Option<Vec<WMailmsgTrl>>,
 }
 
+#[derive(Debug)]
 pub struct WMailmsgTrl {
 	/// primary
 	/// not nullable 
@@ -39798,6 +40553,7 @@ pub struct WMailmsgTrl {
 	pub ad_language_ad_language:Option<AdLanguage>,
 }
 
+#[derive(Debug)]
 pub struct WStore {
 	/// primary
 	/// not nullable 
@@ -39898,6 +40654,7 @@ pub struct WStore {
 	pub w_store_trl:Option<Vec<WStoreTrl>>,
 }
 
+#[derive(Debug)]
 pub struct WStoreTrl {
 	/// primary
 	/// not nullable 
@@ -39940,6 +40697,7 @@ pub struct WStoreTrl {
 	pub ad_language_ad_language:Option<AdLanguage>,
 }
 
+#[derive(Debug)]
 pub struct Yesno {
 	/// primary
 	/// not nullable 

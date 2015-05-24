@@ -6,6 +6,7 @@ use uuid::Uuid;
 ///
 /// @Address
 ///
+#[derive(Debug)]
 pub struct Address {
 	/// primary
 	/// defaults to: uuid_generate_v4()
@@ -47,6 +48,7 @@ pub struct Address {
 	pub user_info:Option<Vec<UserInfo>>,
 }
 
+#[derive(Debug)]
 pub struct ApiKey {
 	/// primary
 	/// defaults to: uuid_generate_v4()
@@ -87,12 +89,13 @@ pub struct ApiKey {
 	/// --inherited-- 
 	pub updatedby:Option<Uuid>,
 	/// has one
-	pub user_id_users:Option<Users>,
+	pub user:Option<Users>,
 }
 
 ///
 /// Base table contains the creation and modification status of a record
 ///
+#[derive(Debug)]
 pub struct Base {
 	pub client_id:Option<Uuid>,
 	/// defaults to: now()
@@ -108,6 +111,7 @@ pub struct Base {
 	pub updatedby:Option<Uuid>,
 }
 
+#[derive(Debug)]
 pub struct Cart {
 	/// primary
 	/// defaults to: uuid_generate_v4()
@@ -143,6 +147,7 @@ pub struct Cart {
 	pub updatedby:Option<Uuid>,
 }
 
+#[derive(Debug)]
 pub struct CartLine {
 	/// primary
 	/// defaults to: uuid_generate_v4()
@@ -181,6 +186,7 @@ pub struct CartLine {
 	pub updatedby:Option<Uuid>,
 }
 
+#[derive(Debug)]
 pub struct Category {
 	/// primary
 	/// defaults to: uuid_generate_v4()
@@ -219,6 +225,7 @@ pub struct Category {
 	pub product:Option<Vec<Product>>,
 }
 
+#[derive(Debug)]
 pub struct Client {
 	/// primary
 	/// defaults to: uuid_generate_v4()
@@ -253,6 +260,7 @@ pub struct Client {
 	pub updatedby:Option<Uuid>,
 }
 
+#[derive(Debug)]
 pub struct Country {
 	/// primary
 	/// defaults to: uuid_generate_v4()
@@ -291,6 +299,7 @@ pub struct Country {
 	pub currency:Option<Vec<Currency>>,
 }
 
+#[derive(Debug)]
 pub struct Currency {
 	/// primary
 	/// defaults to: uuid_generate_v4()
@@ -329,13 +338,14 @@ pub struct Currency {
 	/// --inherited-- 
 	pub updatedby:Option<Uuid>,
 	/// has one
-	pub country_id_country:Option<Country>,
+	pub country:Option<Country>,
 	/// has many
 	pub exchange_rate:Option<Vec<ExchangeRate>>,
 	/// has many
 	pub product:Option<Vec<Product>>,
 }
 
+#[derive(Debug)]
 pub struct ExchangeRate {
 	/// primary
 	/// this will be referred when processing payments with different currencies
@@ -374,11 +384,12 @@ pub struct ExchangeRate {
 	/// --inherited-- 
 	pub updatedby:Option<Uuid>,
 	/// has one
-	pub from_currency_currency:Option<Currency>,
+	pub from:Option<Currency>,
 	/// has one
-	pub to_currency_currency:Option<Currency>,
+	pub to:Option<Currency>,
 }
 
+#[derive(Debug)]
 pub struct Invoice {
 	/// defaults to: uuid_generate_v4()
 	pub invoice_id:Option<Uuid>,
@@ -414,6 +425,7 @@ pub struct Invoice {
 	pub updatedby:Option<Uuid>,
 }
 
+#[derive(Debug)]
 pub struct OrderLine {
 	/// primary
 	/// defaults to: uuid_generate_v4()
@@ -454,9 +466,10 @@ pub struct OrderLine {
 	/// --inherited-- 
 	pub updatedby:Option<Uuid>,
 	/// has one
-	pub order_id_orders:Option<Orders>,
+	pub order:Option<Orders>,
 }
 
+#[derive(Debug)]
 pub struct Orders {
 	/// primary
 	/// defaults to: uuid_generate_v4()
@@ -522,6 +535,7 @@ pub struct Orders {
 	pub order_line:Option<Vec<OrderLine>>,
 }
 
+#[derive(Debug)]
 pub struct Organization {
 	/// primary
 	/// defaults to: uuid_generate_v4()
@@ -558,11 +572,12 @@ pub struct Organization {
 	/// --inherited-- 
 	pub updatedby:Option<Uuid>,
 	/// has one, self referential
-	pub parent_organization_id_organization:Option<Box<Organization>>,
+	pub parent:Option<Box<Organization>>,
 	/// has many
 	pub organization:Option<Vec<Organization>>,
 }
 
+#[derive(Debug)]
 pub struct Photo {
 	/// primary
 	/// defaults to: uuid_generate_v4()
@@ -609,6 +624,7 @@ pub struct Photo {
 	pub user_info:Option<Vec<UserInfo>>,
 }
 
+#[derive(Debug)]
 pub struct PhotoSizes {
 	/// primary
 	/// not nullable 
@@ -650,12 +666,13 @@ pub struct PhotoSizes {
 	/// --inherited-- 
 	pub updatedby:Option<Uuid>,
 	/// has one
-	pub photo_id_photo:Option<Photo>,
+	pub photo:Option<Photo>,
 }
 
 ///
 /// This will be exposed as an @Api, including @Table(users, category, product_availability, photo)
 ///
+#[derive(Debug)]
 pub struct Product {
 	/// primary
 	/// defaults to: uuid_generate_v4()
@@ -726,9 +743,9 @@ pub struct Product {
 	/// --inherited-- 
 	pub updatedby:Option<Uuid>,
 	/// has one
-	pub owner_id_users:Option<Users>,
+	pub owner:Option<Users>,
 	/// has one
-	pub currency_id_currency:Option<Currency>,
+	pub currency:Option<Currency>,
 	/// has one, extension table
 	pub product_availability:Option<Box<ProductAvailability>>,
 	/// has many, indirect referring table, derived from linker table: product_category
@@ -739,6 +756,7 @@ pub struct Product {
 	pub review:Option<Vec<Review>>,
 }
 
+#[derive(Debug)]
 pub struct ProductAvailability {
 	/// primary
 	/// not nullable 
@@ -772,16 +790,17 @@ pub struct ProductAvailability {
 	/// --inherited-- 
 	pub updatedby:Option<Uuid>,
 	/// has one
-	pub product_id_product:Option<Product>,
+	pub product:Option<Product>,
 }
 
+#[derive(Debug)]
 pub struct ProductCategory {
 	/// primary
 	/// not nullable 
-	pub product_id:Uuid,
+	pub category_id:Uuid,
 	/// primary
 	/// not nullable 
-	pub category_id:Uuid,
+	pub product_id:Uuid,
 	/// --inherited-- 
 	pub client_id:Option<Uuid>,
 	/// defaults to: now()
@@ -801,18 +820,19 @@ pub struct ProductCategory {
 	/// --inherited-- 
 	pub updatedby:Option<Uuid>,
 	/// has one
-	pub product_id_product:Option<Product>,
+	pub product:Option<Product>,
 	/// has one
-	pub category_id_category:Option<Category>,
+	pub category:Option<Category>,
 }
 
+#[derive(Debug)]
 pub struct ProductPhoto {
 	/// primary
 	/// not nullable 
-	pub product_id:Uuid,
+	pub photo_id:Uuid,
 	/// primary
 	/// not nullable 
-	pub photo_id:Uuid,
+	pub product_id:Uuid,
 	/// --inherited-- 
 	pub client_id:Option<Uuid>,
 	/// defaults to: now()
@@ -832,11 +852,12 @@ pub struct ProductPhoto {
 	/// --inherited-- 
 	pub updatedby:Option<Uuid>,
 	/// has one
-	pub product_id_product:Option<Product>,
+	pub product:Option<Product>,
 	/// has one
-	pub photo_id_photo:Option<Photo>,
+	pub photo:Option<Photo>,
 }
 
+#[derive(Debug)]
 pub struct ProductReview {
 	/// primary
 	/// not nullable 
@@ -863,14 +884,15 @@ pub struct ProductReview {
 	/// --inherited-- 
 	pub updatedby:Option<Uuid>,
 	/// has one
-	pub product_id_product:Option<Product>,
+	pub product:Option<Product>,
 	/// has one
-	pub review_id_review:Option<Review>,
+	pub review:Option<Review>,
 }
 
 ///
 /// All User table should inherit from this one
 ///
+#[derive(Debug)]
 pub struct Record {
 	/// @Active
 	/// defaults to: true
@@ -902,6 +924,7 @@ pub struct Record {
 ///
 /// Reviews of buyers from the sellers and the sellers' products
 ///
+#[derive(Debug)]
 pub struct Review {
 	/// primary
 	/// not nullable 
@@ -944,10 +967,11 @@ pub struct Review {
 	pub updatedby:Option<Uuid>,
 	/// has many, indirect referring table, derived from linker table: product_review
 	pub product:Option<Vec<Product>>,
-	/// has many
-	pub user_review:Option<Vec<UserReview>>,
+	/// has many, indirect referring table, derived from linker table: user_review
+	pub users:Option<Vec<Users>>,
 }
 
+#[derive(Debug)]
 pub struct Settings {
 	/// primary
 	/// defaults to: uuid_generate_v4()
@@ -987,9 +1011,10 @@ pub struct Settings {
 	/// --inherited-- 
 	pub updatedby:Option<Uuid>,
 	/// has one
-	pub user_id_users:Option<Users>,
+	pub user:Option<Users>,
 }
 
+#[derive(Debug)]
 pub struct UserInfo {
 	/// primary
 	/// not nullable 
@@ -1027,13 +1052,14 @@ pub struct UserInfo {
 	/// --inherited-- 
 	pub updatedby:Option<Uuid>,
 	/// has one
-	pub user_id_users:Option<Users>,
+	pub user:Option<Users>,
 	/// has one
-	pub address_id_address:Option<Address>,
+	pub address:Option<Address>,
 	/// has one
-	pub photo_id_photo:Option<Photo>,
+	pub photo:Option<Photo>,
 }
 
+#[derive(Debug)]
 pub struct UserLocation {
 	/// primary
 	/// not nullable 
@@ -1074,24 +1100,25 @@ pub struct UserLocation {
 	/// --inherited-- 
 	pub updatedby:Option<Uuid>,
 	/// has one
-	pub user_id_users:Option<Users>,
+	pub user:Option<Users>,
 }
 
 ///
 /// Reviews of the seller by the user
 ///
+#[derive(Debug)]
 pub struct UserReview {
+	/// primary
+	/// not nullable 
+	pub review_id:Uuid,
 	/// primary
 	/// The user id of the seller being reviewed
 	/// not nullable 
 	pub user_id:Uuid,
-	/// primary
+	/// defaults to: true
 	/// not nullable 
-	pub review_id:Uuid,
-	pub active:Option<bool>,
-	pub description:Option<String>,
-	pub help:Option<String>,
-	pub name:Option<String>,
+	/// --inherited-- 
+	pub active:bool,
 	/// --inherited-- 
 	pub client_id:Option<Uuid>,
 	/// defaults to: now()
@@ -1100,6 +1127,12 @@ pub struct UserReview {
 	pub created:DateTime<UTC>,
 	/// --inherited-- 
 	pub createdby:Option<Uuid>,
+	/// --inherited-- 
+	pub description:Option<String>,
+	/// --inherited-- 
+	pub help:Option<String>,
+	/// --inherited-- 
+	pub name:Option<String>,
 	/// --inherited-- 
 	pub organization_id:Option<Uuid>,
 	/// --inherited-- 
@@ -1111,14 +1144,15 @@ pub struct UserReview {
 	/// --inherited-- 
 	pub updatedby:Option<Uuid>,
 	/// has one
-	pub user_id_users:Option<Users>,
+	pub user:Option<Users>,
 	/// has one
-	pub review_id_review:Option<Review>,
+	pub review:Option<Review>,
 }
 
 ///
 /// This are @Users, will be used for @Login
 ///
+#[derive(Debug)]
 pub struct Users {
 	/// primary
 	/// defaults to: uuid_generate_v4()
@@ -1167,6 +1201,8 @@ pub struct Users {
 	pub updatedby:Option<Uuid>,
 	/// has one, extension table
 	pub user_location:Option<Box<UserLocation>>,
+	/// has many, indirect referring table, derived from linker table: user_review
+	pub review:Option<Vec<Review>>,
 	/// has many
 	pub api_key:Option<Vec<ApiKey>>,
 	/// has many
@@ -1175,10 +1211,9 @@ pub struct Users {
 	pub settings:Option<Vec<Settings>>,
 	/// has many
 	pub user_info:Option<Vec<UserInfo>>,
-	/// has many
-	pub user_review:Option<Vec<UserReview>>,
 }
 
+#[derive(Debug)]
 pub struct Wishlist {
 	/// primary
 	/// defaults to: uuid_generate_v4()
@@ -1216,6 +1251,7 @@ pub struct Wishlist {
 	pub wishlist_line:Option<Vec<WishlistLine>>,
 }
 
+#[derive(Debug)]
 pub struct WishlistLine {
 	/// primary
 	/// not nullable 
@@ -1254,5 +1290,5 @@ pub struct WishlistLine {
 	/// --inherited-- 
 	pub updatedby:Option<Uuid>,
 	/// has one
-	pub wishlist_id_wishlist:Option<Wishlist>,
+	pub wishlist:Option<Wishlist>,
 }

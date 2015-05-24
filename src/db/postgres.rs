@@ -397,7 +397,7 @@ impl DatabaseDev for Postgres{
 		let comment = self.get_table_comment(schema, table);
 		let parent = self.get_parent_table(schema, table);
 		let subclass = self.get_table_sub_class(schema, table);
-		
+		// #FIXME column that is both primary and foreign should be unified
 		if parent.is_some(){//mutate columns to mark those which are inherited
 			let inherited_columns = self.get_inherited_columns(schema, table);
 			for i in inherited_columns{

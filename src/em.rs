@@ -2,6 +2,7 @@ use filter::Filter;
 use query::Query;
 use table::Table;
 use types::Dao;
+use database::Database;
 
 pub trait EntityManager{
 
@@ -48,7 +49,7 @@ pub trait EntityManager{
 	fn get_all_with_filter(&self, table:String, filters:Vec<Filter>)->Vec<Dao>;
 
 	/// get the first records of this table that passed thru the filters
-	fn get_one(&self, table:String, Vec<Filter>)->Dao;
+	fn get_one(&self, table:String, filter:Vec<Filter>)->Dao;
 
 	/// insert this records to the database
 	fn insert(&self, dao:Dao);
@@ -69,4 +70,62 @@ pub trait EntityManager{
 	fn update_with_filter(&self, dao:&Dao, filter:Vec<Filter>)->Dao;
 
 	
+}
+
+pub struct SyncEm<'a>{
+	db:&'a Database,
+}
+
+impl <'a>SyncEm<'a>{
+	
+	pub fn new(db:&'a Database)->Self{
+		SyncEm{db:db}
+	}
+}
+
+impl <'a> EntityManager for SyncEm<'a>{
+	
+	fn begin(&self){
+		self.db.begin();
+	}
+
+	fn commit(&self){panic!("not yet")}
+
+	fn count(&self, query:&Query)->usize{panic!("not yet")}
+
+	fn create_table(&self, model: &Table){panic!("not yet")}
+
+	fn create_schema(&self, schema:String){panic!("not yet")}
+
+	fn delete(&self, table:String, filters:&Vec<Filter>)->usize{panic!("not yet")}
+
+	fn drop_table(&self, schema:String, table:String, forced:bool){panic!("not yet")}
+
+	fn drop_schema(&self, schema:String, forced:bool){panic!("not yet")}
+
+	fn truncate_table(&self, schema:String, table:String, forced:bool) ->usize{panic!("not yet")}
+
+	fn exist_table(&self, schema: String, table:String)->bool{panic!("not yet")}
+	
+	fn exist_schema(&self, schema: String)->bool{panic!("not yet")}
+
+	fn get_all(&self, table:String)->Vec<Dao>{panic!("not yet")}
+
+	fn get_all_distinct(&self, table:String)->Vec<Dao>{panic!("not yet")}
+
+	fn get_all_with_filter(&self, table:String, filters:Vec<Filter>)->Vec<Dao>{panic!("not yet")}
+
+	fn get_one(&self, table:String, filter: Vec<Filter>)->Dao{panic!("not yet")}
+
+	fn insert(&self, dao:Dao){panic!("not yet")}
+	
+	fn reset(&self){panic!("not yet")}
+
+	fn retrieve(&self, query:&Query)->Vec<Dao>{panic!("not yet")}
+
+	fn rollback(&self, ){panic!("not yet")}
+	
+	fn update(&self, dao:&Dao)->Dao{panic!("not yet")}
+
+	fn update_with_filter(&self, dao:&Dao, filter:Vec<Filter>)->Dao{panic!("not yet")}
 }
