@@ -1,7 +1,7 @@
 # rustorm
 A Work in Progress ORM for postgresql
 
-A fork of my previous, very simple ORM (http://github.com/ivanceras/orm) for java
+A fork of my previous, very simple [ORM](http://github.com/ivanceras/orm) for java
 
 
 ##Dependency
@@ -207,7 +207,7 @@ Take notice of these last members of the struct here
 
 
 ##Documentation
-(http://ivanceras.github.io/rustorm/rustorm)
+[docs](http://ivanceras.github.io/rustorm/rustorm)
 
 ##Roadmap
 * implement all the features in ivanceras/orm
