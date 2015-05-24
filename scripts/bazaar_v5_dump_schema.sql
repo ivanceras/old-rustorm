@@ -694,14 +694,10 @@ COMMENT ON COLUMN user_location.set_accuracy IS 'user can anonymize their locati
 --
 
 CREATE TABLE user_review (
-    name character varying,
-    description character varying,
-    help text,
-    active boolean,
     user_id uuid NOT NULL,
     review_id uuid NOT NULL
 )
-INHERITS (system.base);
+INHERITS (system.record);
 
 
 ALTER TABLE bazaar.user_review OWNER TO bazaar;
@@ -1293,6 +1289,13 @@ ALTER TABLE ONLY user_review ALTER COLUMN updated SET DEFAULT now();
 
 
 --
+-- Name: active; Type: DEFAULT; Schema: bazaar; Owner: bazaar
+--
+
+ALTER TABLE ONLY user_review ALTER COLUMN active SET DEFAULT true;
+
+
+--
 -- Name: created; Type: DEFAULT; Schema: bazaar; Owner: bazaar
 --
 
@@ -1675,6 +1678,14 @@ ALTER TABLE ONLY api_key
 
 
 --
+-- Name: cart_line_cart_id_fkey; Type: FK CONSTRAINT; Schema: bazaar; Owner: bazaar
+--
+
+ALTER TABLE ONLY cart_line
+    ADD CONSTRAINT cart_line_cart_id_fkey FOREIGN KEY (cart_id) REFERENCES cart(cart_id);
+
+
+--
 -- Name: order_line_order_id_fkey; Type: FK CONSTRAINT; Schema: bazaar; Owner: bazaar
 --
 
@@ -1880,11 +1891,12 @@ GRANT ALL ON SCHEMA payment TO bazaar;
 
 
 --
--- Name: public; Type: ACL; Schema: -; Owner: bazaar
+-- Name: public; Type: ACL; Schema: -; Owner: postgres
 --
 
 REVOKE ALL ON SCHEMA public FROM PUBLIC;
-REVOKE ALL ON SCHEMA public FROM bazaar;
+REVOKE ALL ON SCHEMA public FROM postgres;
+GRANT ALL ON SCHEMA public TO postgres;
 GRANT ALL ON SCHEMA public TO bazaar;
 GRANT ALL ON SCHEMA public TO PUBLIC;
 

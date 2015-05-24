@@ -1,4 +1,3 @@
-extern crate chrono;
 use chrono::naive::date::NaiveDate;
 use chrono::naive::datetime::NaiveDateTime;
 
@@ -89,31 +88,31 @@ pub struct AAsset {
 	pub value:String,
 	pub versionno:Option<String>,
 	/// has one
-	pub a_asset_group_id_a_asset_group:Option<AAssetGroup>,
+	pub a_asset_group:Option<AAssetGroup>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has one
-	pub m_locator_id_m_locator:Option<MLocator>,
+	pub m_locator:Option<MLocator>,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 	/// has one
-	pub c_bpartner_location_id_c_bpartner_location:Option<CBpartnerLocation>,
+	pub c_bpartner_location:Option<CBpartnerLocation>,
 	/// has one
-	pub c_location_id_c_location:Option<CLocation>,
+	pub c_location:Option<CLocation>,
 	/// has one
-	pub ad_user_id_ad_user:Option<AdUser>,
+	pub ad_user:Option<AdUser>,
 	/// has one
-	pub m_attributesetinstance_id_m_attributesetinstance:Option<MAttributesetinstance>,
+	pub m_attributesetinstance:Option<MAttributesetinstance>,
 	/// has one
-	pub c_project_id_c_project:Option<CProject>,
+	pub c_project:Option<CProject>,
 	/// has one
-	pub c_bpartnersr_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartnersr:Option<CBpartner>,
 	/// has one
-	pub m_inoutline_id_m_inoutline:Option<MInoutline>,
+	pub m_inoutline:Option<MInoutline>,
 	/// has one
-	pub lease_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub lease_bpartner:Option<CBpartner>,
 	/// has one, self referential
-	pub a_parent_asset_id_a_asset:Option<Box<AAsset>>,
+	pub a_parent_asset:Option<Box<AAsset>>,
 	/// has many
 	pub a_asset:Option<Vec<AAsset>>,
 	/// has many
@@ -221,19 +220,19 @@ pub struct AAssetAcct {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub a_asset_id_a_asset:Option<AAsset>,
+	pub a_asset:Option<AAsset>,
 	/// has one
-	pub c_acctschema_id_c_acctschema:Option<CAcctschema>,
+	pub c_acctschema:Option<CAcctschema>,
 	/// has one
-	pub a_depreciation_id_a_depreciation:Option<ADepreciation>,
+	pub a_depreciation:Option<ADepreciation>,
 	/// has one
-	pub a_depreciation_table_header_id_a_depreciation_table_header:Option<ADepreciationTableHeader>,
+	pub a_depreciation_table_header:Option<ADepreciationTableHeader>,
 	/// has one
-	pub a_depreciation_method_id_a_depreciation_method:Option<ADepreciationMethod>,
+	pub a_depreciation_method:Option<ADepreciationMethod>,
 	/// has one
-	pub a_depreciation_conv_id_a_depreciation_convention:Option<ADepreciationConvention>,
+	pub a_depreciation_conv:Option<ADepreciationConvention>,
 	/// has one
-	pub a_asset_spread_id_a_asset_spread:Option<AAssetSpread>,
+	pub a_asset_spread:Option<AAssetSpread>,
 }
 
 #[derive(Debug)]
@@ -271,13 +270,13 @@ pub struct AAssetAddition {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub a_asset_id_a_asset:Option<AAsset>,
+	pub a_asset:Option<AAsset>,
 	/// has one
-	pub c_invoiceline_id_c_invoiceline:Option<CInvoiceline>,
+	pub c_invoiceline:Option<CInvoiceline>,
 	/// has one
-	pub gl_journalbatch_id_gl_journalbatch:Option<GlJournalbatch>,
+	pub gl_journalbatch:Option<GlJournalbatch>,
 	/// has one
-	pub c_invoice_id_c_invoice:Option<CInvoice>,
+	pub c_invoice:Option<CInvoice>,
 	/// has many
 	pub a_asset_change:Option<Vec<AAssetChange>>,
 }
@@ -368,23 +367,23 @@ pub struct AAssetChange {
 	pub useunits:Option<f64>,
 	pub versionno:Option<String>,
 	/// has one
-	pub a_asset_id_a_asset:Option<AAsset>,
+	pub a_asset:Option<AAsset>,
 	/// has one
-	pub a_asset_retirement_id_a_asset_retirement:Option<AAssetRetirement>,
+	pub a_asset_retirement:Option<AAssetRetirement>,
 	/// has one
-	pub a_asset_addition_id_a_asset_addition:Option<AAssetAddition>,
+	pub a_asset_addition:Option<AAssetAddition>,
 	/// has one
-	pub a_parent_asset_id_a_asset:Option<AAsset>,
+	pub a_parent_asset:Option<AAsset>,
 	/// has one
-	pub a_depreciation_table_header_id_a_depreciation_table_header:Option<ADepreciationTableHeader>,
+	pub a_depreciation_table_header:Option<ADepreciationTableHeader>,
 	/// has one
-	pub c_acctschema_id_c_acctschema:Option<CAcctschema>,
+	pub c_acctschema:Option<CAcctschema>,
 	/// has one
-	pub ad_user_id_ad_user:Option<AdUser>,
+	pub ad_user:Option<AdUser>,
 	/// has one
-	pub c_location_id_c_location:Option<CLocation>,
+	pub c_location:Option<CLocation>,
 	/// has one
-	pub c_bpartner_location_id_c_bpartner_location:Option<CBpartnerLocation>,
+	pub c_bpartner_location:Option<CBpartnerLocation>,
 	/// has many
 	pub a_asset_change_amt:Option<Vec<AAssetChangeAmt>>,
 }
@@ -427,9 +426,9 @@ pub struct AAssetChangeAmt {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub a_asset_change_id_a_asset_change:Option<AAssetChange>,
+	pub a_asset_change:Option<AAssetChange>,
 	/// has one
-	pub c_acctschema_id_c_acctschema:Option<CAcctschema>,
+	pub c_acctschema:Option<CAcctschema>,
 }
 
 #[derive(Debug)]
@@ -473,13 +472,13 @@ pub struct AAssetDelivery {
 	pub url:Option<String>,
 	pub versionno:Option<String>,
 	/// has one
-	pub a_asset_id_a_asset:Option<AAsset>,
+	pub a_asset:Option<AAsset>,
 	/// has one
-	pub m_inoutline_id_m_inoutline:Option<MInoutline>,
+	pub m_inoutline:Option<MInoutline>,
 	/// has one
-	pub ad_user_id_ad_user:Option<AdUser>,
+	pub ad_user:Option<AdUser>,
 	/// has one
-	pub m_productdownload_id_m_productdownload:Option<MProductdownload>,
+	pub m_productdownload:Option<MProductdownload>,
 }
 
 #[derive(Debug)]
@@ -522,9 +521,9 @@ pub struct AAssetDisposed {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_period_id_c_period:Option<CPeriod>,
+	pub c_period:Option<CPeriod>,
 	/// has one
-	pub a_asset_trade_id_a_asset:Option<AAsset>,
+	pub a_asset_trade:Option<AAsset>,
 }
 
 #[derive(Debug)]
@@ -635,13 +634,13 @@ pub struct AAssetGroupAcct {
 	pub uselifemonths:Option<f64>,
 	pub uselifeyears:Option<f64>,
 	/// has one
-	pub a_asset_group_id_a_asset_group:Option<AAssetGroup>,
+	pub a_asset_group:Option<AAssetGroup>,
 	/// has one
-	pub c_acctschema_id_c_acctschema:Option<CAcctschema>,
+	pub c_acctschema:Option<CAcctschema>,
 	/// has one
-	pub a_depreciation_id_a_depreciation:Option<ADepreciation>,
+	pub a_depreciation:Option<ADepreciation>,
 	/// has one
-	pub a_depreciation_table_header_id_a_depreciation_table_header:Option<ADepreciationTableHeader>,
+	pub a_depreciation_table_header:Option<ADepreciationTableHeader>,
 }
 
 #[derive(Debug)]
@@ -837,9 +836,9 @@ pub struct AAssetRetirement {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub a_asset_id_a_asset:Option<AAsset>,
+	pub a_asset:Option<AAsset>,
 	/// has one
-	pub c_invoiceline_id_c_invoiceline:Option<CInvoiceline>,
+	pub c_invoiceline:Option<CInvoiceline>,
 	/// has many
 	pub a_asset_change:Option<Vec<AAssetChange>>,
 }
@@ -892,15 +891,15 @@ pub struct AAssetRevalEntry {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_currency_id_c_currency:Option<CCurrency>,
+	pub c_currency:Option<CCurrency>,
 	/// has one
-	pub c_period_id_c_period:Option<CPeriod>,
+	pub c_period:Option<CPeriod>,
 	/// has one
-	pub gl_category_id_gl_category:Option<GlCategory>,
+	pub gl_category:Option<GlCategory>,
 	/// has one
-	pub c_doctype_id_c_doctype:Option<CDoctype>,
+	pub c_doctype:Option<CDoctype>,
 	/// has one
-	pub c_acctschema_id_c_acctschema:Option<CAcctschema>,
+	pub c_acctschema:Option<CAcctschema>,
 }
 
 #[derive(Debug)]
@@ -980,7 +979,7 @@ pub struct AAssetSplit {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_period_id_c_period:Option<CPeriod>,
+	pub c_period:Option<CPeriod>,
 }
 
 #[derive(Debug)]
@@ -1096,9 +1095,9 @@ pub struct AAssetTransfer {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_period_id_c_period:Option<CPeriod>,
+	pub c_period:Option<CPeriod>,
 	/// has one
-	pub c_acctschema_id_c_acctschema:Option<CAcctschema>,
+	pub c_acctschema:Option<CAcctschema>,
 }
 
 #[derive(Debug)]
@@ -1128,7 +1127,7 @@ pub struct AAssetUse {
 	/// not nullable 
 	pub useunits:f64,
 	/// has one
-	pub a_asset_id_a_asset:Option<AAsset>,
+	pub a_asset:Option<AAsset>,
 }
 
 #[derive(Debug)]
@@ -1189,11 +1188,11 @@ pub struct ADepreciationBuild {
 	pub updated:Option<NaiveDateTime>,
 	pub updatedby:Option<f64>,
 	/// has one
-	pub a_end_asset_id_a_asset:Option<AAsset>,
+	pub a_end_asset:Option<AAsset>,
 	/// has one
-	pub c_period_id_c_period:Option<CPeriod>,
+	pub c_period:Option<CPeriod>,
 	/// has one
-	pub a_start_asset_id_a_asset:Option<AAsset>,
+	pub a_start_asset:Option<AAsset>,
 }
 
 #[derive(Debug)]
@@ -1273,15 +1272,15 @@ pub struct ADepreciationEntry {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_currency_id_c_currency:Option<CCurrency>,
+	pub c_currency:Option<CCurrency>,
 	/// has one
-	pub c_period_id_c_period:Option<CPeriod>,
+	pub c_period:Option<CPeriod>,
 	/// has one
-	pub gl_category_id_gl_category:Option<GlCategory>,
+	pub gl_category:Option<GlCategory>,
 	/// has one
-	pub c_doctype_id_c_doctype:Option<CDoctype>,
+	pub c_doctype:Option<CDoctype>,
 	/// has one
-	pub c_acctschema_id_c_acctschema:Option<CAcctschema>,
+	pub c_acctschema:Option<CAcctschema>,
 }
 
 #[derive(Debug)]
@@ -1353,9 +1352,9 @@ pub struct ADepreciationForecast {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub a_end_asset_id_a_asset:Option<AAsset>,
+	pub a_end_asset:Option<AAsset>,
 	/// has one
-	pub a_start_asset_id_a_asset:Option<AAsset>,
+	pub a_start_asset:Option<AAsset>,
 }
 
 #[derive(Debug)]
@@ -1550,13 +1549,13 @@ pub struct ARegistration {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub a_asset_id_a_asset:Option<AAsset>,
+	pub a_asset:Option<AAsset>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 	/// has one
-	pub ad_user_id_ad_user:Option<AdUser>,
+	pub ad_user:Option<AdUser>,
 	/// has many
 	pub a_registrationvalue:Option<Vec<ARegistrationvalue>>,
 }
@@ -1597,9 +1596,9 @@ pub struct ARegistrationattribute {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_reference_id_ad_reference:Option<AdReference>,
+	pub ad_reference:Option<AdReference>,
 	/// has one
-	pub ad_reference_value_id_ad_reference:Option<AdReference>,
+	pub ad_reference_value:Option<AdReference>,
 	/// has many
 	pub a_registrationproduct:Option<Vec<ARegistrationproduct>>,
 	/// has many
@@ -1633,9 +1632,9 @@ pub struct ARegistrationproduct {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub a_registrationattribute_id_a_registrationattribute:Option<ARegistrationattribute>,
+	pub a_registrationattribute:Option<ARegistrationattribute>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 }
 
 #[derive(Debug)]
@@ -1667,9 +1666,9 @@ pub struct ARegistrationvalue {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub a_registration_id_a_registration:Option<ARegistration>,
+	pub a_registration:Option<ARegistration>,
 	/// has one
-	pub a_registrationattribute_id_a_registrationattribute:Option<ARegistrationattribute>,
+	pub a_registrationattribute:Option<ARegistrationattribute>,
 }
 
 #[derive(Debug)]
@@ -1703,9 +1702,9 @@ pub struct AdAccesslog {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_table_id_ad_table:Option<AdTable>,
+	pub ad_table:Option<AdTable>,
 	/// has one
-	pub ad_column_id_ad_column:Option<AdColumn>,
+	pub ad_column:Option<AdColumn>,
 }
 
 #[derive(Debug)]
@@ -1749,7 +1748,7 @@ pub struct AdAlert {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_alertprocessor_id_ad_alertprocessor:Option<AdAlertprocessor>,
+	pub ad_alertprocessor:Option<AdAlertprocessor>,
 	/// has many
 	pub ad_alertrecipient:Option<Vec<AdAlertrecipient>>,
 	/// has many
@@ -1793,11 +1792,11 @@ pub struct AdAlertprocessor {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub supervisor_id_ad_user:Option<AdUser>,
+	pub supervisor:Option<AdUser>,
+	/// has one, extension table
+	pub ad_alertprocessorlog:Option<Box<AdAlertprocessorlog>>,
 	/// has many
 	pub ad_alert:Option<Vec<AdAlert>>,
-	/// has many
-	pub ad_alertprocessorlog:Option<Vec<AdAlertprocessorlog>>,
 }
 
 #[derive(Debug)]
@@ -1834,7 +1833,7 @@ pub struct AdAlertprocessorlog {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_alertprocessor_id_ad_alertprocessor:Option<AdAlertprocessor>,
+	pub ad_alertprocessor:Option<AdAlertprocessor>,
 }
 
 #[derive(Debug)]
@@ -1864,11 +1863,11 @@ pub struct AdAlertrecipient {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_alert_id_ad_alert:Option<AdAlert>,
+	pub ad_alert:Option<AdAlert>,
 	/// has one
-	pub ad_user_id_ad_user:Option<AdUser>,
+	pub ad_user:Option<AdUser>,
 	/// has one
-	pub ad_role_id_ad_role:Option<AdRole>,
+	pub ad_role:Option<AdRole>,
 }
 
 #[derive(Debug)]
@@ -1911,9 +1910,9 @@ pub struct AdAlertrule {
 	pub updatedby:f64,
 	pub whereclause:Option<String>,
 	/// has one
-	pub ad_alert_id_ad_alert:Option<AdAlert>,
+	pub ad_alert:Option<AdAlert>,
 	/// has one
-	pub ad_table_id_ad_table:Option<AdTable>,
+	pub ad_table:Option<AdTable>,
 }
 
 #[derive(Debug)]
@@ -1951,11 +1950,11 @@ pub struct AdArchive {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_table_id_ad_table:Option<AdTable>,
+	pub ad_table:Option<AdTable>,
 	/// has one
-	pub ad_process_id_ad_process:Option<AdProcess>,
+	pub ad_process:Option<AdProcess>,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 }
 
 #[derive(Debug)]
@@ -1989,7 +1988,7 @@ pub struct AdAttachment {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_table_id_ad_table:Option<AdTable>,
+	pub ad_table:Option<AdTable>,
 	/// has many
 	pub ad_attachmentnote:Option<Vec<AdAttachmentnote>>,
 }
@@ -2025,9 +2024,9 @@ pub struct AdAttachmentnote {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_attachment_id_ad_attachment:Option<AdAttachment>,
+	pub ad_attachment:Option<AdAttachment>,
 	/// has one
-	pub ad_user_id_ad_user:Option<AdUser>,
+	pub ad_user:Option<AdUser>,
 }
 
 #[derive(Debug)]
@@ -2093,15 +2092,15 @@ pub struct AdAttribute {
 	pub valuemin:Option<String>,
 	pub vformat:Option<String>,
 	/// has one
-	pub ad_table_id_ad_table:Option<AdTable>,
+	pub ad_table:Option<AdTable>,
 	/// has one
-	pub ad_reference_id_ad_reference:Option<AdReference>,
+	pub ad_reference:Option<AdReference>,
 	/// has one
-	pub ad_reference_value_id_ad_reference:Option<AdReference>,
+	pub ad_reference_value:Option<AdReference>,
 	/// has one
-	pub ad_val_rule_id_ad_val_rule:Option<AdValRule>,
-	/// has many
-	pub ad_attribute_value:Option<Vec<AdAttributeValue>>,
+	pub ad_val_rule:Option<AdValRule>,
+	/// has one, extension table
+	pub ad_attribute_value:Option<Box<AdAttributeValue>>,
 }
 
 #[derive(Debug)]
@@ -2116,7 +2115,7 @@ pub struct AdAttributeValue {
 	pub v_number:Option<f64>,
 	pub v_string:Option<String>,
 	/// has one
-	pub ad_attribute_id_ad_attribute:Option<AdAttribute>,
+	pub ad_attribute:Option<AdAttribute>,
 }
 
 #[derive(Debug)]
@@ -2126,13 +2125,13 @@ pub struct AdChangelog {
 	pub ad_changelog_id:f64,
 	/// primary
 	/// not nullable 
+	pub ad_column_id:f64,
+	/// primary
+	/// not nullable 
 	pub ad_session_id:f64,
 	/// primary
 	/// not nullable 
 	pub ad_table_id:f64,
-	/// primary
-	/// not nullable 
-	pub ad_column_id:f64,
 	/// not nullable 
 	pub ad_client_id:f64,
 	/// not nullable 
@@ -2163,11 +2162,11 @@ pub struct AdChangelog {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_session_id_ad_session:Option<AdSession>,
+	pub ad_session:Option<AdSession>,
 	/// has one
-	pub ad_table_id_ad_table:Option<AdTable>,
+	pub ad_table:Option<AdTable>,
 	/// has one
-	pub ad_column_id_ad_column:Option<AdColumn>,
+	pub ad_column:Option<AdColumn>,
 }
 
 #[derive(Debug)]
@@ -2278,11 +2277,11 @@ pub struct AdClient {
 	pub windowsarchivepath:Option<String>,
 	pub windowsattachmentpath:Option<String>,
 	/// has one
-	pub ad_language_ad_language:Option<AdLanguage>,
+	pub ad_language:Option<AdLanguage>,
 	/// has one
-	pub ad_replicationstrategy_id_ad_replicationstrategy:Option<AdReplicationstrategy>,
-	/// has many
-	pub ad_clientinfo:Option<Vec<AdClientinfo>>,
+	pub ad_replicationstrategy:Option<AdReplicationstrategy>,
+	/// has one, extension table
+	pub ad_clientinfo:Option<Box<AdClientinfo>>,
 	/// has many
 	pub ad_clientshare:Option<Vec<AdClientshare>>,
 	/// has many
@@ -2462,39 +2461,39 @@ pub struct AdClientinfo {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_client_id_ad_client:Option<AdClient>,
+	pub ad_client:Option<AdClient>,
 	/// has one
-	pub c_calendar_id_c_calendar:Option<CCalendar>,
+	pub c_calendar:Option<CCalendar>,
 	/// has one
-	pub c_acctschema1_id_c_acctschema:Option<CAcctschema>,
+	pub c_acctschema1:Option<CAcctschema>,
 	/// has one
-	pub c_uom_volume_id_c_uom:Option<CUom>,
+	pub c_uom_volume:Option<CUom>,
 	/// has one
-	pub c_uom_weight_id_c_uom:Option<CUom>,
+	pub c_uom_weight:Option<CUom>,
 	/// has one
-	pub c_uom_length_id_c_uom:Option<CUom>,
+	pub c_uom_length:Option<CUom>,
 	/// has one
-	pub c_uom_time_id_c_uom:Option<CUom>,
+	pub c_uom_time:Option<CUom>,
 	/// has one
-	pub ad_tree_menu_id_ad_tree:Option<AdTree>,
+	pub ad_tree_menu:Option<AdTree>,
 	/// has one
-	pub ad_tree_org_id_ad_tree:Option<AdTree>,
+	pub ad_tree_org:Option<AdTree>,
 	/// has one
-	pub ad_tree_bpartner_id_ad_tree:Option<AdTree>,
+	pub ad_tree_bpartner:Option<AdTree>,
 	/// has one
-	pub ad_tree_project_id_ad_tree:Option<AdTree>,
+	pub ad_tree_project:Option<AdTree>,
 	/// has one
-	pub ad_tree_salesregion_id_ad_tree:Option<AdTree>,
+	pub ad_tree_salesregion:Option<AdTree>,
 	/// has one
-	pub ad_tree_product_id_ad_tree:Option<AdTree>,
+	pub ad_tree_product:Option<AdTree>,
 	/// has one
-	pub m_productfreight_id_m_product:Option<MProduct>,
+	pub m_productfreight:Option<MProduct>,
 	/// has one
-	pub c_bpartnercashtrx_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartnercashtrx:Option<CBpartner>,
 	/// has one
-	pub ad_tree_activity_id_ad_tree:Option<AdTree>,
+	pub ad_tree_activity:Option<AdTree>,
 	/// has one
-	pub ad_tree_campaign_id_ad_tree:Option<AdTree>,
+	pub ad_tree_campaign:Option<AdTree>,
 }
 
 #[derive(Debug)]
@@ -2527,11 +2526,11 @@ pub struct AdClientshare {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_client_id_ad_client:Option<AdClient>,
+	pub ad_client:Option<AdClient>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 	/// has one
-	pub ad_table_id_ad_table:Option<AdTable>,
+	pub ad_table:Option<AdTable>,
 }
 
 #[derive(Debug)]
@@ -2583,7 +2582,7 @@ pub struct AdColor {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_image_id_ad_image:Option<AdImage>,
+	pub ad_image:Option<AdImage>,
 	/// has many
 	pub ad_desktop:Option<Vec<AdDesktop>>,
 	/// has many
@@ -2682,23 +2681,23 @@ pub struct AdColumn {
 	pub version:f64,
 	pub vformat:Option<String>,
 	/// has one
-	pub ad_client_id_ad_client:Option<AdClient>,
+	pub ad_client:Option<AdClient>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 	/// has one
-	pub entitytype_ad_entitytype:Option<AdEntitytype>,
+	pub entitytype:Option<AdEntitytype>,
 	/// has one
-	pub ad_table_id_ad_table:Option<AdTable>,
+	pub ad_table:Option<AdTable>,
 	/// has one
-	pub ad_reference_id_ad_reference:Option<AdReference>,
+	pub ad_reference:Option<AdReference>,
 	/// has one
-	pub ad_reference_value_id_ad_reference:Option<AdReference>,
+	pub ad_reference_value:Option<AdReference>,
 	/// has one
-	pub ad_val_rule_id_ad_val_rule:Option<AdValRule>,
+	pub ad_val_rule:Option<AdValRule>,
 	/// has one
-	pub ad_element_id_ad_element:Option<AdElement>,
+	pub ad_element:Option<AdElement>,
 	/// has one
-	pub ad_process_id_ad_process:Option<AdProcess>,
+	pub ad_process:Option<AdProcess>,
 	/// has many
 	pub ad_accesslog:Option<Vec<AdAccesslog>>,
 	/// has many
@@ -2745,10 +2744,10 @@ pub struct AdColumn {
 pub struct AdColumnAccess {
 	/// primary
 	/// not nullable 
-	pub ad_role_id:f64,
+	pub ad_column_id:f64,
 	/// primary
 	/// not nullable 
-	pub ad_column_id:f64,
+	pub ad_role_id:f64,
 	/// not nullable 
 	pub ad_client_id:f64,
 	/// not nullable 
@@ -2774,11 +2773,11 @@ pub struct AdColumnAccess {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_role_id_ad_role:Option<AdRole>,
+	pub ad_role:Option<AdRole>,
 	/// has one
-	pub ad_column_id_ad_column:Option<AdColumn>,
+	pub ad_column:Option<AdColumn>,
 	/// has one
-	pub ad_table_id_ad_table:Option<AdTable>,
+	pub ad_table:Option<AdTable>,
 }
 
 #[derive(Debug)]
@@ -2812,9 +2811,9 @@ pub struct AdColumnTrl {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_column_id_ad_column:Option<AdColumn>,
+	pub ad_column:Option<AdColumn>,
 	/// has one
-	pub ad_language_ad_language:Option<AdLanguage>,
+	pub ad_language:Option<AdLanguage>,
 }
 
 #[derive(Debug)]
@@ -2846,9 +2845,9 @@ pub struct AdDesktop {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_image_id_ad_image:Option<AdImage>,
+	pub ad_image:Option<AdImage>,
 	/// has one
-	pub ad_color_id_ad_color:Option<AdColor>,
+	pub ad_color:Option<AdColor>,
 	/// has many
 	pub ad_desktop_trl:Option<Vec<AdDesktopTrl>>,
 	/// has many
@@ -2888,9 +2887,9 @@ pub struct AdDesktopTrl {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_desktop_id_ad_desktop:Option<AdDesktop>,
+	pub ad_desktop:Option<AdDesktop>,
 	/// has one
-	pub ad_language_ad_language:Option<AdLanguage>,
+	pub ad_language:Option<AdLanguage>,
 }
 
 #[derive(Debug)]
@@ -2922,9 +2921,9 @@ pub struct AdDesktopworkbench {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_workbench_id_ad_workbench:Option<AdWorkbench>,
+	pub ad_workbench:Option<AdWorkbench>,
 	/// has one
-	pub ad_desktop_id_ad_desktop:Option<AdDesktop>,
+	pub ad_desktop:Option<AdDesktop>,
 }
 
 #[derive(Debug)]
@@ -2953,11 +2952,11 @@ pub struct AdDocumentActionAccess {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_doctype_id_c_doctype:Option<CDoctype>,
+	pub c_doctype:Option<CDoctype>,
 	/// has one
-	pub ad_role_id_ad_role:Option<AdRole>,
+	pub ad_role:Option<AdRole>,
 	/// has one
-	pub ad_ref_list_id_ad_ref_list:Option<AdRefList>,
+	pub ad_ref_list:Option<AdRefList>,
 }
 
 #[derive(Debug)]
@@ -2997,7 +2996,7 @@ pub struct AdElement {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub entitytype_ad_entitytype:Option<AdEntitytype>,
+	pub entitytype:Option<AdEntitytype>,
 	/// has many
 	pub ad_column:Option<Vec<AdColumn>>,
 	/// has many
@@ -3047,9 +3046,9 @@ pub struct AdElementTrl {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_element_id_ad_element:Option<AdElement>,
+	pub ad_element:Option<AdElement>,
 	/// has one
-	pub ad_language_ad_language:Option<AdLanguage>,
+	pub ad_language:Option<AdLanguage>,
 }
 
 #[derive(Debug)]
@@ -3196,7 +3195,7 @@ pub struct AdError {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_language_ad_language:Option<AdLanguage>,
+	pub ad_language:Option<AdLanguage>,
 }
 
 #[derive(Debug)]
@@ -3266,23 +3265,23 @@ pub struct AdField {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_client_id_ad_client:Option<AdClient>,
+	pub ad_client:Option<AdClient>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 	/// has one
-	pub ad_tab_id_ad_tab:Option<AdTab>,
+	pub ad_tab:Option<AdTab>,
 	/// has one
-	pub ad_column_id_ad_column:Option<AdColumn>,
+	pub ad_column:Option<AdColumn>,
 	/// has one
-	pub ad_fieldgroup_id_ad_fieldgroup:Option<AdFieldgroup>,
+	pub ad_fieldgroup:Option<AdFieldgroup>,
 	/// has one
-	pub entitytype_ad_entitytype:Option<AdEntitytype>,
+	pub entitytype:Option<AdEntitytype>,
 	/// has one
-	pub ad_reference_id_ad_reference:Option<AdReference>,
+	pub ad_reference:Option<AdReference>,
 	/// has one
-	pub ad_reference_value_id_ad_reference:Option<AdReference>,
+	pub ad_reference_value:Option<AdReference>,
 	/// has one
-	pub ad_val_rule_id_ad_val_rule:Option<AdValRule>,
+	pub ad_val_rule:Option<AdValRule>,
 	/// has many
 	pub ad_field_trl:Option<Vec<AdFieldTrl>>,
 	/// has many
@@ -3326,9 +3325,9 @@ pub struct AdFieldTrl {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_field_id_ad_field:Option<AdField>,
+	pub ad_field:Option<AdField>,
 	/// has one
-	pub ad_language_ad_language:Option<AdLanguage>,
+	pub ad_language:Option<AdLanguage>,
 }
 
 #[derive(Debug)]
@@ -3362,7 +3361,7 @@ pub struct AdFieldgroup {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub entitytype_ad_entitytype:Option<AdEntitytype>,
+	pub entitytype:Option<AdEntitytype>,
 	/// has many
 	pub ad_field:Option<Vec<AdField>>,
 	/// has many
@@ -3400,9 +3399,9 @@ pub struct AdFieldgroupTrl {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_fieldgroup_id_ad_fieldgroup:Option<AdFieldgroup>,
+	pub ad_fieldgroup:Option<AdFieldgroup>,
 	/// has one
-	pub ad_language_ad_language:Option<AdLanguage>,
+	pub ad_language:Option<AdLanguage>,
 }
 
 #[derive(Debug)]
@@ -3439,7 +3438,7 @@ pub struct AdFind {
 	pub value:String,
 	pub value2:Option<String>,
 	/// has one
-	pub ad_column_id_ad_column:Option<AdColumn>,
+	pub ad_column:Option<AdColumn>,
 }
 
 #[derive(Debug)]
@@ -3479,7 +3478,7 @@ pub struct AdForm {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub entitytype_ad_entitytype:Option<AdEntitytype>,
+	pub entitytype:Option<AdEntitytype>,
 	/// has many
 	pub ad_form_access:Option<Vec<AdFormAccess>>,
 	/// has many
@@ -3533,9 +3532,9 @@ pub struct AdFormAccess {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_form_id_ad_form:Option<AdForm>,
+	pub ad_form:Option<AdForm>,
 	/// has one
-	pub ad_role_id_ad_role:Option<AdRole>,
+	pub ad_role:Option<AdRole>,
 }
 
 #[derive(Debug)]
@@ -3571,9 +3570,9 @@ pub struct AdFormTrl {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_form_id_ad_form:Option<AdForm>,
+	pub ad_form:Option<AdForm>,
 	/// has one
-	pub ad_language_ad_language:Option<AdLanguage>,
+	pub ad_language:Option<AdLanguage>,
 }
 
 #[derive(Debug)]
@@ -3646,7 +3645,7 @@ pub struct AdImage {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub entitytype_ad_entitytype:Option<AdEntitytype>,
+	pub entitytype:Option<AdEntitytype>,
 	/// has many
 	pub ad_color:Option<Vec<AdColor>>,
 	/// has many
@@ -3695,7 +3694,7 @@ pub struct AdImpformat {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_table_id_ad_table:Option<AdTable>,
+	pub ad_table:Option<AdTable>,
 	/// has many
 	pub ad_impformat_row:Option<Vec<AdImpformatRow>>,
 	/// has many
@@ -3748,9 +3747,9 @@ pub struct AdImpformatRow {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_impformat_id_ad_impformat:Option<AdImpformat>,
+	pub ad_impformat:Option<AdImpformat>,
 	/// has one
-	pub ad_column_id_ad_column:Option<AdColumn>,
+	pub ad_column:Option<AdColumn>,
 }
 
 #[derive(Debug)]
@@ -3799,13 +3798,13 @@ pub struct AdInfocolumn {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_infowindow_id_ad_infowindow:Option<AdInfowindow>,
+	pub ad_infowindow:Option<AdInfowindow>,
 	/// has one
-	pub entitytype_ad_entitytype:Option<AdEntitytype>,
+	pub entitytype:Option<AdEntitytype>,
 	/// has one
-	pub ad_element_id_ad_element:Option<AdElement>,
+	pub ad_element:Option<AdElement>,
 	/// has one
-	pub ad_reference_id_ad_reference:Option<AdReference>,
+	pub ad_reference:Option<AdReference>,
 	/// has many
 	pub ad_infocolumn_trl:Option<Vec<AdInfocolumnTrl>>,
 }
@@ -3843,9 +3842,9 @@ pub struct AdInfocolumnTrl {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_infocolumn_id_ad_infocolumn:Option<AdInfocolumn>,
+	pub ad_infocolumn:Option<AdInfocolumn>,
 	/// has one
-	pub ad_language_ad_language:Option<AdLanguage>,
+	pub ad_language:Option<AdLanguage>,
 }
 
 #[derive(Debug)]
@@ -3884,9 +3883,9 @@ pub struct AdInfowindow {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_table_id_ad_table:Option<AdTable>,
+	pub ad_table:Option<AdTable>,
 	/// has one
-	pub entitytype_ad_entitytype:Option<AdEntitytype>,
+	pub entitytype:Option<AdEntitytype>,
 	/// has many
 	pub ad_infocolumn:Option<Vec<AdInfocolumn>>,
 	/// has many
@@ -3926,9 +3925,9 @@ pub struct AdInfowindowTrl {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_infowindow_id_ad_infowindow:Option<AdInfowindow>,
+	pub ad_infowindow:Option<AdInfowindow>,
 	/// has one
-	pub ad_language_ad_language:Option<AdLanguage>,
+	pub ad_language:Option<AdLanguage>,
 }
 
 #[derive(Debug)]
@@ -4006,23 +4005,23 @@ pub struct AdIssue {
 	/// not nullable 
 	pub version:String,
 	/// has one
-	pub a_asset_id_a_asset:Option<AAsset>,
+	pub a_asset:Option<AAsset>,
 	/// has one
-	pub r_request_id_r_request:Option<RRequest>,
+	pub r_request:Option<RRequest>,
 	/// has one
-	pub r_issueknown_id_r_issueknown:Option<RIssueknown>,
+	pub r_issueknown:Option<RIssueknown>,
 	/// has one
-	pub r_issueproject_id_r_issueproject:Option<RIssueproject>,
+	pub r_issueproject:Option<RIssueproject>,
 	/// has one
-	pub r_issueuser_id_r_issueuser:Option<RIssueuser>,
+	pub r_issueuser:Option<RIssueuser>,
 	/// has one
-	pub r_issuesystem_id_r_issuesystem:Option<RIssuesystem>,
+	pub r_issuesystem:Option<RIssuesystem>,
 	/// has one
-	pub ad_window_id_ad_window:Option<AdWindow>,
+	pub ad_window:Option<AdWindow>,
 	/// has one
-	pub ad_process_id_ad_process:Option<AdProcess>,
+	pub ad_process:Option<AdProcess>,
 	/// has one
-	pub ad_form_id_ad_form:Option<AdForm>,
+	pub ad_form:Option<AdForm>,
 }
 
 #[derive(Debug)]
@@ -4090,7 +4089,7 @@ pub struct AdLabelprinterfunction {
 	pub updatedby:f64,
 	pub xyseparator:Option<String>,
 	/// has one
-	pub ad_labelprinter_id_ad_labelprinter:Option<AdLabelprinter>,
+	pub ad_labelprinter:Option<AdLabelprinter>,
 	/// has many
 	pub ad_printlabelline:Option<Vec<AdPrintlabelline>>,
 }
@@ -4136,9 +4135,9 @@ pub struct AdLanguage {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_client_id_ad_client:Option<AdClient>,
+	pub ad_client:Option<AdClient>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 	/// has many
 	pub ad_client:Option<Vec<AdClient>>,
 	/// has many
@@ -4269,11 +4268,11 @@ pub struct AdLdapaccess {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_ldapprocessor_id_ad_ldapprocessor:Option<AdLdapprocessor>,
+	pub ad_ldapprocessor:Option<AdLdapprocessor>,
 	/// has one
-	pub ad_user_id_ad_user:Option<AdUser>,
+	pub ad_user:Option<AdUser>,
 	/// has one
-	pub r_interestarea_id_r_interestarea:Option<RInterestarea>,
+	pub r_interestarea:Option<RInterestarea>,
 }
 
 #[derive(Debug)]
@@ -4313,11 +4312,11 @@ pub struct AdLdapprocessor {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub supervisor_id_ad_user:Option<AdUser>,
+	pub supervisor:Option<AdUser>,
+	/// has one, extension table
+	pub ad_ldapprocessorlog:Option<Box<AdLdapprocessorlog>>,
 	/// has many
 	pub ad_ldapaccess:Option<Vec<AdLdapaccess>>,
-	/// has many
-	pub ad_ldapprocessorlog:Option<Vec<AdLdapprocessorlog>>,
 }
 
 #[derive(Debug)]
@@ -4354,7 +4353,7 @@ pub struct AdLdapprocessorlog {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_ldapprocessor_id_ad_ldapprocessor:Option<AdLdapprocessor>,
+	pub ad_ldapprocessor:Option<AdLdapprocessor>,
 }
 
 #[derive(Debug)]
@@ -4402,23 +4401,23 @@ pub struct AdMenu {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_client_id_ad_client:Option<AdClient>,
+	pub ad_client:Option<AdClient>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 	/// has one
-	pub ad_window_id_ad_window:Option<AdWindow>,
+	pub ad_window:Option<AdWindow>,
 	/// has one
-	pub ad_workflow_id_ad_workflow:Option<AdWorkflow>,
+	pub ad_workflow:Option<AdWorkflow>,
 	/// has one
-	pub ad_task_id_ad_task:Option<AdTask>,
+	pub ad_task:Option<AdTask>,
 	/// has one
-	pub ad_process_id_ad_process:Option<AdProcess>,
+	pub ad_process:Option<AdProcess>,
 	/// has one
-	pub ad_form_id_ad_form:Option<AdForm>,
+	pub ad_form:Option<AdForm>,
 	/// has one
-	pub ad_workbench_id_ad_workbench:Option<AdWorkbench>,
+	pub ad_workbench:Option<AdWorkbench>,
 	/// has one
-	pub entitytype_ad_entitytype:Option<AdEntitytype>,
+	pub entitytype:Option<AdEntitytype>,
 	/// has many
 	pub ad_menu_trl:Option<Vec<AdMenuTrl>>,
 	/// has many
@@ -4431,10 +4430,10 @@ pub struct AdMenu {
 pub struct AdMenuTrl {
 	/// primary
 	/// not nullable 
-	pub ad_menu_id:f64,
+	pub ad_language:String,
 	/// primary
 	/// not nullable 
-	pub ad_language:String,
+	pub ad_menu_id:f64,
 	/// not nullable 
 	pub ad_client_id:f64,
 	/// not nullable 
@@ -4459,9 +4458,9 @@ pub struct AdMenuTrl {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_menu_id_ad_menu:Option<AdMenu>,
+	pub ad_menu:Option<AdMenu>,
 	/// has one
-	pub ad_language_ad_language:Option<AdLanguage>,
+	pub ad_language:Option<AdLanguage>,
 }
 
 #[derive(Debug)]
@@ -4497,11 +4496,11 @@ pub struct AdMessage {
 	/// not nullable 
 	pub value:String,
 	/// has one
-	pub ad_client_id_ad_client:Option<AdClient>,
+	pub ad_client:Option<AdClient>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 	/// has one
-	pub entitytype_ad_entitytype:Option<AdEntitytype>,
+	pub entitytype:Option<AdEntitytype>,
 	/// has many
 	pub ad_message_trl:Option<Vec<AdMessageTrl>>,
 	/// has many
@@ -4518,10 +4517,10 @@ pub struct AdMessage {
 pub struct AdMessageTrl {
 	/// primary
 	/// not nullable 
-	pub ad_message_id:f64,
+	pub ad_language:String,
 	/// primary
 	/// not nullable 
-	pub ad_language:String,
+	pub ad_message_id:f64,
 	/// not nullable 
 	pub ad_client_id:f64,
 	/// not nullable 
@@ -4546,9 +4545,9 @@ pub struct AdMessageTrl {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_message_id_ad_message:Option<AdMessage>,
+	pub ad_message:Option<AdMessage>,
 	/// has one
-	pub ad_language_ad_language:Option<AdLanguage>,
+	pub ad_language:Option<AdLanguage>,
 }
 
 #[derive(Debug)]
@@ -4621,7 +4620,7 @@ pub struct AdModelvalidator {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub entitytype_ad_entitytype:Option<AdEntitytype>,
+	pub entitytype:Option<AdEntitytype>,
 	/// has many
 	pub ad_package_exp_detail:Option<Vec<AdPackageExpDetail>>,
 }
@@ -4660,7 +4659,7 @@ pub struct AdModification {
 	pub updatedby:f64,
 	pub version:Option<String>,
 	/// has one
-	pub entitytype_ad_entitytype:Option<AdEntitytype>,
+	pub entitytype:Option<AdEntitytype>,
 }
 
 #[derive(Debug)]
@@ -4698,13 +4697,13 @@ pub struct AdNote {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_user_id_ad_user:Option<AdUser>,
+	pub ad_user:Option<AdUser>,
 	/// has one
-	pub ad_message_id_ad_message:Option<AdMessage>,
+	pub ad_message:Option<AdMessage>,
 	/// has one
-	pub ad_table_id_ad_table:Option<AdTable>,
+	pub ad_table:Option<AdTable>,
 	/// has one
-	pub ad_wf_activity_id_ad_wf_activity:Option<AdWfActivity>,
+	pub ad_wf_activity:Option<AdWfActivity>,
 }
 
 #[derive(Debug)]
@@ -4737,9 +4736,13 @@ pub struct AdOrg {
 	/// not nullable 
 	pub value:String,
 	/// has one
-	pub ad_client_id_ad_client:Option<AdClient>,
+	pub ad_client:Option<AdClient>,
 	/// has one
-	pub ad_replicationstrategy_id_ad_replicationstrategy:Option<AdReplicationstrategy>,
+	pub ad_replicationstrategy:Option<AdReplicationstrategy>,
+	/// has one, extension table
+	pub ad_orginfo:Option<Box<AdOrginfo>>,
+	/// has one, extension table
+	pub ad_orginfo:Option<Box<AdOrginfo>>,
 	/// has many
 	pub ad_clientshare:Option<Vec<AdClientshare>>,
 	/// has many
@@ -4752,8 +4755,6 @@ pub struct AdOrg {
 	pub ad_menu:Option<Vec<AdMenu>>,
 	/// has many
 	pub ad_message:Option<Vec<AdMessage>>,
-	/// has many
-	pub ad_orginfo:Option<Vec<AdOrginfo>>,
 	/// has many
 	pub ad_preference:Option<Vec<AdPreference>>,
 	/// has many
@@ -4972,21 +4973,21 @@ pub struct AdOrginfo {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 	/// has one
-	pub c_location_id_c_location:Option<CLocation>,
+	pub c_location:Option<CLocation>,
 	/// has one
-	pub supervisor_id_ad_user:Option<AdUser>,
+	pub supervisor:Option<AdUser>,
 	/// has one
-	pub parent_org_id_ad_org:Option<AdOrg>,
+	pub parent_org:Option<AdOrg>,
 	/// has one
-	pub ad_orgtype_id_ad_orgtype:Option<AdOrgtype>,
+	pub ad_orgtype:Option<AdOrgtype>,
 	/// has one
-	pub m_warehouse_id_m_warehouse:Option<MWarehouse>,
+	pub m_warehouse:Option<MWarehouse>,
 	/// has one
-	pub transferbank_id_c_bank:Option<CBank>,
+	pub transferbank:Option<CBank>,
 	/// has one
-	pub transfercashbook_id_c_cashbook:Option<CCashbook>,
+	pub transfercashbook:Option<CCashbook>,
 }
 
 #[derive(Debug)]
@@ -5016,7 +5017,7 @@ pub struct AdOrgtype {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_printcolor_id_ad_printcolor:Option<AdPrintcolor>,
+	pub ad_printcolor:Option<AdPrintcolor>,
 	/// has many
 	pub ad_orginfo:Option<Vec<AdOrginfo>>,
 	/// has many
@@ -5115,25 +5116,25 @@ pub struct AdPackageExpCommon {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_form_id_ad_form:Option<AdForm>,
+	pub ad_form:Option<AdForm>,
 	/// has one
-	pub ad_impformat_id_ad_impformat:Option<AdImpformat>,
+	pub ad_impformat:Option<AdImpformat>,
 	/// has one
-	pub ad_reportview_id_ad_reportview:Option<AdReportview>,
+	pub ad_reportview:Option<AdReportview>,
 	/// has one
-	pub ad_table_id_ad_table:Option<AdTable>,
+	pub ad_table:Option<AdTable>,
 	/// has one
-	pub ad_workbench_id_ad_workbench:Option<AdWorkbench>,
+	pub ad_workbench:Option<AdWorkbench>,
 	/// has one
-	pub ad_workflow_id_ad_workflow:Option<AdWorkflow>,
+	pub ad_workflow:Option<AdWorkflow>,
 	/// has one
-	pub ad_window_id_ad_window:Option<AdWindow>,
+	pub ad_window:Option<AdWindow>,
 	/// has one
-	pub ad_role_id_ad_role:Option<AdRole>,
+	pub ad_role:Option<AdRole>,
 	/// has one
-	pub ad_process_id_ad_process:Option<AdProcess>,
+	pub ad_process:Option<AdProcess>,
 	/// has one
-	pub ad_menu_id_ad_menu:Option<AdMenu>,
+	pub ad_menu:Option<AdMenu>,
 }
 
 #[derive(Debug)]
@@ -5198,33 +5199,33 @@ pub struct AdPackageExpDetail {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_form_id_ad_form:Option<AdForm>,
+	pub ad_form:Option<AdForm>,
 	/// has one
-	pub ad_impformat_id_ad_impformat:Option<AdImpformat>,
+	pub ad_impformat:Option<AdImpformat>,
 	/// has one
-	pub ad_menu_id_ad_menu:Option<AdMenu>,
+	pub ad_menu:Option<AdMenu>,
 	/// has one
-	pub ad_process_id_ad_process:Option<AdProcess>,
+	pub ad_process:Option<AdProcess>,
 	/// has one
-	pub ad_role_id_ad_role:Option<AdRole>,
+	pub ad_role:Option<AdRole>,
 	/// has one
-	pub ad_window_id_ad_window:Option<AdWindow>,
+	pub ad_window:Option<AdWindow>,
 	/// has one
-	pub ad_workflow_id_ad_workflow:Option<AdWorkflow>,
+	pub ad_workflow:Option<AdWorkflow>,
 	/// has one
-	pub ad_workbench_id_ad_workbench:Option<AdWorkbench>,
+	pub ad_workbench:Option<AdWorkbench>,
 	/// has one
-	pub ad_table_id_ad_table:Option<AdTable>,
+	pub ad_table:Option<AdTable>,
 	/// has one
-	pub ad_reportview_id_ad_reportview:Option<AdReportview>,
+	pub ad_reportview:Option<AdReportview>,
 	/// has one
-	pub ad_message_id_ad_message:Option<AdMessage>,
+	pub ad_message:Option<AdMessage>,
 	/// has one
-	pub ad_printformat_id_ad_printformat:Option<AdPrintformat>,
+	pub ad_printformat:Option<AdPrintformat>,
 	/// has one
-	pub ad_reference_id_ad_reference:Option<AdReference>,
+	pub ad_reference:Option<AdReference>,
 	/// has one
-	pub ad_modelvalidator_id_ad_modelvalidator:Option<AdModelvalidator>,
+	pub ad_modelvalidator:Option<AdModelvalidator>,
 }
 
 #[derive(Debug)]
@@ -5304,9 +5305,9 @@ pub struct AdPackageImpBackup {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_column_id_ad_column:Option<AdColumn>,
+	pub ad_column:Option<AdColumn>,
 	/// has one
-	pub ad_reference_id_ad_reference:Option<AdReference>,
+	pub ad_reference:Option<AdReference>,
 }
 
 #[derive(Debug)]
@@ -5436,13 +5437,19 @@ pub struct AdPinstance {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_process_id_ad_process:Option<AdProcess>,
+	pub ad_process:Option<AdProcess>,
 	/// has one
-	pub ad_user_id_ad_user:Option<AdUser>,
-	/// has many
-	pub ad_pinstance_log:Option<Vec<AdPinstanceLog>>,
-	/// has many
-	pub ad_pinstance_para:Option<Vec<AdPinstancePara>>,
+	pub ad_user:Option<AdUser>,
+	/// has one, extension table
+	pub ad_pinstance_log:Option<Box<AdPinstanceLog>>,
+	/// has one, extension table
+	pub ad_pinstance_para:Option<Box<AdPinstancePara>>,
+	/// has one, extension table
+	pub t_reportstatement:Option<Box<TReportstatement>>,
+	/// has one, extension table
+	pub t_spool:Option<Box<TSpool>>,
+	/// has one, extension table
+	pub t_trialbalance:Option<Box<TTrialbalance>>,
 	/// has many
 	pub t_aging:Option<Vec<TAging>>,
 	/// has many
@@ -5454,13 +5461,7 @@ pub struct AdPinstance {
 	/// has many
 	pub t_report:Option<Vec<TReport>>,
 	/// has many
-	pub t_reportstatement:Option<Vec<TReportstatement>>,
-	/// has many
-	pub t_spool:Option<Vec<TSpool>>,
-	/// has many
 	pub t_transaction:Option<Vec<TTransaction>>,
-	/// has many
-	pub t_trialbalance:Option<Vec<TTrialbalance>>,
 }
 
 #[derive(Debug)]
@@ -5477,7 +5478,7 @@ pub struct AdPinstanceLog {
 	pub p_msg:Option<String>,
 	pub p_number:Option<f64>,
 	/// has one
-	pub ad_pinstance_id_ad_pinstance:Option<AdPinstance>,
+	pub ad_pinstance:Option<AdPinstance>,
 }
 
 #[derive(Debug)]
@@ -5508,7 +5509,7 @@ pub struct AdPinstancePara {
 	pub updated:Option<NaiveDateTime>,
 	pub updatedby:Option<f64>,
 	/// has one
-	pub ad_pinstance_id_ad_pinstance:Option<AdPinstance>,
+	pub ad_pinstance:Option<AdPinstance>,
 }
 
 #[derive(Debug)]
@@ -5540,13 +5541,13 @@ pub struct AdPreference {
 	/// not nullable 
 	pub value:String,
 	/// has one
-	pub ad_client_id_ad_client:Option<AdClient>,
+	pub ad_client:Option<AdClient>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 	/// has one
-	pub ad_window_id_ad_window:Option<AdWindow>,
+	pub ad_window:Option<AdWindow>,
 	/// has one
-	pub ad_user_id_ad_user:Option<AdUser>,
+	pub ad_user:Option<AdUser>,
 }
 
 #[derive(Debug)]
@@ -5674,27 +5675,27 @@ pub struct AdPrintform {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_client_id_ad_client:Option<AdClient>,
+	pub ad_client:Option<AdClient>,
 	/// has one
-	pub invoice_printformat_id_ad_printformat:Option<AdPrintformat>,
+	pub invoice_printformat:Option<AdPrintformat>,
 	/// has one
-	pub order_printformat_id_ad_printformat:Option<AdPrintformat>,
+	pub order_printformat:Option<AdPrintformat>,
 	/// has one
-	pub remittance_printformat_id_ad_printformat:Option<AdPrintformat>,
+	pub remittance_printformat:Option<AdPrintformat>,
 	/// has one
-	pub shipment_printformat_id_ad_printformat:Option<AdPrintformat>,
+	pub shipment_printformat:Option<AdPrintformat>,
 	/// has one
-	pub invoice_mailtext_id_r_mailtext:Option<RMailtext>,
+	pub invoice_mailtext:Option<RMailtext>,
 	/// has one
-	pub order_mailtext_id_r_mailtext:Option<RMailtext>,
+	pub orde:Option<RMailtext>,
 	/// has one
-	pub remittance_mailtext_id_r_mailtext:Option<RMailtext>,
+	pub remittance_mailtext:Option<RMailtext>,
 	/// has one
-	pub shipment_mailtext_id_r_mailtext:Option<RMailtext>,
+	pub shipment_mailtext:Option<RMailtext>,
 	/// has one
-	pub project_mailtext_id_r_mailtext:Option<RMailtext>,
+	pub project_mailtext:Option<RMailtext>,
 	/// has one
-	pub project_printformat_id_ad_printformat:Option<AdPrintformat>,
+	pub project_printformat:Option<AdPrintformat>,
 }
 
 #[derive(Debug)]
@@ -5754,19 +5755,19 @@ pub struct AdPrintformat {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_table_id_ad_table:Option<AdTable>,
+	pub ad_table:Option<AdTable>,
 	/// has one
-	pub ad_printpaper_id_ad_printpaper:Option<AdPrintpaper>,
+	pub ad_printpaper:Option<AdPrintpaper>,
 	/// has one
-	pub ad_printcolor_id_ad_printcolor:Option<AdPrintcolor>,
+	pub ad_printcolor:Option<AdPrintcolor>,
 	/// has one
-	pub ad_printfont_id_ad_printfont:Option<AdPrintfont>,
+	pub ad_printfont:Option<AdPrintfont>,
 	/// has one
-	pub ad_reportview_id_ad_reportview:Option<AdReportview>,
+	pub ad_reportview:Option<AdReportview>,
 	/// has one
-	pub ad_printtableformat_id_ad_printtableformat:Option<AdPrinttableformat>,
+	pub ad_printtableformat:Option<AdPrinttableformat>,
 	/// has one
-	pub jasperprocess_id_ad_process:Option<AdProcess>,
+	pub jasperprocess:Option<AdProcess>,
 	/// has many
 	pub ad_package_exp_detail:Option<Vec<AdPackageExpDetail>>,
 	/// has many
@@ -5933,17 +5934,17 @@ pub struct AdPrintformatitem {
 	/// not nullable 
 	pub yspace:f64,
 	/// has one
-	pub ad_printformat_id_ad_printformat:Option<AdPrintformat>,
+	pub ad_printformat:Option<AdPrintformat>,
 	/// has one
-	pub ad_column_id_ad_column:Option<AdColumn>,
+	pub ad_column:Option<AdColumn>,
 	/// has one
-	pub ad_printformatchild_id_ad_printformat:Option<AdPrintformat>,
+	pub ad_printformatchild:Option<AdPrintformat>,
 	/// has one
-	pub ad_printcolor_id_ad_printcolor:Option<AdPrintcolor>,
+	pub ad_printcolor:Option<AdPrintcolor>,
 	/// has one
-	pub ad_printfont_id_ad_printfont:Option<AdPrintfont>,
+	pub ad_printfont:Option<AdPrintfont>,
 	/// has one
-	pub ad_printgraph_id_ad_printgraph:Option<AdPrintgraph>,
+	pub ad_printgraph:Option<AdPrintgraph>,
 	/// has many
 	pub ad_printformatitem_trl:Option<Vec<AdPrintformatitemTrl>>,
 	/// has many
@@ -5954,10 +5955,10 @@ pub struct AdPrintformatitem {
 pub struct AdPrintformatitemTrl {
 	/// primary
 	/// not nullable 
-	pub ad_printformatitem_id:f64,
+	pub ad_language:String,
 	/// primary
 	/// not nullable 
-	pub ad_language:String,
+	pub ad_printformatitem_id:f64,
 	/// not nullable 
 	pub ad_client_id:f64,
 	/// not nullable 
@@ -5981,9 +5982,9 @@ pub struct AdPrintformatitemTrl {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_printformatitem_id_ad_printformatitem:Option<AdPrintformatitem>,
+	pub ad_printformatitem:Option<AdPrintformatitem>,
 	/// has one
-	pub ad_language_ad_language:Option<AdLanguage>,
+	pub ad_language:Option<AdLanguage>,
 }
 
 #[derive(Debug)]
@@ -6024,19 +6025,19 @@ pub struct AdPrintgraph {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub description_printformatitem_id_ad_printformatitem:Option<AdPrintformatitem>,
+	pub description_printformatitem:Option<AdPrintformatitem>,
 	/// has one
-	pub data_printformatitem_id_ad_printformatitem:Option<AdPrintformatitem>,
+	pub data_printformatitem:Option<AdPrintformatitem>,
 	/// has one
-	pub data1_printformatitem_id_ad_printformatitem:Option<AdPrintformatitem>,
+	pub data1_printformatitem:Option<AdPrintformatitem>,
 	/// has one
-	pub data2_printformatitem_id_ad_printformatitem:Option<AdPrintformatitem>,
+	pub data2_printformatitem:Option<AdPrintformatitem>,
 	/// has one
-	pub data3_printformatitem_id_ad_printformatitem:Option<AdPrintformatitem>,
+	pub data3_printformatitem:Option<AdPrintformatitem>,
 	/// has one
-	pub data4_printformatitem_id_ad_printformatitem:Option<AdPrintformatitem>,
+	pub data4_printformatitem:Option<AdPrintformatitem>,
 	/// has one
-	pub ad_printformat_id_ad_printformat:Option<AdPrintformat>,
+	pub ad_printformat:Option<AdPrintformat>,
 	/// has many
 	pub ad_printformatitem:Option<Vec<AdPrintformatitem>>,
 }
@@ -6079,9 +6080,9 @@ pub struct AdPrintlabel {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_table_id_ad_table:Option<AdTable>,
+	pub ad_table:Option<AdTable>,
 	/// has one
-	pub ad_labelprinter_id_ad_labelprinter:Option<AdLabelprinter>,
+	pub ad_labelprinter:Option<AdLabelprinter>,
 	/// has many
 	pub ad_printlabelline:Option<Vec<AdPrintlabelline>>,
 }
@@ -6125,11 +6126,11 @@ pub struct AdPrintlabelline {
 	/// not nullable 
 	pub yposition:f64,
 	/// has one
-	pub ad_printlabel_id_ad_printlabel:Option<AdPrintlabel>,
+	pub ad_printlabel:Option<AdPrintlabel>,
 	/// has one
-	pub ad_column_id_ad_column:Option<AdColumn>,
+	pub ad_column:Option<AdColumn>,
 	/// has one
-	pub ad_labelprinterfunction_id_ad_labelprinterfunction:Option<AdLabelprinterfunction>,
+	pub ad_labelprinterfunction:Option<AdLabelprinterfunction>,
 	/// has many
 	pub ad_printlabelline_trl:Option<Vec<AdPrintlabellineTrl>>,
 }
@@ -6138,10 +6139,10 @@ pub struct AdPrintlabelline {
 pub struct AdPrintlabellineTrl {
 	/// primary
 	/// not nullable 
-	pub ad_printlabelline_id:f64,
+	pub ad_language:String,
 	/// primary
 	/// not nullable 
-	pub ad_language:String,
+	pub ad_printlabelline_id:f64,
 	/// not nullable 
 	pub ad_client_id:f64,
 	/// not nullable 
@@ -6164,9 +6165,9 @@ pub struct AdPrintlabellineTrl {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_printlabelline_id_ad_printlabelline:Option<AdPrintlabelline>,
+	pub ad_printlabelline:Option<AdPrintlabelline>,
 	/// has one
-	pub ad_language_ad_language:Option<AdLanguage>,
+	pub ad_language:Option<AdLanguage>,
 }
 
 #[derive(Debug)]
@@ -6291,21 +6292,21 @@ pub struct AdPrinttableformat {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub hdr_printfont_id_ad_printfont:Option<AdPrintfont>,
+	pub hdr_printfont:Option<AdPrintfont>,
 	/// has one
-	pub hdrtextfg_printcolor_id_ad_printcolor:Option<AdPrintcolor>,
+	pub hdrtextfg_printcolor:Option<AdPrintcolor>,
 	/// has one
-	pub hdrtextbg_printcolor_id_ad_printcolor:Option<AdPrintcolor>,
+	pub hdrtextbg_printcolor:Option<AdPrintcolor>,
 	/// has one
-	pub hdrline_printcolor_id_ad_printcolor:Option<AdPrintcolor>,
+	pub hdrline_printcolor:Option<AdPrintcolor>,
 	/// has one
-	pub funct_printfont_id_ad_printfont:Option<AdPrintfont>,
+	pub funct_printfont:Option<AdPrintfont>,
 	/// has one
-	pub functbg_printcolor_id_ad_printcolor:Option<AdPrintcolor>,
+	pub functbg_printcolor:Option<AdPrintcolor>,
 	/// has one
-	pub functfg_printcolor_id_ad_printcolor:Option<AdPrintcolor>,
+	pub functfg_printcolor:Option<AdPrintcolor>,
 	/// has one
-	pub line_printcolor_id_ad_printcolor:Option<AdPrintcolor>,
+	pub line_printcolor:Option<AdPrintcolor>,
 	/// has many
 	pub ad_printformat:Option<Vec<AdPrintformat>>,
 }
@@ -6314,10 +6315,10 @@ pub struct AdPrinttableformat {
 pub struct AdPrivateAccess {
 	/// primary
 	/// not nullable 
-	pub ad_user_id:f64,
+	pub ad_table_id:f64,
 	/// primary
 	/// not nullable 
-	pub ad_table_id:f64,
+	pub ad_user_id:f64,
 	/// primary
 	/// not nullable 
 	pub record_id:f64,
@@ -6339,9 +6340,9 @@ pub struct AdPrivateAccess {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_user_id_ad_user:Option<AdUser>,
+	pub ad_user:Option<AdUser>,
 	/// has one
-	pub ad_table_id_ad_table:Option<AdTable>,
+	pub ad_table:Option<AdTable>,
 }
 
 #[derive(Debug)]
@@ -6403,13 +6404,13 @@ pub struct AdProcess {
 	pub value:String,
 	pub workflowvalue:Option<String>,
 	/// has one
-	pub entitytype_ad_entitytype:Option<AdEntitytype>,
+	pub entitytype:Option<AdEntitytype>,
 	/// has one
-	pub ad_reportview_id_ad_reportview:Option<AdReportview>,
+	pub ad_reportview:Option<AdReportview>,
 	/// has one
-	pub ad_printformat_id_ad_printformat:Option<AdPrintformat>,
+	pub ad_printformat:Option<AdPrintformat>,
 	/// has one
-	pub ad_workflow_id_ad_workflow:Option<AdWorkflow>,
+	pub ad_workflow:Option<AdWorkflow>,
 	/// has many
 	pub ad_archive:Option<Vec<AdArchive>>,
 	/// has many
@@ -6479,13 +6480,13 @@ pub struct AdProcessAccess {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_process_id_ad_process:Option<AdProcess>,
+	pub ad_process:Option<AdProcess>,
 	/// has one
-	pub ad_role_id_ad_role:Option<AdRole>,
+	pub ad_role:Option<AdRole>,
 	/// has one
-	pub ad_client_id_ad_client:Option<AdClient>,
+	pub ad_client:Option<AdClient>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 }
 
 #[derive(Debug)]
@@ -6547,17 +6548,17 @@ pub struct AdProcessPara {
 	pub valuemin:Option<String>,
 	pub vformat:Option<String>,
 	/// has one
-	pub ad_process_id_ad_process:Option<AdProcess>,
+	pub ad_process:Option<AdProcess>,
 	/// has one
-	pub ad_reference_id_ad_reference:Option<AdReference>,
+	pub ad_reference:Option<AdReference>,
 	/// has one
-	pub ad_reference_value_id_ad_reference:Option<AdReference>,
+	pub ad_reference_value:Option<AdReference>,
 	/// has one
-	pub ad_val_rule_id_ad_val_rule:Option<AdValRule>,
+	pub ad_val_rule:Option<AdValRule>,
 	/// has one
-	pub ad_element_id_ad_element:Option<AdElement>,
+	pub ad_element:Option<AdElement>,
 	/// has one
-	pub entitytype_ad_entitytype:Option<AdEntitytype>,
+	pub entitytype:Option<AdEntitytype>,
 	/// has many
 	pub ad_process_para_trl:Option<Vec<AdProcessParaTrl>>,
 	/// has many
@@ -6574,10 +6575,10 @@ pub struct AdProcessPara {
 pub struct AdProcessParaTrl {
 	/// primary
 	/// not nullable 
-	pub ad_process_para_id:f64,
+	pub ad_language:String,
 	/// primary
 	/// not nullable 
-	pub ad_language:String,
+	pub ad_process_para_id:f64,
 	/// not nullable 
 	pub ad_client_id:f64,
 	/// not nullable 
@@ -6603,19 +6604,19 @@ pub struct AdProcessParaTrl {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_process_para_id_ad_process_para:Option<AdProcessPara>,
+	pub ad_process_para:Option<AdProcessPara>,
 	/// has one
-	pub ad_language_ad_language:Option<AdLanguage>,
+	pub ad_language:Option<AdLanguage>,
 }
 
 #[derive(Debug)]
 pub struct AdProcessTrl {
 	/// primary
 	/// not nullable 
-	pub ad_process_id:f64,
+	pub ad_language:String,
 	/// primary
 	/// not nullable 
-	pub ad_language:String,
+	pub ad_process_id:f64,
 	/// not nullable 
 	pub ad_client_id:f64,
 	/// not nullable 
@@ -6641,9 +6642,9 @@ pub struct AdProcessTrl {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_process_id_ad_process:Option<AdProcess>,
+	pub ad_process:Option<AdProcess>,
 	/// has one
-	pub ad_language_ad_language:Option<AdLanguage>,
+	pub ad_language:Option<AdLanguage>,
 }
 
 #[derive(Debug)]
@@ -6684,9 +6685,9 @@ pub struct AdRecordAccess {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_role_id_ad_role:Option<AdRole>,
+	pub ad_role:Option<AdRole>,
 	/// has one
-	pub ad_table_id_ad_table:Option<AdTable>,
+	pub ad_table:Option<AdTable>,
 }
 
 #[derive(Debug)]
@@ -6724,13 +6725,13 @@ pub struct AdRefList {
 	/// not nullable 
 	pub value:String,
 	/// has one
-	pub ad_client_id_ad_client:Option<AdClient>,
+	pub ad_client:Option<AdClient>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 	/// has one
-	pub ad_reference_id_ad_reference:Option<AdReference>,
+	pub ad_reference:Option<AdReference>,
 	/// has one
-	pub entitytype_ad_entitytype:Option<AdEntitytype>,
+	pub entitytype:Option<AdEntitytype>,
 	/// has many
 	pub ad_document_action_access:Option<Vec<AdDocumentActionAccess>>,
 	/// has many
@@ -6741,10 +6742,10 @@ pub struct AdRefList {
 pub struct AdRefListTrl {
 	/// primary
 	/// not nullable 
-	pub ad_ref_list_id:f64,
+	pub ad_language:String,
 	/// primary
 	/// not nullable 
-	pub ad_language:String,
+	pub ad_ref_list_id:f64,
 	/// not nullable 
 	pub ad_client_id:f64,
 	/// not nullable 
@@ -6769,9 +6770,9 @@ pub struct AdRefListTrl {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_ref_list_id_ad_ref_list:Option<AdRefList>,
+	pub ad_ref_list:Option<AdRefList>,
 	/// has one
-	pub ad_language_ad_language:Option<AdLanguage>,
+	pub ad_language:Option<AdLanguage>,
 }
 
 #[derive(Debug)]
@@ -6813,21 +6814,21 @@ pub struct AdRefTable {
 	pub updatedby:f64,
 	pub whereclause:Option<String>,
 	/// has one
-	pub ad_reference_id_ad_reference:Option<AdReference>,
+	pub ad_reference:Option<AdReference>,
 	/// has one
-	pub ad_client_id_ad_client:Option<AdClient>,
+	pub ad_client:Option<AdClient>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 	/// has one
-	pub ad_table_id_ad_table:Option<AdTable>,
+	pub ad_table:Option<AdTable>,
 	/// has one
-	pub ad_key_ad_column:Option<AdColumn>,
+	pub ad_key:Option<AdColumn>,
 	/// has one
-	pub ad_display_ad_column:Option<AdColumn>,
+	pub ad_display:Option<AdColumn>,
 	/// has one
-	pub entitytype_ad_entitytype:Option<AdEntitytype>,
+	pub entitytype:Option<AdEntitytype>,
 	/// has one
-	pub ad_window_id_ad_window:Option<AdWindow>,
+	pub ad_window:Option<AdWindow>,
 }
 
 #[derive(Debug)]
@@ -6865,11 +6866,13 @@ pub struct AdReference {
 	pub validationtype:String,
 	pub vformat:Option<String>,
 	/// has one
-	pub ad_client_id_ad_client:Option<AdClient>,
+	pub ad_client:Option<AdClient>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 	/// has one
-	pub entitytype_ad_entitytype:Option<AdEntitytype>,
+	pub entitytype:Option<AdEntitytype>,
+	/// has one, extension table
+	pub ad_ref_table:Option<Box<AdRefTable>>,
 	/// has many
 	pub a_registrationattribute:Option<Vec<ARegistrationattribute>>,
 	/// has many
@@ -6889,8 +6892,6 @@ pub struct AdReference {
 	/// has many
 	pub ad_ref_list:Option<Vec<AdRefList>>,
 	/// has many
-	pub ad_ref_table:Option<Vec<AdRefTable>>,
-	/// has many
 	pub ad_reference_trl:Option<Vec<AdReferenceTrl>>,
 	/// has many
 	pub hr_concept:Option<Vec<HrConcept>>,
@@ -6900,10 +6901,10 @@ pub struct AdReference {
 pub struct AdReferenceTrl {
 	/// primary
 	/// not nullable 
-	pub ad_reference_id:f64,
+	pub ad_language:String,
 	/// primary
 	/// not nullable 
-	pub ad_language:String,
+	pub ad_reference_id:f64,
 	/// not nullable 
 	pub ad_client_id:f64,
 	/// not nullable 
@@ -6928,19 +6929,19 @@ pub struct AdReferenceTrl {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_reference_id_ad_reference:Option<AdReference>,
+	pub ad_reference:Option<AdReference>,
 	/// has one
-	pub ad_language_ad_language:Option<AdLanguage>,
+	pub ad_language:Option<AdLanguage>,
 }
 
 #[derive(Debug)]
 pub struct AdRegistration {
 	/// primary
 	/// not nullable 
-	pub ad_registration_id:f64,
+	pub ad_client_id:f64,
 	/// primary
 	/// not nullable 
-	pub ad_client_id:f64,
+	pub ad_registration_id:f64,
 	/// primary
 	/// not nullable 
 	pub ad_system_id:f64,
@@ -6986,11 +6987,11 @@ pub struct AdRegistration {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_client_id_ad_system:Option<AdSystem>,
+	pub ad_client:Option<AdSystem>,
 	/// has one
-	pub ad_system_id_ad_system:Option<AdSystem>,
+	pub ad_system:Option<AdSystem>,
 	/// has one
-	pub c_currency_id_c_currency:Option<CCurrency>,
+	pub c_currency:Option<CCurrency>,
 }
 
 #[derive(Debug)]
@@ -7037,11 +7038,11 @@ pub struct AdReplication {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_replicationstrategy_id_ad_replicationstrategy:Option<AdReplicationstrategy>,
+	pub ad_replicationstrategy:Option<AdReplicationstrategy>,
 	/// has one
-	pub remote_client_id_ad_client:Option<AdClient>,
+	pub remote_client:Option<AdClient>,
 	/// has one
-	pub remote_org_id_ad_org:Option<AdOrg>,
+	pub remote_org:Option<AdOrg>,
 	/// has many
 	pub ad_replication_run:Option<Vec<AdReplicationRun>>,
 }
@@ -7076,9 +7077,9 @@ pub struct AdReplicationLog {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_replication_run_id_ad_replication_run:Option<AdReplicationRun>,
+	pub ad_replication_run:Option<AdReplicationRun>,
 	/// has one
-	pub ad_replicationtable_id_ad_replicationtable:Option<AdReplicationtable>,
+	pub ad_replicationtable:Option<AdReplicationtable>,
 }
 
 #[derive(Debug)]
@@ -7112,7 +7113,7 @@ pub struct AdReplicationRun {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_replication_id_ad_replication:Option<AdReplication>,
+	pub ad_replication:Option<AdReplication>,
 	/// has many
 	pub ad_replication_log:Option<Vec<AdReplicationLog>>,
 }
@@ -7147,9 +7148,9 @@ pub struct AdReplicationdocument {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_doctype_id_c_doctype:Option<CDoctype>,
+	pub c_doctype:Option<CDoctype>,
 	/// has one
-	pub ad_table_id_ad_table:Option<AdTable>,
+	pub ad_table:Option<AdTable>,
 }
 
 #[derive(Debug)]
@@ -7186,9 +7187,9 @@ pub struct AdReplicationstrategy {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub entitytype_ad_entitytype:Option<AdEntitytype>,
+	pub entitytype:Option<AdEntitytype>,
 	/// has one
-	pub exp_processor_id_exp_processor:Option<ExpProcessor>,
+	pub exp_processor:Option<ExpProcessor>,
 	/// has many
 	pub ad_client:Option<Vec<AdClient>>,
 	/// has many
@@ -7233,11 +7234,11 @@ pub struct AdReplicationtable {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_replicationstrategy_id_ad_replicationstrategy:Option<AdReplicationstrategy>,
+	pub ad_replicationstrategy:Option<AdReplicationstrategy>,
 	/// has one
-	pub ad_table_id_ad_table:Option<AdTable>,
+	pub ad_table:Option<AdTable>,
 	/// has one
-	pub entitytype_ad_entitytype:Option<AdEntitytype>,
+	pub entitytype:Option<AdEntitytype>,
 	/// has many
 	pub ad_replication_log:Option<Vec<AdReplicationLog>>,
 }
@@ -7275,9 +7276,9 @@ pub struct AdReportview {
 	pub updatedby:f64,
 	pub whereclause:Option<String>,
 	/// has one
-	pub ad_table_id_ad_table:Option<AdTable>,
+	pub ad_table:Option<AdTable>,
 	/// has one
-	pub entitytype_ad_entitytype:Option<AdEntitytype>,
+	pub entitytype:Option<AdEntitytype>,
 	/// has many
 	pub ad_package_exp_common:Option<Vec<AdPackageExpCommon>>,
 	/// has many
@@ -7321,9 +7322,9 @@ pub struct AdReportviewCol {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_reportview_id_ad_reportview:Option<AdReportview>,
+	pub ad_reportview:Option<AdReportview>,
 	/// has one
-	pub ad_column_id_ad_column:Option<AdColumn>,
+	pub ad_column:Option<AdColumn>,
 }
 
 #[derive(Debug)]
@@ -7450,17 +7451,17 @@ pub struct AdRole {
 	/// not nullable 
 	pub userlevel:String,
 	/// has one
-	pub ad_client_id_ad_client:Option<AdClient>,
+	pub ad_client:Option<AdClient>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 	/// has one
-	pub c_currency_id_c_currency:Option<CCurrency>,
+	pub c_currency:Option<CCurrency>,
 	/// has one
-	pub ad_tree_menu_id_ad_tree:Option<AdTree>,
+	pub ad_tree_menu:Option<AdTree>,
 	/// has one
-	pub supervisor_id_ad_user:Option<AdUser>,
+	pub supervisor:Option<AdUser>,
 	/// has one
-	pub ad_tree_org_id_ad_tree:Option<AdTree>,
+	pub ad_tree_org:Option<AdTree>,
 	/// has many
 	pub ad_alertrecipient:Option<Vec<AdAlertrecipient>>,
 	/// has many
@@ -7513,10 +7514,10 @@ pub struct AdRole {
 pub struct AdRoleOrgaccess {
 	/// primary
 	/// not nullable 
-	pub ad_role_id:f64,
+	pub ad_org_id:f64,
 	/// primary
 	/// not nullable 
-	pub ad_org_id:f64,
+	pub ad_role_id:f64,
 	/// not nullable 
 	pub ad_client_id:f64,
 	/// defaults to: now()
@@ -7536,9 +7537,9 @@ pub struct AdRoleOrgaccess {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_role_id_ad_role:Option<AdRole>,
+	pub ad_role:Option<AdRole>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 }
 
 #[derive(Debug)]
@@ -7574,7 +7575,7 @@ pub struct AdRule {
 	/// not nullable 
 	pub value:String,
 	/// has one
-	pub entitytype_ad_entitytype:Option<AdEntitytype>,
+	pub entitytype:Option<AdEntitytype>,
 	/// has many
 	pub ad_table_scriptvalidator:Option<Vec<AdTableScriptvalidator>>,
 	/// has many
@@ -7631,13 +7632,13 @@ pub struct AdScheduler {
 	pub updatedby:f64,
 	pub weekday:Option<String>,
 	/// has one
-	pub ad_process_id_ad_process:Option<AdProcess>,
+	pub ad_process:Option<AdProcess>,
 	/// has one
-	pub supervisor_id_ad_user:Option<AdUser>,
+	pub supervisor:Option<AdUser>,
+	/// has one, extension table
+	pub ad_schedulerlog:Option<Box<AdSchedulerlog>>,
 	/// has many
 	pub ad_scheduler_para:Option<Vec<AdSchedulerPara>>,
-	/// has many
-	pub ad_schedulerlog:Option<Vec<AdSchedulerlog>>,
 	/// has many
 	pub ad_schedulerrecipient:Option<Vec<AdSchedulerrecipient>>,
 }
@@ -7646,10 +7647,10 @@ pub struct AdScheduler {
 pub struct AdSchedulerPara {
 	/// primary
 	/// not nullable 
-	pub ad_scheduler_id:f64,
+	pub ad_process_para_id:f64,
 	/// primary
 	/// not nullable 
-	pub ad_process_para_id:f64,
+	pub ad_scheduler_id:f64,
 	/// not nullable 
 	pub ad_client_id:f64,
 	/// not nullable 
@@ -7670,9 +7671,9 @@ pub struct AdSchedulerPara {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_scheduler_id_ad_scheduler:Option<AdScheduler>,
+	pub ad_scheduler:Option<AdScheduler>,
 	/// has one
-	pub ad_process_para_id_ad_process_para:Option<AdProcessPara>,
+	pub ad_process_para:Option<AdProcessPara>,
 }
 
 #[derive(Debug)]
@@ -7709,7 +7710,7 @@ pub struct AdSchedulerlog {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_scheduler_id_ad_scheduler:Option<AdScheduler>,
+	pub ad_scheduler:Option<AdScheduler>,
 }
 
 #[derive(Debug)]
@@ -7739,11 +7740,11 @@ pub struct AdSchedulerrecipient {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_scheduler_id_ad_scheduler:Option<AdScheduler>,
+	pub ad_scheduler:Option<AdScheduler>,
 	/// has one
-	pub ad_user_id_ad_user:Option<AdUser>,
+	pub ad_user:Option<AdUser>,
 	/// has one
-	pub ad_role_id_ad_role:Option<AdRole>,
+	pub ad_role:Option<AdRole>,
 }
 
 #[derive(Debug)]
@@ -7832,13 +7833,13 @@ pub struct AdSequence {
 	pub updatedby:f64,
 	pub vformat:Option<String>,
 	/// has one
-	pub ad_client_id_ad_client:Option<AdClient>,
+	pub ad_client:Option<AdClient>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
-	/// has many
-	pub ad_sequence_audit:Option<Vec<AdSequenceAudit>>,
-	/// has many
-	pub ad_sequence_no:Option<Vec<AdSequenceNo>>,
+	pub ad_org:Option<AdOrg>,
+	/// has one, extension table
+	pub ad_sequence_audit:Option<Box<AdSequenceAudit>>,
+	/// has one, extension table
+	pub ad_sequence_no:Option<Box<AdSequenceNo>>,
 	/// has many
 	pub c_bp_edi:Option<Vec<CBpEdi>>,
 	/// has many
@@ -7877,13 +7878,13 @@ pub struct AdSequenceAudit {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_sequence_id_ad_sequence:Option<AdSequence>,
+	pub ad_sequence:Option<AdSequence>,
 	/// has one
-	pub ad_client_id_ad_client:Option<AdClient>,
+	pub ad_client:Option<AdClient>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 	/// has one
-	pub ad_table_id_ad_table:Option<AdTable>,
+	pub ad_table:Option<AdTable>,
 }
 
 #[derive(Debug)]
@@ -7915,11 +7916,11 @@ pub struct AdSequenceNo {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_sequence_id_ad_sequence:Option<AdSequence>,
+	pub ad_sequence:Option<AdSequence>,
 	/// has one
-	pub ad_client_id_ad_client:Option<AdClient>,
+	pub ad_client:Option<AdClient>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 }
 
 #[derive(Debug)]
@@ -7954,7 +7955,7 @@ pub struct AdSession {
 	pub updatedby:f64,
 	pub websession:Option<String>,
 	/// has one
-	pub ad_role_id_ad_role:Option<AdRole>,
+	pub ad_role:Option<AdRole>,
 	/// has many
 	pub ad_changelog:Option<Vec<AdChangelog>>,
 	/// has many
@@ -7994,17 +7995,17 @@ pub struct AdSysconfig {
 	/// not nullable 
 	pub value:String,
 	/// has one
-	pub entitytype_ad_entitytype:Option<AdEntitytype>,
+	pub entitytype:Option<AdEntitytype>,
 }
 
 #[derive(Debug)]
 pub struct AdSystem {
 	/// primary
 	/// not nullable 
-	pub ad_system_id:f64,
+	pub ad_client_id:f64,
 	/// primary
 	/// not nullable 
-	pub ad_client_id:f64,
+	pub ad_system_id:f64,
 	/// not nullable 
 	pub ad_org_id:f64,
 	/// defaults to: now()
@@ -8069,8 +8070,10 @@ pub struct AdSystem {
 	/// not nullable 
 	pub username:String,
 	pub version:Option<String>,
-	/// has many
-	pub ad_registration:Option<Vec<AdRegistration>>,
+	/// has one, extension table
+	pub ad_registration:Option<Box<AdRegistration>>,
+	/// has one, extension table
+	pub ad_registration:Option<Box<AdRegistration>>,
 }
 
 #[derive(Debug)]
@@ -8149,27 +8152,27 @@ pub struct AdTab {
 	pub updatedby:f64,
 	pub whereclause:Option<String>,
 	/// has one
-	pub ad_client_id_ad_client:Option<AdClient>,
+	pub ad_client:Option<AdClient>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 	/// has one
-	pub ad_table_id_ad_table:Option<AdTable>,
+	pub ad_table:Option<AdTable>,
 	/// has one
-	pub ad_window_id_ad_window:Option<AdWindow>,
+	pub ad_window:Option<AdWindow>,
 	/// has one
-	pub ad_column_id_ad_column:Option<AdColumn>,
+	pub ad_column:Option<AdColumn>,
 	/// has one
-	pub ad_process_id_ad_process:Option<AdProcess>,
+	pub ad_process:Option<AdProcess>,
 	/// has one
-	pub ad_image_id_ad_image:Option<AdImage>,
+	pub ad_image:Option<AdImage>,
 	/// has one
-	pub ad_columnsortorder_id_ad_column:Option<AdColumn>,
+	pub ad_columnsortorder:Option<AdColumn>,
 	/// has one
-	pub ad_columnsortyesno_id_ad_column:Option<AdColumn>,
+	pub ad_columnsortyesno:Option<AdColumn>,
 	/// has one
-	pub entitytype_ad_entitytype:Option<AdEntitytype>,
+	pub entitytype:Option<AdEntitytype>,
 	/// has one, self referential
-	pub included_tab_id_ad_tab:Option<Box<AdTab>>,
+	pub included_tab:Option<Box<AdTab>>,
 	/// has many
 	pub ad_field:Option<Vec<AdField>>,
 	/// has many
@@ -8190,10 +8193,10 @@ pub struct AdTab {
 pub struct AdTabTrl {
 	/// primary
 	/// not nullable 
-	pub ad_tab_id:f64,
+	pub ad_language:String,
 	/// primary
 	/// not nullable 
-	pub ad_language:String,
+	pub ad_tab_id:f64,
 	/// not nullable 
 	pub ad_client_id:f64,
 	/// not nullable 
@@ -8220,9 +8223,9 @@ pub struct AdTabTrl {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_tab_id_ad_tab:Option<AdTab>,
+	pub ad_tab:Option<AdTab>,
 	/// has one
-	pub ad_language_ad_language:Option<AdLanguage>,
+	pub ad_language:Option<AdLanguage>,
 }
 
 #[derive(Debug)]
@@ -8287,17 +8290,17 @@ pub struct AdTable {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_client_id_ad_client:Option<AdClient>,
+	pub ad_client:Option<AdClient>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 	/// has one
-	pub entitytype_ad_entitytype:Option<AdEntitytype>,
+	pub entitytype:Option<AdEntitytype>,
 	/// has one
-	pub ad_window_id_ad_window:Option<AdWindow>,
+	pub ad_window:Option<AdWindow>,
 	/// has one
-	pub ad_val_rule_id_ad_val_rule:Option<AdValRule>,
+	pub ad_val_rule:Option<AdValRule>,
 	/// has one
-	pub po_window_id_ad_window:Option<AdWindow>,
+	pub po_window:Option<AdWindow>,
 	/// has many
 	pub ad_accesslog:Option<Vec<AdAccesslog>>,
 	/// has many
@@ -8397,15 +8400,15 @@ pub struct AdTable {
 #[derive(Debug)]
 pub struct AdTableAccess {
 	/// primary
+	/// defaults to: 'G'::bpchar
+	/// not nullable 
+	pub accesstyperule:String,
+	/// primary
 	/// not nullable 
 	pub ad_role_id:f64,
 	/// primary
 	/// not nullable 
 	pub ad_table_id:f64,
-	/// primary
-	/// defaults to: 'G'::bpchar
-	/// not nullable 
-	pub accesstyperule:String,
 	/// not nullable 
 	pub ad_client_id:f64,
 	/// not nullable 
@@ -8436,13 +8439,13 @@ pub struct AdTableAccess {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_role_id_ad_role:Option<AdRole>,
+	pub ad_role:Option<AdRole>,
 	/// has one
-	pub ad_table_id_ad_table:Option<AdTable>,
+	pub ad_table:Option<AdTable>,
 	/// has one
-	pub ad_client_id_ad_client:Option<AdClient>,
+	pub ad_client:Option<AdClient>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 }
 
 #[derive(Debug)]
@@ -8475,19 +8478,19 @@ pub struct AdTableScriptvalidator {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_rule_id_ad_rule:Option<AdRule>,
+	pub ad_rule:Option<AdRule>,
 	/// has one
-	pub ad_table_id_ad_table:Option<AdTable>,
+	pub ad_table:Option<AdTable>,
 }
 
 #[derive(Debug)]
 pub struct AdTableTrl {
 	/// primary
 	/// not nullable 
-	pub ad_table_id:f64,
+	pub ad_language:String,
 	/// primary
 	/// not nullable 
-	pub ad_language:String,
+	pub ad_table_id:f64,
 	/// not nullable 
 	pub ad_client_id:f64,
 	/// not nullable 
@@ -8511,9 +8514,9 @@ pub struct AdTableTrl {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_table_id_ad_table:Option<AdTable>,
+	pub ad_table:Option<AdTable>,
 	/// has one
-	pub ad_language_ad_language:Option<AdLanguage>,
+	pub ad_language:Option<AdLanguage>,
 }
 
 #[derive(Debug)]
@@ -8553,11 +8556,11 @@ pub struct AdTask {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_client_id_ad_client:Option<AdClient>,
+	pub ad_client:Option<AdClient>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 	/// has one
-	pub entitytype_ad_entitytype:Option<AdEntitytype>,
+	pub entitytype:Option<AdEntitytype>,
 	/// has many
 	pub ad_menu:Option<Vec<AdMenu>>,
 	/// has many
@@ -8582,10 +8585,10 @@ pub struct AdTask {
 pub struct AdTaskAccess {
 	/// primary
 	/// not nullable 
-	pub ad_task_id:f64,
+	pub ad_role_id:f64,
 	/// primary
 	/// not nullable 
-	pub ad_role_id:f64,
+	pub ad_task_id:f64,
 	/// not nullable 
 	pub ad_client_id:f64,
 	/// not nullable 
@@ -8607,23 +8610,23 @@ pub struct AdTaskAccess {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_task_id_ad_task:Option<AdTask>,
+	pub ad_task:Option<AdTask>,
 	/// has one
-	pub ad_role_id_ad_role:Option<AdRole>,
+	pub ad_role:Option<AdRole>,
 	/// has one
-	pub ad_client_id_ad_client:Option<AdClient>,
+	pub ad_client:Option<AdClient>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 }
 
 #[derive(Debug)]
 pub struct AdTaskTrl {
 	/// primary
 	/// not nullable 
-	pub ad_task_id:f64,
+	pub ad_language:String,
 	/// primary
 	/// not nullable 
-	pub ad_language:String,
+	pub ad_task_id:f64,
 	/// not nullable 
 	pub ad_client_id:f64,
 	/// not nullable 
@@ -8649,9 +8652,9 @@ pub struct AdTaskTrl {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_task_id_ad_task:Option<AdTask>,
+	pub ad_task:Option<AdTask>,
 	/// has one
-	pub ad_language_ad_language:Option<AdLanguage>,
+	pub ad_language:Option<AdLanguage>,
 }
 
 #[derive(Debug)]
@@ -8677,11 +8680,11 @@ pub struct AdTaskinstance {
 	pub updated:NaiveDateTime,
 	pub updatedby:Option<f64>,
 	/// has one
-	pub ad_client_id_ad_client:Option<AdClient>,
+	pub ad_client:Option<AdClient>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 	/// has one
-	pub ad_task_id_ad_task:Option<AdTask>,
+	pub ad_task:Option<AdTask>,
 }
 
 #[derive(Debug)]
@@ -8718,36 +8721,36 @@ pub struct AdTree {
 	pub updated:NaiveDateTime,
 	/// not nullable 
 	pub updatedby:f64,
+	/// has one, extension table
+	pub ad_treenode:Option<Box<AdTreenode>>,
+	/// has one, extension table
+	pub ad_treenodebp:Option<Box<AdTreenodebp>>,
+	/// has one, extension table
+	pub ad_treenodecmc:Option<Box<AdTreenodecmc>>,
+	/// has one, extension table
+	pub ad_treenodecmm:Option<Box<AdTreenodecmm>>,
+	/// has one, extension table
+	pub ad_treenodecms:Option<Box<AdTreenodecms>>,
+	/// has one, extension table
+	pub ad_treenodecmt:Option<Box<AdTreenodecmt>>,
+	/// has one, extension table
+	pub ad_treenodemm:Option<Box<AdTreenodemm>>,
+	/// has one, extension table
+	pub ad_treenodepr:Option<Box<AdTreenodepr>>,
+	/// has one, extension table
+	pub ad_treenodeu1:Option<Box<AdTreenodeu1>>,
+	/// has one, extension table
+	pub ad_treenodeu2:Option<Box<AdTreenodeu2>>,
+	/// has one, extension table
+	pub ad_treenodeu3:Option<Box<AdTreenodeu3>>,
+	/// has one, extension table
+	pub ad_treenodeu4:Option<Box<AdTreenodeu4>>,
 	/// has many
 	pub ad_clientinfo:Option<Vec<AdClientinfo>>,
 	/// has many
 	pub ad_role:Option<Vec<AdRole>>,
 	/// has many
 	pub ad_treebar:Option<Vec<AdTreebar>>,
-	/// has many
-	pub ad_treenode:Option<Vec<AdTreenode>>,
-	/// has many
-	pub ad_treenodebp:Option<Vec<AdTreenodebp>>,
-	/// has many
-	pub ad_treenodecmc:Option<Vec<AdTreenodecmc>>,
-	/// has many
-	pub ad_treenodecmm:Option<Vec<AdTreenodecmm>>,
-	/// has many
-	pub ad_treenodecms:Option<Vec<AdTreenodecms>>,
-	/// has many
-	pub ad_treenodecmt:Option<Vec<AdTreenodecmt>>,
-	/// has many
-	pub ad_treenodemm:Option<Vec<AdTreenodemm>>,
-	/// has many
-	pub ad_treenodepr:Option<Vec<AdTreenodepr>>,
-	/// has many
-	pub ad_treenodeu1:Option<Vec<AdTreenodeu1>>,
-	/// has many
-	pub ad_treenodeu2:Option<Vec<AdTreenodeu2>>,
-	/// has many
-	pub ad_treenodeu3:Option<Vec<AdTreenodeu3>>,
-	/// has many
-	pub ad_treenodeu4:Option<Vec<AdTreenodeu4>>,
 	/// has many
 	pub c_element:Option<Vec<CElement>>,
 	/// has many
@@ -8785,9 +8788,9 @@ pub struct AdTreebar {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_tree_id_ad_tree:Option<AdTree>,
+	pub ad_tree:Option<AdTree>,
 	/// has one
-	pub ad_user_id_ad_user:Option<AdUser>,
+	pub ad_user:Option<AdUser>,
 }
 
 #[derive(Debug)]
@@ -8818,7 +8821,7 @@ pub struct AdTreenode {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_tree_id_ad_tree:Option<AdTree>,
+	pub ad_tree:Option<AdTree>,
 }
 
 #[derive(Debug)]
@@ -8849,7 +8852,7 @@ pub struct AdTreenodebp {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_tree_id_ad_tree:Option<AdTree>,
+	pub ad_tree:Option<AdTree>,
 }
 
 #[derive(Debug)]
@@ -8883,7 +8886,7 @@ pub struct AdTreenodecmc {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_tree_id_ad_tree:Option<AdTree>,
+	pub ad_tree:Option<AdTree>,
 }
 
 #[derive(Debug)]
@@ -8917,7 +8920,7 @@ pub struct AdTreenodecmm {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_tree_id_ad_tree:Option<AdTree>,
+	pub ad_tree:Option<AdTree>,
 }
 
 #[derive(Debug)]
@@ -8951,7 +8954,7 @@ pub struct AdTreenodecms {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_tree_id_ad_tree:Option<AdTree>,
+	pub ad_tree:Option<AdTree>,
 }
 
 #[derive(Debug)]
@@ -8985,7 +8988,7 @@ pub struct AdTreenodecmt {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_tree_id_ad_tree:Option<AdTree>,
+	pub ad_tree:Option<AdTree>,
 }
 
 #[derive(Debug)]
@@ -9016,7 +9019,7 @@ pub struct AdTreenodemm {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_tree_id_ad_tree:Option<AdTree>,
+	pub ad_tree:Option<AdTree>,
 }
 
 #[derive(Debug)]
@@ -9047,7 +9050,7 @@ pub struct AdTreenodepr {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_tree_id_ad_tree:Option<AdTree>,
+	pub ad_tree:Option<AdTree>,
 }
 
 #[derive(Debug)]
@@ -9081,7 +9084,7 @@ pub struct AdTreenodeu1 {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_tree_id_ad_tree:Option<AdTree>,
+	pub ad_tree:Option<AdTree>,
 }
 
 #[derive(Debug)]
@@ -9115,7 +9118,7 @@ pub struct AdTreenodeu2 {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_tree_id_ad_tree:Option<AdTree>,
+	pub ad_tree:Option<AdTree>,
 }
 
 #[derive(Debug)]
@@ -9149,7 +9152,7 @@ pub struct AdTreenodeu3 {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_tree_id_ad_tree:Option<AdTree>,
+	pub ad_tree:Option<AdTree>,
 }
 
 #[derive(Debug)]
@@ -9183,7 +9186,7 @@ pub struct AdTreenodeu4 {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_tree_id_ad_tree:Option<AdTree>,
+	pub ad_tree:Option<AdTree>,
 }
 
 #[derive(Debug)]
@@ -9246,21 +9249,21 @@ pub struct AdUser {
 	pub userpin:Option<String>,
 	pub value:Option<String>,
 	/// has one
-	pub ad_client_id_ad_client:Option<AdClient>,
+	pub ad_client:Option<AdClient>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 	/// has one, self referential
-	pub supervisor_id_ad_user:Option<Box<AdUser>>,
+	pub supervisor:Option<Box<AdUser>>,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 	/// has one
-	pub c_bpartner_location_id_c_bpartner_location:Option<CBpartnerLocation>,
+	pub c_bpartner_location:Option<CBpartnerLocation>,
 	/// has one
-	pub c_greeting_id_c_greeting:Option<CGreeting>,
+	pub c_greeting:Option<CGreeting>,
 	/// has one
-	pub ad_orgtrx_id_ad_org:Option<AdOrg>,
+	pub ad_orgtrx:Option<AdOrg>,
 	/// has one
-	pub c_job_id_c_job:Option<CJob>,
+	pub c_job:Option<CJob>,
 	/// has one, extension table
 	pub b_buyer:Option<Box<BBuyer>>,
 	/// has one, extension table
@@ -9447,10 +9450,10 @@ pub struct AdUser {
 pub struct AdUserOrgaccess {
 	/// primary
 	/// not nullable 
-	pub ad_user_id:f64,
+	pub ad_org_id:f64,
 	/// primary
 	/// not nullable 
-	pub ad_org_id:f64,
+	pub ad_user_id:f64,
 	/// not nullable 
 	pub ad_client_id:f64,
 	/// defaults to: now()
@@ -9470,19 +9473,19 @@ pub struct AdUserOrgaccess {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_user_id_ad_user:Option<AdUser>,
+	pub ad_user:Option<AdUser>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 }
 
 #[derive(Debug)]
 pub struct AdUserRoles {
 	/// primary
 	/// not nullable 
-	pub ad_user_id:f64,
+	pub ad_role_id:f64,
 	/// primary
 	/// not nullable 
-	pub ad_role_id:f64,
+	pub ad_user_id:f64,
 	/// not nullable 
 	pub ad_client_id:f64,
 	/// not nullable 
@@ -9501,13 +9504,13 @@ pub struct AdUserRoles {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_user_id_ad_user:Option<AdUser>,
+	pub ad_user:Option<AdUser>,
 	/// has one
-	pub ad_role_id_ad_role:Option<AdRole>,
+	pub ad_role:Option<AdRole>,
 	/// has one
-	pub ad_client_id_ad_client:Option<AdClient>,
+	pub ad_client:Option<AdClient>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 }
 
 #[derive(Debug)]
@@ -9542,9 +9545,9 @@ pub struct AdUserSubstitute {
 	pub validfrom:Option<NaiveDateTime>,
 	pub validto:Option<NaiveDateTime>,
 	/// has one
-	pub ad_user_id_ad_user:Option<AdUser>,
+	pub ad_user:Option<AdUser>,
 	/// has one
-	pub substitute_id_ad_user:Option<AdUser>,
+	pub substitute:Option<AdUser>,
 }
 
 #[derive(Debug)]
@@ -9576,9 +9579,9 @@ pub struct AdUserbpaccess {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_user_id_ad_user:Option<AdUser>,
+	pub ad_user:Option<AdUser>,
 	/// has one
-	pub r_requesttype_id_r_requesttype:Option<RRequesttype>,
+	pub r_requesttype:Option<RRequesttype>,
 }
 
 #[derive(Debug)]
@@ -9637,9 +9640,9 @@ pub struct AdUserdefField {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_userdef_tab_id_ad_userdef_tab:Option<AdUserdefTab>,
+	pub ad_userdef_tab:Option<AdUserdefTab>,
 	/// has one
-	pub ad_field_id_ad_field:Option<AdField>,
+	pub ad_field:Option<AdField>,
 }
 
 #[derive(Debug)]
@@ -9682,9 +9685,9 @@ pub struct AdUserdefTab {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_userdef_win_id_ad_userdef_win:Option<AdUserdefWin>,
+	pub ad_userdef_win:Option<AdUserdefWin>,
 	/// has one
-	pub ad_tab_id_ad_tab:Option<AdTab>,
+	pub ad_tab:Option<AdTab>,
 	/// has many
 	pub ad_userdef_field:Option<Vec<AdUserdefField>>,
 }
@@ -9730,13 +9733,13 @@ pub struct AdUserdefWin {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_role_id_ad_role:Option<AdRole>,
+	pub ad_role:Option<AdRole>,
 	/// has one
-	pub ad_user_id_ad_user:Option<AdUser>,
+	pub ad_user:Option<AdUser>,
 	/// has one
-	pub ad_window_id_ad_window:Option<AdWindow>,
+	pub ad_window:Option<AdWindow>,
 	/// has one
-	pub ad_language_ad_language:Option<AdLanguage>,
+	pub ad_language:Option<AdLanguage>,
 	/// has many
 	pub ad_userdef_tab:Option<Vec<AdUserdefTab>>,
 }
@@ -9773,11 +9776,11 @@ pub struct AdUsermail {
 	pub updatedby:f64,
 	pub w_mailmsg_id:Option<f64>,
 	/// has one
-	pub ad_user_id_ad_user:Option<AdUser>,
+	pub ad_user:Option<AdUser>,
 	/// has one
-	pub r_mailtext_id_r_mailtext:Option<RMailtext>,
+	pub r_mailtext:Option<RMailtext>,
 	/// has one
-	pub w_mailmsg_id_w_mailmsg:Option<WMailmsg>,
+	pub w_mailmsg:Option<WMailmsg>,
 }
 
 #[derive(Debug)]
@@ -9811,11 +9814,11 @@ pub struct AdUserquery {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_user_id_ad_user:Option<AdUser>,
+	pub ad_user:Option<AdUser>,
 	/// has one
-	pub ad_table_id_ad_table:Option<AdTable>,
+	pub ad_table:Option<AdTable>,
 	/// has one
-	pub ad_tab_id_ad_tab:Option<AdTab>,
+	pub ad_tab:Option<AdTab>,
 }
 
 #[derive(Debug)]
@@ -9849,11 +9852,11 @@ pub struct AdValRule {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_client_id_ad_client:Option<AdClient>,
+	pub ad_client:Option<AdClient>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 	/// has one
-	pub entitytype_ad_entitytype:Option<AdEntitytype>,
+	pub entitytype:Option<AdEntitytype>,
 	/// has many
 	pub ad_attribute:Option<Vec<AdAttribute>>,
 	/// has many
@@ -9913,19 +9916,19 @@ pub struct AdWfActivity {
 	/// not nullable 
 	pub wfstate:String,
 	/// has one
-	pub ad_wf_process_id_ad_wf_process:Option<AdWfProcess>,
+	pub ad_wf_process:Option<AdWfProcess>,
 	/// has one
-	pub ad_wf_node_id_ad_wf_node:Option<AdWfNode>,
+	pub ad_wf_node:Option<AdWfNode>,
 	/// has one
-	pub ad_wf_responsible_id_ad_wf_responsible:Option<AdWfResponsible>,
+	pub ad_wf_responsible:Option<AdWfResponsible>,
 	/// has one
-	pub ad_user_id_ad_user:Option<AdUser>,
+	pub ad_user:Option<AdUser>,
 	/// has one
-	pub ad_message_id_ad_message:Option<AdMessage>,
+	pub ad_message:Option<AdMessage>,
 	/// has one
-	pub ad_workflow_id_ad_workflow:Option<AdWorkflow>,
+	pub ad_workflow:Option<AdWorkflow>,
 	/// has one
-	pub ad_table_id_ad_table:Option<AdTable>,
+	pub ad_table:Option<AdTable>,
 	/// has many
 	pub ad_note:Option<Vec<AdNote>>,
 	/// has many
@@ -9962,7 +9965,7 @@ pub struct AdWfActivityresult {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_wf_activity_id_ad_wf_activity:Option<AdWfActivity>,
+	pub ad_wf_activity:Option<AdWfActivity>,
 }
 
 #[derive(Debug)]
@@ -9993,7 +9996,7 @@ pub struct AdWfBlock {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_workflow_id_ad_workflow:Option<AdWorkflow>,
+	pub ad_workflow:Option<AdWorkflow>,
 	/// has many
 	pub ad_wf_node:Option<Vec<AdWfNode>>,
 	/// has many
@@ -10045,15 +10048,15 @@ pub struct AdWfEventaudit {
 	/// not nullable 
 	pub wfstate:String,
 	/// has one
-	pub ad_wf_process_id_ad_wf_process:Option<AdWfProcess>,
+	pub ad_wf_process:Option<AdWfProcess>,
 	/// has one
-	pub ad_wf_node_id_ad_wf_node:Option<AdWfNode>,
+	pub ad_wf_node:Option<AdWfNode>,
 	/// has one
-	pub ad_table_id_ad_table:Option<AdTable>,
+	pub ad_table:Option<AdTable>,
 	/// has one
-	pub ad_wf_responsible_id_ad_wf_responsible:Option<AdWfResponsible>,
+	pub ad_wf_responsible:Option<AdWfResponsible>,
 	/// has one
-	pub ad_user_id_ad_user:Option<AdUser>,
+	pub ad_user:Option<AdUser>,
 }
 
 #[derive(Debug)]
@@ -10095,11 +10098,11 @@ pub struct AdWfNextcondition {
 	pub value:String,
 	pub value2:Option<String>,
 	/// has one
-	pub ad_wf_nodenext_id_ad_wf_nodenext:Option<AdWfNodenext>,
+	pub ad_wf_nodenext:Option<AdWfNodenext>,
 	/// has one
-	pub entitytype_ad_entitytype:Option<AdEntitytype>,
+	pub entitytype:Option<AdEntitytype>,
 	/// has one
-	pub ad_column_id_ad_column:Option<AdColumn>,
+	pub ad_column:Option<AdColumn>,
 }
 
 #[derive(Debug)]
@@ -10202,37 +10205,37 @@ pub struct AdWfNode {
 	/// not nullable 
 	pub yposition:f64,
 	/// has one
-	pub ad_client_id_ad_client:Option<AdClient>,
+	pub ad_client:Option<AdClient>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 	/// has one
-	pub ad_workflow_id_ad_workflow:Option<AdWorkflow>,
+	pub ad_workflow:Option<AdWorkflow>,
 	/// has one
-	pub ad_window_id_ad_window:Option<AdWindow>,
+	pub ad_window:Option<AdWindow>,
 	/// has one
-	pub workflow_id_ad_workflow:Option<AdWorkflow>,
+	pub workflow:Option<AdWorkflow>,
 	/// has one
-	pub ad_task_id_ad_task:Option<AdTask>,
+	pub ad_task:Option<AdTask>,
 	/// has one
-	pub ad_process_id_ad_process:Option<AdProcess>,
+	pub ad_process:Option<AdProcess>,
 	/// has one
-	pub ad_form_id_ad_form:Option<AdForm>,
+	pub ad_form:Option<AdForm>,
 	/// has one
-	pub entitytype_ad_entitytype:Option<AdEntitytype>,
+	pub entitytype:Option<AdEntitytype>,
 	/// has one
-	pub ad_wf_block_id_ad_wf_block:Option<AdWfBlock>,
+	pub ad_wf_block:Option<AdWfBlock>,
 	/// has one
-	pub ad_wf_responsible_id_ad_wf_responsible:Option<AdWfResponsible>,
+	pub ad_wf_responsible:Option<AdWfResponsible>,
 	/// has one
-	pub ad_image_id_ad_image:Option<AdImage>,
+	pub ad_image:Option<AdImage>,
 	/// has one
-	pub ad_column_id_ad_column:Option<AdColumn>,
+	pub ad_column:Option<AdColumn>,
 	/// has one
-	pub r_mailtext_id_r_mailtext:Option<RMailtext>,
+	pub r_mailtext:Option<RMailtext>,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 	/// has one
-	pub s_resource_id_s_resource:Option<SResource>,
+	pub s_resource:Option<SResource>,
 	/// has many
 	pub ad_wf_activity:Option<Vec<AdWfActivity>>,
 	/// has many
@@ -10291,11 +10294,11 @@ pub struct AdWfNodePara {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_wf_node_id_ad_wf_node:Option<AdWfNode>,
+	pub ad_wf_node:Option<AdWfNode>,
 	/// has one
-	pub ad_process_para_id_ad_process_para:Option<AdProcessPara>,
+	pub ad_process_para:Option<AdProcessPara>,
 	/// has one
-	pub entitytype_ad_entitytype:Option<AdEntitytype>,
+	pub entitytype:Option<AdEntitytype>,
 }
 
 #[derive(Debug)]
@@ -10331,9 +10334,9 @@ pub struct AdWfNodeTrl {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_language_ad_language:Option<AdLanguage>,
+	pub ad_language:Option<AdLanguage>,
 	/// has one
-	pub ad_wf_node_id_ad_wf_node:Option<AdWfNode>,
+	pub ad_wf_node:Option<AdWfNode>,
 }
 
 #[derive(Debug)]
@@ -10373,15 +10376,15 @@ pub struct AdWfNodenext {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_client_id_ad_client:Option<AdClient>,
+	pub ad_client:Option<AdClient>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 	/// has one
-	pub ad_wf_node_id_ad_wf_node:Option<AdWfNode>,
+	pub ad_wf_node:Option<AdWfNode>,
 	/// has one
-	pub ad_wf_next_id_ad_wf_node:Option<AdWfNode>,
+	pub ad_wf_next:Option<AdWfNode>,
 	/// has one
-	pub entitytype_ad_entitytype:Option<AdEntitytype>,
+	pub entitytype:Option<AdEntitytype>,
 	/// has many
 	pub ad_wf_nextcondition:Option<Vec<AdWfNextcondition>>,
 }
@@ -10427,27 +10430,27 @@ pub struct AdWfProcess {
 	/// not nullable 
 	pub wfstate:String,
 	/// has one, self referential
-	pub ad_wf_process_id_ad_wf_process:Option<Box<AdWfProcess>>,
+	pub ad_wf_process:Option<Box<AdWfProcess>>,
 	/// has one
-	pub ad_client_id_ad_client:Option<AdClient>,
+	pub ad_client:Option<AdClient>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 	/// has one
-	pub ad_workflow_id_ad_workflow:Option<AdWorkflow>,
+	pub ad_workflow:Option<AdWorkflow>,
 	/// has one
-	pub ad_wf_responsible_id_ad_wf_responsible:Option<AdWfResponsible>,
+	pub ad_wf_responsible:Option<AdWfResponsible>,
 	/// has one
-	pub ad_user_id_ad_user:Option<AdUser>,
+	pub ad_user:Option<AdUser>,
 	/// has one
-	pub ad_message_id_ad_message:Option<AdMessage>,
+	pub ad_message:Option<AdMessage>,
 	/// has one
-	pub ad_table_id_ad_table:Option<AdTable>,
+	pub ad_table:Option<AdTable>,
+	/// has one, extension table
+	pub ad_wf_process:Option<Box<AdWfProcess>>,
 	/// has many
 	pub ad_wf_activity:Option<Vec<AdWfActivity>>,
 	/// has many
 	pub ad_wf_eventaudit:Option<Vec<AdWfEventaudit>>,
-	/// has many
-	pub ad_wf_process:Option<Vec<AdWfProcess>>,
 	/// has many
 	pub ad_wf_processdata:Option<Vec<AdWfProcessdata>>,
 }
@@ -10480,7 +10483,7 @@ pub struct AdWfProcessdata {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_wf_process_id_ad_wf_process:Option<AdWfProcess>,
+	pub ad_wf_process:Option<AdWfProcess>,
 }
 
 #[derive(Debug)]
@@ -10516,13 +10519,13 @@ pub struct AdWfResponsible {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 	/// has one
-	pub ad_user_id_ad_user:Option<AdUser>,
+	pub ad_user:Option<AdUser>,
 	/// has one
-	pub ad_role_id_ad_role:Option<AdRole>,
+	pub ad_role:Option<AdRole>,
 	/// has one
-	pub entitytype_ad_entitytype:Option<AdEntitytype>,
+	pub entitytype:Option<AdEntitytype>,
 	/// has many
 	pub ad_wf_activity:Option<Vec<AdWfActivity>>,
 	/// has many
@@ -10584,15 +10587,15 @@ pub struct AdWindow {
 	pub winheight:Option<f64>,
 	pub winwidth:Option<f64>,
 	/// has one
-	pub ad_client_id_ad_client:Option<AdClient>,
+	pub ad_client:Option<AdClient>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 	/// has one
-	pub entitytype_ad_entitytype:Option<AdEntitytype>,
+	pub entitytype:Option<AdEntitytype>,
 	/// has one
-	pub ad_image_id_ad_image:Option<AdImage>,
+	pub ad_image:Option<AdImage>,
 	/// has one
-	pub ad_color_id_ad_color:Option<AdColor>,
+	pub ad_color:Option<AdColor>,
 	/// has many
 	pub ad_issue:Option<Vec<AdIssue>>,
 	/// has many
@@ -10633,10 +10636,10 @@ pub struct AdWindow {
 pub struct AdWindowAccess {
 	/// primary
 	/// not nullable 
-	pub ad_window_id:f64,
+	pub ad_role_id:f64,
 	/// primary
 	/// not nullable 
-	pub ad_role_id:f64,
+	pub ad_window_id:f64,
 	/// not nullable 
 	pub ad_client_id:f64,
 	/// not nullable 
@@ -10660,23 +10663,23 @@ pub struct AdWindowAccess {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_window_id_ad_window:Option<AdWindow>,
+	pub ad_window:Option<AdWindow>,
 	/// has one
-	pub ad_role_id_ad_role:Option<AdRole>,
+	pub ad_role:Option<AdRole>,
 	/// has one
-	pub ad_client_id_ad_client:Option<AdClient>,
+	pub ad_client:Option<AdClient>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 }
 
 #[derive(Debug)]
 pub struct AdWindowTrl {
 	/// primary
 	/// not nullable 
-	pub ad_window_id:f64,
+	pub ad_language:String,
 	/// primary
 	/// not nullable 
-	pub ad_language:String,
+	pub ad_window_id:f64,
 	/// not nullable 
 	pub ad_client_id:f64,
 	/// not nullable 
@@ -10702,9 +10705,9 @@ pub struct AdWindowTrl {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_window_id_ad_window:Option<AdWindow>,
+	pub ad_window:Option<AdWindow>,
 	/// has one
-	pub ad_language_ad_language:Option<AdLanguage>,
+	pub ad_language:Option<AdLanguage>,
 }
 
 #[derive(Debug)]
@@ -10741,13 +10744,13 @@ pub struct AdWorkbench {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_column_id_ad_column:Option<AdColumn>,
+	pub ad_column:Option<AdColumn>,
 	/// has one
-	pub ad_image_id_ad_image:Option<AdImage>,
+	pub ad_image:Option<AdImage>,
 	/// has one
-	pub ad_color_id_ad_color:Option<AdColor>,
+	pub ad_color:Option<AdColor>,
 	/// has one
-	pub entitytype_ad_entitytype:Option<AdEntitytype>,
+	pub entitytype:Option<AdEntitytype>,
 	/// has many
 	pub ad_desktopworkbench:Option<Vec<AdDesktopworkbench>>,
 	/// has many
@@ -10766,10 +10769,10 @@ pub struct AdWorkbench {
 pub struct AdWorkbenchTrl {
 	/// primary
 	/// not nullable 
-	pub ad_workbench_id:f64,
+	pub ad_language:String,
 	/// primary
 	/// not nullable 
-	pub ad_language:String,
+	pub ad_workbench_id:f64,
 	/// not nullable 
 	pub ad_client_id:f64,
 	/// not nullable 
@@ -10795,9 +10798,9 @@ pub struct AdWorkbenchTrl {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_workbench_id_ad_workbench:Option<AdWorkbench>,
+	pub ad_workbench:Option<AdWorkbench>,
 	/// has one
-	pub ad_language_ad_language:Option<AdLanguage>,
+	pub ad_language:Option<AdLanguage>,
 }
 
 #[derive(Debug)]
@@ -10837,17 +10840,17 @@ pub struct AdWorkbenchwindow {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_workbench_id_ad_workbench:Option<AdWorkbench>,
+	pub ad_workbench:Option<AdWorkbench>,
 	/// has one
-	pub ad_window_id_ad_window:Option<AdWindow>,
+	pub ad_window:Option<AdWindow>,
 	/// has one
-	pub ad_form_id_ad_form:Option<AdForm>,
+	pub ad_form:Option<AdForm>,
 	/// has one
-	pub ad_process_id_ad_process:Option<AdProcess>,
+	pub ad_process:Option<AdProcess>,
 	/// has one
-	pub ad_task_id_ad_task:Option<AdTask>,
+	pub ad_task:Option<AdTask>,
 	/// has one
-	pub entitytype_ad_entitytype:Option<AdEntitytype>,
+	pub entitytype:Option<AdEntitytype>,
 }
 
 #[derive(Debug)]
@@ -10938,21 +10941,21 @@ pub struct AdWorkflow {
 	/// defaults to: (100)::numeric
 	pub yield_:Option<f64>,
 	/// has one
-	pub ad_client_id_ad_client:Option<AdClient>,
+	pub ad_client:Option<AdClient>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 	/// has one
-	pub ad_wf_node_id_ad_wf_node:Option<AdWfNode>,
+	pub ad_wf_node:Option<AdWfNode>,
 	/// has one
-	pub entitytype_ad_entitytype:Option<AdEntitytype>,
+	pub entitytype:Option<AdEntitytype>,
 	/// has one
-	pub ad_wf_responsible_id_ad_wf_responsible:Option<AdWfResponsible>,
+	pub ad_wf_responsible:Option<AdWfResponsible>,
 	/// has one
-	pub ad_workflowprocessor_id_ad_workflowprocessor:Option<AdWorkflowprocessor>,
+	pub ad_workflowprocessor:Option<AdWorkflowprocessor>,
 	/// has one
-	pub ad_table_id_ad_table:Option<AdTable>,
+	pub ad_table:Option<AdTable>,
 	/// has one
-	pub s_resource_id_s_resource:Option<SResource>,
+	pub s_resource:Option<SResource>,
 	/// has many
 	pub ad_menu:Option<Vec<AdMenu>>,
 	/// has many
@@ -10995,10 +10998,10 @@ pub struct AdWorkflow {
 pub struct AdWorkflowAccess {
 	/// primary
 	/// not nullable 
-	pub ad_workflow_id:f64,
+	pub ad_role_id:f64,
 	/// primary
 	/// not nullable 
-	pub ad_role_id:f64,
+	pub ad_workflow_id:f64,
 	/// not nullable 
 	pub ad_client_id:f64,
 	/// not nullable 
@@ -11020,23 +11023,23 @@ pub struct AdWorkflowAccess {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_workflow_id_ad_workflow:Option<AdWorkflow>,
+	pub ad_workflow:Option<AdWorkflow>,
 	/// has one
-	pub ad_role_id_ad_role:Option<AdRole>,
+	pub ad_role:Option<AdRole>,
 	/// has one
-	pub ad_client_id_ad_client:Option<AdClient>,
+	pub ad_client:Option<AdClient>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 }
 
 #[derive(Debug)]
 pub struct AdWorkflowTrl {
 	/// primary
 	/// not nullable 
-	pub ad_workflow_id:f64,
+	pub ad_language:String,
 	/// primary
 	/// not nullable 
-	pub ad_language:String,
+	pub ad_workflow_id:f64,
 	/// not nullable 
 	pub ad_client_id:f64,
 	/// not nullable 
@@ -11062,9 +11065,9 @@ pub struct AdWorkflowTrl {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_workflow_id_ad_workflow:Option<AdWorkflow>,
+	pub ad_workflow:Option<AdWorkflow>,
 	/// has one
-	pub ad_language_ad_language:Option<AdLanguage>,
+	pub ad_language:Option<AdLanguage>,
 }
 
 #[derive(Debug)]
@@ -11109,11 +11112,11 @@ pub struct AdWorkflowprocessor {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub supervisor_id_ad_user:Option<AdUser>,
+	pub supervisor:Option<AdUser>,
+	/// has one, extension table
+	pub ad_workflowprocessorlog:Option<Box<AdWorkflowprocessorlog>>,
 	/// has many
 	pub ad_workflow:Option<Vec<AdWorkflow>>,
-	/// has many
-	pub ad_workflowprocessorlog:Option<Vec<AdWorkflowprocessorlog>>,
 	/// has many
 	pub pp_order_workflow:Option<Vec<PpOrderWorkflow>>,
 }
@@ -11152,7 +11155,7 @@ pub struct AdWorkflowprocessorlog {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_workflowprocessor_id_ad_workflowprocessor:Option<AdWorkflowprocessor>,
+	pub ad_workflowprocessor:Option<AdWorkflowprocessor>,
 }
 
 #[derive(Debug)]
@@ -11189,23 +11192,23 @@ pub struct AspClientexception {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_field_id_ad_field:Option<AdField>,
+	pub ad_field:Option<AdField>,
 	/// has one
-	pub ad_form_id_ad_form:Option<AdForm>,
+	pub ad_form:Option<AdForm>,
 	/// has one
-	pub ad_process_id_ad_process:Option<AdProcess>,
+	pub ad_process:Option<AdProcess>,
 	/// has one
-	pub ad_process_para_id_ad_process_para:Option<AdProcessPara>,
+	pub ad_process_para:Option<AdProcessPara>,
 	/// has one
-	pub ad_tab_id_ad_tab:Option<AdTab>,
+	pub ad_tab:Option<AdTab>,
 	/// has one
-	pub ad_task_id_ad_task:Option<AdTask>,
+	pub ad_task:Option<AdTask>,
 	/// has one
-	pub ad_wf_node_id_ad_wf_node:Option<AdWfNode>,
+	pub ad_wf_node:Option<AdWfNode>,
 	/// has one
-	pub ad_window_id_ad_window:Option<AdWindow>,
+	pub ad_window:Option<AdWindow>,
 	/// has one
-	pub ad_workflow_id_ad_workflow:Option<AdWorkflow>,
+	pub ad_workflow:Option<AdWorkflow>,
 }
 
 #[derive(Debug)]
@@ -11235,9 +11238,9 @@ pub struct AspClientlevel {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub asp_level_id_asp_level:Option<AspLevel>,
+	pub asp_level:Option<AspLevel>,
 	/// has one
-	pub asp_module_id_asp_module:Option<AspModule>,
+	pub asp_module:Option<AspModule>,
 }
 
 #[derive(Debug)]
@@ -11267,9 +11270,9 @@ pub struct AspField {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_field_id_ad_field:Option<AdField>,
+	pub ad_field:Option<AdField>,
 	/// has one
-	pub asp_tab_id_asp_tab:Option<AspTab>,
+	pub asp_tab:Option<AspTab>,
 }
 
 #[derive(Debug)]
@@ -11300,9 +11303,9 @@ pub struct AspForm {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_form_id_ad_form:Option<AdForm>,
+	pub ad_form:Option<AdForm>,
 	/// has one
-	pub asp_level_id_asp_level:Option<AspLevel>,
+	pub asp_level:Option<AspLevel>,
 }
 
 #[derive(Debug)]
@@ -11335,7 +11338,7 @@ pub struct AspLevel {
 	/// not nullable 
 	pub value:String,
 	/// has one
-	pub asp_module_id_asp_module:Option<AspModule>,
+	pub asp_module:Option<AspModule>,
 	/// has many
 	pub asp_clientlevel:Option<Vec<AspClientlevel>>,
 	/// has many
@@ -11410,9 +11413,9 @@ pub struct AspProcess {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_process_id_ad_process:Option<AdProcess>,
+	pub ad_process:Option<AdProcess>,
 	/// has one
-	pub asp_level_id_asp_level:Option<AspLevel>,
+	pub asp_level:Option<AspLevel>,
 	/// has many
 	pub asp_process_para:Option<Vec<AspProcessPara>>,
 }
@@ -11444,9 +11447,9 @@ pub struct AspProcessPara {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_process_para_id_ad_process_para:Option<AdProcessPara>,
+	pub ad_process_para:Option<AdProcessPara>,
 	/// has one
-	pub asp_process_id_asp_process:Option<AspProcess>,
+	pub asp_process:Option<AspProcess>,
 }
 
 #[derive(Debug)]
@@ -11479,9 +11482,9 @@ pub struct AspTab {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_tab_id_ad_tab:Option<AdTab>,
+	pub ad_tab:Option<AdTab>,
 	/// has one
-	pub asp_window_id_asp_window:Option<AspWindow>,
+	pub asp_window:Option<AspWindow>,
 	/// has many
 	pub asp_field:Option<Vec<AspField>>,
 }
@@ -11514,9 +11517,9 @@ pub struct AspTask {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_task_id_ad_task:Option<AdTask>,
+	pub ad_task:Option<AdTask>,
 	/// has one
-	pub asp_level_id_asp_level:Option<AspLevel>,
+	pub asp_level:Option<AspLevel>,
 }
 
 #[derive(Debug)]
@@ -11547,9 +11550,9 @@ pub struct AspWindow {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_window_id_ad_window:Option<AdWindow>,
+	pub ad_window:Option<AdWindow>,
 	/// has one
-	pub asp_level_id_asp_level:Option<AspLevel>,
+	pub asp_level:Option<AspLevel>,
 	/// has many
 	pub asp_tab:Option<Vec<AspTab>>,
 }
@@ -11582,9 +11585,9 @@ pub struct AspWorkflow {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_workflow_id_ad_workflow:Option<AdWorkflow>,
+	pub ad_workflow:Option<AdWorkflow>,
 	/// has one
-	pub asp_level_id_asp_level:Option<AspLevel>,
+	pub asp_level:Option<AspLevel>,
 }
 
 #[derive(Debug)]
@@ -11687,23 +11690,23 @@ pub struct BBid {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub b_topic_id_b_topic:Option<BTopic>,
+	pub b_topic:Option<BTopic>,
 	/// has one
-	pub ad_user_id_ad_user:Option<AdUser>,
+	pub ad_user:Option<AdUser>,
 	/// has one
-	pub ad_user_id_b_buyer:Option<BBuyer>,
+	pub ad_user:Option<BBuyer>,
 	/// has one
-	pub b_buyerfunds_id_b_buyerfunds:Option<BBuyerfunds>,
+	pub b_buyerfunds:Option<BBuyerfunds>,
 }
 
 #[derive(Debug)]
 pub struct BBidcomment {
 	/// primary
 	/// not nullable 
-	pub b_topic_id:f64,
+	pub b_bidcomment_id:f64,
 	/// primary
 	/// not nullable 
-	pub b_bidcomment_id:f64,
+	pub b_topic_id:f64,
 	/// not nullable 
 	pub ad_client_id:f64,
 	/// not nullable 
@@ -11726,9 +11729,9 @@ pub struct BBidcomment {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub b_topic_id_b_topic:Option<BTopic>,
+	pub b_topic:Option<BTopic>,
 	/// has one
-	pub ad_user_id_ad_user:Option<AdUser>,
+	pub ad_user:Option<AdUser>,
 }
 
 #[derive(Debug)]
@@ -11759,7 +11762,7 @@ pub struct BBuyer {
 	/// not nullable 
 	pub validto:NaiveDateTime,
 	/// has one
-	pub ad_user_id_ad_user:Option<AdUser>,
+	pub ad_user:Option<AdUser>,
 	/// has many
 	pub b_bid:Option<Vec<BBid>>,
 	/// has many
@@ -11799,13 +11802,13 @@ pub struct BBuyerfunds {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_user_id_ad_user:Option<AdUser>,
+	pub ad_user:Option<AdUser>,
 	/// has one
-	pub ad_user_id_b_buyer:Option<BBuyer>,
+	pub ad_user:Option<BBuyer>,
 	/// has one
-	pub c_order_id_c_order:Option<COrder>,
+	pub c_order:Option<COrder>,
 	/// has one
-	pub c_payment_id_c_payment:Option<CPayment>,
+	pub c_payment:Option<CPayment>,
 	/// has many
 	pub b_bid:Option<Vec<BBid>>,
 }
@@ -11846,13 +11849,13 @@ pub struct BOffer {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub b_topic_id_b_topic:Option<BTopic>,
+	pub b_topic:Option<BTopic>,
 	/// has one
-	pub ad_user_id_ad_user:Option<AdUser>,
+	pub ad_user:Option<AdUser>,
 	/// has one
-	pub ad_user_id_b_seller:Option<BSeller>,
+	pub ad_user:Option<BSeller>,
 	/// has one
-	pub b_sellerfunds_id_b_sellerfunds:Option<BSellerfunds>,
+	pub b_sellerfunds:Option<BSellerfunds>,
 }
 
 #[derive(Debug)]
@@ -11886,7 +11889,7 @@ pub struct BSeller {
 	/// not nullable 
 	pub validto:NaiveDateTime,
 	/// has one
-	pub ad_user_id_ad_user:Option<AdUser>,
+	pub ad_user:Option<AdUser>,
 	/// has many
 	pub b_offer:Option<Vec<BOffer>>,
 	/// has many
@@ -11926,13 +11929,13 @@ pub struct BSellerfunds {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_user_id_ad_user:Option<AdUser>,
+	pub ad_user:Option<AdUser>,
 	/// has one
-	pub ad_user_id_b_seller:Option<BSeller>,
+	pub ad_user:Option<BSeller>,
 	/// has one
-	pub c_order_id_c_order:Option<COrder>,
+	pub c_order:Option<COrder>,
 	/// has one
-	pub c_payment_id_c_payment:Option<CPayment>,
+	pub c_payment:Option<CPayment>,
 	/// has many
 	pub b_offer:Option<Vec<BOffer>>,
 }
@@ -11984,13 +11987,13 @@ pub struct BTopic {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub b_topictype_id_b_topictype:Option<BTopictype>,
+	pub b_topictype:Option<BTopictype>,
 	/// has one
-	pub b_topiccategory_id_b_topiccategory:Option<BTopiccategory>,
+	pub b_topiccategory:Option<BTopiccategory>,
+	/// has one, extension table
+	pub b_bidcomment:Option<Box<BBidcomment>>,
 	/// has many
 	pub b_bid:Option<Vec<BBid>>,
-	/// has many
-	pub b_bidcomment:Option<Vec<BBidcomment>>,
 	/// has many
 	pub b_offer:Option<Vec<BOffer>>,
 }
@@ -12023,7 +12026,7 @@ pub struct BTopiccategory {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub b_topictype_id_b_topictype:Option<BTopictype>,
+	pub b_topictype:Option<BTopictype>,
 	/// has many
 	pub b_topic:Option<Vec<BTopic>>,
 }
@@ -12063,11 +12066,11 @@ pub struct BTopictype {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub m_pricelist_id_m_pricelist:Option<MPricelist>,
+	pub m_pricelist:Option<MPricelist>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has one
-	pub m_productmember_id_m_product:Option<MProduct>,
+	pub m_productmember:Option<MProduct>,
 	/// has many
 	pub b_topic:Option<Vec<BTopic>>,
 	/// has many
@@ -12113,13 +12116,13 @@ pub struct CAcctprocessor {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub supervisor_id_ad_user:Option<AdUser>,
+	pub supervisor:Option<AdUser>,
 	/// has one
-	pub c_acctschema_id_c_acctschema:Option<CAcctschema>,
+	pub c_acctschema:Option<CAcctschema>,
 	/// has one
-	pub ad_table_id_ad_table:Option<AdTable>,
-	/// has many
-	pub c_acctprocessorlog:Option<Vec<CAcctprocessorlog>>,
+	pub ad_table:Option<AdTable>,
+	/// has one, extension table
+	pub c_acctprocessorlog:Option<Box<CAcctprocessorlog>>,
 }
 
 #[derive(Debug)]
@@ -12156,7 +12159,7 @@ pub struct CAcctprocessorlog {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_acctprocessor_id_c_acctprocessor:Option<CAcctprocessor>,
+	pub c_acctprocessor:Option<CAcctprocessor>,
 }
 
 #[derive(Debug)]
@@ -12237,17 +12240,21 @@ pub struct CAcctschema {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_client_id_ad_client:Option<AdClient>,
+	pub ad_client:Option<AdClient>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 	/// has one
-	pub c_currency_id_c_currency:Option<CCurrency>,
+	pub c_currency:Option<CCurrency>,
 	/// has one
-	pub c_period_id_c_period:Option<CPeriod>,
+	pub c_period:Option<CPeriod>,
 	/// has one
-	pub m_costtype_id_m_costtype:Option<MCosttype>,
+	pub m_costtype:Option<MCosttype>,
 	/// has one
-	pub ad_orgonly_id_ad_org:Option<AdOrg>,
+	pub ad_orgonly:Option<AdOrg>,
+	/// has one, extension table
+	pub c_acctschema_default:Option<Box<CAcctschemaDefault>>,
+	/// has one, extension table
+	pub c_acctschema_gl:Option<Box<CAcctschemaGl>>,
 	/// has many
 	pub a_asset_acct:Option<Vec<AAssetAcct>>,
 	/// has many
@@ -12267,11 +12274,7 @@ pub struct CAcctschema {
 	/// has many
 	pub c_acctprocessor:Option<Vec<CAcctprocessor>>,
 	/// has many
-	pub c_acctschema_default:Option<Vec<CAcctschemaDefault>>,
-	/// has many
 	pub c_acctschema_element:Option<Vec<CAcctschemaElement>>,
-	/// has many
-	pub c_acctschema_gl:Option<Vec<CAcctschemaGl>>,
 	/// has many
 	pub c_bankaccount_acct:Option<Vec<CBankaccountAcct>>,
 	/// has many
@@ -12498,121 +12501,121 @@ pub struct CAcctschemaDefault {
 	/// not nullable 
 	pub writeoff_acct:f64,
 	/// has one
-	pub c_acctschema_id_c_acctschema:Option<CAcctschema>,
+	pub c_acctschema:Option<CAcctschema>,
 	/// has one
-	pub w_inventory_acct_c_validcombination:Option<CValidcombination>,
+	pub w_inventory_acct:Option<CValidcombination>,
 	/// has one
-	pub w_invactualadjust_acct_c_validcombination:Option<CValidcombination>,
+	pub w_invactualadjust_acct:Option<CValidcombination>,
 	/// has one
-	pub w_differences_acct_c_validcombination:Option<CValidcombination>,
+	pub w_differences_acct:Option<CValidcombination>,
 	/// has one
-	pub w_revaluation_acct_c_validcombination:Option<CValidcombination>,
+	pub w_revaluation_acct:Option<CValidcombination>,
 	/// has one
-	pub p_revenue_acct_c_validcombination:Option<CValidcombination>,
+	pub p_revenue_acct:Option<CValidcombination>,
 	/// has one
-	pub p_expense_acct_c_validcombination:Option<CValidcombination>,
+	pub p_expense_acct:Option<CValidcombination>,
 	/// has one
-	pub p_asset_acct_c_validcombination:Option<CValidcombination>,
+	pub p_asset_acct:Option<CValidcombination>,
 	/// has one
-	pub p_purchasepricevariance_acct_c_validcombination:Option<CValidcombination>,
+	pub p_purchasepricevariance_acct:Option<CValidcombination>,
 	/// has one
-	pub p_invoicepricevariance_acct_c_validcombination:Option<CValidcombination>,
+	pub p_invoicepricevariance_acct:Option<CValidcombination>,
 	/// has one
-	pub p_tradediscountrec_acct_c_validcombination:Option<CValidcombination>,
+	pub p_tradediscountrec_acct:Option<CValidcombination>,
 	/// has one
-	pub p_tradediscountgrant_acct_c_validcombination:Option<CValidcombination>,
+	pub p_tradediscountgrant_acct:Option<CValidcombination>,
 	/// has one
-	pub p_cogs_acct_c_validcombination:Option<CValidcombination>,
+	pub p_cogs_acct:Option<CValidcombination>,
 	/// has one
-	pub c_receivable_acct_c_validcombination:Option<CValidcombination>,
+	pub c_receivable_acct:Option<CValidcombination>,
 	/// has one
-	pub c_prepayment_acct_c_validcombination:Option<CValidcombination>,
+	pub c_prepayment_acct:Option<CValidcombination>,
 	/// has one
-	pub v_liability_acct_c_validcombination:Option<CValidcombination>,
+	pub v_liability_acct:Option<CValidcombination>,
 	/// has one
-	pub v_liability_services_acct_c_validcombination:Option<CValidcombination>,
+	pub v_liability_services_acct:Option<CValidcombination>,
 	/// has one
-	pub v_prepayment_acct_c_validcombination:Option<CValidcombination>,
+	pub v_prepayment_acct:Option<CValidcombination>,
 	/// has one
-	pub paydiscount_exp_acct_c_validcombination:Option<CValidcombination>,
+	pub paydiscount_exp_acct:Option<CValidcombination>,
 	/// has one
-	pub writeoff_acct_c_validcombination:Option<CValidcombination>,
+	pub writeoff_acct:Option<CValidcombination>,
 	/// has one
-	pub paydiscount_rev_acct_c_validcombination:Option<CValidcombination>,
+	pub paydiscount_rev_acct:Option<CValidcombination>,
 	/// has one
-	pub unrealizedgain_acct_c_validcombination:Option<CValidcombination>,
+	pub unrealizedgain_acct:Option<CValidcombination>,
 	/// has one
-	pub unrealizedloss_acct_c_validcombination:Option<CValidcombination>,
+	pub unrealizedloss_acct:Option<CValidcombination>,
 	/// has one
-	pub realizedgain_acct_c_validcombination:Option<CValidcombination>,
+	pub realizedgain_acct:Option<CValidcombination>,
 	/// has one
-	pub realizedloss_acct_c_validcombination:Option<CValidcombination>,
+	pub realizedloss_acct:Option<CValidcombination>,
 	/// has one
-	pub withholding_acct_c_validcombination:Option<CValidcombination>,
+	pub withholding_acct:Option<CValidcombination>,
 	/// has one
-	pub e_prepayment_acct_c_validcombination:Option<CValidcombination>,
+	pub e_prepayment_acct:Option<CValidcombination>,
 	/// has one
-	pub e_expense_acct_c_validcombination:Option<CValidcombination>,
+	pub e_expense_acct:Option<CValidcombination>,
 	/// has one
-	pub pj_asset_acct_c_validcombination:Option<CValidcombination>,
+	pub pj_asset_acct:Option<CValidcombination>,
 	/// has one
-	pub pj_wip_acct_c_validcombination:Option<CValidcombination>,
+	pub pj_wip_acct:Option<CValidcombination>,
 	/// has one
-	pub t_expense_acct_c_validcombination:Option<CValidcombination>,
+	pub t_expense_acct:Option<CValidcombination>,
 	/// has one
-	pub t_liability_acct_c_validcombination:Option<CValidcombination>,
+	pub t_liability_acct:Option<CValidcombination>,
 	/// has one
-	pub t_receivables_acct_c_validcombination:Option<CValidcombination>,
+	pub t_receivables_acct:Option<CValidcombination>,
 	/// has one
-	pub t_due_acct_c_validcombination:Option<CValidcombination>,
+	pub t_due_acct:Option<CValidcombination>,
 	/// has one
-	pub t_credit_acct_c_validcombination:Option<CValidcombination>,
+	pub t_credit_acct:Option<CValidcombination>,
 	/// has one
-	pub b_intransit_acct_c_validcombination:Option<CValidcombination>,
+	pub b_intransit_acct:Option<CValidcombination>,
 	/// has one
-	pub b_asset_acct_c_validcombination:Option<CValidcombination>,
+	pub b_asset_acct:Option<CValidcombination>,
 	/// has one
-	pub b_expense_acct_c_validcombination:Option<CValidcombination>,
+	pub b_expense_acct:Option<CValidcombination>,
 	/// has one
-	pub b_interestrev_acct_c_validcombination:Option<CValidcombination>,
+	pub b_interestrev_acct:Option<CValidcombination>,
 	/// has one
-	pub b_interestexp_acct_c_validcombination:Option<CValidcombination>,
+	pub b_interestexp_acct:Option<CValidcombination>,
 	/// has one
-	pub b_unidentified_acct_c_validcombination:Option<CValidcombination>,
+	pub b_unidentified_acct:Option<CValidcombination>,
 	/// has one
-	pub b_unallocatedcash_acct_c_validcombination:Option<CValidcombination>,
+	pub b_unallocatedcash_acct:Option<CValidcombination>,
 	/// has one
-	pub b_paymentselect_acct_c_validcombination:Option<CValidcombination>,
+	pub b_paymentselect_acct:Option<CValidcombination>,
 	/// has one
-	pub b_settlementgain_acct_c_validcombination:Option<CValidcombination>,
+	pub b_settlementgain_acct:Option<CValidcombination>,
 	/// has one
-	pub b_settlementloss_acct_c_validcombination:Option<CValidcombination>,
+	pub b_settlementloss_acct:Option<CValidcombination>,
 	/// has one
-	pub b_revaluationgain_acct_c_validcombination:Option<CValidcombination>,
+	pub b_revaluationgain_acct:Option<CValidcombination>,
 	/// has one
-	pub b_revaluationloss_acct_c_validcombination:Option<CValidcombination>,
+	pub b_revaluationloss_acct:Option<CValidcombination>,
 	/// has one
-	pub ch_expense_acct_c_validcombination:Option<CValidcombination>,
+	pub ch_expense_acct:Option<CValidcombination>,
 	/// has one
-	pub ch_revenue_acct_c_validcombination:Option<CValidcombination>,
+	pub ch_revenue_acct:Option<CValidcombination>,
 	/// has one
-	pub unearnedrevenue_acct_c_validcombination:Option<CValidcombination>,
+	pub unearnedrevenue_acct:Option<CValidcombination>,
 	/// has one
-	pub notinvoicedreceivables_acct_c_validcombination:Option<CValidcombination>,
+	pub notinvoicedreceivables_acct:Option<CValidcombination>,
 	/// has one
-	pub notinvoicedrevenue_acct_c_validcombination:Option<CValidcombination>,
+	pub notinvoicedrevenue_acct:Option<CValidcombination>,
 	/// has one
-	pub notinvoicedreceipts_acct_c_validcombination:Option<CValidcombination>,
+	pub notinvoicedreceipts_acct:Option<CValidcombination>,
 	/// has one
-	pub cb_asset_acct_c_validcombination:Option<CValidcombination>,
+	pub cb_asset_acct:Option<CValidcombination>,
 	/// has one
-	pub cb_cashtransfer_acct_c_validcombination:Option<CValidcombination>,
+	pub cb_cashtransfer_acct:Option<CValidcombination>,
 	/// has one
-	pub cb_differences_acct_c_validcombination:Option<CValidcombination>,
+	pub cb_differences_acct:Option<CValidcombination>,
 	/// has one
-	pub cb_expense_acct_c_validcombination:Option<CValidcombination>,
+	pub cb_expense_acct:Option<CValidcombination>,
 	/// has one
-	pub cb_receipt_acct_c_validcombination:Option<CValidcombination>,
+	pub cb_receipt_acct:Option<CValidcombination>,
 }
 
 #[derive(Debug)]
@@ -12663,33 +12666,33 @@ pub struct CAcctschemaElement {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 	/// has one
-	pub c_acctschema_id_c_acctschema:Option<CAcctschema>,
+	pub c_acctschema:Option<CAcctschema>,
 	/// has one
-	pub c_element_id_c_element:Option<CElement>,
+	pub c_element:Option<CElement>,
 	/// has one
-	pub ad_client_id_ad_client:Option<AdClient>,
+	pub ad_client:Option<AdClient>,
 	/// has one
-	pub org_id_ad_org:Option<AdOrg>,
+	pub org:Option<AdOrg>,
 	/// has one
-	pub c_elementvalue_id_c_elementvalue:Option<CElementvalue>,
+	pub c_elementvalue:Option<CElementvalue>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 	/// has one
-	pub c_location_id_c_location:Option<CLocation>,
+	pub c_location:Option<CLocation>,
 	/// has one
-	pub c_salesregion_id_c_salesregion:Option<CSalesregion>,
+	pub c_salesregion:Option<CSalesregion>,
 	/// has one
-	pub c_project_id_c_project:Option<CProject>,
+	pub c_project:Option<CProject>,
 	/// has one
-	pub c_campaign_id_c_campaign:Option<CCampaign>,
+	pub c_campaign:Option<CCampaign>,
 	/// has one
-	pub c_activity_id_c_activity:Option<CActivity>,
+	pub c_activity:Option<CActivity>,
 	/// has one
-	pub ad_column_id_ad_column:Option<AdColumn>,
+	pub ad_column:Option<AdColumn>,
 }
 
 #[derive(Debug)]
@@ -12741,23 +12744,23 @@ pub struct CAcctschemaGl {
 	/// not nullable 
 	pub usesuspenseerror:String,
 	/// has one
-	pub c_acctschema_id_c_acctschema:Option<CAcctschema>,
+	pub c_acctschema:Option<CAcctschema>,
 	/// has one
-	pub suspensebalancing_acct_c_validcombination:Option<CValidcombination>,
+	pub suspensebalancing_acct:Option<CValidcombination>,
 	/// has one
-	pub suspenseerror_acct_c_validcombination:Option<CValidcombination>,
+	pub suspenseerror_acct:Option<CValidcombination>,
 	/// has one
-	pub currencybalancing_acct_c_validcombination:Option<CValidcombination>,
+	pub currencybalancing_acct:Option<CValidcombination>,
 	/// has one
-	pub retainedearning_acct_c_validcombination:Option<CValidcombination>,
+	pub retainedearning_acct:Option<CValidcombination>,
 	/// has one
-	pub incomesummary_acct_c_validcombination:Option<CValidcombination>,
+	pub incomesummary_acct:Option<CValidcombination>,
 	/// has one
-	pub intercompanydueto_acct_c_validcombination:Option<CValidcombination>,
+	pub intercompanydueto_acct:Option<CValidcombination>,
 	/// has one
-	pub intercompanyduefrom_acct_c_validcombination:Option<CValidcombination>,
+	pub intercompanyduefrom_acct:Option<CValidcombination>,
 	/// has one
-	pub ppvoffset_acct_c_validcombination:Option<CValidcombination>,
+	pub ppvoffset_acct:Option<CValidcombination>,
 }
 
 #[derive(Debug)]
@@ -12913,7 +12916,7 @@ pub struct CAllocationhdr {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_currency_id_c_currency:Option<CCurrency>,
+	pub c_currency:Option<CCurrency>,
 	/// has many
 	pub c_allocationline:Option<Vec<CAllocationline>>,
 }
@@ -12965,17 +12968,17 @@ pub struct CAllocationline {
 	/// not nullable 
 	pub writeoffamt:f64,
 	/// has one
-	pub c_invoice_id_c_invoice:Option<CInvoice>,
+	pub c_invoice:Option<CInvoice>,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 	/// has one
-	pub c_order_id_c_order:Option<COrder>,
+	pub c_order:Option<COrder>,
 	/// has one
-	pub c_payment_id_c_payment:Option<CPayment>,
+	pub c_payment:Option<CPayment>,
 	/// has one
-	pub c_cashline_id_c_cashline:Option<CCashline>,
+	pub c_cashline:Option<CCashline>,
 	/// has one
-	pub c_allocationhdr_id_c_allocationhdr:Option<CAllocationhdr>,
+	pub c_allocationhdr:Option<CAllocationhdr>,
 	/// has many
 	pub c_paymentallocate:Option<Vec<CPaymentallocate>>,
 	/// has many
@@ -13015,7 +13018,7 @@ pub struct CBank {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_location_id_c_location:Option<CLocation>,
+	pub c_location:Option<CLocation>,
 	/// has many
 	pub ad_orginfo:Option<Vec<AdOrginfo>>,
 	/// has many
@@ -13067,9 +13070,9 @@ pub struct CBankaccount {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_bank_id_c_bank:Option<CBank>,
+	pub c_bank:Option<CBank>,
 	/// has one
-	pub c_currency_id_c_currency:Option<CCurrency>,
+	pub c_currency:Option<CCurrency>,
 	/// has many
 	pub c_bankaccount_acct:Option<Vec<CBankaccountAcct>>,
 	/// has many
@@ -13100,10 +13103,10 @@ pub struct CBankaccount {
 pub struct CBankaccountAcct {
 	/// primary
 	/// not nullable 
-	pub c_bankaccount_id:f64,
+	pub c_acctschema_id:f64,
 	/// primary
 	/// not nullable 
-	pub c_acctschema_id:f64,
+	pub c_bankaccount_id:f64,
 	/// not nullable 
 	pub ad_client_id:f64,
 	/// not nullable 
@@ -13146,33 +13149,33 @@ pub struct CBankaccountAcct {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_bankaccount_id_c_bankaccount:Option<CBankaccount>,
+	pub c_bankaccount:Option<CBankaccount>,
 	/// has one
-	pub c_acctschema_id_c_acctschema:Option<CAcctschema>,
+	pub c_acctschema:Option<CAcctschema>,
 	/// has one
-	pub b_intransit_acct_c_validcombination:Option<CValidcombination>,
+	pub b_intransit_acct:Option<CValidcombination>,
 	/// has one
-	pub b_asset_acct_c_validcombination:Option<CValidcombination>,
+	pub b_asset_acct:Option<CValidcombination>,
 	/// has one
-	pub b_expense_acct_c_validcombination:Option<CValidcombination>,
+	pub b_expense_acct:Option<CValidcombination>,
 	/// has one
-	pub b_interestrev_acct_c_validcombination:Option<CValidcombination>,
+	pub b_interestrev_acct:Option<CValidcombination>,
 	/// has one
-	pub b_interestexp_acct_c_validcombination:Option<CValidcombination>,
+	pub b_interestexp_acct:Option<CValidcombination>,
 	/// has one
-	pub b_unidentified_acct_c_validcombination:Option<CValidcombination>,
+	pub b_unidentified_acct:Option<CValidcombination>,
 	/// has one
-	pub b_unallocatedcash_acct_c_validcombination:Option<CValidcombination>,
+	pub b_unallocatedcash_acct:Option<CValidcombination>,
 	/// has one
-	pub b_paymentselect_acct_c_validcombination:Option<CValidcombination>,
+	pub b_paymentselect_acct:Option<CValidcombination>,
 	/// has one
-	pub b_settlementgain_acct_c_validcombination:Option<CValidcombination>,
+	pub b_settlementgain_acct:Option<CValidcombination>,
 	/// has one
-	pub b_settlementloss_acct_c_validcombination:Option<CValidcombination>,
+	pub b_settlementloss_acct:Option<CValidcombination>,
 	/// has one
-	pub b_revaluationgain_acct_c_validcombination:Option<CValidcombination>,
+	pub b_revaluationgain_acct:Option<CValidcombination>,
 	/// has one
-	pub b_revaluationloss_acct_c_validcombination:Option<CValidcombination>,
+	pub b_revaluationloss_acct:Option<CValidcombination>,
 }
 
 #[derive(Debug)]
@@ -13208,9 +13211,9 @@ pub struct CBankaccountdoc {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_bankaccount_id_c_bankaccount:Option<CBankaccount>,
+	pub c_bankaccount:Option<CBankaccount>,
 	/// has one
-	pub check_printformat_id_ad_printformat:Option<AdPrintformat>,
+	pub check_printformat:Option<AdPrintformat>,
 }
 
 #[derive(Debug)]
@@ -13272,7 +13275,7 @@ pub struct CBankstatement {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_bankaccount_id_c_bankaccount:Option<CBankaccount>,
+	pub c_bankaccount:Option<CBankaccount>,
 	/// has many
 	pub c_bankstatementline:Option<Vec<CBankstatementline>>,
 	/// has many
@@ -13356,17 +13359,17 @@ pub struct CBankstatementline {
 	/// not nullable 
 	pub valutadate:NaiveDateTime,
 	/// has one
-	pub c_bankstatement_id_c_bankstatement:Option<CBankstatement>,
+	pub c_bankstatement:Option<CBankstatement>,
 	/// has one
-	pub c_payment_id_c_payment:Option<CPayment>,
+	pub c_payment:Option<CPayment>,
 	/// has one
-	pub c_currency_id_c_currency:Option<CCurrency>,
+	pub c_currency:Option<CCurrency>,
 	/// has one
-	pub c_charge_id_c_charge:Option<CCharge>,
+	pub c_charge:Option<CCharge>,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 	/// has one
-	pub c_invoice_id_c_invoice:Option<CInvoice>,
+	pub c_invoice:Option<CInvoice>,
 	/// has many
 	pub i_bankstatement:Option<Vec<IBankstatement>>,
 }
@@ -13415,7 +13418,7 @@ pub struct CBankstatementloader {
 	pub updatedby:f64,
 	pub userid:Option<String>,
 	/// has one
-	pub c_bankaccount_id_c_bankaccount:Option<CBankaccount>,
+	pub c_bankaccount:Option<CBankaccount>,
 }
 
 #[derive(Debug)]
@@ -13499,11 +13502,11 @@ pub struct CBpBankaccount {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 	/// has one
-	pub c_bank_id_c_bank:Option<CBank>,
+	pub c_bank:Option<CBank>,
 	/// has one
-	pub ad_user_id_ad_user:Option<AdUser>,
+	pub ad_user:Option<AdUser>,
 	/// has many
 	pub c_payment:Option<Vec<CPayment>>,
 	/// has many
@@ -13514,10 +13517,10 @@ pub struct CBpBankaccount {
 pub struct CBpCustomerAcct {
 	/// primary
 	/// not nullable 
-	pub c_bpartner_id:f64,
+	pub c_acctschema_id:f64,
 	/// primary
 	/// not nullable 
-	pub c_acctschema_id:f64,
+	pub c_bpartner_id:f64,
 	/// not nullable 
 	pub ad_client_id:f64,
 	/// not nullable 
@@ -13539,13 +13542,13 @@ pub struct CBpCustomerAcct {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 	/// has one
-	pub c_acctschema_id_c_acctschema:Option<CAcctschema>,
+	pub c_acctschema:Option<CAcctschema>,
 	/// has one
-	pub c_receivable_acct_c_validcombination:Option<CValidcombination>,
+	pub c_receivable_acct:Option<CValidcombination>,
 	/// has one
-	pub c_prepayment_acct_c_validcombination:Option<CValidcombination>,
+	pub c_prepayment_acct:Option<CValidcombination>,
 }
 
 #[derive(Debug)]
@@ -13610,11 +13613,11 @@ pub struct CBpEdi {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 	/// has one
-	pub m_warehouse_id_m_warehouse:Option<MWarehouse>,
+	pub m_warehouse:Option<MWarehouse>,
 	/// has one
-	pub ad_sequence_id_ad_sequence:Option<AdSequence>,
+	pub ad_sequence:Option<AdSequence>,
 	/// has many
 	pub m_edi:Option<Vec<MEdi>>,
 }
@@ -13623,10 +13626,10 @@ pub struct CBpEdi {
 pub struct CBpEmployeeAcct {
 	/// primary
 	/// not nullable 
-	pub c_bpartner_id:f64,
+	pub c_acctschema_id:f64,
 	/// primary
 	/// not nullable 
-	pub c_acctschema_id:f64,
+	pub c_bpartner_id:f64,
 	/// not nullable 
 	pub ad_client_id:f64,
 	/// not nullable 
@@ -13647,13 +13650,13 @@ pub struct CBpEmployeeAcct {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 	/// has one
-	pub c_acctschema_id_c_acctschema:Option<CAcctschema>,
+	pub c_acctschema:Option<CAcctschema>,
 	/// has one
-	pub e_expense_acct_c_validcombination:Option<CValidcombination>,
+	pub e_expense_acct:Option<CValidcombination>,
 	/// has one
-	pub e_prepayment_acct_c_validcombination:Option<CValidcombination>,
+	pub e_prepayment_acct:Option<CValidcombination>,
 }
 
 #[derive(Debug)]
@@ -13699,17 +13702,17 @@ pub struct CBpGroup {
 	/// not nullable 
 	pub value:String,
 	/// has one
-	pub ad_printcolor_id_ad_printcolor:Option<AdPrintcolor>,
+	pub ad_printcolor:Option<AdPrintcolor>,
 	/// has one
-	pub m_pricelist_id_m_pricelist:Option<MPricelist>,
+	pub m_pricelist:Option<MPricelist>,
 	/// has one
-	pub po_pricelist_id_m_pricelist:Option<MPricelist>,
+	pub po_pricelist:Option<MPricelist>,
 	/// has one
-	pub m_discountschema_id_m_discountschema:Option<MDiscountschema>,
+	pub m_discountschema:Option<MDiscountschema>,
 	/// has one
-	pub po_discountschema_id_m_discountschema:Option<MDiscountschema>,
+	pub po_discountschema:Option<MDiscountschema>,
 	/// has one
-	pub c_dunning_id_c_dunning:Option<CDunning>,
+	pub c_dunning:Option<CDunning>,
 	/// has many
 	pub c_bp_group_acct:Option<Vec<CBpGroupAcct>>,
 	/// has many
@@ -13782,33 +13785,33 @@ pub struct CBpGroupAcct {
 	/// not nullable 
 	pub writeoff_acct:f64,
 	/// has one
-	pub c_acctschema_id_c_acctschema:Option<CAcctschema>,
+	pub c_acctschema:Option<CAcctschema>,
 	/// has one
-	pub c_bp_group_id_c_bp_group:Option<CBpGroup>,
+	pub c_bp_group:Option<CBpGroup>,
 	/// has one
-	pub c_receivable_acct_c_validcombination:Option<CValidcombination>,
+	pub c_receivable_acct:Option<CValidcombination>,
 	/// has one
-	pub c_prepayment_acct_c_validcombination:Option<CValidcombination>,
+	pub c_prepayment_acct:Option<CValidcombination>,
 	/// has one
-	pub v_liability_acct_c_validcombination:Option<CValidcombination>,
+	pub v_liability_acct:Option<CValidcombination>,
 	/// has one
-	pub v_liability_services_acct_c_validcombination:Option<CValidcombination>,
+	pub v_liability_services_acct:Option<CValidcombination>,
 	/// has one
-	pub v_prepayment_acct_c_validcombination:Option<CValidcombination>,
+	pub v_prepayment_acct:Option<CValidcombination>,
 	/// has one
-	pub paydiscount_exp_acct_c_validcombination:Option<CValidcombination>,
+	pub paydiscount_exp_acct:Option<CValidcombination>,
 	/// has one
-	pub paydiscount_rev_acct_c_validcombination:Option<CValidcombination>,
+	pub paydiscount_rev_acct:Option<CValidcombination>,
 	/// has one
-	pub writeoff_acct_c_validcombination:Option<CValidcombination>,
+	pub writeoff_acct:Option<CValidcombination>,
 	/// has one
-	pub notinvoicedreceipts_acct_c_validcombination:Option<CValidcombination>,
+	pub notinvoicedreceipts_acct:Option<CValidcombination>,
 	/// has one
-	pub unearnedrevenue_acct_c_validcombination:Option<CValidcombination>,
+	pub unearnedrevenue_acct:Option<CValidcombination>,
 	/// has one
-	pub notinvoicedrevenue_acct_c_validcombination:Option<CValidcombination>,
+	pub notinvoicedrevenue_acct:Option<CValidcombination>,
 	/// has one
-	pub notinvoicedreceivables_acct_c_validcombination:Option<CValidcombination>,
+	pub notinvoicedreceivables_acct:Option<CValidcombination>,
 }
 
 #[derive(Debug)]
@@ -13856,13 +13859,13 @@ pub struct CBpRelation {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 	/// has one
-	pub c_bpartner_location_id_c_bpartner_location:Option<CBpartnerLocation>,
+	pub c_bpartner_location:Option<CBpartnerLocation>,
 	/// has one
-	pub c_bpartnerrelation_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartnerrelation:Option<CBpartner>,
 	/// has one
-	pub c_bpartnerrelation_location_id_c_bpartner_location:Option<CBpartnerLocation>,
+	pub c_bpartnerrelation_location:Option<CBpartnerLocation>,
 }
 
 #[derive(Debug)]
@@ -13894,15 +13897,15 @@ pub struct CBpVendorAcct {
 	pub v_liability_services_acct:Option<f64>,
 	pub v_prepayment_acct:Option<f64>,
 	/// has one
-	pub c_acctschema_id_c_acctschema:Option<CAcctschema>,
+	pub c_acctschema:Option<CAcctschema>,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 	/// has one
-	pub v_liability_acct_c_validcombination:Option<CValidcombination>,
+	pub v_liability_acct:Option<CValidcombination>,
 	/// has one
-	pub v_liability_services_acct_c_validcombination:Option<CValidcombination>,
+	pub v_liability_services_acct:Option<CValidcombination>,
 	/// has one
-	pub v_prepayment_acct_c_validcombination:Option<CValidcombination>,
+	pub v_prepayment_acct:Option<CValidcombination>,
 }
 
 #[derive(Debug)]
@@ -13938,9 +13941,9 @@ pub struct CBpWithholding {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 	/// has one
-	pub c_withholding_id_c_withholding:Option<CWithholding>,
+	pub c_withholding:Option<CWithholding>,
 }
 
 #[derive(Debug)]
@@ -14068,41 +14071,41 @@ pub struct CBpartner {
 	/// not nullable 
 	pub value:String,
 	/// has one
-	pub ad_client_id_ad_client:Option<AdClient>,
+	pub ad_client:Option<AdClient>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 	/// has one
-	pub c_bp_group_id_c_bp_group:Option<CBpGroup>,
+	pub c_bp_group:Option<CBpGroup>,
 	/// has one
-	pub ad_language_ad_language:Option<AdLanguage>,
+	pub ad_language:Option<AdLanguage>,
 	/// has one
-	pub c_invoiceschedule_id_c_invoiceschedule:Option<CInvoiceschedule>,
+	pub c_invoiceschedule:Option<CInvoiceschedule>,
 	/// has one
-	pub c_paymentterm_id_c_paymentterm:Option<CPaymentterm>,
+	pub c_paymentterm:Option<CPaymentterm>,
 	/// has one
-	pub m_pricelist_id_m_pricelist:Option<MPricelist>,
+	pub m_pricelist:Option<MPricelist>,
 	/// has one
-	pub m_discountschema_id_m_discountschema:Option<MDiscountschema>,
+	pub m_discountschema:Option<MDiscountschema>,
 	/// has one
-	pub c_dunning_id_c_dunning:Option<CDunning>,
+	pub c_dunning:Option<CDunning>,
 	/// has one
-	pub po_pricelist_id_m_pricelist:Option<MPricelist>,
+	pub po_pricelist:Option<MPricelist>,
 	/// has one
-	pub po_discountschema_id_m_discountschema:Option<MDiscountschema>,
+	pub po_discountschema:Option<MDiscountschema>,
 	/// has one
-	pub po_paymentterm_id_c_paymentterm:Option<CPaymentterm>,
+	pub po_paymentterm:Option<CPaymentterm>,
 	/// has one
-	pub c_greeting_id_c_greeting:Option<CGreeting>,
+	pub c_greeting:Option<CGreeting>,
 	/// has one
-	pub salesrep_id_ad_user:Option<AdUser>,
+	pub salesrep:Option<AdUser>,
 	/// has one, self referential
-	pub bpartner_parent_id_c_bpartner:Option<Box<CBpartner>>,
+	pub bpartner_parent:Option<Box<CBpartner>>,
 	/// has one
-	pub invoice_printformat_id_ad_printformat:Option<AdPrintformat>,
+	pub invoice_printformat:Option<AdPrintformat>,
 	/// has one
-	pub ad_orgbp_id_ad_org:Option<AdOrg>,
+	pub ad_orgbp:Option<AdOrg>,
 	/// has one
-	pub c_taxgroup_id_c_taxgroup:Option<CTaxgroup>,
+	pub c_taxgroup:Option<CTaxgroup>,
 	/// has many
 	pub a_asset:Option<Vec<AAsset>>,
 	/// has many
@@ -14312,15 +14315,15 @@ pub struct CBpartnerLocation {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_client_id_ad_client:Option<AdClient>,
+	pub ad_client:Option<AdClient>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 	/// has one
-	pub c_salesregion_id_c_salesregion:Option<CSalesregion>,
+	pub c_salesregion:Option<CSalesregion>,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 	/// has one
-	pub c_location_id_c_location:Option<CLocation>,
+	pub c_location:Option<CLocation>,
 	/// has many
 	pub a_asset:Option<Vec<AAsset>>,
 	/// has many
@@ -14402,9 +14405,9 @@ pub struct CBpartnerProduct {
 	pub vendorcategory:Option<String>,
 	pub vendorproductno:Option<String>,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 }
 
 #[derive(Debug)]
@@ -14433,9 +14436,9 @@ pub struct CCalendar {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_client_id_ad_client:Option<AdClient>,
+	pub ad_client:Option<AdClient>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 	/// has many
 	pub ad_clientinfo:Option<Vec<AdClientinfo>>,
 	/// has many
@@ -14487,7 +14490,7 @@ pub struct CCampaign {
 	/// not nullable 
 	pub value:String,
 	/// has one
-	pub c_channel_id_c_channel:Option<CChannel>,
+	pub c_channel:Option<CChannel>,
 	/// has many
 	pub c_acctschema_element:Option<Vec<CAcctschemaElement>>,
 	/// has many
@@ -14614,21 +14617,21 @@ pub struct CCash {
 	pub user1_id:Option<f64>,
 	pub user2_id:Option<f64>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 	/// has one
-	pub c_cashbook_id_c_cashbook:Option<CCashbook>,
+	pub c_cashbook:Option<CCashbook>,
 	/// has one
-	pub ad_orgtrx_id_ad_org:Option<AdOrg>,
+	pub ad_orgtrx:Option<AdOrg>,
 	/// has one
-	pub c_project_id_c_project:Option<CProject>,
+	pub c_project:Option<CProject>,
 	/// has one
-	pub c_campaign_id_c_campaign:Option<CCampaign>,
+	pub c_campaign:Option<CCampaign>,
 	/// has one
-	pub c_activity_id_c_activity:Option<CActivity>,
+	pub c_activity:Option<CActivity>,
 	/// has one
-	pub user1_id_c_elementvalue:Option<CElementvalue>,
+	pub user1:Option<CElementvalue>,
 	/// has one
-	pub user2_id_c_elementvalue:Option<CElementvalue>,
+	pub user2:Option<CElementvalue>,
 	/// has many
 	pub c_cashline:Option<Vec<CCashline>>,
 }
@@ -14664,7 +14667,7 @@ pub struct CCashbook {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_currency_id_c_currency:Option<CCurrency>,
+	pub c_currency:Option<CCurrency>,
 	/// has many
 	pub ad_orginfo:Option<Vec<AdOrginfo>>,
 	/// has many
@@ -14681,10 +14684,10 @@ pub struct CCashbook {
 pub struct CCashbookAcct {
 	/// primary
 	/// not nullable 
-	pub c_cashbook_id:f64,
+	pub c_acctschema_id:f64,
 	/// primary
 	/// not nullable 
-	pub c_acctschema_id:f64,
+	pub c_cashbook_id:f64,
 	/// not nullable 
 	pub ad_client_id:f64,
 	/// not nullable 
@@ -14713,19 +14716,19 @@ pub struct CCashbookAcct {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_cashbook_id_c_cashbook:Option<CCashbook>,
+	pub c_cashbook:Option<CCashbook>,
 	/// has one
-	pub c_acctschema_id_c_acctschema:Option<CAcctschema>,
+	pub c_acctschema:Option<CAcctschema>,
 	/// has one
-	pub cb_asset_acct_c_validcombination:Option<CValidcombination>,
+	pub cb_asset_acct:Option<CValidcombination>,
 	/// has one
-	pub cb_cashtransfer_acct_c_validcombination:Option<CValidcombination>,
+	pub cb_cashtransfer_acct:Option<CValidcombination>,
 	/// has one
-	pub cb_differences_acct_c_validcombination:Option<CValidcombination>,
+	pub cb_differences_acct:Option<CValidcombination>,
 	/// has one
-	pub cb_expense_acct_c_validcombination:Option<CValidcombination>,
+	pub cb_expense_acct:Option<CValidcombination>,
 	/// has one
-	pub cb_receipt_acct_c_validcombination:Option<CValidcombination>,
+	pub cb_receipt_acct:Option<CValidcombination>,
 }
 
 #[derive(Debug)]
@@ -14775,17 +14778,17 @@ pub struct CCashline {
 	/// defaults to: 0
 	pub writeoffamt:Option<f64>,
 	/// has one
-	pub c_cash_id_c_cash:Option<CCash>,
+	pub c_cash:Option<CCash>,
 	/// has one
-	pub c_bankaccount_id_c_bankaccount:Option<CBankaccount>,
+	pub c_bankaccount:Option<CBankaccount>,
 	/// has one
-	pub c_charge_id_c_charge:Option<CCharge>,
+	pub c_charge:Option<CCharge>,
 	/// has one
-	pub c_invoice_id_c_invoice:Option<CInvoice>,
+	pub c_invoice:Option<CInvoice>,
 	/// has one
-	pub c_currency_id_c_currency:Option<CCurrency>,
+	pub c_currency:Option<CCurrency>,
 	/// has one
-	pub c_payment_id_c_payment:Option<CPayment>,
+	pub c_payment:Option<CPayment>,
 	/// has many
 	pub c_allocationline:Option<Vec<CAllocationline>>,
 	/// has many
@@ -14821,7 +14824,7 @@ pub struct CChannel {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_printcolor_id_ad_printcolor:Option<AdPrintcolor>,
+	pub ad_printcolor:Option<AdPrintcolor>,
 	/// has many
 	pub c_campaign:Option<Vec<CCampaign>>,
 }
@@ -14867,9 +14870,9 @@ pub struct CCharge {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_taxcategory_id_c_taxcategory:Option<CTaxcategory>,
+	pub c_taxcategory:Option<CTaxcategory>,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 	/// has many
 	pub c_bankstatementline:Option<Vec<CBankstatementline>>,
 	/// has many
@@ -14922,10 +14925,10 @@ pub struct CCharge {
 pub struct CChargeAcct {
 	/// primary
 	/// not nullable 
-	pub c_charge_id:f64,
+	pub c_acctschema_id:f64,
 	/// primary
 	/// not nullable 
-	pub c_acctschema_id:f64,
+	pub c_charge_id:f64,
 	/// not nullable 
 	pub ad_client_id:f64,
 	/// not nullable 
@@ -14948,13 +14951,13 @@ pub struct CChargeAcct {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_charge_id_c_charge:Option<CCharge>,
+	pub c_charge:Option<CCharge>,
 	/// has one
-	pub c_acctschema_id_c_acctschema:Option<CAcctschema>,
+	pub c_acctschema:Option<CAcctschema>,
 	/// has one
-	pub ch_expense_acct_c_validcombination:Option<CValidcombination>,
+	pub ch_expense_acct:Option<CValidcombination>,
 	/// has one
-	pub ch_revenue_acct_c_validcombination:Option<CValidcombination>,
+	pub ch_revenue_acct:Option<CValidcombination>,
 }
 
 #[derive(Debug)]
@@ -15083,13 +15086,13 @@ pub struct CCity {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_client_id_ad_client:Option<AdClient>,
+	pub ad_client:Option<AdClient>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 	/// has one
-	pub c_country_id_c_country:Option<CCountry>,
+	pub c_country:Option<CCountry>,
 	/// has one
-	pub c_region_id_c_region:Option<CRegion>,
+	pub c_region:Option<CRegion>,
 	/// has many
 	pub c_location:Option<Vec<CLocation>>,
 }
@@ -15136,11 +15139,11 @@ pub struct CCommission {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 	/// has one
-	pub c_currency_id_c_currency:Option<CCurrency>,
+	pub c_currency:Option<CCurrency>,
 	/// has one
-	pub c_charge_id_c_charge:Option<CCharge>,
+	pub c_charge:Option<CCharge>,
 	/// has many
 	pub c_commissionline:Option<Vec<CCommissionline>>,
 	/// has many
@@ -15183,9 +15186,9 @@ pub struct CCommissionamt {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_commissionrun_id_c_commissionrun:Option<CCommissionrun>,
+	pub c_commissionrun:Option<CCommissionrun>,
 	/// has one
-	pub c_commissionline_id_c_commissionline:Option<CCommissionline>,
+	pub c_commissionline:Option<CCommissionline>,
 	/// has many
 	pub c_commissiondetail:Option<Vec<CCommissiondetail>>,
 }
@@ -15230,13 +15233,13 @@ pub struct CCommissiondetail {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_commissionamt_id_c_commissionamt:Option<CCommissionamt>,
+	pub c_commissionamt:Option<CCommissionamt>,
 	/// has one
-	pub c_orderline_id_c_orderline:Option<COrderline>,
+	pub c_orderline:Option<COrderline>,
 	/// has one
-	pub c_invoiceline_id_c_invoiceline:Option<CInvoiceline>,
+	pub c_invoiceline:Option<CInvoiceline>,
 	/// has one
-	pub c_currency_id_c_currency:Option<CCurrency>,
+	pub c_currency:Option<CCurrency>,
 }
 
 #[derive(Debug)]
@@ -15288,19 +15291,19 @@ pub struct CCommissionline {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_commission_id_c_commission:Option<CCommission>,
+	pub c_commission:Option<CCommission>,
 	/// has one
-	pub org_id_ad_org:Option<AdOrg>,
+	pub org:Option<AdOrg>,
 	/// has one
-	pub m_product_category_id_m_product_category:Option<MProductCategory>,
+	pub m_product_category:Option<MProductCategory>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has one
-	pub c_bp_group_id_c_bp_group:Option<CBpGroup>,
+	pub c_bp_group:Option<CBpGroup>,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 	/// has one
-	pub c_salesregion_id_c_salesregion:Option<CSalesregion>,
+	pub c_salesregion:Option<CSalesregion>,
 	/// has many
 	pub c_commissionamt:Option<Vec<CCommissionamt>>,
 }
@@ -15342,7 +15345,7 @@ pub struct CCommissionrun {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_commission_id_c_commission:Option<CCommission>,
+	pub c_commission:Option<CCommission>,
 	/// has many
 	pub c_commissionamt:Option<Vec<CCommissionamt>>,
 }
@@ -15385,15 +15388,15 @@ pub struct CConversionRate {
 	pub validfrom:NaiveDateTime,
 	pub validto:Option<NaiveDateTime>,
 	/// has one
-	pub ad_client_id_ad_client:Option<AdClient>,
+	pub ad_client:Option<AdClient>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 	/// has one
-	pub c_currency_id_c_currency:Option<CCurrency>,
+	pub c_currency:Option<CCurrency>,
 	/// has one
-	pub c_currency_id_to_c_currency:Option<CCurrency>,
+	pub c_currency_id_to:Option<CCurrency>,
 	/// has one
-	pub c_conversiontype_id_c_conversiontype:Option<CConversiontype>,
+	pub c_conversiontype:Option<CConversiontype>,
 	/// has many
 	pub i_conversion_rate:Option<Vec<IConversionRate>>,
 }
@@ -15511,19 +15514,19 @@ pub struct CCountry {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one, self referential
-	pub c_country_id_c_country:Option<Box<CCountry>>,
+	pub c_country:Option<Box<CCountry>>,
 	/// has one
-	pub ad_client_id_ad_client:Option<AdClient>,
+	pub ad_client:Option<AdClient>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 	/// has one
-	pub ad_language_ad_language:Option<AdLanguage>,
+	pub ad_language:Option<AdLanguage>,
 	/// has one
-	pub c_currency_id_c_currency:Option<CCurrency>,
+	pub c_currency:Option<CCurrency>,
+	/// has one, extension table
+	pub c_country:Option<Box<CCountry>>,
 	/// has many
 	pub c_city:Option<Vec<CCity>>,
-	/// has many
-	pub c_country:Option<Vec<CCountry>>,
 	/// has many
 	pub c_country_trl:Option<Vec<CCountryTrl>>,
 	/// has many
@@ -15546,10 +15549,10 @@ pub struct CCountry {
 pub struct CCountryTrl {
 	/// primary
 	/// not nullable 
-	pub c_country_id:f64,
+	pub ad_language:String,
 	/// primary
 	/// not nullable 
-	pub ad_language:String,
+	pub c_country_id:f64,
 	/// not nullable 
 	pub ad_client_id:f64,
 	/// not nullable 
@@ -15575,9 +15578,9 @@ pub struct CCountryTrl {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_country_id_c_country:Option<CCountry>,
+	pub c_country:Option<CCountry>,
 	/// has one
-	pub ad_language_ad_language:Option<AdLanguage>,
+	pub ad_language:Option<AdLanguage>,
 }
 
 #[derive(Debug)]
@@ -15622,9 +15625,9 @@ pub struct CCurrency {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_client_id_ad_client:Option<AdClient>,
+	pub ad_client:Option<AdClient>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 	/// has many
 	pub a_asset_reval_entry:Option<Vec<AAssetRevalEntry>>,
 	/// has many
@@ -15761,27 +15764,27 @@ pub struct CCurrencyAcct {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_acctschema_id_c_acctschema:Option<CAcctschema>,
+	pub c_acctschema:Option<CAcctschema>,
 	/// has one
-	pub c_currency_id_c_currency:Option<CCurrency>,
+	pub c_currency:Option<CCurrency>,
 	/// has one
-	pub unrealizedgain_acct_c_validcombination:Option<CValidcombination>,
+	pub unrealizedgain_acct:Option<CValidcombination>,
 	/// has one
-	pub unrealizedloss_acct_c_validcombination:Option<CValidcombination>,
+	pub unrealizedloss_acct:Option<CValidcombination>,
 	/// has one
-	pub realizedgain_acct_c_validcombination:Option<CValidcombination>,
+	pub realizedgain_acct:Option<CValidcombination>,
 	/// has one
-	pub realizedloss_acct_c_validcombination:Option<CValidcombination>,
+	pub realizedloss_acct:Option<CValidcombination>,
 }
 
 #[derive(Debug)]
 pub struct CCurrencyTrl {
 	/// primary
 	/// not nullable 
-	pub c_currency_id:f64,
+	pub ad_language:String,
 	/// primary
 	/// not nullable 
-	pub ad_language:String,
+	pub c_currency_id:f64,
 	/// not nullable 
 	pub ad_client_id:f64,
 	/// not nullable 
@@ -15806,9 +15809,9 @@ pub struct CCurrencyTrl {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_currency_id_c_currency:Option<CCurrency>,
+	pub c_currency:Option<CCurrency>,
 	/// has one
-	pub ad_language_ad_language:Option<AdLanguage>,
+	pub ad_language:Option<AdLanguage>,
 }
 
 #[derive(Debug)]
@@ -15839,7 +15842,7 @@ pub struct CCycle {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_currency_id_c_currency:Option<CCurrency>,
+	pub c_currency:Option<CCurrency>,
 	/// has many
 	pub c_cyclestep:Option<Vec<CCyclestep>>,
 }
@@ -15870,9 +15873,9 @@ pub struct CCyclephase {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_cyclestep_id_c_cyclestep:Option<CCyclestep>,
+	pub c_cyclestep:Option<CCyclestep>,
 	/// has one
-	pub c_phase_id_c_phase:Option<CPhase>,
+	pub c_phase:Option<CPhase>,
 }
 
 #[derive(Debug)]
@@ -15906,7 +15909,7 @@ pub struct CCyclestep {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_cycle_id_c_cycle:Option<CCycle>,
+	pub c_cycle:Option<CCycle>,
 	/// has many
 	pub c_cyclephase:Option<Vec<CCyclephase>>,
 }
@@ -15993,21 +15996,21 @@ pub struct CDoctype {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one, self referential
-	pub c_doctypeproforma_id_c_doctype:Option<Box<CDoctype>>,
+	pub c_doctypeproforma:Option<Box<CDoctype>>,
 	/// has one, self referential
-	pub c_doctypeshipment_id_c_doctype:Option<Box<CDoctype>>,
+	pub c_doctypeshipment:Option<Box<CDoctype>>,
 	/// has one, self referential
-	pub c_doctypeinvoice_id_c_doctype:Option<Box<CDoctype>>,
+	pub c_doctypeinvoice:Option<Box<CDoctype>>,
 	/// has one
-	pub docnosequence_id_ad_sequence:Option<AdSequence>,
+	pub docnosequence:Option<AdSequence>,
 	/// has one
-	pub gl_category_id_gl_category:Option<GlCategory>,
+	pub gl_category:Option<GlCategory>,
 	/// has one
-	pub ad_printformat_id_ad_printformat:Option<AdPrintformat>,
+	pub ad_printformat:Option<AdPrintformat>,
 	/// has one, self referential
-	pub c_doctypedifference_id_c_doctype:Option<Box<CDoctype>>,
+	pub c_doctypedifference:Option<Box<CDoctype>>,
 	/// has one
-	pub definitesequence_id_ad_sequence:Option<AdSequence>,
+	pub definitesequence:Option<AdSequence>,
 	/// has many
 	pub a_asset_reval_entry:Option<Vec<AAssetRevalEntry>>,
 	/// has many
@@ -16080,10 +16083,10 @@ pub struct CDoctype {
 pub struct CDoctypeTrl {
 	/// primary
 	/// not nullable 
-	pub c_doctype_id:f64,
+	pub ad_language:String,
 	/// primary
 	/// not nullable 
-	pub ad_language:String,
+	pub c_doctype_id:f64,
 	/// not nullable 
 	pub ad_client_id:f64,
 	/// not nullable 
@@ -16110,9 +16113,9 @@ pub struct CDoctypeTrl {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_doctype_id_c_doctype:Option<CDoctype>,
+	pub c_doctype:Option<CDoctype>,
 	/// has one
-	pub ad_language_ad_language:Option<AdLanguage>,
+	pub ad_language:Option<AdLanguage>,
 }
 
 #[derive(Debug)]
@@ -16152,9 +16155,9 @@ pub struct CDoctypecounter {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_doctype_id_c_doctype:Option<CDoctype>,
+	pub c_doctype:Option<CDoctype>,
 	/// has one
-	pub counter_c_doctype_id_c_doctype:Option<CDoctype>,
+	pub counter:Option<CDoctype>,
 }
 
 #[derive(Debug)]
@@ -16259,11 +16262,11 @@ pub struct CDunninglevel {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_dunning_id_c_dunning:Option<CDunning>,
+	pub c_dunning:Option<CDunning>,
 	/// has one
-	pub dunning_printformat_id_ad_printformat:Option<AdPrintformat>,
+	pub dunning_printformat:Option<AdPrintformat>,
 	/// has one
-	pub c_paymentterm_id_c_paymentterm:Option<CPaymentterm>,
+	pub c_paymentterm:Option<CPaymentterm>,
 	/// has many
 	pub c_dunninglevel_trl:Option<Vec<CDunninglevelTrl>>,
 	/// has many
@@ -16304,9 +16307,9 @@ pub struct CDunninglevelTrl {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_language_ad_language:Option<AdLanguage>,
+	pub ad_language:Option<AdLanguage>,
 	/// has one
-	pub c_dunninglevel_id_c_dunninglevel:Option<CDunninglevel>,
+	pub c_dunninglevel:Option<CDunninglevel>,
 }
 
 #[derive(Debug)]
@@ -16342,7 +16345,7 @@ pub struct CDunningrun {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_dunninglevel_id_c_dunninglevel:Option<CDunninglevel>,
+	pub c_dunninglevel:Option<CDunninglevel>,
 	/// has many
 	pub c_dunningrunentry:Option<Vec<CDunningrunentry>>,
 }
@@ -16391,17 +16394,17 @@ pub struct CDunningrunentry {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 	/// has one
-	pub c_bpartner_location_id_c_bpartner_location:Option<CBpartnerLocation>,
+	pub c_bpartner_location:Option<CBpartnerLocation>,
 	/// has one
-	pub ad_user_id_ad_user:Option<AdUser>,
+	pub ad_user:Option<AdUser>,
 	/// has one
-	pub c_dunningrun_id_c_dunningrun:Option<CDunningrun>,
+	pub c_dunningrun:Option<CDunningrun>,
 	/// has one
-	pub c_currency_id_c_currency:Option<CCurrency>,
+	pub c_currency:Option<CCurrency>,
 	/// has one
-	pub salesrep_id_ad_user:Option<AdUser>,
+	pub salesrep:Option<AdUser>,
 	/// has many
 	pub c_dunningrunline:Option<Vec<CDunningrunline>>,
 }
@@ -16463,13 +16466,13 @@ pub struct CDunningrunline {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_dunningrunentry_id_c_dunningrunentry:Option<CDunningrunentry>,
+	pub c_dunningrunentry:Option<CDunningrunentry>,
 	/// has one
-	pub c_invoice_id_c_invoice:Option<CInvoice>,
+	pub c_invoice:Option<CInvoice>,
 	/// has one
-	pub c_payment_id_c_payment:Option<CPayment>,
+	pub c_payment:Option<CPayment>,
 	/// has one
-	pub c_invoicepayschedule_id_c_invoicepayschedule:Option<CInvoicepayschedule>,
+	pub c_invoicepayschedule:Option<CInvoicepayschedule>,
 }
 
 #[derive(Debug)]
@@ -16508,11 +16511,11 @@ pub struct CElement {
 	pub updatedby:f64,
 	pub vformat:Option<String>,
 	/// has one
-	pub ad_client_id_ad_client:Option<AdClient>,
+	pub ad_client:Option<AdClient>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 	/// has one
-	pub ad_tree_id_ad_tree:Option<AdTree>,
+	pub ad_tree:Option<AdTree>,
 	/// has many
 	pub c_acctschema_element:Option<Vec<CAcctschemaElement>>,
 	/// has many
@@ -16580,15 +16583,15 @@ pub struct CElementvalue {
 	/// not nullable 
 	pub value:String,
 	/// has one
-	pub ad_client_id_ad_client:Option<AdClient>,
+	pub ad_client:Option<AdClient>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 	/// has one
-	pub c_element_id_c_element:Option<CElement>,
+	pub c_element:Option<CElement>,
 	/// has one
-	pub c_bankaccount_id_c_bankaccount:Option<CBankaccount>,
+	pub c_bankaccount:Option<CBankaccount>,
 	/// has one
-	pub c_currency_id_c_currency:Option<CCurrency>,
+	pub c_currency:Option<CCurrency>,
 	/// has many
 	pub c_acctschema_element:Option<Vec<CAcctschemaElement>>,
 	/// has many
@@ -16659,10 +16662,10 @@ pub struct CElementvalue {
 pub struct CElementvalueTrl {
 	/// primary
 	/// not nullable 
-	pub c_elementvalue_id:f64,
+	pub ad_language:String,
 	/// primary
 	/// not nullable 
-	pub ad_language:String,
+	pub c_elementvalue_id:f64,
 	/// not nullable 
 	pub ad_client_id:f64,
 	/// not nullable 
@@ -16687,9 +16690,9 @@ pub struct CElementvalueTrl {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_elementvalue_id_c_elementvalue:Option<CElementvalue>,
+	pub c_elementvalue:Option<CElementvalue>,
 	/// has one
-	pub ad_language_ad_language:Option<AdLanguage>,
+	pub ad_language:Option<AdLanguage>,
 }
 
 #[derive(Debug)]
@@ -16765,22 +16768,22 @@ pub struct CGreetingTrl {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_language_ad_language:Option<AdLanguage>,
+	pub ad_language:Option<AdLanguage>,
 	/// has one
-	pub c_greeting_id_c_greeting:Option<CGreeting>,
+	pub c_greeting:Option<CGreeting>,
 }
 
 #[derive(Debug)]
 pub struct CInterorgAcct {
 	/// primary
 	/// not nullable 
-	pub c_acctschema_id:f64,
-	/// primary
-	/// not nullable 
 	pub ad_org_id:f64,
 	/// primary
 	/// not nullable 
 	pub ad_orgto_id:f64,
+	/// primary
+	/// not nullable 
+	pub c_acctschema_id:f64,
 	/// not nullable 
 	pub ad_client_id:f64,
 	/// defaults to: now()
@@ -16801,15 +16804,15 @@ pub struct CInterorgAcct {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_acctschema_id_c_acctschema:Option<CAcctschema>,
+	pub c_acctschema:Option<CAcctschema>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 	/// has one
-	pub ad_orgto_id_ad_org:Option<AdOrg>,
+	pub ad_orgto:Option<AdOrg>,
 	/// has one
-	pub intercompanydueto_acct_c_validcombination:Option<CValidcombination>,
+	pub intercompanydueto_acct:Option<CValidcombination>,
 	/// has one
-	pub intercompanyduefrom_acct_c_validcombination:Option<CValidcombination>,
+	pub intercompanyduefrom_acct:Option<CValidcombination>,
 }
 
 #[derive(Debug)]
@@ -16935,55 +16938,55 @@ pub struct CInvoice {
 	pub user1_id:Option<f64>,
 	pub user2_id:Option<f64>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 	/// has one
-	pub c_doctype_id_c_doctype:Option<CDoctype>,
+	pub c_doctype:Option<CDoctype>,
 	/// has one
-	pub c_doctypetarget_id_c_doctype:Option<CDoctype>,
+	pub c_doctypetarget:Option<CDoctype>,
 	/// has one
-	pub c_order_id_c_order:Option<COrder>,
+	pub c_order:Option<COrder>,
 	/// has one
-	pub salesrep_id_ad_user:Option<AdUser>,
+	pub salesrep:Option<AdUser>,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 	/// has one
-	pub c_bpartner_location_id_c_bpartner_location:Option<CBpartnerLocation>,
+	pub c_bpartner_location:Option<CBpartnerLocation>,
 	/// has one
-	pub c_currency_id_c_currency:Option<CCurrency>,
+	pub c_currency:Option<CCurrency>,
 	/// has one
-	pub c_paymentterm_id_c_paymentterm:Option<CPaymentterm>,
+	pub c_paymentterm:Option<CPaymentterm>,
 	/// has one
-	pub c_charge_id_c_charge:Option<CCharge>,
+	pub c_charge:Option<CCharge>,
 	/// has one
-	pub m_pricelist_id_m_pricelist:Option<MPricelist>,
+	pub m_pricelist:Option<MPricelist>,
 	/// has one
-	pub c_campaign_id_c_campaign:Option<CCampaign>,
+	pub c_campaign:Option<CCampaign>,
 	/// has one
-	pub c_project_id_c_project:Option<CProject>,
+	pub c_project:Option<CProject>,
 	/// has one
-	pub c_activity_id_c_activity:Option<CActivity>,
+	pub c_activity:Option<CActivity>,
 	/// has one
-	pub c_payment_id_c_payment:Option<CPayment>,
+	pub c_payment:Option<CPayment>,
 	/// has one
-	pub c_cashline_id_c_cashline:Option<CCashline>,
+	pub c_cashline:Option<CCashline>,
 	/// has one
-	pub ad_user_id_ad_user:Option<AdUser>,
+	pub ad_user:Option<AdUser>,
 	/// has one
-	pub ad_orgtrx_id_ad_org:Option<AdOrg>,
+	pub ad_orgtrx:Option<AdOrg>,
 	/// has one
-	pub user1_id_c_elementvalue:Option<CElementvalue>,
+	pub user1:Option<CElementvalue>,
 	/// has one
-	pub user2_id_c_elementvalue:Option<CElementvalue>,
+	pub user2:Option<CElementvalue>,
 	/// has one
-	pub c_conversiontype_id_c_conversiontype:Option<CConversiontype>,
+	pub c_conversiontype:Option<CConversiontype>,
 	/// has one, self referential
-	pub ref_invoice_id_c_invoice:Option<Box<CInvoice>>,
+	pub ref_invoice:Option<Box<CInvoice>>,
 	/// has one
-	pub m_rma_id_m_rma:Option<MRma>,
+	pub m_rma:Option<MRma>,
 	/// has one
-	pub c_dunninglevel_id_c_dunninglevel:Option<CDunninglevel>,
+	pub c_dunninglevel:Option<CDunninglevel>,
 	/// has one, self referential
-	pub reversal_id_c_invoice:Option<Box<CInvoice>>,
+	pub reversal:Option<Box<CInvoice>>,
 	/// has many
 	pub a_asset_addition:Option<Vec<AAssetAddition>>,
 	/// has many
@@ -17082,11 +17085,11 @@ pub struct CInvoicebatch {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub salesrep_id_ad_user:Option<AdUser>,
+	pub salesrep:Option<AdUser>,
 	/// has one
-	pub c_currency_id_c_currency:Option<CCurrency>,
+	pub c_currency:Option<CCurrency>,
 	/// has one
-	pub c_conversiontype_id_c_conversiontype:Option<CConversiontype>,
+	pub c_conversiontype:Option<CConversiontype>,
 	/// has many
 	pub c_invoicebatchline:Option<Vec<CInvoicebatchline>>,
 }
@@ -17165,35 +17168,35 @@ pub struct CInvoicebatchline {
 	pub user1_id:Option<f64>,
 	pub user2_id:Option<f64>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 	/// has one
-	pub c_invoicebatch_id_c_invoicebatch:Option<CInvoicebatch>,
+	pub c_invoicebatch:Option<CInvoicebatch>,
 	/// has one
-	pub c_doctype_id_c_doctype:Option<CDoctype>,
+	pub c_doctype:Option<CDoctype>,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 	/// has one
-	pub c_bpartner_location_id_c_bpartner_location:Option<CBpartnerLocation>,
+	pub c_bpartner_location:Option<CBpartnerLocation>,
 	/// has one
-	pub ad_user_id_ad_user:Option<AdUser>,
+	pub ad_user:Option<AdUser>,
 	/// has one
-	pub c_charge_id_c_charge:Option<CCharge>,
+	pub c_charge:Option<CCharge>,
 	/// has one
-	pub c_tax_id_c_tax:Option<CTax>,
+	pub c_tax:Option<CTax>,
 	/// has one
-	pub c_project_id_c_project:Option<CProject>,
+	pub c_project:Option<CProject>,
 	/// has one
-	pub c_activity_id_c_activity:Option<CActivity>,
+	pub c_activity:Option<CActivity>,
 	/// has one
-	pub ad_orgtrx_id_ad_org:Option<AdOrg>,
+	pub ad_orgtrx:Option<AdOrg>,
 	/// has one
-	pub user1_id_c_elementvalue:Option<CElementvalue>,
+	pub user1:Option<CElementvalue>,
 	/// has one
-	pub user2_id_c_elementvalue:Option<CElementvalue>,
+	pub user2:Option<CElementvalue>,
 	/// has one
-	pub c_invoice_id_c_invoice:Option<CInvoice>,
+	pub c_invoice:Option<CInvoice>,
 	/// has one
-	pub c_invoiceline_id_c_invoiceline:Option<CInvoiceline>,
+	pub c_invoiceline:Option<CInvoiceline>,
 }
 
 #[derive(Debug)]
@@ -17284,49 +17287,49 @@ pub struct CInvoiceline {
 	pub user1_id:Option<f64>,
 	pub user2_id:Option<f64>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 	/// has one
-	pub c_invoice_id_c_invoice:Option<CInvoice>,
+	pub c_invoice:Option<CInvoice>,
 	/// has one
-	pub c_orderline_id_c_orderline:Option<COrderline>,
+	pub c_orderline:Option<COrderline>,
 	/// has one
-	pub m_inoutline_id_m_inoutline:Option<MInoutline>,
+	pub m_inoutline:Option<MInoutline>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has one
-	pub c_charge_id_c_charge:Option<CCharge>,
+	pub c_charge:Option<CCharge>,
 	/// has one
-	pub c_uom_id_c_uom:Option<CUom>,
+	pub c_uom:Option<CUom>,
 	/// has one
-	pub c_tax_id_c_tax:Option<CTax>,
+	pub c_tax:Option<CTax>,
 	/// has one
-	pub s_resourceassignment_id_s_resourceassignment:Option<SResourceassignment>,
+	pub s_resourceassignment:Option<SResourceassignment>,
 	/// has one
-	pub a_asset_id_a_asset:Option<AAsset>,
+	pub a_asset:Option<AAsset>,
 	/// has one
-	pub m_attributesetinstance_id_m_attributesetinstance:Option<MAttributesetinstance>,
+	pub m_attributesetinstance:Option<MAttributesetinstance>,
 	/// has one, self referential
-	pub ref_invoiceline_id_c_invoiceline:Option<Box<CInvoiceline>>,
+	pub ref_invoiceline:Option<Box<CInvoiceline>>,
 	/// has one
-	pub c_project_id_c_project:Option<CProject>,
+	pub c_project:Option<CProject>,
 	/// has one
-	pub c_projectphase_id_c_projectphase:Option<CProjectphase>,
+	pub c_projectphase:Option<CProjectphase>,
 	/// has one
-	pub c_projecttask_id_c_projecttask:Option<CProjecttask>,
+	pub c_projecttask:Option<CProjecttask>,
 	/// has one
-	pub c_campaign_id_c_campaign:Option<CCampaign>,
+	pub c_campaign:Option<CCampaign>,
 	/// has one
-	pub c_activity_id_c_activity:Option<CActivity>,
+	pub c_activity:Option<CActivity>,
 	/// has one
-	pub user1_id_c_elementvalue:Option<CElementvalue>,
+	pub user1:Option<CElementvalue>,
 	/// has one
-	pub user2_id_c_elementvalue:Option<CElementvalue>,
+	pub user2:Option<CElementvalue>,
 	/// has one
-	pub ad_orgtrx_id_ad_org:Option<AdOrg>,
+	pub ad_orgtrx:Option<AdOrg>,
 	/// has one
-	pub m_rmaline_id_m_rmaline:Option<MRmaline>,
+	pub m_rmaline:Option<MRmaline>,
 	/// has one
-	pub a_asset_group_id_a_asset_group:Option<AAssetGroup>,
+	pub a_asset_group:Option<AAssetGroup>,
 	/// has many
 	pub a_asset_addition:Option<Vec<AAssetAddition>>,
 	/// has many
@@ -17402,9 +17405,9 @@ pub struct CInvoicepayschedule {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_invoice_id_c_invoice:Option<CInvoice>,
+	pub c_invoice:Option<CInvoice>,
 	/// has one
-	pub c_payschedule_id_c_payschedule:Option<CPayschedule>,
+	pub c_payschedule:Option<CPayschedule>,
 	/// has many
 	pub c_dunningrunline:Option<Vec<CDunningrunline>>,
 }
@@ -17458,10 +17461,10 @@ pub struct CInvoiceschedule {
 pub struct CInvoicetax {
 	/// primary
 	/// not nullable 
-	pub c_tax_id:f64,
+	pub c_invoice_id:f64,
 	/// primary
 	/// not nullable 
-	pub c_invoice_id:f64,
+	pub c_tax_id:f64,
 	/// not nullable 
 	pub ad_client_id:f64,
 	/// not nullable 
@@ -17492,9 +17495,9 @@ pub struct CInvoicetax {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_tax_id_c_tax:Option<CTax>,
+	pub c_tax:Option<CTax>,
 	/// has one
-	pub c_invoice_id_c_invoice:Option<CInvoice>,
+	pub c_invoice:Option<CInvoice>,
 }
 
 #[derive(Debug)]
@@ -17529,7 +17532,7 @@ pub struct CJob {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_jobcategory_id_c_jobcategory:Option<CJobcategory>,
+	pub c_jobcategory:Option<CJobcategory>,
 	/// has many
 	pub ad_user:Option<Vec<AdUser>>,
 	/// has many
@@ -17571,9 +17574,9 @@ pub struct CJobassignment {
 	pub validfrom:NaiveDateTime,
 	pub validto:Option<NaiveDateTime>,
 	/// has one
-	pub ad_user_id_ad_user:Option<AdUser>,
+	pub ad_user:Option<AdUser>,
 	/// has one
-	pub c_job_id_c_job:Option<CJob>,
+	pub c_job:Option<CJob>,
 }
 
 #[derive(Debug)]
@@ -17637,9 +17640,9 @@ pub struct CJobremuneration {
 	pub validfrom:NaiveDateTime,
 	pub validto:Option<NaiveDateTime>,
 	/// has one
-	pub c_job_id_c_job:Option<CJob>,
+	pub c_job:Option<CJob>,
 	/// has one
-	pub c_remuneration_id_c_remuneration:Option<CRemuneration>,
+	pub c_remuneration:Option<CRemuneration>,
 }
 
 #[derive(Debug)]
@@ -17673,15 +17676,15 @@ pub struct CLandedcost {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_invoiceline_id_c_invoiceline:Option<CInvoiceline>,
+	pub c_invoiceline:Option<CInvoiceline>,
 	/// has one
-	pub m_costelement_id_m_costelement:Option<MCostelement>,
+	pub m_costelement:Option<MCostelement>,
 	/// has one
-	pub m_inoutline_id_m_inoutline:Option<MInoutline>,
+	pub m_inoutline:Option<MInoutline>,
 	/// has one
-	pub m_inout_id_m_inout:Option<MInout>,
+	pub m_inout:Option<MInout>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 }
 
 #[derive(Debug)]
@@ -17720,13 +17723,13 @@ pub struct CLandedcostallocation {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_invoiceline_id_c_invoiceline:Option<CInvoiceline>,
+	pub c_invoiceline:Option<CInvoiceline>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has one
-	pub m_attributesetinstance_id_m_attributesetinstance:Option<MAttributesetinstance>,
+	pub m_attributesetinstance:Option<MAttributesetinstance>,
 	/// has one
-	pub m_costelement_id_m_costelement:Option<MCostelement>,
+	pub m_costelement:Option<MCostelement>,
 }
 
 #[derive(Debug)]
@@ -17764,15 +17767,15 @@ pub struct CLocation {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_client_id_ad_client:Option<AdClient>,
+	pub ad_client:Option<AdClient>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 	/// has one
-	pub c_country_id_c_country:Option<CCountry>,
+	pub c_country:Option<CCountry>,
 	/// has one
-	pub c_region_id_c_region:Option<CRegion>,
+	pub c_region:Option<CRegion>,
 	/// has one
-	pub c_city_id_c_city:Option<CCity>,
+	pub c_city:Option<CCity>,
 	/// has many
 	pub a_asset:Option<Vec<AAsset>>,
 	/// has many
@@ -17837,11 +17840,11 @@ pub struct CNonbusinessday {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_client_id_ad_client:Option<AdClient>,
+	pub ad_client:Option<AdClient>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 	/// has one
-	pub c_calendar_id_c_calendar:Option<CCalendar>,
+	pub c_calendar:Option<CCalendar>,
 }
 
 #[derive(Debug)]
@@ -17998,67 +18001,67 @@ pub struct COrder {
 	pub volume:Option<f64>,
 	pub weight:Option<f64>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 	/// has one
-	pub c_doctype_id_c_doctype:Option<CDoctype>,
+	pub c_doctype:Option<CDoctype>,
 	/// has one
-	pub c_doctypetarget_id_c_doctype:Option<CDoctype>,
+	pub c_doctypetarget:Option<CDoctype>,
 	/// has one
-	pub salesrep_id_ad_user:Option<AdUser>,
+	pub salesrep:Option<AdUser>,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 	/// has one
-	pub c_bpartner_location_id_c_bpartner_location:Option<CBpartnerLocation>,
+	pub c_bpartner_location:Option<CBpartnerLocation>,
 	/// has one
-	pub c_currency_id_c_currency:Option<CCurrency>,
+	pub c_currency:Option<CCurrency>,
 	/// has one
-	pub c_paymentterm_id_c_paymentterm:Option<CPaymentterm>,
+	pub c_paymentterm:Option<CPaymentterm>,
 	/// has one
-	pub m_shipper_id_m_shipper:Option<MShipper>,
+	pub m_shipper:Option<MShipper>,
 	/// has one
-	pub c_charge_id_c_charge:Option<CCharge>,
+	pub c_charge:Option<CCharge>,
 	/// has one
-	pub m_warehouse_id_m_warehouse:Option<MWarehouse>,
+	pub m_warehouse:Option<MWarehouse>,
 	/// has one
-	pub m_pricelist_id_m_pricelist:Option<MPricelist>,
+	pub m_pricelist:Option<MPricelist>,
 	/// has one
-	pub c_campaign_id_c_campaign:Option<CCampaign>,
+	pub c_campaign:Option<CCampaign>,
 	/// has one
-	pub c_project_id_c_project:Option<CProject>,
+	pub c_project:Option<CProject>,
 	/// has one
-	pub c_activity_id_c_activity:Option<CActivity>,
+	pub c_activity:Option<CActivity>,
 	/// has one
-	pub c_payment_id_c_payment:Option<CPayment>,
+	pub c_payment:Option<CPayment>,
 	/// has one
-	pub c_cashline_id_c_cashline:Option<CCashline>,
+	pub c_cashline:Option<CCashline>,
 	/// has one
-	pub ad_user_id_ad_user:Option<AdUser>,
+	pub ad_user:Option<AdUser>,
 	/// has one
-	pub ad_orgtrx_id_ad_org:Option<AdOrg>,
+	pub ad_orgtrx:Option<AdOrg>,
 	/// has one
-	pub user1_id_c_elementvalue:Option<CElementvalue>,
+	pub user1:Option<CElementvalue>,
 	/// has one
-	pub user2_id_c_elementvalue:Option<CElementvalue>,
+	pub user2:Option<CElementvalue>,
 	/// has one
-	pub c_conversiontype_id_c_conversiontype:Option<CConversiontype>,
+	pub c_conversiontype:Option<CConversiontype>,
 	/// has one
-	pub bill_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub bill_bpartner:Option<CBpartner>,
 	/// has one
-	pub bill_location_id_c_bpartner_location:Option<CBpartnerLocation>,
+	pub bill_location:Option<CBpartnerLocation>,
 	/// has one
-	pub bill_user_id_ad_user:Option<AdUser>,
+	pub bill_user:Option<AdUser>,
 	/// has one
-	pub pay_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub pay_bpartner:Option<CBpartner>,
 	/// has one
-	pub pay_location_id_c_bpartner_location:Option<CBpartnerLocation>,
+	pub pay_location:Option<CBpartnerLocation>,
 	/// has one, self referential
-	pub ref_order_id_c_order:Option<Box<COrder>>,
+	pub ref_order:Option<Box<COrder>>,
 	/// has one
-	pub c_pos_id_c_pos:Option<CPos>,
+	pub c_pos:Option<CPos>,
 	/// has one, self referential
-	pub link_order_id_c_order:Option<Box<COrder>>,
+	pub link_order:Option<Box<COrder>>,
 	/// has one
-	pub m_freightcategory_id_m_freightcategory:Option<MFreightcategory>,
+	pub m_freightcategory:Option<MFreightcategory>,
 	/// has many
 	pub b_buyerfunds:Option<Vec<BBuyerfunds>>,
 	/// has many
@@ -18208,51 +18211,51 @@ pub struct COrderline {
 	pub user1_id:Option<f64>,
 	pub user2_id:Option<f64>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 	/// has one
-	pub c_order_id_c_order:Option<COrder>,
+	pub c_order:Option<COrder>,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 	/// has one
-	pub c_bpartner_location_id_c_bpartner_location:Option<CBpartnerLocation>,
+	pub c_bpartner_location:Option<CBpartnerLocation>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has one
-	pub m_warehouse_id_m_warehouse:Option<MWarehouse>,
+	pub m_warehouse:Option<MWarehouse>,
 	/// has one
-	pub c_uom_id_c_uom:Option<CUom>,
+	pub c_uom:Option<CUom>,
 	/// has one
-	pub m_shipper_id_m_shipper:Option<MShipper>,
+	pub m_shipper:Option<MShipper>,
 	/// has one
-	pub c_currency_id_c_currency:Option<CCurrency>,
+	pub c_currency:Option<CCurrency>,
 	/// has one
-	pub c_charge_id_c_charge:Option<CCharge>,
+	pub c_charge:Option<CCharge>,
 	/// has one
-	pub c_tax_id_c_tax:Option<CTax>,
+	pub c_tax:Option<CTax>,
 	/// has one
-	pub s_resourceassignment_id_s_resourceassignment:Option<SResourceassignment>,
+	pub s_resourceassignment:Option<SResourceassignment>,
 	/// has one, self referential
-	pub ref_orderline_id_c_orderline:Option<Box<COrderline>>,
+	pub ref_orderline:Option<Box<COrderline>>,
 	/// has one
-	pub m_attributesetinstance_id_m_attributesetinstance:Option<MAttributesetinstance>,
+	pub m_attributesetinstance:Option<MAttributesetinstance>,
 	/// has one
-	pub c_project_id_c_project:Option<CProject>,
+	pub c_project:Option<CProject>,
 	/// has one
-	pub c_projectphase_id_c_projectphase:Option<CProjectphase>,
+	pub c_projectphase:Option<CProjectphase>,
 	/// has one
-	pub c_projecttask_id_c_projecttask:Option<CProjecttask>,
+	pub c_projecttask:Option<CProjecttask>,
 	/// has one
-	pub c_campaign_id_c_campaign:Option<CCampaign>,
+	pub c_campaign:Option<CCampaign>,
 	/// has one
-	pub c_activity_id_c_activity:Option<CActivity>,
+	pub c_activity:Option<CActivity>,
 	/// has one
-	pub user1_id_c_elementvalue:Option<CElementvalue>,
+	pub user1:Option<CElementvalue>,
 	/// has one
-	pub user2_id_c_elementvalue:Option<CElementvalue>,
+	pub user2:Option<CElementvalue>,
 	/// has one
-	pub ad_orgtrx_id_ad_org:Option<AdOrg>,
+	pub ad_orgtrx:Option<AdOrg>,
 	/// has one, self referential
-	pub link_orderline_id_c_orderline:Option<Box<COrderline>>,
+	pub link_orderline:Option<Box<COrderline>>,
 	/// has many
 	pub c_commissiondetail:Option<Vec<CCommissiondetail>>,
 	/// has many
@@ -18317,9 +18320,9 @@ pub struct COrdertax {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_order_id_c_order:Option<COrder>,
+	pub c_order:Option<COrder>,
 	/// has one
-	pub c_tax_id_c_tax:Option<CTax>,
+	pub c_tax:Option<CTax>,
 }
 
 #[derive(Debug)]
@@ -18352,9 +18355,9 @@ pub struct COrgassignment {
 	/// not nullable 
 	pub validto:NaiveDateTime,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 	/// has one
-	pub ad_user_id_ad_user:Option<AdUser>,
+	pub ad_user:Option<AdUser>,
 }
 
 #[derive(Debug)]
@@ -18496,45 +18499,45 @@ pub struct CPayment {
 	/// defaults to: 0
 	pub writeoffamt:Option<f64>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 	/// has one
-	pub c_doctype_id_c_doctype:Option<CDoctype>,
+	pub c_doctype:Option<CDoctype>,
 	/// has one
-	pub c_bankaccount_id_c_bankaccount:Option<CBankaccount>,
+	pub c_bankaccount:Option<CBankaccount>,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 	/// has one
-	pub c_invoice_id_c_invoice:Option<CInvoice>,
+	pub c_invoice:Option<CInvoice>,
 	/// has one
-	pub c_bp_bankaccount_id_c_bp_bankaccount:Option<CBpBankaccount>,
+	pub c_bp_bankaccount:Option<CBpBankaccount>,
 	/// has one
-	pub c_paymentbatch_id_c_paymentbatch:Option<CPaymentbatch>,
+	pub c_paymentbatch:Option<CPaymentbatch>,
 	/// has one
-	pub c_currency_id_c_currency:Option<CCurrency>,
+	pub c_currency:Option<CCurrency>,
 	/// has one
-	pub c_project_id_c_project:Option<CProject>,
+	pub c_project:Option<CProject>,
 	/// has one
-	pub c_charge_id_c_charge:Option<CCharge>,
+	pub c_charge:Option<CCharge>,
 	/// has one
-	pub ad_orgtrx_id_ad_org:Option<AdOrg>,
+	pub ad_orgtrx:Option<AdOrg>,
 	/// has one
-	pub c_campaign_id_c_campaign:Option<CCampaign>,
+	pub c_campaign:Option<CCampaign>,
 	/// has one
-	pub c_activity_id_c_activity:Option<CActivity>,
+	pub c_activity:Option<CActivity>,
 	/// has one
-	pub user1_id_c_elementvalue:Option<CElementvalue>,
+	pub user1:Option<CElementvalue>,
 	/// has one
-	pub user2_id_c_elementvalue:Option<CElementvalue>,
+	pub user2:Option<CElementvalue>,
 	/// has one
-	pub c_conversiontype_id_c_conversiontype:Option<CConversiontype>,
+	pub c_conversiontype:Option<CConversiontype>,
 	/// has one
-	pub c_order_id_c_order:Option<COrder>,
+	pub c_order:Option<COrder>,
 	/// has one, self referential
-	pub ref_payment_id_c_payment:Option<Box<CPayment>>,
+	pub ref_payment:Option<Box<CPayment>>,
 	/// has one, self referential
-	pub reversal_id_c_payment:Option<Box<CPayment>>,
+	pub reversal:Option<Box<CPayment>>,
 	/// has one
-	pub c_cashbook_id_c_cashbook:Option<CCashbook>,
+	pub c_cashbook:Option<CCashbook>,
 	/// has many
 	pub b_buyerfunds:Option<Vec<BBuyerfunds>>,
 	/// has many
@@ -18613,11 +18616,11 @@ pub struct CPaymentallocate {
 	/// not nullable 
 	pub writeoffamt:f64,
 	/// has one
-	pub c_payment_id_c_payment:Option<CPayment>,
+	pub c_payment:Option<CPayment>,
 	/// has one
-	pub c_invoice_id_c_invoice:Option<CInvoice>,
+	pub c_invoice:Option<CInvoice>,
 	/// has one
-	pub c_allocationline_id_c_allocationline:Option<CAllocationline>,
+	pub c_allocationline:Option<CAllocationline>,
 }
 
 #[derive(Debug)]
@@ -18653,7 +18656,7 @@ pub struct CPaymentbatch {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_paymentprocessor_id_c_paymentprocessor:Option<CPaymentprocessor>,
+	pub c_paymentprocessor:Option<CPaymentprocessor>,
 	/// has many
 	pub c_payment:Option<Vec<CPayment>>,
 }
@@ -18739,11 +18742,11 @@ pub struct CPaymentprocessor {
 	pub userid:Option<String>,
 	pub vendorid:Option<String>,
 	/// has one
-	pub c_bankaccount_id_c_bankaccount:Option<CBankaccount>,
+	pub c_bankaccount:Option<CBankaccount>,
 	/// has one
-	pub ad_sequence_id_ad_sequence:Option<AdSequence>,
+	pub ad_sequence:Option<AdSequence>,
 	/// has one
-	pub c_currency_id_c_currency:Option<CCurrency>,
+	pub c_currency:Option<CCurrency>,
 	/// has many
 	pub c_paymentbatch:Option<Vec<CPaymentbatch>>,
 }
@@ -18834,10 +18837,10 @@ pub struct CPaymentterm {
 pub struct CPaymenttermTrl {
 	/// primary
 	/// not nullable 
-	pub c_paymentterm_id:f64,
+	pub ad_language:String,
 	/// primary
 	/// not nullable 
-	pub ad_language:String,
+	pub c_paymentterm_id:f64,
 	/// not nullable 
 	pub ad_client_id:f64,
 	/// not nullable 
@@ -18863,9 +18866,9 @@ pub struct CPaymenttermTrl {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_paymentterm_id_c_paymentterm:Option<CPaymentterm>,
+	pub c_paymentterm:Option<CPaymentterm>,
 	/// has one
-	pub ad_language_ad_language:Option<AdLanguage>,
+	pub ad_language:Option<AdLanguage>,
 }
 
 #[derive(Debug)]
@@ -18907,7 +18910,7 @@ pub struct CPayschedule {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_paymentterm_id_c_paymentterm:Option<CPaymentterm>,
+	pub c_paymentterm:Option<CPaymentterm>,
 	/// has many
 	pub c_invoicepayschedule:Option<Vec<CInvoicepayschedule>>,
 }
@@ -18953,7 +18956,7 @@ pub struct CPayselection {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_bankaccount_id_c_bankaccount:Option<CBankaccount>,
+	pub c_bankaccount:Option<CBankaccount>,
 	/// has many
 	pub c_payselectioncheck:Option<Vec<CPayselectioncheck>>,
 	/// has many
@@ -19015,13 +19018,13 @@ pub struct CPayselectioncheck {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_payselection_id_c_payselection:Option<CPayselection>,
+	pub c_payselection:Option<CPayselection>,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 	/// has one
-	pub c_payment_id_c_payment:Option<CPayment>,
+	pub c_payment:Option<CPayment>,
 	/// has one
-	pub c_bp_bankaccount_id_c_bp_bankaccount:Option<CBpBankaccount>,
+	pub c_bp_bankaccount:Option<CBpBankaccount>,
 	/// has many
 	pub c_payselectionline:Option<Vec<CPayselectionline>>,
 }
@@ -19080,11 +19083,11 @@ pub struct CPayselectionline {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_payselection_id_c_payselection:Option<CPayselection>,
+	pub c_payselection:Option<CPayselection>,
 	/// has one
-	pub c_invoice_id_c_invoice:Option<CInvoice>,
+	pub c_invoice:Option<CInvoice>,
 	/// has one
-	pub c_payselectioncheck_id_c_payselectioncheck:Option<CPayselectioncheck>,
+	pub c_payselectioncheck:Option<CPayselectioncheck>,
 }
 
 #[derive(Debug)]
@@ -19122,11 +19125,11 @@ pub struct CPeriod {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_client_id_ad_client:Option<AdClient>,
+	pub ad_client:Option<AdClient>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 	/// has one
-	pub c_year_id_c_year:Option<CYear>,
+	pub c_year:Option<CYear>,
 	/// has many
 	pub a_asset_disposed:Option<Vec<AAssetDisposed>>,
 	/// has many
@@ -19192,7 +19195,7 @@ pub struct CPeriodcontrol {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_period_id_c_period:Option<CPeriod>,
+	pub c_period:Option<CPeriod>,
 }
 
 #[derive(Debug)]
@@ -19230,9 +19233,9 @@ pub struct CPhase {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_projecttype_id_c_projecttype:Option<CProjecttype>,
+	pub c_projecttype:Option<CProjecttype>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has many
 	pub c_cyclephase:Option<Vec<CCyclephase>>,
 	/// has many
@@ -19287,21 +19290,21 @@ pub struct CPos {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub salesrep_id_ad_user:Option<AdUser>,
+	pub salesrep:Option<AdUser>,
 	/// has one
-	pub m_pricelist_id_m_pricelist:Option<MPricelist>,
+	pub m_pricelist:Option<MPricelist>,
 	/// has one
-	pub c_cashbook_id_c_cashbook:Option<CCashbook>,
+	pub c_cashbook:Option<CCashbook>,
 	/// has one
-	pub m_warehouse_id_m_warehouse:Option<MWarehouse>,
+	pub m_warehouse:Option<MWarehouse>,
 	/// has one
-	pub c_poskeylayout_id_c_poskeylayout:Option<CPoskeylayout>,
+	pub c_poskeylayout:Option<CPoskeylayout>,
 	/// has one
-	pub c_bpartnercashtrx_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartnercashtrx:Option<CBpartner>,
 	/// has one
-	pub c_doctype_id_c_doctype:Option<CDoctype>,
+	pub c_doctype:Option<CDoctype>,
 	/// has one
-	pub c_bankaccount_id_c_bankaccount:Option<CBankaccount>,
+	pub c_bankaccount:Option<CBankaccount>,
 	/// has many
 	pub c_order:Option<Vec<COrder>>,
 }
@@ -19342,11 +19345,11 @@ pub struct CPoskey {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_poskeylayout_id_c_poskeylayout:Option<CPoskeylayout>,
+	pub c_poskeylayout:Option<CPoskeylayout>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has one
-	pub ad_printcolor_id_ad_printcolor:Option<AdPrintcolor>,
+	pub ad_printcolor:Option<AdPrintcolor>,
 }
 
 #[derive(Debug)]
@@ -19473,33 +19476,33 @@ pub struct CProject {
 	/// not nullable 
 	pub value:String,
 	/// has one
-	pub ad_client_id_ad_client:Option<AdClient>,
+	pub ad_client:Option<AdClient>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 	/// has one
-	pub ad_user_id_ad_user:Option<AdUser>,
+	pub ad_user:Option<AdUser>,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 	/// has one
-	pub c_bpartner_location_id_c_bpartner_location:Option<CBpartnerLocation>,
+	pub c_bpartner_location:Option<CBpartnerLocation>,
 	/// has one
-	pub c_paymentterm_id_c_paymentterm:Option<CPaymentterm>,
+	pub c_paymentterm:Option<CPaymentterm>,
 	/// has one
-	pub c_currency_id_c_currency:Option<CCurrency>,
+	pub c_currency:Option<CCurrency>,
 	/// has one
-	pub m_pricelist_version_id_m_pricelist_version:Option<MPricelistVersion>,
+	pub m_pricelist_version:Option<MPricelistVersion>,
 	/// has one
-	pub c_campaign_id_c_campaign:Option<CCampaign>,
+	pub c_campaign:Option<CCampaign>,
 	/// has one
-	pub salesrep_id_ad_user:Option<AdUser>,
+	pub salesrep:Option<AdUser>,
 	/// has one
-	pub c_projecttype_id_c_projecttype:Option<CProjecttype>,
+	pub c_projecttype:Option<CProjecttype>,
 	/// has one
-	pub c_phase_id_c_phase:Option<CPhase>,
+	pub c_phase:Option<CPhase>,
 	/// has one
-	pub m_warehouse_id_m_warehouse:Option<MWarehouse>,
+	pub m_warehouse:Option<MWarehouse>,
 	/// has one
-	pub c_bpartnersr_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartnersr:Option<CBpartner>,
 	/// has many
 	pub a_asset:Option<Vec<AAsset>>,
 	/// has many
@@ -19588,10 +19591,10 @@ pub struct CProject {
 pub struct CProjectAcct {
 	/// primary
 	/// not nullable 
-	pub c_project_id:f64,
+	pub c_acctschema_id:f64,
 	/// primary
 	/// not nullable 
-	pub c_acctschema_id:f64,
+	pub c_project_id:f64,
 	/// not nullable 
 	pub ad_client_id:f64,
 	/// not nullable 
@@ -19614,13 +19617,13 @@ pub struct CProjectAcct {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_project_id_c_project:Option<CProject>,
+	pub c_project:Option<CProject>,
 	/// has one
-	pub c_acctschema_id_c_acctschema:Option<CAcctschema>,
+	pub c_acctschema:Option<CAcctschema>,
 	/// has one
-	pub pj_asset_acct_c_validcombination:Option<CValidcombination>,
+	pub pj_asset_acct:Option<CValidcombination>,
 	/// has one
-	pub pj_wip_acct_c_validcombination:Option<CValidcombination>,
+	pub pj_wip_acct:Option<CValidcombination>,
 }
 
 #[derive(Debug)]
@@ -19671,17 +19674,17 @@ pub struct CProjectissue {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_project_id_c_project:Option<CProject>,
+	pub c_project:Option<CProject>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has one
-	pub m_attributesetinstance_id_m_attributesetinstance:Option<MAttributesetinstance>,
+	pub m_attributesetinstance:Option<MAttributesetinstance>,
 	/// has one
-	pub m_locator_id_m_locator:Option<MLocator>,
+	pub m_locator:Option<MLocator>,
 	/// has one
-	pub s_timeexpenseline_id_s_timeexpenseline:Option<STimeexpenseline>,
+	pub s_timeexpenseline:Option<STimeexpenseline>,
 	/// has one
-	pub m_inoutline_id_m_inoutline:Option<MInoutline>,
+	pub m_inoutline:Option<MInoutline>,
 	/// has many
 	pub c_projectissuema:Option<Vec<CProjectissuema>>,
 	/// has many
@@ -19723,9 +19726,9 @@ pub struct CProjectissuema {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_projectissue_id_c_projectissue:Option<CProjectissue>,
+	pub c_projectissue:Option<CProjectissue>,
 	/// has one
-	pub m_attributesetinstance_id_m_attributesetinstance:Option<MAttributesetinstance>,
+	pub m_attributesetinstance:Option<MAttributesetinstance>,
 }
 
 #[derive(Debug)]
@@ -19793,21 +19796,21 @@ pub struct CProjectline {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_project_id_c_project:Option<CProject>,
+	pub c_project:Option<CProject>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has one
-	pub m_product_category_id_m_product_category:Option<MProductCategory>,
+	pub m_product_category:Option<MProductCategory>,
 	/// has one
-	pub c_projectissue_id_c_projectissue:Option<CProjectissue>,
+	pub c_projectissue:Option<CProjectissue>,
 	/// has one
-	pub c_order_id_c_order:Option<COrder>,
+	pub c_order:Option<COrder>,
 	/// has one
-	pub c_orderpo_id_c_order:Option<COrder>,
+	pub c_orderpo:Option<COrder>,
 	/// has one
-	pub c_projectphase_id_c_projectphase:Option<CProjectphase>,
+	pub c_projectphase:Option<CProjectphase>,
 	/// has one
-	pub c_projecttask_id_c_projecttask:Option<CProjecttask>,
+	pub c_projecttask:Option<CProjecttask>,
 }
 
 #[derive(Debug)]
@@ -19864,13 +19867,13 @@ pub struct CProjectphase {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_project_id_c_project:Option<CProject>,
+	pub c_project:Option<CProject>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has one
-	pub c_order_id_c_order:Option<COrder>,
+	pub c_order:Option<COrder>,
 	/// has one
-	pub c_phase_id_c_phase:Option<CPhase>,
+	pub c_phase:Option<CPhase>,
 	/// has many
 	pub c_invoiceline:Option<Vec<CInvoiceline>>,
 	/// has many
@@ -19931,11 +19934,11 @@ pub struct CProjecttask {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_task_id_c_task:Option<CTask>,
+	pub c_task:Option<CTask>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has one
-	pub c_projectphase_id_c_projectphase:Option<CProjectphase>,
+	pub c_projectphase:Option<CProjectphase>,
 	/// has many
 	pub c_invoiceline:Option<Vec<CInvoiceline>>,
 	/// has many
@@ -20033,15 +20036,15 @@ pub struct CRecurring {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_order_id_c_order:Option<COrder>,
+	pub c_order:Option<COrder>,
 	/// has one
-	pub c_invoice_id_c_invoice:Option<CInvoice>,
+	pub c_invoice:Option<CInvoice>,
 	/// has one
-	pub c_payment_id_c_payment:Option<CPayment>,
+	pub c_payment:Option<CPayment>,
 	/// has one
-	pub c_project_id_c_project:Option<CProject>,
+	pub c_project:Option<CProject>,
 	/// has one
-	pub gl_journalbatch_id_gl_journalbatch:Option<GlJournalbatch>,
+	pub gl_journalbatch:Option<GlJournalbatch>,
 	/// has many
 	pub c_recurring_run:Option<Vec<CRecurringRun>>,
 }
@@ -20077,17 +20080,17 @@ pub struct CRecurringRun {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_payment_id_c_payment:Option<CPayment>,
+	pub c_payment:Option<CPayment>,
 	/// has one
-	pub c_order_id_c_order:Option<COrder>,
+	pub c_order:Option<COrder>,
 	/// has one
-	pub c_invoice_id_c_invoice:Option<CInvoice>,
+	pub c_invoice:Option<CInvoice>,
 	/// has one
-	pub c_project_id_c_project:Option<CProject>,
+	pub c_project:Option<CProject>,
 	/// has one
-	pub gl_journalbatch_id_gl_journalbatch:Option<GlJournalbatch>,
+	pub gl_journalbatch:Option<GlJournalbatch>,
 	/// has one
-	pub c_recurring_id_c_recurring:Option<CRecurring>,
+	pub c_recurring:Option<CRecurring>,
 }
 
 #[derive(Debug)]
@@ -20120,11 +20123,11 @@ pub struct CRegion {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_client_id_ad_client:Option<AdClient>,
+	pub ad_client:Option<AdClient>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 	/// has one
-	pub c_country_id_c_country:Option<CCountry>,
+	pub c_country:Option<CCountry>,
 	/// has many
 	pub c_city:Option<Vec<CCity>>,
 	/// has many
@@ -20266,17 +20269,17 @@ pub struct CRevenuerecognitionPlan {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_acctschema_id_c_acctschema:Option<CAcctschema>,
+	pub c_acctschema:Option<CAcctschema>,
 	/// has one
-	pub c_revenuerecognition_id_c_revenuerecognition:Option<CRevenuerecognition>,
+	pub c_revenuerecognition:Option<CRevenuerecognition>,
 	/// has one
-	pub c_invoiceline_id_c_invoiceline:Option<CInvoiceline>,
+	pub c_invoiceline:Option<CInvoiceline>,
 	/// has one
-	pub unearnedrevenue_acct_c_validcombination:Option<CValidcombination>,
+	pub unearnedrevenue_acct:Option<CValidcombination>,
 	/// has one
-	pub p_revenue_acct_c_validcombination:Option<CValidcombination>,
+	pub p_revenue_acct:Option<CValidcombination>,
 	/// has one
-	pub c_currency_id_c_currency:Option<CCurrency>,
+	pub c_currency:Option<CCurrency>,
 	/// has many
 	pub c_revenuerecognition_run:Option<Vec<CRevenuerecognitionRun>>,
 	/// has many
@@ -20313,9 +20316,9 @@ pub struct CRevenuerecognitionRun {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_revenuerecognition_plan_id_c_revenuerecognition_plan:Option<CRevenuerecognitionPlan>,
+	pub c_revenuerecognition_plan:Option<CRevenuerecognitionPlan>,
 	/// has one
-	pub gl_journal_id_gl_journal:Option<GlJournal>,
+	pub gl_journal:Option<GlJournal>,
 }
 
 #[derive(Debug)]
@@ -20391,19 +20394,19 @@ pub struct CRfq {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_rfq_topic_id_c_rfq_topic:Option<CRfqTopic>,
+	pub c_rfq_topic:Option<CRfqTopic>,
 	/// has one
-	pub c_currency_id_c_currency:Option<CCurrency>,
+	pub c_currency:Option<CCurrency>,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 	/// has one
-	pub c_bpartner_location_id_c_bpartner_location:Option<CBpartnerLocation>,
+	pub c_bpartner_location:Option<CBpartnerLocation>,
 	/// has one
-	pub ad_user_id_ad_user:Option<AdUser>,
+	pub ad_user:Option<AdUser>,
 	/// has one
-	pub salesrep_id_ad_user:Option<AdUser>,
+	pub salesrep:Option<AdUser>,
 	/// has one
-	pub c_order_id_c_order:Option<COrder>,
+	pub c_order:Option<COrder>,
 	/// has many
 	pub c_rfqline:Option<Vec<CRfqline>>,
 	/// has many
@@ -20440,7 +20443,7 @@ pub struct CRfqTopic {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_printformat_id_ad_printformat:Option<AdPrintformat>,
+	pub ad_printformat:Option<AdPrintformat>,
 	/// has many
 	pub c_rfq:Option<Vec<CRfq>>,
 	/// has many
@@ -20479,13 +20482,13 @@ pub struct CRfqTopicsubscriber {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_rfq_topic_id_c_rfq_topic:Option<CRfqTopic>,
+	pub c_rfq_topic:Option<CRfqTopic>,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 	/// has one
-	pub c_bpartner_location_id_c_bpartner_location:Option<CBpartnerLocation>,
+	pub c_bpartner_location:Option<CBpartnerLocation>,
 	/// has one
-	pub ad_user_id_ad_user:Option<AdUser>,
+	pub ad_user:Option<AdUser>,
 	/// has many
 	pub c_rfq_topicsubscriberonly:Option<Vec<CRfqTopicsubscriberonly>>,
 }
@@ -20518,11 +20521,11 @@ pub struct CRfqTopicsubscriberonly {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_rfq_topicsubscriber_id_c_rfq_topicsubscriber:Option<CRfqTopicsubscriber>,
+	pub c_rfq_topicsubscriber:Option<CRfqTopicsubscriber>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has one
-	pub m_product_category_id_m_product_category:Option<MProductCategory>,
+	pub m_product_category:Option<MProductCategory>,
 }
 
 #[derive(Debug)]
@@ -20562,11 +20565,11 @@ pub struct CRfqline {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_rfq_id_c_rfq:Option<CRfq>,
+	pub c_rfq:Option<CRfq>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has one
-	pub m_attributesetinstance_id_m_attributesetinstance:Option<MAttributesetinstance>,
+	pub m_attributesetinstance:Option<MAttributesetinstance>,
 	/// has many
 	pub c_rfqlineqty:Option<Vec<CRfqlineqty>>,
 	/// has many
@@ -20620,9 +20623,9 @@ pub struct CRfqlineqty {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_rfqline_id_c_rfqline:Option<CRfqline>,
+	pub c_rfqline:Option<CRfqline>,
 	/// has one
-	pub c_uom_id_c_uom:Option<CUom>,
+	pub c_uom:Option<CUom>,
 	/// has many
 	pub c_rfqresponselineqty:Option<Vec<CRfqresponselineqty>>,
 }
@@ -20689,17 +20692,17 @@ pub struct CRfqresponse {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_rfq_id_c_rfq:Option<CRfq>,
+	pub c_rfq:Option<CRfq>,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 	/// has one
-	pub c_bpartner_location_id_c_bpartner_location:Option<CBpartnerLocation>,
+	pub c_bpartner_location:Option<CBpartnerLocation>,
 	/// has one
-	pub ad_user_id_ad_user:Option<AdUser>,
+	pub ad_user:Option<AdUser>,
 	/// has one
-	pub c_currency_id_c_currency:Option<CCurrency>,
+	pub c_currency:Option<CCurrency>,
 	/// has one
-	pub c_order_id_c_order:Option<COrder>,
+	pub c_order:Option<COrder>,
 	/// has many
 	pub c_rfqresponseline:Option<Vec<CRfqresponseline>>,
 }
@@ -20743,9 +20746,9 @@ pub struct CRfqresponseline {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_rfqline_id_c_rfqline:Option<CRfqline>,
+	pub c_rfqline:Option<CRfqline>,
 	/// has one
-	pub c_rfqresponse_id_c_rfqresponse:Option<CRfqresponse>,
+	pub c_rfqresponse:Option<CRfqresponse>,
 	/// has many
 	pub c_rfqresponselineqty:Option<Vec<CRfqresponselineqty>>,
 }
@@ -20783,9 +20786,9 @@ pub struct CRfqresponselineqty {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_rfqresponseline_id_c_rfqresponseline:Option<CRfqresponseline>,
+	pub c_rfqresponseline:Option<CRfqresponseline>,
 	/// has one
-	pub c_rfqlineqty_id_c_rfqlineqty:Option<CRfqlineqty>,
+	pub c_rfqlineqty:Option<CRfqlineqty>,
 }
 
 #[derive(Debug)]
@@ -20823,7 +20826,7 @@ pub struct CSalesregion {
 	/// not nullable 
 	pub value:String,
 	/// has one
-	pub salesrep_id_ad_user:Option<AdUser>,
+	pub salesrep:Option<AdUser>,
 	/// has many
 	pub c_acctschema_element:Option<Vec<CAcctschemaElement>>,
 	/// has many
@@ -20883,9 +20886,9 @@ pub struct CServicelevel {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has one
-	pub c_revenuerecognition_plan_id_c_revenuerecognition_plan:Option<CRevenuerecognitionPlan>,
+	pub c_revenuerecognition_plan:Option<CRevenuerecognitionPlan>,
 	/// has many
 	pub c_servicelevelline:Option<Vec<CServicelevelline>>,
 }
@@ -20922,7 +20925,7 @@ pub struct CServicelevelline {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_servicelevel_id_c_servicelevel:Option<CServicelevel>,
+	pub c_servicelevel:Option<CServicelevel>,
 }
 
 #[derive(Debug)]
@@ -20956,7 +20959,7 @@ pub struct CSubacct {
 	/// not nullable 
 	pub value:String,
 	/// has one
-	pub c_elementvalue_id_c_elementvalue:Option<CElementvalue>,
+	pub c_elementvalue:Option<CElementvalue>,
 	/// has many
 	pub c_validcombination:Option<Vec<CValidcombination>>,
 	/// has many
@@ -21003,11 +21006,11 @@ pub struct CSubscription {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has one
-	pub c_subscriptiontype_id_c_subscriptiontype:Option<CSubscriptiontype>,
+	pub c_subscriptiontype:Option<CSubscriptiontype>,
 	/// has many
 	pub c_subscription_delivery:Option<Vec<CSubscriptionDelivery>>,
 }
@@ -21037,7 +21040,7 @@ pub struct CSubscriptionDelivery {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_subscription_id_c_subscription:Option<CSubscription>,
+	pub c_subscription:Option<CSubscription>,
 }
 
 #[derive(Debug)]
@@ -21109,9 +21112,9 @@ pub struct CTask {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_phase_id_c_phase:Option<CPhase>,
+	pub c_phase:Option<CPhase>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has many
 	pub c_projecttask:Option<Vec<CProjecttask>>,
 }
@@ -21176,19 +21179,19 @@ pub struct CTax {
 	/// not nullable 
 	pub validfrom:NaiveDateTime,
 	/// has one, self referential
-	pub parent_tax_id_c_tax:Option<Box<CTax>>,
+	pub parent_tax:Option<Box<CTax>>,
 	/// has one
-	pub c_country_id_c_country:Option<CCountry>,
+	pub c_country:Option<CCountry>,
 	/// has one
-	pub c_region_id_c_region:Option<CRegion>,
+	pub c_region:Option<CRegion>,
 	/// has one
-	pub to_country_id_c_country:Option<CCountry>,
+	pub to_country:Option<CCountry>,
 	/// has one
-	pub to_region_id_c_region:Option<CRegion>,
+	pub to_region:Option<CRegion>,
 	/// has one
-	pub c_taxcategory_id_c_taxcategory:Option<CTaxcategory>,
+	pub c_taxcategory:Option<CTaxcategory>,
 	/// has one
-	pub ad_rule_id_ad_rule:Option<AdRule>,
+	pub ad_rule:Option<AdRule>,
 	/// has many
 	pub c_invoicebatchline:Option<Vec<CInvoicebatchline>>,
 	/// has many
@@ -21223,10 +21226,10 @@ pub struct CTax {
 pub struct CTaxAcct {
 	/// primary
 	/// not nullable 
-	pub c_tax_id:f64,
+	pub c_acctschema_id:f64,
 	/// primary
 	/// not nullable 
-	pub c_acctschema_id:f64,
+	pub c_tax_id:f64,
 	/// not nullable 
 	pub ad_client_id:f64,
 	/// not nullable 
@@ -21255,29 +21258,29 @@ pub struct CTaxAcct {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_tax_id_c_tax:Option<CTax>,
+	pub c_tax:Option<CTax>,
 	/// has one
-	pub c_acctschema_id_c_acctschema:Option<CAcctschema>,
+	pub c_acctschema:Option<CAcctschema>,
 	/// has one
-	pub t_due_acct_c_validcombination:Option<CValidcombination>,
+	pub t_due_acct:Option<CValidcombination>,
 	/// has one
-	pub t_liability_acct_c_validcombination:Option<CValidcombination>,
+	pub t_liability_acct:Option<CValidcombination>,
 	/// has one
-	pub t_credit_acct_c_validcombination:Option<CValidcombination>,
+	pub t_credit_acct:Option<CValidcombination>,
 	/// has one
-	pub t_receivables_acct_c_validcombination:Option<CValidcombination>,
+	pub t_receivables_acct:Option<CValidcombination>,
 	/// has one
-	pub t_expense_acct_c_validcombination:Option<CValidcombination>,
+	pub t_expense_acct:Option<CValidcombination>,
 }
 
 #[derive(Debug)]
 pub struct CTaxTrl {
 	/// primary
 	/// not nullable 
-	pub c_tax_id:f64,
+	pub ad_language:String,
 	/// primary
 	/// not nullable 
-	pub ad_language:String,
+	pub c_tax_id:f64,
 	/// not nullable 
 	pub ad_client_id:f64,
 	/// not nullable 
@@ -21303,9 +21306,9 @@ pub struct CTaxTrl {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_tax_id_c_tax:Option<CTax>,
+	pub c_tax:Option<CTax>,
 	/// has one
-	pub ad_language_ad_language:Option<AdLanguage>,
+	pub ad_language:Option<AdLanguage>,
 }
 
 #[derive(Debug)]
@@ -21390,10 +21393,10 @@ pub struct CTaxcategory {
 pub struct CTaxcategoryTrl {
 	/// primary
 	/// not nullable 
-	pub c_taxcategory_id:f64,
+	pub ad_language:String,
 	/// primary
 	/// not nullable 
-	pub ad_language:String,
+	pub c_taxcategory_id:f64,
 	/// not nullable 
 	pub ad_client_id:f64,
 	/// not nullable 
@@ -21418,9 +21421,9 @@ pub struct CTaxcategoryTrl {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_taxcategory_id_c_taxcategory:Option<CTaxcategory>,
+	pub c_taxcategory:Option<CTaxcategory>,
 	/// has one
-	pub ad_language_ad_language:Option<AdLanguage>,
+	pub ad_language:Option<AdLanguage>,
 }
 
 #[derive(Debug)]
@@ -21495,11 +21498,11 @@ pub struct CTaxdeclarationacct {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_taxdeclaration_id_c_taxdeclaration:Option<CTaxdeclaration>,
+	pub c_taxdeclaration:Option<CTaxdeclaration>,
 	/// has one
-	pub fact_acct_id_fact_acct:Option<FactAcct>,
+	pub fact_acct:Option<FactAcct>,
 	/// has one
-	pub c_acctschema_id_c_acctschema:Option<CAcctschema>,
+	pub c_acctschema:Option<CAcctschema>,
 }
 
 #[derive(Debug)]
@@ -21551,19 +21554,19 @@ pub struct CTaxdeclarationline {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_taxdeclaration_id_c_taxdeclaration:Option<CTaxdeclaration>,
+	pub c_taxdeclaration:Option<CTaxdeclaration>,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 	/// has one
-	pub c_tax_id_c_tax:Option<CTax>,
+	pub c_tax:Option<CTax>,
 	/// has one
-	pub c_invoice_id_c_invoice:Option<CInvoice>,
+	pub c_invoice:Option<CInvoice>,
 	/// has one
-	pub c_invoiceline_id_c_invoiceline:Option<CInvoiceline>,
+	pub c_invoiceline:Option<CInvoiceline>,
 	/// has one
-	pub c_allocationline_id_c_allocationline:Option<CAllocationline>,
+	pub c_allocationline:Option<CAllocationline>,
 	/// has one
-	pub c_currency_id_c_currency:Option<CCurrency>,
+	pub c_currency:Option<CCurrency>,
 }
 
 #[derive(Debug)]
@@ -21608,25 +21611,25 @@ pub struct CTaxdefinition {
 	/// not nullable 
 	pub value:String,
 	/// has one
-	pub c_bp_group_id_c_bp_group:Option<CBpGroup>,
+	pub c_bp_group:Option<CBpGroup>,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 	/// has one
-	pub c_taxbase_id_c_taxbase:Option<CTaxbase>,
+	pub c_taxbase:Option<CTaxbase>,
 	/// has one
-	pub c_taxcategory_id_c_taxcategory:Option<CTaxcategory>,
+	pub c_taxcategory:Option<CTaxcategory>,
 	/// has one
-	pub c_taxgroup_id_c_taxgroup:Option<CTaxgroup>,
+	pub c_taxgroup:Option<CTaxgroup>,
 	/// has one
-	pub c_taxtype_id_c_taxtype:Option<CTaxtype>,
+	pub c_taxtype:Option<CTaxtype>,
 	/// has one
-	pub c_tax_id_c_tax:Option<CTax>,
+	pub c_tax:Option<CTax>,
 	/// has one
-	pub m_product_category_id_m_product_category:Option<MProductCategory>,
+	pub m_product_category:Option<MProductCategory>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has one
-	pub ad_orgtype_id_ad_orgtype:Option<AdOrgtype>,
+	pub ad_orgtype:Option<AdOrgtype>,
 }
 
 #[derive(Debug)]
@@ -21688,7 +21691,7 @@ pub struct CTaxpostal {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_tax_id_c_tax:Option<CTax>,
+	pub c_tax:Option<CTax>,
 }
 
 #[derive(Debug)]
@@ -21758,9 +21761,9 @@ pub struct CUom {
 	/// not nullable 
 	pub x12de355:String,
 	/// has one
-	pub ad_client_id_ad_client:Option<AdClient>,
+	pub ad_client:Option<AdClient>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 	/// has many
 	pub ad_clientinfo:Option<Vec<AdClientinfo>>,
 	/// has many
@@ -21849,25 +21852,25 @@ pub struct CUomConversion {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_client_id_ad_client:Option<AdClient>,
+	pub ad_client:Option<AdClient>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 	/// has one
-	pub c_uom_id_c_uom:Option<CUom>,
+	pub c_uom:Option<CUom>,
 	/// has one
-	pub c_uom_to_id_c_uom:Option<CUom>,
+	pub c_uom_to:Option<CUom>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 }
 
 #[derive(Debug)]
 pub struct CUomTrl {
 	/// primary
 	/// not nullable 
-	pub c_uom_id:f64,
+	pub ad_language:String,
 	/// primary
 	/// not nullable 
-	pub ad_language:String,
+	pub c_uom_id:f64,
 	/// not nullable 
 	pub ad_client_id:f64,
 	/// not nullable 
@@ -21893,9 +21896,9 @@ pub struct CUomTrl {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_uom_id_c_uom:Option<CUom>,
+	pub c_uom:Option<CUom>,
 	/// has one
-	pub ad_language_ad_language:Option<AdLanguage>,
+	pub ad_language:Option<AdLanguage>,
 }
 
 #[derive(Debug)]
@@ -21941,9 +21944,9 @@ pub struct CUserremuneration {
 	pub validfrom:NaiveDateTime,
 	pub validto:Option<NaiveDateTime>,
 	/// has one
-	pub ad_user_id_ad_user:Option<AdUser>,
+	pub ad_user:Option<AdUser>,
 	/// has one
-	pub c_remuneration_id_c_remuneration:Option<CRemuneration>,
+	pub c_remuneration:Option<CRemuneration>,
 }
 
 #[derive(Debug)]
@@ -21993,37 +21996,37 @@ pub struct CValidcombination {
 	pub userelement1_id:Option<f64>,
 	pub userelement2_id:Option<f64>,
 	/// has one
-	pub ad_client_id_ad_client:Option<AdClient>,
+	pub ad_client:Option<AdClient>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 	/// has one
-	pub c_acctschema_id_c_acctschema:Option<CAcctschema>,
+	pub c_acctschema:Option<CAcctschema>,
 	/// has one
-	pub account_id_c_elementvalue:Option<CElementvalue>,
+	pub account:Option<CElementvalue>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 	/// has one
-	pub ad_orgtrx_id_ad_org:Option<AdOrg>,
+	pub ad_orgtrx:Option<AdOrg>,
 	/// has one
-	pub c_locfrom_id_c_location:Option<CLocation>,
+	pub c_locfrom:Option<CLocation>,
 	/// has one
-	pub c_locto_id_c_location:Option<CLocation>,
+	pub c_locto:Option<CLocation>,
 	/// has one
-	pub c_salesregion_id_c_salesregion:Option<CSalesregion>,
+	pub c_salesregion:Option<CSalesregion>,
 	/// has one
-	pub c_project_id_c_project:Option<CProject>,
+	pub c_project:Option<CProject>,
 	/// has one
-	pub c_campaign_id_c_campaign:Option<CCampaign>,
+	pub c_campaign:Option<CCampaign>,
 	/// has one
-	pub c_activity_id_c_activity:Option<CActivity>,
+	pub c_activity:Option<CActivity>,
 	/// has one
-	pub user1_id_c_elementvalue:Option<CElementvalue>,
+	pub user1:Option<CElementvalue>,
 	/// has one
-	pub user2_id_c_elementvalue:Option<CElementvalue>,
+	pub user2:Option<CElementvalue>,
 	/// has one
-	pub c_subacct_id_c_subacct:Option<CSubacct>,
+	pub c_subacct:Option<CSubacct>,
 	/// has many
 	pub c_acctschema_default:Option<Vec<CAcctschemaDefault>>,
 	/// has many
@@ -22123,9 +22126,9 @@ pub struct CWithholding {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_paymentterm_id_c_paymentterm:Option<CPaymentterm>,
+	pub c_paymentterm:Option<CPaymentterm>,
 	/// has one
-	pub beneficiary_c_bpartner:Option<CBpartner>,
+	pub beneficiary:Option<CBpartner>,
 	/// has many
 	pub c_bp_withholding:Option<Vec<CBpWithholding>>,
 	/// has many
@@ -22136,10 +22139,10 @@ pub struct CWithholding {
 pub struct CWithholdingAcct {
 	/// primary
 	/// not nullable 
-	pub c_withholding_id:f64,
+	pub c_acctschema_id:f64,
 	/// primary
 	/// not nullable 
-	pub c_acctschema_id:f64,
+	pub c_withholding_id:f64,
 	/// not nullable 
 	pub ad_client_id:f64,
 	/// not nullable 
@@ -22160,11 +22163,11 @@ pub struct CWithholdingAcct {
 	/// not nullable 
 	pub withholding_acct:f64,
 	/// has one
-	pub c_withholding_id_c_withholding:Option<CWithholding>,
+	pub c_withholding:Option<CWithholding>,
 	/// has one
-	pub c_acctschema_id_c_acctschema:Option<CAcctschema>,
+	pub c_acctschema:Option<CAcctschema>,
 	/// has one
-	pub withholding_acct_c_validcombination:Option<CValidcombination>,
+	pub withholding_acct:Option<CValidcombination>,
 }
 
 #[derive(Debug)]
@@ -22196,11 +22199,11 @@ pub struct CYear {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_client_id_ad_client:Option<AdClient>,
+	pub ad_client:Option<AdClient>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 	/// has one
-	pub c_calendar_id_c_calendar:Option<CCalendar>,
+	pub c_calendar:Option<CCalendar>,
 	/// has many
 	pub c_period:Option<Vec<CPeriod>>,
 	/// has many
@@ -22269,19 +22272,19 @@ pub struct CmAccesscontainer {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub cm_accessprofile_id_cm_accessprofile:Option<CmAccessprofile>,
+	pub cm_accessprofile:Option<CmAccessprofile>,
 	/// has one
-	pub cm_container_id_cm_container:Option<CmContainer>,
+	pub cm_container:Option<CmContainer>,
 }
 
 #[derive(Debug)]
 pub struct CmAccesslistbpgroup {
 	/// primary
 	/// not nullable 
-	pub cm_accessprofile_id:f64,
+	pub c_bp_group_id:f64,
 	/// primary
 	/// not nullable 
-	pub c_bp_group_id:f64,
+	pub cm_accessprofile_id:f64,
 	/// not nullable 
 	pub ad_client_id:f64,
 	/// not nullable 
@@ -22300,19 +22303,19 @@ pub struct CmAccesslistbpgroup {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub cm_accessprofile_id_cm_accessprofile:Option<CmAccessprofile>,
+	pub cm_accessprofile:Option<CmAccessprofile>,
 	/// has one
-	pub c_bp_group_id_c_bp_group:Option<CBpGroup>,
+	pub c_bp_group:Option<CBpGroup>,
 }
 
 #[derive(Debug)]
 pub struct CmAccesslistrole {
 	/// primary
 	/// not nullable 
-	pub cm_accessprofile_id:f64,
+	pub ad_role_id:f64,
 	/// primary
 	/// not nullable 
-	pub ad_role_id:f64,
+	pub cm_accessprofile_id:f64,
 	/// not nullable 
 	pub ad_client_id:f64,
 	/// not nullable 
@@ -22331,19 +22334,19 @@ pub struct CmAccesslistrole {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub cm_accessprofile_id_cm_accessprofile:Option<CmAccessprofile>,
+	pub cm_accessprofile:Option<CmAccessprofile>,
 	/// has one
-	pub ad_role_id_ad_role:Option<AdRole>,
+	pub ad_role:Option<AdRole>,
 }
 
 #[derive(Debug)]
 pub struct CmAccessmedia {
 	/// primary
 	/// not nullable 
-	pub cm_media_id:f64,
+	pub cm_accessprofile_id:f64,
 	/// primary
 	/// not nullable 
-	pub cm_accessprofile_id:f64,
+	pub cm_media_id:f64,
 	/// not nullable 
 	pub ad_client_id:f64,
 	/// not nullable 
@@ -22362,9 +22365,9 @@ pub struct CmAccessmedia {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub cm_media_id_cm_media:Option<CmMedia>,
+	pub cm_media:Option<CmMedia>,
 	/// has one
-	pub cm_accessprofile_id_cm_accessprofile:Option<CmAccessprofile>,
+	pub cm_accessprofile:Option<CmAccessprofile>,
 }
 
 #[derive(Debug)]
@@ -22393,9 +22396,9 @@ pub struct CmAccessnewschannel {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub cm_accessprofile_id_cm_accessprofile:Option<CmAccessprofile>,
+	pub cm_accessprofile:Option<CmAccessprofile>,
 	/// has one
-	pub cm_newschannel_id_cm_newschannel:Option<CmNewschannel>,
+	pub cm_newschannel:Option<CmNewschannel>,
 }
 
 #[derive(Debug)]
@@ -22467,9 +22470,9 @@ pub struct CmAccessstage {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub cm_accessprofile_id_cm_accessprofile:Option<CmAccessprofile>,
+	pub cm_accessprofile:Option<CmAccessprofile>,
 	/// has one
-	pub cm_cstage_id_cm_cstage:Option<CmCstage>,
+	pub cm_cstage:Option<CmCstage>,
 }
 
 #[derive(Debug)]
@@ -22531,9 +22534,9 @@ pub struct CmAd {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub cm_ad_cat_id_cm_ad_cat:Option<CmAdCat>,
+	pub cm_ad_cat:Option<CmAdCat>,
 	/// has one
-	pub cm_media_id_cm_media:Option<CmMedia>,
+	pub cm_media:Option<CmMedia>,
 }
 
 #[derive(Debug)]
@@ -22565,7 +22568,7 @@ pub struct CmAdCat {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub cm_webproject_id_cm_webproject:Option<CmWebproject>,
+	pub cm_webproject:Option<CmWebproject>,
 	/// has many
 	pub cm_ad:Option<Vec<CmAd>>,
 	/// has many
@@ -22603,7 +22606,7 @@ pub struct CmBroadcastserver {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub cm_webproject_id_cm_webproject:Option<CmWebproject>,
+	pub cm_webproject:Option<CmWebproject>,
 	/// has many
 	pub cm_webaccesslog:Option<Vec<CmWebaccesslog>>,
 }
@@ -22641,9 +22644,9 @@ pub struct CmChat {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_table_id_ad_table:Option<AdTable>,
+	pub ad_table:Option<AdTable>,
 	/// has one
-	pub cm_chattype_id_cm_chattype:Option<CmChattype>,
+	pub cm_chattype:Option<CmChattype>,
 	/// has many
 	pub cm_chatentry:Option<Vec<CmChatentry>>,
 	/// has many
@@ -22685,13 +22688,13 @@ pub struct CmChatentry {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub cm_chat_id_cm_chat:Option<CmChat>,
+	pub cm_chat:Option<CmChat>,
 	/// has one, self referential
-	pub cm_chatentryparent_id_cm_chatentry:Option<Box<CmChatentry>>,
+	pub cm_chatentryparent:Option<Box<CmChatentry>>,
 	/// has one, self referential
-	pub cm_chatentrygrandparent_id_cm_chatentry:Option<Box<CmChatentry>>,
+	pub cm_chatentrygrandparent:Option<Box<CmChatentry>>,
 	/// has one
-	pub ad_user_id_ad_user:Option<AdUser>,
+	pub ad_user:Option<AdUser>,
 	/// has many
 	pub cm_chatentry:Option<Vec<CmChatentry>>,
 }
@@ -22725,7 +22728,7 @@ pub struct CmChattype {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_table_id_ad_table:Option<AdTable>,
+	pub ad_table:Option<AdTable>,
 	/// has many
 	pub cm_chat:Option<Vec<CmChat>>,
 	/// has many
@@ -22736,10 +22739,10 @@ pub struct CmChattype {
 pub struct CmChattypeupdate {
 	/// primary
 	/// not nullable 
-	pub cm_chattype_id:f64,
+	pub ad_user_id:f64,
 	/// primary
 	/// not nullable 
-	pub ad_user_id:f64,
+	pub cm_chattype_id:f64,
 	/// not nullable 
 	pub ad_client_id:f64,
 	/// not nullable 
@@ -22761,19 +22764,19 @@ pub struct CmChattypeupdate {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub cm_chattype_id_cm_chattype:Option<CmChattype>,
+	pub cm_chattype:Option<CmChattype>,
 	/// has one
-	pub ad_user_id_ad_user:Option<AdUser>,
+	pub ad_user:Option<AdUser>,
 }
 
 #[derive(Debug)]
 pub struct CmChatupdate {
 	/// primary
 	/// not nullable 
-	pub cm_chat_id:f64,
+	pub ad_user_id:f64,
 	/// primary
 	/// not nullable 
-	pub ad_user_id:f64,
+	pub cm_chat_id:f64,
 	/// not nullable 
 	pub ad_client_id:f64,
 	/// not nullable 
@@ -22795,9 +22798,9 @@ pub struct CmChatupdate {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub cm_chat_id_cm_chat:Option<CmChat>,
+	pub cm_chat:Option<CmChat>,
 	/// has one
-	pub ad_user_id_ad_user:Option<AdUser>,
+	pub ad_user:Option<AdUser>,
 }
 
 #[derive(Debug)]
@@ -22860,11 +22863,11 @@ pub struct CmContainer {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub cm_webproject_id_cm_webproject:Option<CmWebproject>,
+	pub cm_webproject:Option<CmWebproject>,
 	/// has one
-	pub cm_template_id_cm_template:Option<CmTemplate>,
+	pub cm_template:Option<CmTemplate>,
 	/// has one, self referential
-	pub cm_containerlink_id_cm_container:Option<Box<CmContainer>>,
+	pub cm_containerlink:Option<Box<CmContainer>>,
 	/// has many
 	pub cm_accesscontainer:Option<Vec<CmAccesscontainer>>,
 	/// has many
@@ -22914,7 +22917,7 @@ pub struct CmContainerElement {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub cm_container_id_cm_container:Option<CmContainer>,
+	pub cm_container:Option<CmContainer>,
 	/// has many
 	pub cm_container_element_trl:Option<Vec<CmContainerElementTrl>>,
 }
@@ -22923,10 +22926,10 @@ pub struct CmContainerElement {
 pub struct CmContainerElementTrl {
 	/// primary
 	/// not nullable 
-	pub cm_container_element_id:f64,
+	pub ad_language:String,
 	/// primary
 	/// not nullable 
-	pub ad_language:String,
+	pub cm_container_element_id:f64,
 	/// not nullable 
 	pub ad_client_id:f64,
 	/// not nullable 
@@ -22953,19 +22956,19 @@ pub struct CmContainerElementTrl {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub cm_container_element_id_cm_container_element:Option<CmContainerElement>,
+	pub cm_container_element:Option<CmContainerElement>,
 	/// has one
-	pub ad_language_ad_language:Option<AdLanguage>,
+	pub ad_language:Option<AdLanguage>,
 }
 
 #[derive(Debug)]
 pub struct CmContainerTrl {
 	/// primary
 	/// not nullable 
-	pub cm_container_id:f64,
+	pub ad_language:String,
 	/// primary
 	/// not nullable 
-	pub ad_language:String,
+	pub cm_container_id:f64,
 	/// not nullable 
 	pub ad_client_id:f64,
 	/// not nullable 
@@ -22994,9 +22997,9 @@ pub struct CmContainerTrl {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub cm_container_id_cm_container:Option<CmContainer>,
+	pub cm_container:Option<CmContainer>,
 	/// has one
-	pub ad_language_ad_language:Option<AdLanguage>,
+	pub ad_language:Option<AdLanguage>,
 }
 
 #[derive(Debug)]
@@ -23030,7 +23033,7 @@ pub struct CmContainerUrl {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub cm_container_id_cm_container:Option<CmContainer>,
+	pub cm_container:Option<CmContainer>,
 }
 
 #[derive(Debug)]
@@ -23066,9 +23069,9 @@ pub struct CmContainerttable {
 	pub updatedby:f64,
 	pub whereclause:Option<String>,
 	/// has one
-	pub cm_container_id_cm_container:Option<CmContainer>,
+	pub cm_container:Option<CmContainer>,
 	/// has one
-	pub cm_templatetable_id_cm_templatetable:Option<CmTemplatetable>,
+	pub cm_templatetable:Option<CmTemplatetable>,
 }
 
 #[derive(Debug)]
@@ -23133,11 +23136,11 @@ pub struct CmCstage {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub cm_webproject_id_cm_webproject:Option<CmWebproject>,
+	pub cm_webproject:Option<CmWebproject>,
 	/// has one
-	pub cm_template_id_cm_template:Option<CmTemplate>,
+	pub cm_template:Option<CmTemplate>,
 	/// has one, self referential
-	pub cm_cstagelink_id_cm_cstage:Option<Box<CmCstage>>,
+	pub cm_cstagelink:Option<Box<CmCstage>>,
 	/// has many
 	pub cm_accessstage:Option<Vec<CmAccessstage>>,
 	/// has many
@@ -23183,7 +23186,7 @@ pub struct CmCstageElement {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub cm_cstage_id_cm_cstage:Option<CmCstage>,
+	pub cm_cstage:Option<CmCstage>,
 	/// has many
 	pub cm_cstage_element_trl:Option<Vec<CmCstageElementTrl>>,
 }
@@ -23192,10 +23195,10 @@ pub struct CmCstageElement {
 pub struct CmCstageElementTrl {
 	/// primary
 	/// not nullable 
-	pub cm_cstage_element_id:f64,
+	pub ad_language:String,
 	/// primary
 	/// not nullable 
-	pub ad_language:String,
+	pub cm_cstage_element_id:f64,
 	/// not nullable 
 	pub ad_client_id:f64,
 	/// not nullable 
@@ -23222,19 +23225,19 @@ pub struct CmCstageElementTrl {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub cm_cstage_element_id_cm_cstage_element:Option<CmCstageElement>,
+	pub cm_cstage_element:Option<CmCstageElement>,
 	/// has one
-	pub ad_language_ad_language:Option<AdLanguage>,
+	pub ad_language:Option<AdLanguage>,
 }
 
 #[derive(Debug)]
 pub struct CmCstageTrl {
 	/// primary
 	/// not nullable 
-	pub cm_cstage_id:f64,
+	pub ad_language:String,
 	/// primary
 	/// not nullable 
-	pub ad_language:String,
+	pub cm_cstage_id:f64,
 	/// not nullable 
 	pub ad_client_id:f64,
 	/// not nullable 
@@ -23263,9 +23266,9 @@ pub struct CmCstageTrl {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub cm_cstage_id_cm_cstage:Option<CmCstage>,
+	pub cm_cstage:Option<CmCstage>,
 	/// has one
-	pub ad_language_ad_language:Option<AdLanguage>,
+	pub ad_language:Option<AdLanguage>,
 }
 
 #[derive(Debug)]
@@ -23301,9 +23304,9 @@ pub struct CmCstagettable {
 	pub updatedby:f64,
 	pub whereclause:Option<String>,
 	/// has one
-	pub cm_cstage_id_cm_cstage:Option<CmCstage>,
+	pub cm_cstage:Option<CmCstage>,
 	/// has one
-	pub cm_templatetable_id_cm_templatetable:Option<CmTemplatetable>,
+	pub cm_templatetable:Option<CmTemplatetable>,
 }
 
 #[derive(Debug)]
@@ -23342,7 +23345,7 @@ pub struct CmMedia {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub cm_webproject_id_cm_webproject:Option<CmWebproject>,
+	pub cm_webproject:Option<CmWebproject>,
 	/// has many
 	pub cm_accessmedia:Option<Vec<CmAccessmedia>>,
 	/// has many
@@ -23390,7 +23393,7 @@ pub struct CmMediaServer {
 	pub url:Option<String>,
 	pub username:Option<String>,
 	/// has one
-	pub cm_webproject_id_cm_webproject:Option<CmWebproject>,
+	pub cm_webproject:Option<CmWebproject>,
 	/// has many
 	pub cm_mediadeploy:Option<Vec<CmMediadeploy>>,
 }
@@ -23427,9 +23430,9 @@ pub struct CmMediadeploy {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub cm_media_server_id_cm_media_server:Option<CmMediaServer>,
+	pub cm_media_server:Option<CmMediaServer>,
 	/// has one
-	pub cm_media_id_cm_media:Option<CmMedia>,
+	pub cm_media:Option<CmMedia>,
 }
 
 #[derive(Debug)]
@@ -23464,9 +23467,9 @@ pub struct CmNewschannel {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_language_ad_language:Option<AdLanguage>,
+	pub ad_language:Option<AdLanguage>,
 	/// has one
-	pub cm_webproject_id_cm_webproject:Option<CmWebproject>,
+	pub cm_webproject:Option<CmWebproject>,
 	/// has many
 	pub cm_accessnewschannel:Option<Vec<CmAccessnewschannel>>,
 	/// has many
@@ -23504,7 +23507,7 @@ pub struct CmNewsitem {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub cm_newschannel_id_cm_newschannel:Option<CmNewschannel>,
+	pub cm_newschannel:Option<CmNewschannel>,
 }
 
 #[derive(Debug)]
@@ -23555,7 +23558,7 @@ pub struct CmTemplate {
 	/// not nullable 
 	pub value:String,
 	/// has one
-	pub cm_webproject_id_cm_webproject:Option<CmWebproject>,
+	pub cm_webproject:Option<CmWebproject>,
 	/// has many
 	pub cm_container:Option<Vec<CmContainer>>,
 	/// has many
@@ -23595,9 +23598,9 @@ pub struct CmTemplateAdCat {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub cm_ad_cat_id_cm_ad_cat:Option<CmAdCat>,
+	pub cm_ad_cat:Option<CmAdCat>,
 	/// has one
-	pub cm_template_id_cm_template:Option<CmTemplate>,
+	pub cm_template:Option<CmTemplate>,
 }
 
 #[derive(Debug)]
@@ -23632,9 +23635,9 @@ pub struct CmTemplatetable {
 	pub updatedby:f64,
 	pub whereclause:Option<String>,
 	/// has one
-	pub cm_template_id_cm_template:Option<CmTemplate>,
+	pub cm_template:Option<CmTemplate>,
 	/// has one
-	pub ad_table_id_ad_table:Option<AdTable>,
+	pub ad_table:Option<AdTable>,
 	/// has many
 	pub cm_containerttable:Option<Vec<CmContainerttable>>,
 	/// has many
@@ -23687,13 +23690,13 @@ pub struct CmWebaccesslog {
 	pub useragent:Option<String>,
 	pub websession:Option<String>,
 	/// has one
-	pub cm_webproject_id_cm_webproject:Option<CmWebproject>,
+	pub cm_webproject:Option<CmWebproject>,
 	/// has one
-	pub cm_broadcastserver_id_cm_broadcastserver:Option<CmBroadcastserver>,
+	pub cm_broadcastserver:Option<CmBroadcastserver>,
 	/// has one
-	pub ad_user_id_ad_user:Option<AdUser>,
+	pub ad_user:Option<AdUser>,
 	/// has one
-	pub cm_media_id_cm_media:Option<CmMedia>,
+	pub cm_media:Option<CmMedia>,
 }
 
 #[derive(Debug)]
@@ -23741,13 +23744,13 @@ pub struct CmWebproject {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_treecmc_id_ad_tree:Option<AdTree>,
+	pub ad_treecmc:Option<AdTree>,
 	/// has one
-	pub ad_treecms_id_ad_tree:Option<AdTree>,
+	pub ad_treecms:Option<AdTree>,
 	/// has one
-	pub ad_treecmm_id_ad_tree:Option<AdTree>,
+	pub ad_treecmm:Option<AdTree>,
 	/// has one
-	pub ad_treecmt_id_ad_tree:Option<AdTree>,
+	pub ad_treecmt:Option<AdTree>,
 	/// has many
 	pub cm_ad_cat:Option<Vec<CmAdCat>>,
 	/// has many
@@ -23806,9 +23809,9 @@ pub struct CmWebprojectDomain {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub cm_webproject_id_cm_webproject:Option<CmWebproject>,
+	pub cm_webproject:Option<CmWebproject>,
 	/// has one
-	pub cm_container_id_cm_container:Option<CmContainer>,
+	pub cm_container:Option<CmContainer>,
 }
 
 #[derive(Debug)]
@@ -23843,7 +23846,7 @@ pub struct CmWikitoken {
 	pub updatedby:f64,
 	pub whereclause:Option<String>,
 	/// has one
-	pub ad_table_id_ad_table:Option<AdTable>,
+	pub ad_table:Option<AdTable>,
 }
 
 #[derive(Debug)]
@@ -23973,7 +23976,7 @@ pub struct DdNetworkdistribution {
 	/// not nullable 
 	pub value:String,
 	/// has one
-	pub m_changenotice_id_m_changenotice:Option<MChangenotice>,
+	pub m_changenotice:Option<MChangenotice>,
 	/// has many
 	pub dd_networkdistributionline:Option<Vec<DdNetworkdistributionline>>,
 }
@@ -24011,13 +24014,13 @@ pub struct DdNetworkdistributionline {
 	pub validfrom:Option<NaiveDateTime>,
 	pub validto:Option<NaiveDateTime>,
 	/// has one
-	pub m_shipper_id_m_shipper:Option<MShipper>,
+	pub m_shipper:Option<MShipper>,
 	/// has one
-	pub m_warehousesource_id_m_warehouse:Option<MWarehouse>,
+	pub m_warehousesource:Option<MWarehouse>,
 	/// has one
-	pub dd_networkdistribution_id_dd_networkdistribution:Option<DdNetworkdistribution>,
+	pub dd_networkdistribution:Option<DdNetworkdistribution>,
 	/// has one
-	pub m_warehouse_id_m_warehouse:Option<MWarehouse>,
+	pub m_warehouse:Option<MWarehouse>,
 }
 
 #[derive(Debug)]
@@ -24120,37 +24123,37 @@ pub struct DdOrder {
 	pub volume:Option<f64>,
 	pub weight:Option<f64>,
 	/// has one
-	pub ad_orgtrx_id_ad_org:Option<AdOrg>,
+	pub ad_orgtrx:Option<AdOrg>,
 	/// has one
-	pub ad_user_id_ad_user:Option<AdUser>,
+	pub ad_user:Option<AdUser>,
 	/// has one
-	pub c_activity_id_c_activity:Option<CActivity>,
+	pub c_activity:Option<CActivity>,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 	/// has one
-	pub c_bpartner_location_id_c_bpartner_location:Option<CBpartnerLocation>,
+	pub c_bpartner_location:Option<CBpartnerLocation>,
 	/// has one
-	pub c_campaign_id_c_campaign:Option<CCampaign>,
+	pub c_campaign:Option<CCampaign>,
 	/// has one
-	pub c_charge_id_c_charge:Option<CCharge>,
+	pub c_charge:Option<CCharge>,
 	/// has one
-	pub c_doctype_id_c_doctype:Option<CDoctype>,
+	pub c_doctype:Option<CDoctype>,
 	/// has one
-	pub c_invoice_id_c_invoice:Option<CInvoice>,
+	pub c_invoice:Option<CInvoice>,
 	/// has one
-	pub c_order_id_c_order:Option<COrder>,
+	pub c_order:Option<COrder>,
 	/// has one
-	pub c_project_id_c_project:Option<CProject>,
+	pub c_project:Option<CProject>,
 	/// has one
-	pub m_shipper_id_m_shipper:Option<MShipper>,
+	pub m_shipper:Option<MShipper>,
 	/// has one
-	pub m_warehouse_id_m_warehouse:Option<MWarehouse>,
+	pub m_warehouse:Option<MWarehouse>,
 	/// has one
-	pub salesrep_id_ad_user:Option<AdUser>,
+	pub salesrep:Option<AdUser>,
 	/// has one
-	pub user1_id_c_elementvalue:Option<CElementvalue>,
+	pub user1:Option<CElementvalue>,
 	/// has one
-	pub user2_id_c_elementvalue:Option<CElementvalue>,
+	pub user2:Option<CElementvalue>,
 	/// has many
 	pub dd_orderline:Option<Vec<DdOrderline>>,
 	/// has many
@@ -24228,29 +24231,29 @@ pub struct DdOrderline {
 	pub user1_id:Option<f64>,
 	pub user2_id:Option<f64>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has one
-	pub dd_order_id_dd_order:Option<DdOrder>,
+	pub dd_order:Option<DdOrder>,
 	/// has one
-	pub c_charge_id_c_charge:Option<CCharge>,
+	pub c_charge:Option<CCharge>,
 	/// has one
-	pub c_project_id_c_project:Option<CProject>,
+	pub c_project:Option<CProject>,
 	/// has one
-	pub c_uom_id_c_uom:Option<CUom>,
+	pub c_uom:Option<CUom>,
 	/// has one
-	pub m_locatorto_id_m_locator:Option<MLocator>,
+	pub m_locatorto:Option<MLocator>,
 	/// has one
-	pub m_locator_id_m_locator:Option<MLocator>,
+	pub m_locator:Option<MLocator>,
 	/// has one
-	pub user1_id_c_elementvalue:Option<CElementvalue>,
+	pub user1:Option<CElementvalue>,
 	/// has one
-	pub user2_id_c_elementvalue:Option<CElementvalue>,
+	pub user2:Option<CElementvalue>,
 	/// has one
-	pub ad_orgtrx_id_ad_org:Option<AdOrg>,
+	pub ad_orgtrx:Option<AdOrg>,
 	/// has one
-	pub c_activity_id_c_activity:Option<CActivity>,
+	pub c_activity:Option<CActivity>,
 	/// has one
-	pub c_campaign_id_c_campaign:Option<CCampaign>,
+	pub c_campaign:Option<CCampaign>,
 	/// has many
 	pub m_movementline:Option<Vec<MMovementline>>,
 	/// has many
@@ -24833,7 +24836,7 @@ pub struct ExpFormat {
 	pub version:String,
 	pub whereclause:Option<String>,
 	/// has one
-	pub ad_table_id_ad_table:Option<AdTable>,
+	pub ad_table:Option<AdTable>,
 	/// has many
 	pub exp_formatline:Option<Vec<ExpFormatline>>,
 }
@@ -24876,11 +24879,11 @@ pub struct ExpFormatline {
 	/// not nullable 
 	pub value:String,
 	/// has one
-	pub exp_format_id_exp_format:Option<ExpFormat>,
+	pub exp_format:Option<ExpFormat>,
 	/// has one
-	pub ad_column_id_ad_column:Option<AdColumn>,
+	pub ad_column:Option<AdColumn>,
 	/// has one
-	pub exp_embeddedformat_id_exp_format:Option<ExpFormat>,
+	pub exp_embeddedformat:Option<ExpFormat>,
 }
 
 #[derive(Debug)]
@@ -24916,7 +24919,7 @@ pub struct ExpProcessor {
 	/// not nullable 
 	pub value:String,
 	/// has one
-	pub exp_processor_type_id_exp_processor_type:Option<ExpProcessorType>,
+	pub exp_processor_type:Option<ExpProcessorType>,
 	/// has many
 	pub ad_replicationstrategy:Option<Vec<AdReplicationstrategy>>,
 	/// has many
@@ -24985,7 +24988,7 @@ pub struct ExpProcessorparameter {
 	/// not nullable 
 	pub value:String,
 	/// has one
-	pub exp_processor_id_exp_processor:Option<ExpProcessor>,
+	pub exp_processor:Option<ExpProcessor>,
 }
 
 #[derive(Debug)]
@@ -25066,59 +25069,59 @@ pub struct FactAcct {
 	pub userelement1_id:Option<f64>,
 	pub userelement2_id:Option<f64>,
 	/// has one
-	pub ad_client_id_ad_client:Option<AdClient>,
+	pub ad_client:Option<AdClient>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 	/// has one
-	pub c_acctschema_id_c_acctschema:Option<CAcctschema>,
+	pub c_acctschema:Option<CAcctschema>,
 	/// has one
-	pub account_id_c_elementvalue:Option<CElementvalue>,
+	pub account:Option<CElementvalue>,
 	/// has one
-	pub c_period_id_c_period:Option<CPeriod>,
+	pub c_period:Option<CPeriod>,
 	/// has one
-	pub ad_table_id_ad_table:Option<AdTable>,
+	pub ad_table:Option<AdTable>,
 	/// has one
-	pub gl_category_id_gl_category:Option<GlCategory>,
+	pub gl_category:Option<GlCategory>,
 	/// has one
-	pub gl_budget_id_gl_budget:Option<GlBudget>,
+	pub gl_budget:Option<GlBudget>,
 	/// has one
-	pub c_tax_id_c_tax:Option<CTax>,
+	pub c_tax:Option<CTax>,
 	/// has one
-	pub m_locator_id_m_locator:Option<MLocator>,
+	pub m_locator:Option<MLocator>,
 	/// has one
-	pub c_currency_id_c_currency:Option<CCurrency>,
+	pub c_currency:Option<CCurrency>,
 	/// has one
-	pub c_uom_id_c_uom:Option<CUom>,
+	pub c_uom:Option<CUom>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 	/// has one
-	pub ad_orgtrx_id_ad_org:Option<AdOrg>,
+	pub ad_orgtrx:Option<AdOrg>,
 	/// has one
-	pub c_locfrom_id_c_location:Option<CLocation>,
+	pub c_locfrom:Option<CLocation>,
 	/// has one
-	pub c_locto_id_c_location:Option<CLocation>,
+	pub c_locto:Option<CLocation>,
 	/// has one
-	pub c_salesregion_id_c_salesregion:Option<CSalesregion>,
+	pub c_salesregion:Option<CSalesregion>,
 	/// has one
-	pub c_project_id_c_project:Option<CProject>,
+	pub c_project:Option<CProject>,
 	/// has one
-	pub c_campaign_id_c_campaign:Option<CCampaign>,
+	pub c_campaign:Option<CCampaign>,
 	/// has one
-	pub c_activity_id_c_activity:Option<CActivity>,
+	pub c_activity:Option<CActivity>,
 	/// has one
-	pub user1_id_c_elementvalue:Option<CElementvalue>,
+	pub user1:Option<CElementvalue>,
 	/// has one
-	pub user2_id_c_elementvalue:Option<CElementvalue>,
+	pub user2:Option<CElementvalue>,
 	/// has one
-	pub a_asset_id_a_asset:Option<AAsset>,
+	pub a_asset:Option<AAsset>,
 	/// has one
-	pub c_subacct_id_c_subacct:Option<CSubacct>,
+	pub c_subacct:Option<CSubacct>,
 	/// has one
-	pub c_projectphase_id_c_projectphase:Option<CProjectphase>,
+	pub c_projectphase:Option<CProjectphase>,
 	/// has one
-	pub c_projecttask_id_c_projecttask:Option<CProjecttask>,
+	pub c_projecttask:Option<CProjecttask>,
 	/// has many
 	pub c_taxdeclarationacct:Option<Vec<CTaxdeclarationacct>>,
 	/// has many
@@ -25277,9 +25280,9 @@ pub struct GlBudgetcontrol {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_acctschema_id_c_acctschema:Option<CAcctschema>,
+	pub c_acctschema:Option<CAcctschema>,
 	/// has one
-	pub gl_budget_id_gl_budget:Option<GlBudget>,
+	pub gl_budget:Option<GlBudget>,
 }
 
 #[derive(Debug)]
@@ -25423,37 +25426,37 @@ pub struct GlDistribution {
 	pub user1_id:Option<f64>,
 	pub user2_id:Option<f64>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 	/// has one
-	pub c_doctype_id_c_doctype:Option<CDoctype>,
+	pub c_doctype:Option<CDoctype>,
 	/// has one
-	pub c_acctschema_id_c_acctschema:Option<CAcctschema>,
+	pub c_acctschema:Option<CAcctschema>,
 	/// has one
-	pub org_id_ad_org:Option<AdOrg>,
+	pub org:Option<AdOrg>,
 	/// has one
-	pub account_id_c_elementvalue:Option<CElementvalue>,
+	pub account:Option<CElementvalue>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 	/// has one
-	pub c_project_id_c_project:Option<CProject>,
+	pub c_project:Option<CProject>,
 	/// has one
-	pub c_campaign_id_c_campaign:Option<CCampaign>,
+	pub c_campaign:Option<CCampaign>,
 	/// has one
-	pub c_activity_id_c_activity:Option<CActivity>,
+	pub c_activity:Option<CActivity>,
 	/// has one
-	pub c_salesregion_id_c_salesregion:Option<CSalesregion>,
+	pub c_salesregion:Option<CSalesregion>,
 	/// has one
-	pub ad_orgtrx_id_ad_org:Option<AdOrg>,
+	pub ad_orgtrx:Option<AdOrg>,
 	/// has one
-	pub c_locto_id_c_location:Option<CLocation>,
+	pub c_locto:Option<CLocation>,
 	/// has one
-	pub c_locfrom_id_c_location:Option<CLocation>,
+	pub c_locfrom:Option<CLocation>,
 	/// has one
-	pub user1_id_c_elementvalue:Option<CElementvalue>,
+	pub user1:Option<CElementvalue>,
 	/// has one
-	pub user2_id_c_elementvalue:Option<CElementvalue>,
+	pub user2:Option<CElementvalue>,
 	/// has many
 	pub gl_distributionline:Option<Vec<GlDistributionline>>,
 }
@@ -25541,35 +25544,35 @@ pub struct GlDistributionline {
 	pub user1_id:Option<f64>,
 	pub user2_id:Option<f64>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 	/// has one
-	pub gl_distribution_id_gl_distribution:Option<GlDistribution>,
+	pub gl_distribution:Option<GlDistribution>,
 	/// has one
-	pub org_id_ad_org:Option<AdOrg>,
+	pub org:Option<AdOrg>,
 	/// has one
-	pub account_id_c_elementvalue:Option<CElementvalue>,
+	pub account:Option<CElementvalue>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 	/// has one
-	pub c_project_id_c_project:Option<CProject>,
+	pub c_project:Option<CProject>,
 	/// has one
-	pub c_campaign_id_c_campaign:Option<CCampaign>,
+	pub c_campaign:Option<CCampaign>,
 	/// has one
-	pub c_activity_id_c_activity:Option<CActivity>,
+	pub c_activity:Option<CActivity>,
 	/// has one
-	pub c_salesregion_id_c_salesregion:Option<CSalesregion>,
+	pub c_salesregion:Option<CSalesregion>,
 	/// has one
-	pub ad_orgtrx_id_ad_org:Option<AdOrg>,
+	pub ad_orgtrx:Option<AdOrg>,
 	/// has one
-	pub c_locto_id_c_location:Option<CLocation>,
+	pub c_locto:Option<CLocation>,
 	/// has one
-	pub c_locfrom_id_c_location:Option<CLocation>,
+	pub c_locfrom:Option<CLocation>,
 	/// has one
-	pub user1_id_c_elementvalue:Option<CElementvalue>,
+	pub user1:Option<CElementvalue>,
 	/// has one
-	pub user2_id_c_elementvalue:Option<CElementvalue>,
+	pub user2:Option<CElementvalue>,
 }
 
 #[derive(Debug)]
@@ -25606,7 +25609,7 @@ pub struct GlFund {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_acctschema_id_c_acctschema:Option<CAcctschema>,
+	pub c_acctschema:Option<CAcctschema>,
 	/// has many
 	pub gl_fundrestriction:Option<Vec<GlFundrestriction>>,
 }
@@ -25641,9 +25644,9 @@ pub struct GlFundrestriction {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub gl_fund_id_gl_fund:Option<GlFund>,
+	pub gl_fund:Option<GlFund>,
 	/// has one
-	pub c_elementvalue_id_c_elementvalue:Option<CElementvalue>,
+	pub c_elementvalue:Option<CElementvalue>,
 }
 
 #[derive(Debug)]
@@ -25720,23 +25723,23 @@ pub struct GlJournal {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_acctschema_id_c_acctschema:Option<CAcctschema>,
+	pub c_acctschema:Option<CAcctschema>,
 	/// has one
-	pub c_doctype_id_c_doctype:Option<CDoctype>,
+	pub c_doctype:Option<CDoctype>,
 	/// has one
-	pub gl_budget_id_gl_budget:Option<GlBudget>,
+	pub gl_budget:Option<GlBudget>,
 	/// has one
-	pub gl_category_id_gl_category:Option<GlCategory>,
+	pub gl_category:Option<GlCategory>,
 	/// has one
-	pub c_period_id_c_period:Option<CPeriod>,
+	pub c_period:Option<CPeriod>,
 	/// has one
-	pub c_currency_id_c_currency:Option<CCurrency>,
+	pub c_currency:Option<CCurrency>,
 	/// has one
-	pub gl_journalbatch_id_gl_journalbatch:Option<GlJournalbatch>,
+	pub gl_journalbatch:Option<GlJournalbatch>,
 	/// has one
-	pub c_conversiontype_id_c_conversiontype:Option<CConversiontype>,
+	pub c_conversiontype:Option<CConversiontype>,
 	/// has one, self referential
-	pub reversal_id_gl_journal:Option<Box<GlJournal>>,
+	pub reversal:Option<Box<GlJournal>>,
 	/// has many
 	pub c_revenuerecognition_run:Option<Vec<CRevenuerecognitionRun>>,
 	/// has many
@@ -25806,15 +25809,15 @@ pub struct GlJournalbatch {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub gl_category_id_gl_category:Option<GlCategory>,
+	pub gl_category:Option<GlCategory>,
 	/// has one
-	pub c_period_id_c_period:Option<CPeriod>,
+	pub c_period:Option<CPeriod>,
 	/// has one
-	pub c_currency_id_c_currency:Option<CCurrency>,
+	pub c_currency:Option<CCurrency>,
 	/// has one
-	pub c_doctype_id_c_doctype:Option<CDoctype>,
+	pub c_doctype:Option<CDoctype>,
 	/// has one, self referential
-	pub reversal_id_gl_journalbatch:Option<Box<GlJournalbatch>>,
+	pub reversal:Option<Box<GlJournalbatch>>,
 	/// has many
 	pub a_asset_addition:Option<Vec<AAssetAddition>>,
 	/// has many
@@ -25897,23 +25900,23 @@ pub struct GlJournalline {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_client_id_ad_client:Option<AdClient>,
+	pub ad_client:Option<AdClient>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 	/// has one
-	pub gl_journal_id_gl_journal:Option<GlJournal>,
+	pub gl_journal:Option<GlJournal>,
 	/// has one
-	pub c_currency_id_c_currency:Option<CCurrency>,
+	pub c_currency:Option<CCurrency>,
 	/// has one
-	pub c_uom_id_c_uom:Option<CUom>,
+	pub c_uom:Option<CUom>,
 	/// has one
-	pub c_validcombination_id_c_validcombination:Option<CValidcombination>,
+	pub c_validcombination:Option<CValidcombination>,
 	/// has one
-	pub c_conversiontype_id_c_conversiontype:Option<CConversiontype>,
+	pub c_conversiontype:Option<CConversiontype>,
 	/// has one
-	pub a_asset_group_id_a_asset_group:Option<AAssetGroup>,
+	pub a_asset_group:Option<AAssetGroup>,
 	/// has one
-	pub a_asset_id_a_asset:Option<AAsset>,
+	pub a_asset:Option<AAsset>,
 	/// has many
 	pub i_fajournal:Option<Vec<IFajournal>>,
 	/// has many
@@ -25961,19 +25964,19 @@ pub struct HrAttribute {
 	pub validfrom:NaiveDateTime,
 	pub validto:Option<NaiveDateTime>,
 	/// has one
-	pub ad_rule_id_ad_rule:Option<AdRule>,
+	pub ad_rule:Option<AdRule>,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 	/// has one
-	pub hr_concept_id_hr_concept:Option<HrConcept>,
+	pub hr_concept:Option<HrConcept>,
 	/// has one
-	pub hr_department_id_hr_department:Option<HrDepartment>,
+	pub hr_department:Option<HrDepartment>,
 	/// has one
-	pub hr_employee_id_hr_employee:Option<HrEmployee>,
+	pub hr_employee:Option<HrEmployee>,
 	/// has one
-	pub hr_job_id_hr_job:Option<HrJob>,
+	pub hr_job:Option<HrJob>,
 	/// has one
-	pub hr_payroll_id_hr_payroll:Option<HrPayroll>,
+	pub hr_payroll:Option<HrPayroll>,
 }
 
 #[derive(Debug)]
@@ -26022,15 +26025,15 @@ pub struct HrConcept {
 	pub validto:Option<NaiveDateTime>,
 	pub value:Option<String>,
 	/// has one
-	pub hr_concept_category_id_hr_concept_category:Option<HrConceptCategory>,
+	pub hr_concept_category:Option<HrConceptCategory>,
 	/// has one
-	pub hr_department_id_hr_department:Option<HrDepartment>,
+	pub hr_department:Option<HrDepartment>,
 	/// has one
-	pub hr_job_id_hr_job:Option<HrJob>,
+	pub hr_job:Option<HrJob>,
 	/// has one
-	pub hr_payroll_id_hr_payroll:Option<HrPayroll>,
+	pub hr_payroll:Option<HrPayroll>,
 	/// has one
-	pub ad_reference_id_ad_reference:Option<AdReference>,
+	pub ad_reference:Option<AdReference>,
 	/// has many
 	pub hr_attribute:Option<Vec<HrAttribute>>,
 	/// has many
@@ -26073,13 +26076,13 @@ pub struct HrConceptAcct {
 	pub user1_id:Option<f64>,
 	pub user2_id:Option<f64>,
 	/// has one
-	pub c_bp_group_id_c_bp_group:Option<CBpGroup>,
+	pub c_bp_group:Option<CBpGroup>,
 	/// has one
-	pub user1_id_c_elementvalue:Option<CElementvalue>,
+	pub user1:Option<CElementvalue>,
 	/// has one
-	pub hr_concept_id_hr_concept:Option<HrConcept>,
+	pub hr_concept:Option<HrConcept>,
 	/// has one
-	pub c_acctschema_id_c_acctschema:Option<CAcctschema>,
+	pub c_acctschema:Option<CAcctschema>,
 }
 
 #[derive(Debug)]
@@ -26143,11 +26146,11 @@ pub struct HrContract {
 	pub validto:Option<NaiveDateTime>,
 	pub value:Option<String>,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 	/// has one
-	pub c_campaign_id_c_campaign:Option<CCampaign>,
+	pub c_campaign:Option<CCampaign>,
 	/// has one
-	pub c_project_id_c_project:Option<CProject>,
+	pub c_project:Option<CProject>,
 	/// has many
 	pub hr_payroll:Option<Vec<HrPayroll>>,
 }
@@ -26177,7 +26180,7 @@ pub struct HrDepartment {
 	pub updatedby:f64,
 	pub value:Option<String>,
 	/// has one
-	pub c_activity_id_c_activity:Option<CActivity>,
+	pub c_activity:Option<CActivity>,
 	/// has many
 	pub hr_attribute:Option<Vec<HrAttribute>>,
 	/// has many
@@ -26232,15 +26235,15 @@ pub struct HrEmployee {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_activity_id_c_activity:Option<CActivity>,
+	pub c_activity:Option<CActivity>,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 	/// has one
-	pub hr_department_id_hr_department:Option<HrDepartment>,
+	pub hr_department:Option<HrDepartment>,
 	/// has one
-	pub hr_job_id_hr_job:Option<HrJob>,
+	pub hr_job:Option<HrJob>,
 	/// has one
-	pub hr_payroll_id_hr_payroll:Option<HrPayroll>,
+	pub hr_payroll:Option<HrPayroll>,
 	/// has many
 	pub hr_attribute:Option<Vec<HrAttribute>>,
 	/// has many
@@ -26278,11 +26281,11 @@ pub struct HrJob {
 	pub updatedby:f64,
 	pub value:Option<String>,
 	/// has one
-	pub hr_department_id_hr_department:Option<HrDepartment>,
+	pub hr_department:Option<HrDepartment>,
 	/// has one, self referential
-	pub next_job_id_hr_job:Option<Box<HrJob>>,
+	pub next_job:Option<Box<HrJob>>,
 	/// has one
-	pub supervisor_id_ad_user:Option<AdUser>,
+	pub supervisor:Option<AdUser>,
 	/// has many
 	pub hr_attribute:Option<Vec<HrAttribute>>,
 	/// has many
@@ -26327,13 +26330,13 @@ pub struct HrList {
 	pub validfrom:Option<NaiveDateTime>,
 	pub value:Option<String>,
 	/// has one
-	pub hr_department_id_hr_department:Option<HrDepartment>,
+	pub hr_department:Option<HrDepartment>,
 	/// has one
-	pub hr_employee_id_hr_employee:Option<HrEmployee>,
+	pub hr_employee:Option<HrEmployee>,
 	/// has one
-	pub hr_listtype_id_hr_listtype:Option<HrListtype>,
+	pub hr_listtype:Option<HrListtype>,
 	/// has one
-	pub hr_payroll_id_hr_payroll:Option<HrPayroll>,
+	pub hr_payroll:Option<HrPayroll>,
 	/// has many
 	pub hr_listversion:Option<Vec<HrListversion>>,
 }
@@ -26372,7 +26375,7 @@ pub struct HrListline {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub hr_listversion_id_hr_listversion:Option<HrListversion>,
+	pub hr_listversion:Option<HrListversion>,
 }
 
 #[derive(Debug)]
@@ -26432,9 +26435,9 @@ pub struct HrListversion {
 	/// not nullable 
 	pub validto:NaiveDateTime,
 	/// has one
-	pub hr_listbase_id_hr_list:Option<HrList>,
+	pub hr_listbase:Option<HrList>,
 	/// has one
-	pub hr_list_id_hr_list:Option<HrList>,
+	pub hr_list:Option<HrList>,
 	/// has many
 	pub hr_listline:Option<Vec<HrListline>>,
 }
@@ -26489,37 +26492,37 @@ pub struct HrMovement {
 	pub validfrom:NaiveDateTime,
 	pub validto:Option<NaiveDateTime>,
 	/// has one
-	pub hr_concept_category_id_hr_concept_category:Option<HrConceptCategory>,
+	pub hr_concept_category:Option<HrConceptCategory>,
 	/// has one
-	pub hr_process_id_hr_process:Option<HrProcess>,
+	pub hr_process:Option<HrProcess>,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 	/// has one
-	pub hr_concept_id_hr_concept:Option<HrConcept>,
+	pub hr_concept:Option<HrConcept>,
 	/// has one
-	pub hr_department_id_hr_department:Option<HrDepartment>,
+	pub hr_department:Option<HrDepartment>,
 	/// has one
-	pub hr_job_id_hr_job:Option<HrJob>,
+	pub hr_job:Option<HrJob>,
 	/// has one
-	pub ad_rule_id_ad_rule:Option<AdRule>,
+	pub ad_rule:Option<AdRule>,
 	/// has one
-	pub c_activity_id_c_activity:Option<CActivity>,
+	pub c_activity:Option<CActivity>,
 	/// has one
-	pub c_campaign_id_c_campaign:Option<CCampaign>,
+	pub c_campaign:Option<CCampaign>,
 	/// has one
-	pub ad_orgtrx_id_ad_org:Option<AdOrg>,
+	pub ad_orgtrx:Option<AdOrg>,
 	/// has one
-	pub c_projectphase_id_c_projectphase:Option<CProjectphase>,
+	pub c_projectphase:Option<CProjectphase>,
 	/// has one
-	pub c_projecttask_id_c_projecttask:Option<CProjecttask>,
+	pub c_projecttask:Option<CProjecttask>,
 	/// has one
-	pub c_project_id_c_project:Option<CProject>,
+	pub c_project:Option<CProject>,
 	/// has one
-	pub user1_id_c_elementvalue:Option<CElementvalue>,
+	pub user1:Option<CElementvalue>,
 	/// has one
-	pub user2_id_c_elementvalue:Option<CElementvalue>,
+	pub user2:Option<CElementvalue>,
 	/// has one
-	pub pp_cost_collector_id_pp_cost_collector:Option<PpCostCollector>,
+	pub pp_cost_collector:Option<PpCostCollector>,
 }
 
 #[derive(Debug)]
@@ -26554,11 +26557,11 @@ pub struct HrPayroll {
 	pub updatedby:f64,
 	pub value:Option<String>,
 	/// has one
-	pub ad_printformat_id_ad_printformat:Option<AdPrintformat>,
+	pub ad_printformat:Option<AdPrintformat>,
 	/// has one
-	pub c_charge_id_c_charge:Option<CCharge>,
+	pub c_charge:Option<CCharge>,
 	/// has one
-	pub hr_contract_id_hr_contract:Option<HrContract>,
+	pub hr_contract:Option<HrContract>,
 	/// has many
 	pub hr_attribute:Option<Vec<HrAttribute>>,
 	/// has many
@@ -26610,11 +26613,11 @@ pub struct HrPayrollconcept {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_rule_id_ad_rule:Option<AdRule>,
+	pub ad_rule:Option<AdRule>,
 	/// has one
-	pub hr_concept_id_hr_concept:Option<HrConcept>,
+	pub hr_concept:Option<HrConcept>,
 	/// has one
-	pub hr_payroll_id_hr_payroll:Option<HrPayroll>,
+	pub hr_payroll:Option<HrPayroll>,
 }
 
 #[derive(Debug)]
@@ -26658,13 +26661,13 @@ pub struct HrPeriod {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_period_id_c_period:Option<CPeriod>,
+	pub c_period:Option<CPeriod>,
 	/// has one
-	pub c_year_id_c_year:Option<CYear>,
+	pub c_year:Option<CYear>,
 	/// has one
-	pub hr_payroll_id_hr_payroll:Option<HrPayroll>,
+	pub hr_payroll:Option<HrPayroll>,
 	/// has one
-	pub hr_year_id_hr_year:Option<HrYear>,
+	pub hr_year:Option<HrYear>,
 	/// has many
 	pub hr_process:Option<Vec<HrProcess>>,
 }
@@ -26723,31 +26726,31 @@ pub struct HrProcess {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub hr_job_id_hr_job:Option<HrJob>,
+	pub hr_job:Option<HrJob>,
 	/// has one
-	pub c_doctype_id_c_doctype:Option<CDoctype>,
+	pub c_doctype:Option<CDoctype>,
 	/// has one
-	pub c_payselection_id_c_payselection:Option<CPayselection>,
+	pub c_payselection:Option<CPayselection>,
 	/// has one
-	pub hr_employee_id_hr_employee:Option<HrEmployee>,
+	pub hr_employee:Option<HrEmployee>,
 	/// has one
-	pub c_doctypetarget_id_c_doctype:Option<CDoctype>,
+	pub c_doctypetarget:Option<CDoctype>,
 	/// has one
-	pub hr_department_id_hr_department:Option<HrDepartment>,
+	pub hr_department:Option<HrDepartment>,
 	/// has one
-	pub hr_payroll_id_hr_payroll:Option<HrPayroll>,
+	pub hr_payroll:Option<HrPayroll>,
 	/// has one
-	pub hr_period_id_hr_period:Option<HrPeriod>,
+	pub hr_period:Option<HrPeriod>,
 	/// has one
-	pub ad_printformat_id_ad_printformat:Option<AdPrintformat>,
+	pub ad_printformat:Option<AdPrintformat>,
 	/// has one
-	pub ad_workflow_id_ad_workflow:Option<AdWorkflow>,
+	pub ad_workflow:Option<AdWorkflow>,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 	/// has one
-	pub c_charge_id_c_charge:Option<CCharge>,
+	pub c_charge:Option<CCharge>,
 	/// has one, self referential
-	pub reversal_id_hr_process:Option<Box<HrProcess>>,
+	pub reversal:Option<Box<HrProcess>>,
 	/// has many
 	pub hr_movement:Option<Vec<HrMovement>>,
 	/// has many
@@ -26786,9 +26789,9 @@ pub struct HrYear {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_year_id_c_year:Option<CYear>,
+	pub c_year:Option<CYear>,
 	/// has one
-	pub hr_payroll_id_hr_payroll:Option<HrPayroll>,
+	pub hr_payroll:Option<HrPayroll>,
 	/// has many
 	pub hr_period:Option<Vec<HrPeriod>>,
 }
@@ -26885,21 +26888,21 @@ pub struct IAsset {
 	pub value:Option<String>,
 	pub versionno:Option<String>,
 	/// has one
-	pub a_asset_group_id_a_asset_group:Option<AAssetGroup>,
+	pub a_asset_group:Option<AAssetGroup>,
 	/// has one
-	pub a_depreciation_table_header_id_a_depreciation_table_header:Option<ADepreciationTableHeader>,
+	pub a_depreciation_table_header:Option<ADepreciationTableHeader>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has one
-	pub m_locator_id_m_locator:Option<MLocator>,
+	pub m_locator:Option<MLocator>,
 	/// has one
-	pub c_acctschema_id_c_acctschema:Option<CAcctschema>,
+	pub c_acctschema:Option<CAcctschema>,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 	/// has one
-	pub c_bpartner_location_id_c_bpartner_location:Option<CBpartnerLocation>,
+	pub c_bpartner_location:Option<CBpartnerLocation>,
 	/// has one
-	pub c_location_id_c_location:Option<CLocation>,
+	pub c_location:Option<CLocation>,
 }
 
 #[derive(Debug)]
@@ -26977,21 +26980,21 @@ pub struct IBankstatement {
 	pub updatedby:Option<f64>,
 	pub valutadate:Option<NaiveDateTime>,
 	/// has one
-	pub c_bankstatement_id_c_bankstatement:Option<CBankstatement>,
+	pub c_bankstatement:Option<CBankstatement>,
 	/// has one
-	pub c_bankaccount_id_c_bankaccount:Option<CBankaccount>,
+	pub c_bankaccount:Option<CBankaccount>,
 	/// has one
-	pub c_payment_id_c_payment:Option<CPayment>,
+	pub c_payment:Option<CPayment>,
 	/// has one
-	pub c_currency_id_c_currency:Option<CCurrency>,
+	pub c_currency:Option<CCurrency>,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 	/// has one
-	pub c_invoice_id_c_invoice:Option<CInvoice>,
+	pub c_invoice:Option<CInvoice>,
 	/// has one
-	pub c_charge_id_c_charge:Option<CCharge>,
+	pub c_charge:Option<CCharge>,
 	/// has one
-	pub c_bankstatementline_id_c_bankstatementline:Option<CBankstatementline>,
+	pub c_bankstatementline:Option<CBankstatementline>,
 }
 
 #[derive(Debug)]
@@ -27052,21 +27055,21 @@ pub struct IBpartner {
 	pub updatedby:Option<f64>,
 	pub value:Option<String>,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 	/// has one
-	pub c_bp_group_id_c_bp_group:Option<CBpGroup>,
+	pub c_bp_group:Option<CBpGroup>,
 	/// has one
-	pub c_bpartner_location_id_c_bpartner_location:Option<CBpartnerLocation>,
+	pub c_bpartner_location:Option<CBpartnerLocation>,
 	/// has one
-	pub c_region_id_c_region:Option<CRegion>,
+	pub c_region:Option<CRegion>,
 	/// has one
-	pub c_country_id_c_country:Option<CCountry>,
+	pub c_country:Option<CCountry>,
 	/// has one
-	pub c_greeting_id_c_greeting:Option<CGreeting>,
+	pub c_greeting:Option<CGreeting>,
 	/// has one
-	pub ad_user_id_ad_user:Option<AdUser>,
+	pub ad_user:Option<AdUser>,
 	/// has one
-	pub r_interestarea_id_r_interestarea:Option<RInterestarea>,
+	pub r_interestarea:Option<RInterestarea>,
 }
 
 #[derive(Debug)]
@@ -27104,13 +27107,13 @@ pub struct IConversionRate {
 	pub validfrom:Option<NaiveDateTime>,
 	pub validto:Option<NaiveDateTime>,
 	/// has one
-	pub c_conversion_rate_id_c_conversion_rate:Option<CConversionRate>,
+	pub c_conversion_rate:Option<CConversionRate>,
 	/// has one
-	pub c_currency_id_c_currency:Option<CCurrency>,
+	pub c_currency:Option<CCurrency>,
 	/// has one
-	pub c_currency_id_to_c_currency:Option<CCurrency>,
+	pub c_currency_id_to:Option<CCurrency>,
 	/// has one
-	pub c_conversiontype_id_c_conversiontype:Option<CConversiontype>,
+	pub c_conversiontype:Option<CConversiontype>,
 }
 
 #[derive(Debug)]
@@ -27160,13 +27163,13 @@ pub struct IElementvalue {
 	pub updatedby:Option<f64>,
 	pub value:Option<String>,
 	/// has one
-	pub c_element_id_c_element:Option<CElement>,
+	pub c_element:Option<CElement>,
 	/// has one
-	pub c_elementvalue_id_c_elementvalue:Option<CElementvalue>,
+	pub c_elementvalue:Option<CElementvalue>,
 	/// has one
-	pub parentelementvalue_id_c_elementvalue:Option<CElementvalue>,
+	pub parentelementvalue:Option<CElementvalue>,
 	/// has one
-	pub ad_column_id_ad_column:Option<AdColumn>,
+	pub ad_column:Option<AdColumn>,
 }
 
 #[derive(Debug)]
@@ -27247,49 +27250,49 @@ pub struct IFajournal {
 	pub userelement1_id:Option<f64>,
 	pub userelement2_id:Option<f64>,
 	/// has one
-	pub ad_orgdoc_id_ad_org:Option<AdOrg>,
+	pub ad_orgdoc:Option<AdOrg>,
 	/// has one
-	pub ad_orgtrx_id_ad_org:Option<AdOrg>,
+	pub ad_orgtrx:Option<AdOrg>,
 	/// has one
-	pub account_id_c_elementvalue:Option<CElementvalue>,
+	pub account:Option<CElementvalue>,
 	/// has one
-	pub c_acctschema_id_c_acctschema:Option<CAcctschema>,
+	pub c_acctschema:Option<CAcctschema>,
 	/// has one
-	pub gl_budget_id_gl_budget:Option<GlBudget>,
+	pub gl_budget:Option<GlBudget>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has one
-	pub user2_id_c_elementvalue:Option<CElementvalue>,
+	pub user2:Option<CElementvalue>,
 	/// has one
-	pub user1_id_c_elementvalue:Option<CElementvalue>,
+	pub user1:Option<CElementvalue>,
 	/// has one
-	pub gl_journal_id_gl_journal:Option<GlJournal>,
+	pub gl_journal:Option<GlJournal>,
 	/// has one
-	pub gl_journalline_id_gl_journalline:Option<GlJournalline>,
+	pub gl_journalline:Option<GlJournalline>,
 	/// has one
-	pub gl_journalbatch_id_gl_journalbatch:Option<GlJournalbatch>,
+	pub gl_journalbatch:Option<GlJournalbatch>,
 	/// has one
-	pub gl_category_id_gl_category:Option<GlCategory>,
+	pub gl_category:Option<GlCategory>,
 	/// has one
-	pub c_validcombination_id_c_validcombination:Option<CValidcombination>,
+	pub c_validcombination:Option<CValidcombination>,
 	/// has one
-	pub c_uom_id_c_uom:Option<CUom>,
+	pub c_uom:Option<CUom>,
 	/// has one
-	pub c_activity_id_c_activity:Option<CActivity>,
+	pub c_activity:Option<CActivity>,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 	/// has one
-	pub c_campaign_id_c_campaign:Option<CCampaign>,
+	pub c_campaign:Option<CCampaign>,
 	/// has one
-	pub c_currency_id_c_currency:Option<CCurrency>,
+	pub c_currency:Option<CCurrency>,
 	/// has one
-	pub c_doctype_id_c_doctype:Option<CDoctype>,
+	pub c_doctype:Option<CDoctype>,
 	/// has one
-	pub c_period_id_c_period:Option<CPeriod>,
+	pub c_period:Option<CPeriod>,
 	/// has one
-	pub c_project_id_c_project:Option<CProject>,
+	pub c_project:Option<CProject>,
 	/// has one
-	pub c_salesregion_id_c_salesregion:Option<CSalesregion>,
+	pub c_salesregion:Option<CSalesregion>,
 }
 
 #[derive(Debug)]
@@ -27375,57 +27378,57 @@ pub struct IGljournal {
 	pub user1_id:Option<f64>,
 	pub user2_id:Option<f64>,
 	/// has one
-	pub ad_orgdoc_id_ad_org:Option<AdOrg>,
+	pub ad_orgdoc:Option<AdOrg>,
 	/// has one
-	pub gl_journalbatch_id_gl_journalbatch:Option<GlJournalbatch>,
+	pub gl_journalbatch:Option<GlJournalbatch>,
 	/// has one
-	pub gl_journal_id_gl_journal:Option<GlJournal>,
+	pub gl_journal:Option<GlJournal>,
 	/// has one
-	pub c_acctschema_id_c_acctschema:Option<CAcctschema>,
+	pub c_acctschema:Option<CAcctschema>,
 	/// has one
-	pub c_doctype_id_c_doctype:Option<CDoctype>,
+	pub c_doctype:Option<CDoctype>,
 	/// has one
-	pub gl_category_id_gl_category:Option<GlCategory>,
+	pub gl_category:Option<GlCategory>,
 	/// has one
-	pub c_period_id_c_period:Option<CPeriod>,
+	pub c_period:Option<CPeriod>,
 	/// has one
-	pub gl_budget_id_gl_budget:Option<GlBudget>,
+	pub gl_budget:Option<GlBudget>,
 	/// has one
-	pub gl_journalline_id_gl_journalline:Option<GlJournalline>,
+	pub gl_journalline:Option<GlJournalline>,
 	/// has one
-	pub c_currency_id_c_currency:Option<CCurrency>,
+	pub c_currency:Option<CCurrency>,
 	/// has one
-	pub c_conversiontype_id_c_conversiontype:Option<CConversiontype>,
+	pub c_conversiontype:Option<CConversiontype>,
 	/// has one
-	pub c_uom_id_c_uom:Option<CUom>,
+	pub c_uom:Option<CUom>,
 	/// has one
-	pub c_validcombination_id_c_validcombination:Option<CValidcombination>,
+	pub c_validcombination:Option<CValidcombination>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 	/// has one
-	pub account_id_c_elementvalue:Option<CElementvalue>,
+	pub account:Option<CElementvalue>,
 	/// has one
-	pub ad_orgtrx_id_ad_org:Option<AdOrg>,
+	pub ad_orgtrx:Option<AdOrg>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 	/// has one
-	pub c_project_id_c_project:Option<CProject>,
+	pub c_project:Option<CProject>,
 	/// has one
-	pub c_locto_id_c_location:Option<CLocation>,
+	pub c_locto:Option<CLocation>,
 	/// has one
-	pub c_locfrom_id_c_location:Option<CLocation>,
+	pub c_locfrom:Option<CLocation>,
 	/// has one
-	pub c_salesregion_id_c_salesregion:Option<CSalesregion>,
+	pub c_salesregion:Option<CSalesregion>,
 	/// has one
-	pub c_activity_id_c_activity:Option<CActivity>,
+	pub c_activity:Option<CActivity>,
 	/// has one
-	pub c_campaign_id_c_campaign:Option<CCampaign>,
+	pub c_campaign:Option<CCampaign>,
 	/// has one
-	pub user1_id_c_elementvalue:Option<CElementvalue>,
+	pub user1:Option<CElementvalue>,
 	/// has one
-	pub user2_id_c_elementvalue:Option<CElementvalue>,
+	pub user2:Option<CElementvalue>,
 }
 
 #[derive(Debug)]
@@ -27468,7 +27471,7 @@ pub struct IInoutlineconfirm {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub m_inoutlineconfirm_id_m_inoutlineconfirm:Option<MInoutlineconfirm>,
+	pub m_inoutlineconfirm:Option<MInoutlineconfirm>,
 }
 
 #[derive(Debug)]
@@ -27514,15 +27517,15 @@ pub struct IInventory {
 	pub y:Option<String>,
 	pub z:Option<String>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has one
-	pub m_locator_id_m_locator:Option<MLocator>,
+	pub m_locator:Option<MLocator>,
 	/// has one
-	pub m_warehouse_id_m_warehouse:Option<MWarehouse>,
+	pub m_warehouse:Option<MWarehouse>,
 	/// has one
-	pub m_inventory_id_m_inventory:Option<MInventory>,
+	pub m_inventory:Option<MInventory>,
 	/// has one
-	pub m_inventoryline_id_m_inventoryline:Option<MInventoryline>,
+	pub m_inventoryline:Option<MInventoryline>,
 }
 
 #[derive(Debug)]
@@ -27601,47 +27604,47 @@ pub struct IInvoice {
 	pub updated:Option<NaiveDateTime>,
 	pub updatedby:Option<f64>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 	/// has one
-	pub ad_orgtrx_id_ad_org:Option<AdOrg>,
+	pub ad_orgtrx:Option<AdOrg>,
 	/// has one
-	pub m_pricelist_id_m_pricelist:Option<MPricelist>,
+	pub m_pricelist:Option<MPricelist>,
 	/// has one
-	pub c_currency_id_c_currency:Option<CCurrency>,
+	pub c_currency:Option<CCurrency>,
 	/// has one
-	pub salesrep_id_ad_user:Option<AdUser>,
+	pub salesrep:Option<AdUser>,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 	/// has one
-	pub c_bpartner_location_id_c_bpartner_location:Option<CBpartnerLocation>,
+	pub c_bpartner_location:Option<CBpartnerLocation>,
 	/// has one
-	pub c_location_id_c_location:Option<CLocation>,
+	pub c_location:Option<CLocation>,
 	/// has one
-	pub c_region_id_c_region:Option<CRegion>,
+	pub c_region:Option<CRegion>,
 	/// has one
-	pub ad_user_id_ad_user:Option<AdUser>,
+	pub ad_user:Option<AdUser>,
 	/// has one
-	pub c_country_id_c_country:Option<CCountry>,
+	pub c_country:Option<CCountry>,
 	/// has one
-	pub c_doctype_id_c_doctype:Option<CDoctype>,
+	pub c_doctype:Option<CDoctype>,
 	/// has one
-	pub c_paymentterm_id_c_paymentterm:Option<CPaymentterm>,
+	pub c_paymentterm:Option<CPaymentterm>,
 	/// has one
-	pub c_project_id_c_project:Option<CProject>,
+	pub c_project:Option<CProject>,
 	/// has one
-	pub c_campaign_id_c_campaign:Option<CCampaign>,
+	pub c_campaign:Option<CCampaign>,
 	/// has one
-	pub c_activity_id_c_activity:Option<CActivity>,
+	pub c_activity:Option<CActivity>,
 	/// has one
-	pub c_invoice_id_c_invoice:Option<CInvoice>,
+	pub c_invoice:Option<CInvoice>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has one
-	pub c_tax_id_c_tax:Option<CTax>,
+	pub c_tax:Option<CTax>,
 	/// has one
-	pub c_invoiceline_id_c_invoiceline:Option<CInvoiceline>,
+	pub c_invoiceline:Option<CInvoiceline>,
 	/// has one
-	pub c_charge_id_c_charge:Option<CCharge>,
+	pub c_charge:Option<CCharge>,
 }
 
 #[derive(Debug)]
@@ -27724,53 +27727,53 @@ pub struct IOrder {
 	pub updated:Option<NaiveDateTime>,
 	pub updatedby:Option<f64>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 	/// has one
-	pub ad_orgtrx_id_ad_org:Option<AdOrg>,
+	pub ad_orgtrx:Option<AdOrg>,
 	/// has one
-	pub salesrep_id_ad_user:Option<AdUser>,
+	pub salesrep:Option<AdUser>,
 	/// has one
-	pub m_warehouse_id_m_warehouse:Option<MWarehouse>,
+	pub m_warehouse:Option<MWarehouse>,
 	/// has one
-	pub m_pricelist_id_m_pricelist:Option<MPricelist>,
+	pub m_pricelist:Option<MPricelist>,
 	/// has one
-	pub c_currency_id_c_currency:Option<CCurrency>,
+	pub c_currency:Option<CCurrency>,
 	/// has one
-	pub m_shipper_id_m_shipper:Option<MShipper>,
+	pub m_shipper:Option<MShipper>,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 	/// has one
-	pub c_bpartner_location_id_c_bpartner_location:Option<CBpartnerLocation>,
+	pub c_bpartner_location:Option<CBpartnerLocation>,
 	/// has one
-	pub billto_id_c_bpartner_location:Option<CBpartnerLocation>,
+	pub billto:Option<CBpartnerLocation>,
 	/// has one
-	pub c_location_id_c_location:Option<CLocation>,
+	pub c_location:Option<CLocation>,
 	/// has one
-	pub c_region_id_c_region:Option<CRegion>,
+	pub c_region:Option<CRegion>,
 	/// has one
-	pub c_country_id_c_country:Option<CCountry>,
+	pub c_country:Option<CCountry>,
 	/// has one
-	pub ad_user_id_ad_user:Option<AdUser>,
+	pub ad_user:Option<AdUser>,
 	/// has one
-	pub c_project_id_c_project:Option<CProject>,
+	pub c_project:Option<CProject>,
 	/// has one
-	pub c_activity_id_c_activity:Option<CActivity>,
+	pub c_activity:Option<CActivity>,
 	/// has one
-	pub c_doctype_id_c_doctype:Option<CDoctype>,
+	pub c_doctype:Option<CDoctype>,
 	/// has one
-	pub c_paymentterm_id_c_paymentterm:Option<CPaymentterm>,
+	pub c_paymentterm:Option<CPaymentterm>,
 	/// has one
-	pub c_order_id_c_order:Option<COrder>,
+	pub c_order:Option<COrder>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has one
-	pub c_tax_id_c_tax:Option<CTax>,
+	pub c_tax:Option<CTax>,
 	/// has one
-	pub c_orderline_id_c_orderline:Option<COrderline>,
+	pub c_orderline:Option<COrderline>,
 	/// has one
-	pub c_uom_id_c_uom:Option<CUom>,
+	pub c_uom:Option<CUom>,
 	/// has one
-	pub c_campaign_id_c_campaign:Option<CCampaign>,
+	pub c_campaign:Option<CCampaign>,
 }
 
 #[derive(Debug)]
@@ -27863,19 +27866,19 @@ pub struct IPayment {
 	/// defaults to: 0
 	pub writeoffamt:Option<f64>,
 	/// has one
-	pub c_payment_id_c_payment:Option<CPayment>,
+	pub c_payment:Option<CPayment>,
 	/// has one
-	pub c_doctype_id_c_doctype:Option<CDoctype>,
+	pub c_doctype:Option<CDoctype>,
 	/// has one
-	pub c_bankaccount_id_c_bankaccount:Option<CBankaccount>,
+	pub c_bankaccount:Option<CBankaccount>,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 	/// has one
-	pub c_invoice_id_c_invoice:Option<CInvoice>,
+	pub c_invoice:Option<CInvoice>,
 	/// has one
-	pub c_currency_id_c_currency:Option<CCurrency>,
+	pub c_currency:Option<CCurrency>,
 	/// has one
-	pub c_charge_id_c_charge:Option<CCharge>,
+	pub c_charge:Option<CCharge>,
 }
 
 #[derive(Debug)]
@@ -27997,15 +28000,15 @@ pub struct IProduct {
 	pub weight:Option<f64>,
 	pub x12de355:Option<String>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has one
-	pub c_uom_id_c_uom:Option<CUom>,
+	pub c_uom:Option<CUom>,
 	/// has one
-	pub m_product_category_id_m_product_category:Option<MProductCategory>,
+	pub m_product_category:Option<MProductCategory>,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 	/// has one
-	pub c_currency_id_c_currency:Option<CCurrency>,
+	pub c_currency:Option<CCurrency>,
 }
 
 #[derive(Debug)]
@@ -28048,13 +28051,13 @@ pub struct IReportline {
 	pub updated:Option<NaiveDateTime>,
 	pub updatedby:Option<f64>,
 	/// has one
-	pub pa_reportlineset_id_pa_reportlineset:Option<PaReportlineset>,
+	pub pa_reportlineset:Option<PaReportlineset>,
 	/// has one
-	pub pa_reportline_id_pa_reportline:Option<PaReportline>,
+	pub pa_reportline:Option<PaReportline>,
 	/// has one
-	pub pa_reportsource_id_pa_reportsource:Option<PaReportsource>,
+	pub pa_reportsource:Option<PaReportsource>,
 	/// has one
-	pub c_elementvalue_id_c_elementvalue:Option<CElementvalue>,
+	pub c_elementvalue:Option<CElementvalue>,
 }
 
 #[derive(Debug)]
@@ -28100,7 +28103,7 @@ pub struct ImpProcessor {
 	/// not nullable 
 	pub value:String,
 	/// has one
-	pub imp_processor_type_id_imp_processor_type:Option<ImpProcessorType>,
+	pub imp_processor_type:Option<ImpProcessorType>,
 	/// has many
 	pub imp_processorlog:Option<Vec<ImpProcessorlog>>,
 	/// has many
@@ -28171,7 +28174,7 @@ pub struct ImpProcessorlog {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub imp_processor_id_imp_processor:Option<ImpProcessor>,
+	pub imp_processor:Option<ImpProcessor>,
 }
 
 #[derive(Debug)]
@@ -28204,7 +28207,7 @@ pub struct ImpProcessorparameter {
 	/// not nullable 
 	pub value:String,
 	/// has one
-	pub imp_processor_id_imp_processor:Option<ImpProcessor>,
+	pub imp_processor:Option<ImpProcessor>,
 }
 
 #[derive(Debug)]
@@ -28267,7 +28270,7 @@ pub struct KCategoryvalue {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub k_category_id_k_category:Option<KCategory>,
+	pub k_category:Option<KCategory>,
 	/// has many
 	pub k_entrycategory:Option<Vec<KEntrycategory>>,
 }
@@ -28305,9 +28308,9 @@ pub struct KComment {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub k_entry_id_k_entry:Option<KEntry>,
+	pub k_entry:Option<KEntry>,
 	/// has one
-	pub ad_session_id_ad_session:Option<AdSession>,
+	pub ad_session:Option<AdSession>,
 }
 
 #[derive(Debug)]
@@ -28349,11 +28352,11 @@ pub struct KEntry {
 	pub updatedby:f64,
 	pub validto:Option<NaiveDateTime>,
 	/// has one
-	pub k_topic_id_k_topic:Option<KTopic>,
+	pub k_topic:Option<KTopic>,
 	/// has one
-	pub k_source_id_k_source:Option<KSource>,
+	pub k_source:Option<KSource>,
 	/// has one
-	pub ad_session_id_ad_session:Option<AdSession>,
+	pub ad_session:Option<AdSession>,
 	/// has one, extension table
 	pub k_entryrelated:Option<Box<KEntryrelated>>,
 	/// has one, extension table
@@ -28392,11 +28395,11 @@ pub struct KEntrycategory {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub k_category_id_k_category:Option<KCategory>,
+	pub k_category:Option<KCategory>,
 	/// has one
-	pub k_entry_id_k_entry:Option<KEntry>,
+	pub k_entry:Option<KEntry>,
 	/// has one
-	pub k_categoryvalue_id_k_categoryvalue:Option<KCategoryvalue>,
+	pub k_categoryvalue:Option<KCategoryvalue>,
 }
 
 #[derive(Debug)]
@@ -28426,9 +28429,9 @@ pub struct KEntryrelated {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub k_entry_id_k_entry:Option<KEntry>,
+	pub k_entry:Option<KEntry>,
 	/// has one
-	pub k_entryrelated_id_k_entry:Option<KEntry>,
+	pub k_entryrelated:Option<KEntry>,
 }
 
 #[derive(Debug)]
@@ -28467,13 +28470,13 @@ pub struct KIndex {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_table_id_ad_table:Option<AdTable>,
+	pub ad_table:Option<AdTable>,
 	/// has one
-	pub cm_webproject_id_cm_webproject:Option<CmWebproject>,
+	pub cm_webproject:Option<CmWebproject>,
 	/// has one
-	pub r_requesttype_id_r_requesttype:Option<RRequesttype>,
+	pub r_requesttype:Option<RRequesttype>,
 	/// has one
-	pub c_doctype_id_c_doctype:Option<CDoctype>,
+	pub c_doctype:Option<CDoctype>,
 }
 
 #[derive(Debug)]
@@ -28538,11 +28541,11 @@ pub struct KIndexstop {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub cm_webproject_id_cm_webproject:Option<CmWebproject>,
+	pub cm_webproject:Option<CmWebproject>,
 	/// has one
-	pub r_requesttype_id_r_requesttype:Option<RRequesttype>,
+	pub r_requesttype:Option<RRequesttype>,
 	/// has one
-	pub c_doctype_id_c_doctype:Option<CDoctype>,
+	pub c_doctype:Option<CDoctype>,
 }
 
 #[derive(Debug)]
@@ -28603,7 +28606,7 @@ pub struct KSynonym {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_language_ad_language:Option<AdLanguage>,
+	pub ad_language:Option<AdLanguage>,
 }
 
 #[derive(Debug)]
@@ -28641,7 +28644,7 @@ pub struct KTopic {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub k_type_id_k_type:Option<KType>,
+	pub k_type:Option<KType>,
 	/// has many
 	pub k_entry:Option<Vec<KEntry>>,
 }
@@ -28751,7 +28754,7 @@ pub struct MAttribute {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub m_attributesearch_id_m_attributesearch:Option<MAttributesearch>,
+	pub m_attributesearch:Option<MAttributesearch>,
 	/// has many
 	pub m_attributeinstance:Option<Vec<MAttributeinstance>>,
 	/// has many
@@ -28765,12 +28768,12 @@ pub struct MAttribute {
 #[derive(Debug)]
 pub struct MAttributeinstance {
 	/// primary
+	/// not nullable 
+	pub m_attribute_id:f64,
+	/// primary
 	/// defaults to: 0
 	/// not nullable 
 	pub m_attributesetinstance_id:f64,
-	/// primary
-	/// not nullable 
-	pub m_attribute_id:f64,
 	/// not nullable 
 	pub ad_client_id:f64,
 	/// not nullable 
@@ -28792,11 +28795,11 @@ pub struct MAttributeinstance {
 	pub value:Option<String>,
 	pub valuenumber:Option<f64>,
 	/// has one
-	pub m_attributesetinstance_id_m_attributesetinstance:Option<MAttributesetinstance>,
+	pub m_attributesetinstance:Option<MAttributesetinstance>,
 	/// has one
-	pub m_attribute_id_m_attribute:Option<MAttribute>,
+	pub m_attribute:Option<MAttribute>,
 	/// has one
-	pub m_attributevalue_id_m_attributevalue:Option<MAttributevalue>,
+	pub m_attributevalue:Option<MAttributevalue>,
 }
 
 #[derive(Debug)]
@@ -28885,9 +28888,9 @@ pub struct MAttributeset {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub m_sernoctl_id_m_sernoctl:Option<MSernoctl>,
+	pub m_sernoctl:Option<MSernoctl>,
 	/// has one
-	pub m_lotctl_id_m_lotctl:Option<MLotctl>,
+	pub m_lotctl:Option<MLotctl>,
 	/// has many
 	pub m_attributesetexclude:Option<Vec<MAttributesetexclude>>,
 	/// has many
@@ -28930,9 +28933,9 @@ pub struct MAttributesetexclude {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub m_attributeset_id_m_attributeset:Option<MAttributeset>,
+	pub m_attributeset:Option<MAttributeset>,
 	/// has one
-	pub ad_table_id_ad_table:Option<AdTable>,
+	pub ad_table:Option<AdTable>,
 }
 
 #[derive(Debug)]
@@ -28964,9 +28967,9 @@ pub struct MAttributesetinstance {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub m_attributeset_id_m_attributeset:Option<MAttributeset>,
+	pub m_attributeset:Option<MAttributeset>,
 	/// has one
-	pub m_lot_id_m_lot:Option<MLot>,
+	pub m_lot:Option<MLot>,
 	/// has many
 	pub a_asset:Option<Vec<AAsset>>,
 	/// has many
@@ -29049,9 +29052,9 @@ pub struct MAttributeuse {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub m_attribute_id_m_attribute:Option<MAttribute>,
+	pub m_attribute:Option<MAttribute>,
 	/// has one
-	pub m_attributeset_id_m_attributeset:Option<MAttributeset>,
+	pub m_attributeset:Option<MAttributeset>,
 }
 
 #[derive(Debug)]
@@ -29084,7 +29087,7 @@ pub struct MAttributevalue {
 	/// not nullable 
 	pub value:String,
 	/// has one
-	pub m_attribute_id_m_attribute:Option<MAttribute>,
+	pub m_attribute:Option<MAttribute>,
 	/// has many
 	pub m_attributeinstance:Option<Vec<MAttributeinstance>>,
 }
@@ -29124,9 +29127,9 @@ pub struct MBom {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has one
-	pub m_changenotice_id_m_changenotice:Option<MChangenotice>,
+	pub m_changenotice:Option<MChangenotice>,
 	/// has many
 	pub m_bomproduct:Option<Vec<MBomproduct>>,
 	/// has many
@@ -29161,7 +29164,7 @@ pub struct MBomalternative {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has many
 	pub m_bomproduct:Option<Vec<MBomproduct>>,
 }
@@ -29214,17 +29217,17 @@ pub struct MBomproduct {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub m_bom_id_m_bom:Option<MBom>,
+	pub m_bom:Option<MBom>,
 	/// has one
-	pub m_productbom_id_m_product:Option<MProduct>,
+	pub m_productbom:Option<MProduct>,
 	/// has one
-	pub m_changenotice_id_m_changenotice:Option<MChangenotice>,
+	pub m_changenotice:Option<MChangenotice>,
 	/// has one
-	pub m_attributesetinstance_id_m_attributesetinstance:Option<MAttributesetinstance>,
+	pub m_attributesetinstance:Option<MAttributesetinstance>,
 	/// has one
-	pub m_bomalternative_id_m_bomalternative:Option<MBomalternative>,
+	pub m_bomalternative:Option<MBomalternative>,
 	/// has one
-	pub m_productoperation_id_m_productoperation:Option<MProductoperation>,
+	pub m_productoperation:Option<MProductoperation>,
 }
 
 #[derive(Debug)]
@@ -29322,9 +29325,9 @@ pub struct MChangerequest {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub m_changenotice_id_m_changenotice:Option<MChangenotice>,
+	pub m_changenotice:Option<MChangenotice>,
 	/// has one
-	pub m_fixchangenotice_id_m_changenotice:Option<MChangenotice>,
+	pub m_fixchangenotice:Option<MChangenotice>,
 	/// has many
 	pub r_request:Option<Vec<RRequest>>,
 }
@@ -29339,19 +29342,19 @@ pub struct MCost {
 	pub ad_org_id:f64,
 	/// primary
 	/// not nullable 
-	pub m_product_id:f64,
-	/// primary
-	/// not nullable 
-	pub m_costtype_id:f64,
-	/// primary
-	/// not nullable 
 	pub c_acctschema_id:f64,
+	/// primary
+	/// not nullable 
+	pub m_attributesetinstance_id:f64,
 	/// primary
 	/// not nullable 
 	pub m_costelement_id:f64,
 	/// primary
 	/// not nullable 
-	pub m_attributesetinstance_id:f64,
+	pub m_costtype_id:f64,
+	/// primary
+	/// not nullable 
+	pub m_product_id:f64,
 	/// defaults to: now()
 	/// not nullable 
 	pub created:NaiveDateTime,
@@ -29384,19 +29387,19 @@ pub struct MCost {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_client_id_ad_client:Option<AdClient>,
+	pub ad_client:Option<AdClient>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has one
-	pub m_costtype_id_m_costtype:Option<MCosttype>,
+	pub m_costtype:Option<MCosttype>,
 	/// has one
-	pub c_acctschema_id_c_acctschema:Option<CAcctschema>,
+	pub c_acctschema:Option<CAcctschema>,
 	/// has one
-	pub m_costelement_id_m_costelement:Option<MCostelement>,
+	pub m_costelement:Option<MCostelement>,
 	/// has one
-	pub m_attributesetinstance_id_m_attributesetinstance:Option<MAttributesetinstance>,
+	pub m_attributesetinstance:Option<MAttributesetinstance>,
 }
 
 #[derive(Debug)]
@@ -29454,31 +29457,31 @@ pub struct MCostdetail {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_client_id_ad_client:Option<AdClient>,
+	pub ad_client:Option<AdClient>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 	/// has one
-	pub c_acctschema_id_c_acctschema:Option<CAcctschema>,
+	pub c_acctschema:Option<CAcctschema>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has one
-	pub m_attributesetinstance_id_m_attributesetinstance:Option<MAttributesetinstance>,
+	pub m_attributesetinstance:Option<MAttributesetinstance>,
 	/// has one
-	pub m_costelement_id_m_costelement:Option<MCostelement>,
+	pub m_costelement:Option<MCostelement>,
 	/// has one
-	pub c_orderline_id_c_orderline:Option<COrderline>,
+	pub c_orderline:Option<COrderline>,
 	/// has one
-	pub m_inoutline_id_m_inoutline:Option<MInoutline>,
+	pub m_inoutline:Option<MInoutline>,
 	/// has one
-	pub c_invoiceline_id_c_invoiceline:Option<CInvoiceline>,
+	pub c_invoiceline:Option<CInvoiceline>,
 	/// has one
-	pub m_movementline_id_m_movementline:Option<MMovementline>,
+	pub m_movementline:Option<MMovementline>,
 	/// has one
-	pub m_inventoryline_id_m_inventoryline:Option<MInventoryline>,
+	pub m_inventoryline:Option<MInventoryline>,
 	/// has one
-	pub m_productionline_id_m_productionline:Option<MProductionline>,
+	pub m_productionline:Option<MProductionline>,
 	/// has one
-	pub c_projectissue_id_c_projectissue:Option<CProjectissue>,
+	pub c_projectissue:Option<CProjectissue>,
 }
 
 #[derive(Debug)]
@@ -29567,15 +29570,15 @@ pub struct MCostqueue {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub m_costtype_id_m_costtype:Option<MCosttype>,
+	pub m_costtype:Option<MCosttype>,
 	/// has one
-	pub c_acctschema_id_c_acctschema:Option<CAcctschema>,
+	pub c_acctschema:Option<CAcctschema>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has one
-	pub m_attributesetinstance_id_m_attributesetinstance:Option<MAttributesetinstance>,
+	pub m_attributesetinstance:Option<MAttributesetinstance>,
 	/// has one
-	pub m_costelement_id_m_costelement:Option<MCostelement>,
+	pub m_costelement:Option<MCostelement>,
 }
 
 #[derive(Debug)]
@@ -29649,9 +29652,9 @@ pub struct MDemand {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_calendar_id_c_calendar:Option<CCalendar>,
+	pub c_calendar:Option<CCalendar>,
 	/// has one
-	pub c_year_id_c_year:Option<CYear>,
+	pub c_year:Option<CYear>,
 	/// has many
 	pub m_demandline:Option<Vec<MDemandline>>,
 }
@@ -29684,13 +29687,13 @@ pub struct MDemanddetail {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub m_demandline_id_m_demandline:Option<MDemandline>,
+	pub m_demandline:Option<MDemandline>,
 	/// has one
-	pub m_forecastline_id_m_forecastline:Option<MForecastline>,
+	pub m_forecastline:Option<MForecastline>,
 	/// has one
-	pub m_requisitionline_id_m_requisitionline:Option<MRequisitionline>,
+	pub m_requisitionline:Option<MRequisitionline>,
 	/// has one
-	pub c_orderline_id_c_orderline:Option<COrderline>,
+	pub c_orderline:Option<COrderline>,
 }
 
 #[derive(Debug)]
@@ -29728,11 +29731,11 @@ pub struct MDemandline {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub m_demand_id_m_demand:Option<MDemand>,
+	pub m_demand:Option<MDemand>,
 	/// has one
-	pub c_period_id_c_period:Option<CPeriod>,
+	pub c_period:Option<CPeriod>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has many
 	pub m_demanddetail:Option<Vec<MDemanddetail>>,
 }
@@ -29824,11 +29827,11 @@ pub struct MDiscountschemabreak {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub m_discountschema_id_m_discountschema:Option<MDiscountschema>,
+	pub m_discountschema:Option<MDiscountschema>,
 	/// has one
-	pub m_product_category_id_m_product_category:Option<MProductCategory>,
+	pub m_product_category:Option<MProductCategory>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 }
 
 #[derive(Debug)]
@@ -29919,15 +29922,15 @@ pub struct MDiscountschemaline {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub m_discountschema_id_m_discountschema:Option<MDiscountschema>,
+	pub m_discountschema:Option<MDiscountschema>,
 	/// has one
-	pub m_product_category_id_m_product_category:Option<MProductCategory>,
+	pub m_product_category:Option<MProductCategory>,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has one
-	pub c_conversiontype_id_c_conversiontype:Option<CConversiontype>,
+	pub c_conversiontype:Option<CConversiontype>,
 }
 
 #[derive(Debug)]
@@ -30000,11 +30003,11 @@ pub struct MDistributionlistline {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub m_distributionlist_id_m_distributionlist:Option<MDistributionlist>,
+	pub m_distributionlist:Option<MDistributionlist>,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 	/// has one
-	pub c_bpartner_location_id_c_bpartner_location:Option<CBpartnerLocation>,
+	pub c_bpartner_location:Option<CBpartnerLocation>,
 	/// has many
 	pub t_distributionrundetail:Option<Vec<TDistributionrundetail>>,
 }
@@ -30041,9 +30044,9 @@ pub struct MDistributionrun {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 	/// has one
-	pub c_bpartner_location_id_c_bpartner_location:Option<CBpartnerLocation>,
+	pub c_bpartner_location:Option<CBpartnerLocation>,
 	/// has many
 	pub m_distributionrunline:Option<Vec<MDistributionrunline>>,
 	/// has many
@@ -30088,11 +30091,11 @@ pub struct MDistributionrunline {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub m_distributionrun_id_m_distributionrun:Option<MDistributionrun>,
+	pub m_distributionrun:Option<MDistributionrun>,
 	/// has one
-	pub m_distributionlist_id_m_distributionlist:Option<MDistributionlist>,
+	pub m_distributionlist:Option<MDistributionlist>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has many
 	pub t_distributionrundetail:Option<Vec<TDistributionrundetail>>,
 }
@@ -30156,11 +30159,11 @@ pub struct MEdi {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_bp_edi_id_c_bp_edi:Option<CBpEdi>,
+	pub c_bp_edi:Option<CBpEdi>,
 	/// has one
-	pub m_warehouse_id_m_warehouse:Option<MWarehouse>,
+	pub m_warehouse:Option<MWarehouse>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has many
 	pub m_edi_info:Option<Vec<MEdiInfo>>,
 }
@@ -30192,7 +30195,7 @@ pub struct MEdiInfo {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub m_edi_id_m_edi:Option<MEdi>,
+	pub m_edi:Option<MEdi>,
 }
 
 #[derive(Debug)]
@@ -30231,9 +30234,9 @@ pub struct MForecast {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_calendar_id_c_calendar:Option<CCalendar>,
+	pub c_calendar:Option<CCalendar>,
 	/// has one
-	pub c_year_id_c_year:Option<CYear>,
+	pub c_year:Option<CYear>,
 	/// has many
 	pub m_forecastline:Option<Vec<MForecastline>>,
 	/// has many
@@ -30280,13 +30283,13 @@ pub struct MForecastline {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub m_forecast_id_m_forecast:Option<MForecast>,
+	pub m_forecast:Option<MForecast>,
 	/// has one
-	pub c_period_id_c_period:Option<CPeriod>,
+	pub c_period:Option<CPeriod>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has one
-	pub m_warehouse_id_m_warehouse:Option<MWarehouse>,
+	pub m_warehouse:Option<MWarehouse>,
 	/// has many
 	pub m_demanddetail:Option<Vec<MDemanddetail>>,
 	/// has many
@@ -30331,19 +30334,19 @@ pub struct MFreight {
 	/// not nullable 
 	pub validfrom:NaiveDateTime,
 	/// has one
-	pub m_shipper_id_m_shipper:Option<MShipper>,
+	pub m_shipper:Option<MShipper>,
 	/// has one
-	pub m_freightcategory_id_m_freightcategory:Option<MFreightcategory>,
+	pub m_freightcategory:Option<MFreightcategory>,
 	/// has one
-	pub c_country_id_c_country:Option<CCountry>,
+	pub c_country:Option<CCountry>,
 	/// has one
-	pub to_country_id_c_country:Option<CCountry>,
+	pub to_country:Option<CCountry>,
 	/// has one
-	pub c_region_id_c_region:Option<CRegion>,
+	pub c_region:Option<CRegion>,
 	/// has one
-	pub to_region_id_c_region:Option<CRegion>,
+	pub to_region:Option<CRegion>,
 	/// has one
-	pub c_currency_id_c_currency:Option<CCurrency>,
+	pub c_currency:Option<CCurrency>,
 }
 
 #[derive(Debug)]
@@ -30499,45 +30502,45 @@ pub struct MInout {
 	pub volume:Option<f64>,
 	pub weight:Option<f64>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 	/// has one
-	pub c_doctype_id_c_doctype:Option<CDoctype>,
+	pub c_doctype:Option<CDoctype>,
 	/// has one
-	pub c_order_id_c_order:Option<COrder>,
+	pub c_order:Option<COrder>,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 	/// has one
-	pub c_bpartner_location_id_c_bpartner_location:Option<CBpartnerLocation>,
+	pub c_bpartner_location:Option<CBpartnerLocation>,
 	/// has one
-	pub m_warehouse_id_m_warehouse:Option<MWarehouse>,
+	pub m_warehouse:Option<MWarehouse>,
 	/// has one
-	pub m_shipper_id_m_shipper:Option<MShipper>,
+	pub m_shipper:Option<MShipper>,
 	/// has one
-	pub c_charge_id_c_charge:Option<CCharge>,
+	pub c_charge:Option<CCharge>,
 	/// has one
-	pub c_invoice_id_c_invoice:Option<CInvoice>,
+	pub c_invoice:Option<CInvoice>,
 	/// has one
-	pub ad_user_id_ad_user:Option<AdUser>,
+	pub ad_user:Option<AdUser>,
 	/// has one
-	pub salesrep_id_ad_user:Option<AdUser>,
+	pub salesrep:Option<AdUser>,
 	/// has one
-	pub ad_orgtrx_id_ad_org:Option<AdOrg>,
+	pub ad_orgtrx:Option<AdOrg>,
 	/// has one
-	pub c_project_id_c_project:Option<CProject>,
+	pub c_project:Option<CProject>,
 	/// has one
-	pub c_campaign_id_c_campaign:Option<CCampaign>,
+	pub c_campaign:Option<CCampaign>,
 	/// has one
-	pub c_activity_id_c_activity:Option<CActivity>,
+	pub c_activity:Option<CActivity>,
 	/// has one
-	pub user1_id_c_elementvalue:Option<CElementvalue>,
+	pub user1:Option<CElementvalue>,
 	/// has one
-	pub user2_id_c_elementvalue:Option<CElementvalue>,
+	pub user2:Option<CElementvalue>,
 	/// has one, self referential
-	pub ref_inout_id_m_inout:Option<Box<MInout>>,
+	pub ref_inout:Option<Box<MInout>>,
 	/// has one
-	pub m_rma_id_m_rma:Option<MRma>,
+	pub m_rma:Option<MRma>,
 	/// has one, self referential
-	pub reversal_id_m_inout:Option<Box<MInout>>,
+	pub reversal:Option<Box<MInout>>,
 	/// has many
 	pub c_landedcost:Option<Vec<CLandedcost>>,
 	/// has many
@@ -30608,11 +30611,11 @@ pub struct MInoutconfirm {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub m_inout_id_m_inout:Option<MInout>,
+	pub m_inout:Option<MInout>,
 	/// has one
-	pub m_inventory_id_m_inventory:Option<MInventory>,
+	pub m_inventory:Option<MInventory>,
 	/// has one
-	pub c_invoice_id_c_invoice:Option<CInvoice>,
+	pub c_invoice:Option<CInvoice>,
 	/// has many
 	pub m_inoutlineconfirm:Option<Vec<MInoutlineconfirm>>,
 }
@@ -30686,41 +30689,41 @@ pub struct MInoutline {
 	pub user1_id:Option<f64>,
 	pub user2_id:Option<f64>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 	/// has one
-	pub m_inout_id_m_inout:Option<MInout>,
+	pub m_inout:Option<MInout>,
 	/// has one
-	pub c_orderline_id_c_orderline:Option<COrderline>,
+	pub c_orderline:Option<COrderline>,
 	/// has one
-	pub m_locator_id_m_locator:Option<MLocator>,
+	pub m_locator:Option<MLocator>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has one
-	pub c_uom_id_c_uom:Option<CUom>,
+	pub c_uom:Option<CUom>,
 	/// has one
-	pub m_attributesetinstance_id_m_attributesetinstance:Option<MAttributesetinstance>,
+	pub m_attributesetinstance:Option<MAttributesetinstance>,
 	/// has one, self referential
-	pub ref_inoutline_id_m_inoutline:Option<Box<MInoutline>>,
+	pub ref_inoutline:Option<Box<MInoutline>>,
 	/// has one
-	pub c_charge_id_c_charge:Option<CCharge>,
+	pub c_charge:Option<CCharge>,
 	/// has one
-	pub c_project_id_c_project:Option<CProject>,
+	pub c_project:Option<CProject>,
 	/// has one
-	pub c_projectphase_id_c_projectphase:Option<CProjectphase>,
+	pub c_projectphase:Option<CProjectphase>,
 	/// has one
-	pub c_projecttask_id_c_projecttask:Option<CProjecttask>,
+	pub c_projecttask:Option<CProjecttask>,
 	/// has one
-	pub c_campaign_id_c_campaign:Option<CCampaign>,
+	pub c_campaign:Option<CCampaign>,
 	/// has one
-	pub c_activity_id_c_activity:Option<CActivity>,
+	pub c_activity:Option<CActivity>,
 	/// has one
-	pub user1_id_c_elementvalue:Option<CElementvalue>,
+	pub user1:Option<CElementvalue>,
 	/// has one
-	pub user2_id_c_elementvalue:Option<CElementvalue>,
+	pub user2:Option<CElementvalue>,
 	/// has one
-	pub ad_orgtrx_id_ad_org:Option<AdOrg>,
+	pub ad_orgtrx:Option<AdOrg>,
 	/// has one
-	pub m_rmaline_id_m_rmaline:Option<MRmaline>,
+	pub m_rmaline:Option<MRmaline>,
 	/// has many
 	pub a_asset:Option<Vec<AAsset>>,
 	/// has many
@@ -30797,13 +30800,13 @@ pub struct MInoutlineconfirm {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub m_inoutconfirm_id_m_inoutconfirm:Option<MInoutconfirm>,
+	pub m_inoutconfirm:Option<MInoutconfirm>,
 	/// has one
-	pub m_inoutline_id_m_inoutline:Option<MInoutline>,
+	pub m_inoutline:Option<MInoutline>,
 	/// has one
-	pub m_inventoryline_id_m_inventoryline:Option<MInventoryline>,
+	pub m_inventoryline:Option<MInventoryline>,
 	/// has one
-	pub c_invoiceline_id_c_invoiceline:Option<CInvoiceline>,
+	pub c_invoiceline:Option<CInvoiceline>,
 	/// has many
 	pub i_inoutlineconfirm:Option<Vec<IInoutlineconfirm>>,
 }
@@ -30812,10 +30815,10 @@ pub struct MInoutlineconfirm {
 pub struct MInoutlinema {
 	/// primary
 	/// not nullable 
-	pub m_inoutline_id:f64,
+	pub m_attributesetinstance_id:f64,
 	/// primary
 	/// not nullable 
-	pub m_attributesetinstance_id:f64,
+	pub m_inoutline_id:f64,
 	/// not nullable 
 	pub ad_client_id:f64,
 	/// not nullable 
@@ -30837,9 +30840,9 @@ pub struct MInoutlinema {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub m_inoutline_id_m_inoutline:Option<MInoutline>,
+	pub m_inoutline:Option<MInoutline>,
 	/// has one
-	pub m_attributesetinstance_id_m_attributesetinstance:Option<MAttributesetinstance>,
+	pub m_attributesetinstance:Option<MAttributesetinstance>,
 }
 
 #[derive(Debug)]
@@ -30901,27 +30904,27 @@ pub struct MInventory {
 	pub user1_id:Option<f64>,
 	pub user2_id:Option<f64>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 	/// has one
-	pub m_warehouse_id_m_warehouse:Option<MWarehouse>,
+	pub m_warehouse:Option<MWarehouse>,
 	/// has one
-	pub m_perpetualinv_id_m_perpetualinv:Option<MPerpetualinv>,
+	pub m_perpetualinv:Option<MPerpetualinv>,
 	/// has one
-	pub ad_orgtrx_id_ad_org:Option<AdOrg>,
+	pub ad_orgtrx:Option<AdOrg>,
 	/// has one
-	pub c_project_id_c_project:Option<CProject>,
+	pub c_project:Option<CProject>,
 	/// has one
-	pub c_campaign_id_c_campaign:Option<CCampaign>,
+	pub c_campaign:Option<CCampaign>,
 	/// has one
-	pub c_activity_id_c_activity:Option<CActivity>,
+	pub c_activity:Option<CActivity>,
 	/// has one
-	pub user1_id_c_elementvalue:Option<CElementvalue>,
+	pub user1:Option<CElementvalue>,
 	/// has one
-	pub user2_id_c_elementvalue:Option<CElementvalue>,
+	pub user2:Option<CElementvalue>,
 	/// has one
-	pub c_doctype_id_c_doctype:Option<CDoctype>,
+	pub c_doctype:Option<CDoctype>,
 	/// has one, self referential
-	pub reversal_id_m_inventory:Option<Box<MInventory>>,
+	pub reversal:Option<Box<MInventory>>,
 	/// has many
 	pub i_inventory:Option<Vec<IInventory>>,
 	/// has many
@@ -30985,15 +30988,15 @@ pub struct MInventoryline {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub m_inventory_id_m_inventory:Option<MInventory>,
+	pub m_inventory:Option<MInventory>,
 	/// has one
-	pub m_locator_id_m_locator:Option<MLocator>,
+	pub m_locator:Option<MLocator>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has one
-	pub m_attributesetinstance_id_m_attributesetinstance:Option<MAttributesetinstance>,
+	pub m_attributesetinstance:Option<MAttributesetinstance>,
 	/// has one
-	pub c_charge_id_c_charge:Option<CCharge>,
+	pub c_charge:Option<CCharge>,
 	/// has many
 	pub i_inventory:Option<Vec<IInventory>>,
 	/// has many
@@ -31016,10 +31019,10 @@ pub struct MInventoryline {
 pub struct MInventorylinema {
 	/// primary
 	/// not nullable 
-	pub m_inventoryline_id:f64,
+	pub m_attributesetinstance_id:f64,
 	/// primary
 	/// not nullable 
-	pub m_attributesetinstance_id:f64,
+	pub m_inventoryline_id:f64,
 	/// not nullable 
 	pub ad_client_id:f64,
 	/// not nullable 
@@ -31041,9 +31044,9 @@ pub struct MInventorylinema {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub m_inventoryline_id_m_inventoryline:Option<MInventoryline>,
+	pub m_inventoryline:Option<MInventoryline>,
 	/// has one
-	pub m_attributesetinstance_id_m_attributesetinstance:Option<MAttributesetinstance>,
+	pub m_attributesetinstance:Option<MAttributesetinstance>,
 }
 
 #[derive(Debug)]
@@ -31081,11 +31084,11 @@ pub struct MLocator {
 	pub y:Option<String>,
 	pub z:Option<String>,
 	/// has one
-	pub ad_client_id_ad_client:Option<AdClient>,
+	pub ad_client:Option<AdClient>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 	/// has one
-	pub m_warehouse_id_m_warehouse:Option<MWarehouse>,
+	pub m_warehouse:Option<MWarehouse>,
 	/// has many
 	pub a_asset:Option<Vec<AAsset>>,
 	/// has many
@@ -31150,9 +31153,9 @@ pub struct MLot {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has one
-	pub m_lotctl_id_m_lotctl:Option<MLotctl>,
+	pub m_lotctl:Option<MLotctl>,
 	/// has many
 	pub m_attributesetinstance:Option<Vec<MAttributesetinstance>>,
 }
@@ -31228,9 +31231,9 @@ pub struct MLotctlexclude {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub m_lotctl_id_m_lotctl:Option<MLotctl>,
+	pub m_lotctl:Option<MLotctl>,
 	/// has one
-	pub ad_table_id_ad_table:Option<AdTable>,
+	pub ad_table:Option<AdTable>,
 }
 
 #[derive(Debug)]
@@ -31278,11 +31281,11 @@ pub struct MMatchinv {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub m_inoutline_id_m_inoutline:Option<MInoutline>,
+	pub m_inoutline:Option<MInoutline>,
 	/// has one
-	pub c_invoiceline_id_c_invoiceline:Option<CInvoiceline>,
+	pub c_invoiceline:Option<CInvoiceline>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 }
 
 #[derive(Debug)]
@@ -31333,13 +31336,13 @@ pub struct MMatchpo {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_orderline_id_c_orderline:Option<COrderline>,
+	pub c_orderline:Option<COrderline>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has one
-	pub m_inoutline_id_m_inoutline:Option<MInoutline>,
+	pub m_inoutline:Option<MInoutline>,
 	/// has one
-	pub c_invoiceline_id_c_invoiceline:Option<CInvoiceline>,
+	pub c_invoiceline:Option<CInvoiceline>,
 }
 
 #[derive(Debug)]
@@ -31413,35 +31416,35 @@ pub struct MMovement {
 	pub user1_id:Option<f64>,
 	pub user2_id:Option<f64>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 	/// has one
-	pub ad_orgtrx_id_ad_org:Option<AdOrg>,
+	pub ad_orgtrx:Option<AdOrg>,
 	/// has one
-	pub c_project_id_c_project:Option<CProject>,
+	pub c_project:Option<CProject>,
 	/// has one
-	pub c_campaign_id_c_campaign:Option<CCampaign>,
+	pub c_campaign:Option<CCampaign>,
 	/// has one
-	pub c_activity_id_c_activity:Option<CActivity>,
+	pub c_activity:Option<CActivity>,
 	/// has one
-	pub user1_id_c_elementvalue:Option<CElementvalue>,
+	pub user1:Option<CElementvalue>,
 	/// has one
-	pub user2_id_c_elementvalue:Option<CElementvalue>,
+	pub user2:Option<CElementvalue>,
 	/// has one
-	pub c_doctype_id_c_doctype:Option<CDoctype>,
+	pub c_doctype:Option<CDoctype>,
 	/// has one
-	pub m_shipper_id_m_shipper:Option<MShipper>,
+	pub m_shipper:Option<MShipper>,
 	/// has one
-	pub salesrep_id_ad_user:Option<AdUser>,
+	pub salesrep:Option<AdUser>,
 	/// has one
-	pub ad_user_id_ad_user:Option<AdUser>,
+	pub ad_user:Option<AdUser>,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 	/// has one
-	pub c_charge_id_c_charge:Option<CCharge>,
+	pub c_charge:Option<CCharge>,
 	/// has one
-	pub dd_order_id_dd_order:Option<DdOrder>,
+	pub dd_order:Option<DdOrder>,
 	/// has one, self referential
-	pub reversal_id_m_movement:Option<Box<MMovement>>,
+	pub reversal:Option<Box<MMovement>>,
 	/// has many
 	pub m_movement:Option<Vec<MMovement>>,
 	/// has many
@@ -31492,9 +31495,9 @@ pub struct MMovementconfirm {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub m_movement_id_m_movement:Option<MMovement>,
+	pub m_movement:Option<MMovement>,
 	/// has one
-	pub m_inventory_id_m_inventory:Option<MInventory>,
+	pub m_inventory:Option<MInventory>,
 	/// has many
 	pub m_movementlineconfirm:Option<Vec<MMovementlineconfirm>>,
 }
@@ -31548,17 +31551,17 @@ pub struct MMovementline {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub m_movement_id_m_movement:Option<MMovement>,
+	pub m_movement:Option<MMovement>,
 	/// has one
-	pub m_locator_id_m_locator:Option<MLocator>,
+	pub m_locator:Option<MLocator>,
 	/// has one
-	pub m_locatorto_id_m_locator:Option<MLocator>,
+	pub m_locatorto:Option<MLocator>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has one
-	pub m_attributesetinstance_id_m_attributesetinstance:Option<MAttributesetinstance>,
+	pub m_attributesetinstance:Option<MAttributesetinstance>,
 	/// has one
-	pub dd_orderline_id_dd_orderline:Option<DdOrderline>,
+	pub dd_orderline:Option<DdOrderline>,
 	/// has many
 	pub m_costdetail:Option<Vec<MCostdetail>>,
 	/// has many
@@ -31615,21 +31618,21 @@ pub struct MMovementlineconfirm {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub m_movementconfirm_id_m_movementconfirm:Option<MMovementconfirm>,
+	pub m_movementconfirm:Option<MMovementconfirm>,
 	/// has one
-	pub m_movementline_id_m_movementline:Option<MMovementline>,
+	pub m_movementline:Option<MMovementline>,
 	/// has one
-	pub m_inventoryline_id_m_inventoryline:Option<MInventoryline>,
+	pub m_inventoryline:Option<MInventoryline>,
 }
 
 #[derive(Debug)]
 pub struct MMovementlinema {
 	/// primary
 	/// not nullable 
-	pub m_movementline_id:f64,
+	pub m_attributesetinstance_id:f64,
 	/// primary
 	/// not nullable 
-	pub m_attributesetinstance_id:f64,
+	pub m_movementline_id:f64,
 	/// not nullable 
 	pub ad_client_id:f64,
 	/// not nullable 
@@ -31649,9 +31652,9 @@ pub struct MMovementlinema {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub m_movementline_id_m_movementline:Option<MMovementline>,
+	pub m_movementline:Option<MMovementline>,
 	/// has one
-	pub m_attributesetinstance_id_m_attributesetinstance:Option<MAttributesetinstance>,
+	pub m_attributesetinstance:Option<MAttributesetinstance>,
 }
 
 #[derive(Debug)]
@@ -31694,11 +31697,11 @@ pub struct MOperationresource {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub m_productoperation_id_m_productoperation:Option<MProductoperation>,
+	pub m_productoperation:Option<MProductoperation>,
 	/// has one
-	pub a_asset_id_a_asset:Option<AAsset>,
+	pub a_asset:Option<AAsset>,
 	/// has one
-	pub c_job_id_c_job:Option<CJob>,
+	pub c_job:Option<CJob>,
 }
 
 #[derive(Debug)]
@@ -31735,9 +31738,9 @@ pub struct MPackage {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub m_inout_id_m_inout:Option<MInout>,
+	pub m_inout:Option<MInout>,
 	/// has one
-	pub m_shipper_id_m_shipper:Option<MShipper>,
+	pub m_shipper:Option<MShipper>,
 	/// has many
 	pub m_packageline:Option<Vec<MPackageline>>,
 }
@@ -31773,9 +31776,9 @@ pub struct MPackageline {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub m_package_id_m_package:Option<MPackage>,
+	pub m_package:Option<MPackage>,
 	/// has one
-	pub m_inoutline_id_m_inoutline:Option<MInoutline>,
+	pub m_inoutline:Option<MInoutline>,
 }
 
 #[derive(Debug)]
@@ -31819,9 +31822,9 @@ pub struct MPerpetualinv {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub m_product_category_id_m_product_category:Option<MProductCategory>,
+	pub m_product_category:Option<MProductCategory>,
 	/// has one
-	pub m_warehouse_id_m_warehouse:Option<MWarehouse>,
+	pub m_warehouse:Option<MWarehouse>,
 	/// has many
 	pub m_inventory:Option<Vec<MInventory>>,
 }
@@ -31874,9 +31877,9 @@ pub struct MPricelist {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one, self referential
-	pub basepricelist_id_m_pricelist:Option<Box<MPricelist>>,
+	pub basepricelist:Option<Box<MPricelist>>,
 	/// has one
-	pub c_currency_id_c_currency:Option<CCurrency>,
+	pub c_currency:Option<CCurrency>,
 	/// has many
 	pub b_topictype:Option<Vec<BTopictype>>,
 	/// has many
@@ -31941,11 +31944,11 @@ pub struct MPricelistVersion {
 	/// not nullable 
 	pub validfrom:NaiveDateTime,
 	/// has one
-	pub m_pricelist_id_m_pricelist:Option<MPricelist>,
+	pub m_pricelist:Option<MPricelist>,
 	/// has one
-	pub m_discountschema_id_m_discountschema:Option<MDiscountschema>,
+	pub m_discountschema:Option<MDiscountschema>,
 	/// has one, self referential
-	pub m_pricelist_version_base_id_m_pricelist_version:Option<Box<MPricelistVersion>>,
+	pub m_pricelist_version_base:Option<Box<MPricelistVersion>>,
 	/// has many
 	pub c_project:Option<Vec<CProject>>,
 	/// has many
@@ -32072,35 +32075,43 @@ pub struct MProduct {
 	/// defaults to: 0
 	pub weight:Option<f64>,
 	/// has one
-	pub ad_client_id_ad_client:Option<AdClient>,
+	pub ad_client:Option<AdClient>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 	/// has one
-	pub c_uom_id_c_uom:Option<CUom>,
+	pub c_uom:Option<CUom>,
 	/// has one
-	pub salesrep_id_ad_user:Option<AdUser>,
+	pub salesrep:Option<AdUser>,
 	/// has one
-	pub c_revenuerecognition_id_c_revenuerecognition:Option<CRevenuerecognition>,
+	pub c_revenuerecognition:Option<CRevenuerecognition>,
 	/// has one
-	pub m_product_category_id_m_product_category:Option<MProductCategory>,
+	pub m_product_category:Option<MProductCategory>,
 	/// has one
-	pub c_taxcategory_id_c_taxcategory:Option<CTaxcategory>,
+	pub c_taxcategory:Option<CTaxcategory>,
 	/// has one
-	pub s_resource_id_s_resource:Option<SResource>,
+	pub s_resource:Option<SResource>,
 	/// has one
-	pub s_expensetype_id_s_expensetype:Option<SExpensetype>,
+	pub s_expensetype:Option<SExpensetype>,
 	/// has one
-	pub r_mailtext_id_r_mailtext:Option<RMailtext>,
+	pub r_mailtext:Option<RMailtext>,
 	/// has one
-	pub m_attributeset_id_m_attributeset:Option<MAttributeset>,
+	pub m_attributeset:Option<MAttributeset>,
 	/// has one
-	pub m_attributesetinstance_id_m_attributesetinstance:Option<MAttributesetinstance>,
+	pub m_attributesetinstance:Option<MAttributesetinstance>,
 	/// has one
-	pub m_freightcategory_id_m_freightcategory:Option<MFreightcategory>,
+	pub m_freightcategory:Option<MFreightcategory>,
 	/// has one
-	pub m_locator_id_m_locator:Option<MLocator>,
+	pub m_locator:Option<MLocator>,
 	/// has one
-	pub c_subscriptiontype_id_c_subscriptiontype:Option<CSubscriptiontype>,
+	pub c_subscriptiontype:Option<CSubscriptiontype>,
+	/// has one, extension table
+	pub m_relatedproduct:Option<Box<MRelatedproduct>>,
+	/// has one, extension table
+	pub m_relatedproduct:Option<Box<MRelatedproduct>>,
+	/// has one, extension table
+	pub m_substitute:Option<Box<MSubstitute>>,
+	/// has one, extension table
+	pub m_substitute:Option<Box<MSubstitute>>,
 	/// has many
 	pub a_asset:Option<Vec<AAsset>>,
 	/// has many
@@ -32232,15 +32243,11 @@ pub struct MProduct {
 	/// has many
 	pub m_productprice:Option<Vec<MProductprice>>,
 	/// has many
-	pub m_relatedproduct:Option<Vec<MRelatedproduct>>,
-	/// has many
 	pub m_replenish:Option<Vec<MReplenish>>,
 	/// has many
 	pub m_requisitionline:Option<Vec<MRequisitionline>>,
 	/// has many
 	pub m_storage:Option<Vec<MStorage>>,
-	/// has many
-	pub m_substitute:Option<Vec<MSubstitute>>,
 	/// has many
 	pub m_transaction:Option<Vec<MTransaction>>,
 	/// has many
@@ -32303,10 +32310,10 @@ pub struct MProduct {
 pub struct MProductAcct {
 	/// primary
 	/// not nullable 
-	pub m_product_id:f64,
+	pub c_acctschema_id:f64,
 	/// primary
 	/// not nullable 
-	pub c_acctschema_id:f64,
+	pub m_product_id:f64,
 	/// not nullable 
 	pub ad_client_id:f64,
 	/// not nullable 
@@ -32355,25 +32362,25 @@ pub struct MProductAcct {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has one
-	pub c_acctschema_id_c_acctschema:Option<CAcctschema>,
+	pub c_acctschema:Option<CAcctschema>,
 	/// has one
-	pub p_revenue_acct_c_validcombination:Option<CValidcombination>,
+	pub p_revenue_acct:Option<CValidcombination>,
 	/// has one
-	pub p_expense_acct_c_validcombination:Option<CValidcombination>,
+	pub p_expense_acct:Option<CValidcombination>,
 	/// has one
-	pub p_asset_acct_c_validcombination:Option<CValidcombination>,
+	pub p_asset_acct:Option<CValidcombination>,
 	/// has one
-	pub p_purchasepricevariance_acct_c_validcombination:Option<CValidcombination>,
+	pub p_purchasepricevariance_acct:Option<CValidcombination>,
 	/// has one
-	pub p_invoicepricevariance_acct_c_validcombination:Option<CValidcombination>,
+	pub p_invoicepricevariance_acct:Option<CValidcombination>,
 	/// has one
-	pub p_cogs_acct_c_validcombination:Option<CValidcombination>,
+	pub p_cogs_acct:Option<CValidcombination>,
 	/// has one
-	pub p_tradediscountrec_acct_c_validcombination:Option<CValidcombination>,
+	pub p_tradediscountrec_acct:Option<CValidcombination>,
 	/// has one
-	pub p_tradediscountgrant_acct_c_validcombination:Option<CValidcombination>,
+	pub p_tradediscountgrant_acct:Option<CValidcombination>,
 }
 
 #[derive(Debug)]
@@ -32410,9 +32417,9 @@ pub struct MProductBom {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has one
-	pub m_productbom_id_m_product:Option<MProduct>,
+	pub m_productbom:Option<MProduct>,
 }
 
 #[derive(Debug)]
@@ -32457,11 +32464,11 @@ pub struct MProductCategory {
 	/// not nullable 
 	pub value:String,
 	/// has one
-	pub a_asset_group_id_a_asset_group:Option<AAssetGroup>,
+	pub a_asset_group:Option<AAssetGroup>,
 	/// has one
-	pub ad_printcolor_id_ad_printcolor:Option<AdPrintcolor>,
+	pub ad_printcolor:Option<AdPrintcolor>,
 	/// has one, self referential
-	pub m_product_category_parent_id_m_product_category:Option<Box<MProductCategory>>,
+	pub m_product_category_parent:Option<Box<MProductCategory>>,
 	/// has many
 	pub c_commissionline:Option<Vec<CCommissionline>>,
 	/// has many
@@ -32498,10 +32505,10 @@ pub struct MProductCategory {
 pub struct MProductCategoryAcct {
 	/// primary
 	/// not nullable 
-	pub m_product_category_id:f64,
+	pub c_acctschema_id:f64,
 	/// primary
 	/// not nullable 
-	pub c_acctschema_id:f64,
+	pub m_product_category_id:f64,
 	/// not nullable 
 	pub ad_client_id:f64,
 	/// not nullable 
@@ -32553,35 +32560,35 @@ pub struct MProductCategoryAcct {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub m_product_category_id_m_product_category:Option<MProductCategory>,
+	pub m_product_category:Option<MProductCategory>,
 	/// has one
-	pub c_acctschema_id_c_acctschema:Option<CAcctschema>,
+	pub c_acctschema:Option<CAcctschema>,
 	/// has one
-	pub p_revenue_acct_c_validcombination:Option<CValidcombination>,
+	pub p_revenue_acct:Option<CValidcombination>,
 	/// has one
-	pub p_expense_acct_c_validcombination:Option<CValidcombination>,
+	pub p_expense_acct:Option<CValidcombination>,
 	/// has one
-	pub p_asset_acct_c_validcombination:Option<CValidcombination>,
+	pub p_asset_acct:Option<CValidcombination>,
 	/// has one
-	pub p_cogs_acct_c_validcombination:Option<CValidcombination>,
+	pub p_cogs_acct:Option<CValidcombination>,
 	/// has one
-	pub p_purchasepricevariance_acct_c_validcombination:Option<CValidcombination>,
+	pub p_purchasepricevariance_acct:Option<CValidcombination>,
 	/// has one
-	pub p_invoicepricevariance_acct_c_validcombination:Option<CValidcombination>,
+	pub p_invoicepricevariance_acct:Option<CValidcombination>,
 	/// has one
-	pub p_tradediscountrec_acct_c_validcombination:Option<CValidcombination>,
+	pub p_tradediscountrec_acct:Option<CValidcombination>,
 	/// has one
-	pub p_tradediscountgrant_acct_c_validcombination:Option<CValidcombination>,
+	pub p_tradediscountgrant_acct:Option<CValidcombination>,
 }
 
 #[derive(Debug)]
 pub struct MProductCosting {
 	/// primary
 	/// not nullable 
-	pub m_product_id:f64,
+	pub c_acctschema_id:f64,
 	/// primary
 	/// not nullable 
-	pub c_acctschema_id:f64,
+	pub m_product_id:f64,
 	/// not nullable 
 	pub ad_client_id:f64,
 	/// not nullable 
@@ -32642,19 +32649,19 @@ pub struct MProductCosting {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has one
-	pub c_acctschema_id_c_acctschema:Option<CAcctschema>,
+	pub c_acctschema:Option<CAcctschema>,
 }
 
 #[derive(Debug)]
 pub struct MProductPo {
 	/// primary
 	/// not nullable 
-	pub m_product_id:f64,
+	pub c_bpartner_id:f64,
 	/// primary
 	/// not nullable 
-	pub c_bpartner_id:f64,
+	pub m_product_id:f64,
 	/// not nullable 
 	pub ad_client_id:f64,
 	/// not nullable 
@@ -32706,27 +32713,27 @@ pub struct MProductPo {
 	/// not nullable 
 	pub vendorproductno:String,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 	/// has one
-	pub ad_client_id_ad_client:Option<AdClient>,
+	pub ad_client:Option<AdClient>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 	/// has one
-	pub c_uom_id_c_uom:Option<CUom>,
+	pub c_uom:Option<CUom>,
 	/// has one
-	pub c_currency_id_c_currency:Option<CCurrency>,
+	pub c_currency:Option<CCurrency>,
 }
 
 #[derive(Debug)]
 pub struct MProductTrl {
 	/// primary
 	/// not nullable 
-	pub m_product_id:f64,
+	pub ad_language:String,
 	/// primary
 	/// not nullable 
-	pub ad_language:String,
+	pub m_product_id:f64,
 	/// not nullable 
 	pub ad_client_id:f64,
 	/// not nullable 
@@ -32752,9 +32759,9 @@ pub struct MProductTrl {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has one
-	pub ad_language_ad_language:Option<AdLanguage>,
+	pub ad_language:Option<AdLanguage>,
 }
 
 #[derive(Debug)]
@@ -32786,7 +32793,7 @@ pub struct MProductdownload {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has many
 	pub a_asset_delivery:Option<Vec<AAssetDelivery>>,
 }
@@ -32835,19 +32842,19 @@ pub struct MProduction {
 	pub user1_id:Option<f64>,
 	pub user2_id:Option<f64>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 	/// has one
-	pub ad_orgtrx_id_ad_org:Option<AdOrg>,
+	pub ad_orgtrx:Option<AdOrg>,
 	/// has one
-	pub c_project_id_c_project:Option<CProject>,
+	pub c_project:Option<CProject>,
 	/// has one
-	pub c_campaign_id_c_campaign:Option<CCampaign>,
+	pub c_campaign:Option<CCampaign>,
 	/// has one
-	pub c_activity_id_c_activity:Option<CActivity>,
+	pub c_activity:Option<CActivity>,
 	/// has one
-	pub user1_id_c_elementvalue:Option<CElementvalue>,
+	pub user1:Option<CElementvalue>,
 	/// has one
-	pub user2_id_c_elementvalue:Option<CElementvalue>,
+	pub user2:Option<CElementvalue>,
 	/// has many
 	pub m_productionplan:Option<Vec<MProductionplan>>,
 }
@@ -32892,13 +32899,13 @@ pub struct MProductionline {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub m_productionplan_id_m_productionplan:Option<MProductionplan>,
+	pub m_productionplan:Option<MProductionplan>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has one
-	pub m_locator_id_m_locator:Option<MLocator>,
+	pub m_locator:Option<MLocator>,
 	/// has one
-	pub m_attributesetinstance_id_m_attributesetinstance:Option<MAttributesetinstance>,
+	pub m_attributesetinstance:Option<MAttributesetinstance>,
 	/// has many
 	pub m_costdetail:Option<Vec<MCostdetail>>,
 	/// has many
@@ -32915,10 +32922,10 @@ pub struct MProductionline {
 pub struct MProductionlinema {
 	/// primary
 	/// not nullable 
-	pub m_productionline_id:f64,
+	pub m_attributesetinstance_id:f64,
 	/// primary
 	/// not nullable 
-	pub m_attributesetinstance_id:f64,
+	pub m_productionline_id:f64,
 	/// not nullable 
 	pub ad_client_id:f64,
 	/// not nullable 
@@ -32940,9 +32947,9 @@ pub struct MProductionlinema {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub m_productionline_id_m_productionline:Option<MProductionline>,
+	pub m_productionline:Option<MProductionline>,
 	/// has one
-	pub m_attributesetinstance_id_m_attributesetinstance:Option<MAttributesetinstance>,
+	pub m_attributesetinstance:Option<MAttributesetinstance>,
 }
 
 #[derive(Debug)]
@@ -32983,11 +32990,11 @@ pub struct MProductionplan {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub m_production_id_m_production:Option<MProduction>,
+	pub m_production:Option<MProduction>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has one
-	pub m_locator_id_m_locator:Option<MLocator>,
+	pub m_locator:Option<MLocator>,
 	/// has many
 	pub m_productionline:Option<Vec<MProductionline>>,
 }
@@ -33027,7 +33034,7 @@ pub struct MProductoperation {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has many
 	pub m_bomproduct:Option<Vec<MBomproduct>>,
 	/// has many
@@ -33069,9 +33076,9 @@ pub struct MProductprice {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub m_pricelist_version_id_m_pricelist_version:Option<MPricelistVersion>,
+	pub m_pricelist_version:Option<MPricelistVersion>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 }
 
 #[derive(Debug)]
@@ -33384,9 +33391,9 @@ pub struct MRelatedproduct {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has one
-	pub relatedproduct_id_m_product:Option<MProduct>,
+	pub relatedproduct:Option<MProduct>,
 }
 
 #[derive(Debug)]
@@ -33425,11 +33432,11 @@ pub struct MReplenish {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has one
-	pub m_warehouse_id_m_warehouse:Option<MWarehouse>,
+	pub m_warehouse:Option<MWarehouse>,
 	/// has one
-	pub m_warehousesource_id_m_warehouse:Option<MWarehouse>,
+	pub m_warehousesource:Option<MWarehouse>,
 }
 
 #[derive(Debug)]
@@ -33491,13 +33498,13 @@ pub struct MRequisition {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_user_id_ad_user:Option<AdUser>,
+	pub ad_user:Option<AdUser>,
 	/// has one
-	pub m_pricelist_id_m_pricelist:Option<MPricelist>,
+	pub m_pricelist:Option<MPricelist>,
 	/// has one
-	pub m_warehouse_id_m_warehouse:Option<MWarehouse>,
+	pub m_warehouse:Option<MWarehouse>,
 	/// has one
-	pub c_doctype_id_c_doctype:Option<CDoctype>,
+	pub c_doctype:Option<CDoctype>,
 	/// has many
 	pub m_requisitionline:Option<Vec<MRequisitionline>>,
 	/// has many
@@ -33549,13 +33556,13 @@ pub struct MRequisitionline {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub m_requisition_id_m_requisition:Option<MRequisition>,
+	pub m_requisition:Option<MRequisition>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has one
-	pub c_orderline_id_c_orderline:Option<COrderline>,
+	pub c_orderline:Option<COrderline>,
 	/// has one
-	pub c_charge_id_c_charge:Option<CCharge>,
+	pub c_charge:Option<CCharge>,
 	/// has many
 	pub m_demanddetail:Option<Vec<MDemanddetail>>,
 	/// has many
@@ -33619,19 +33626,19 @@ pub struct MRma {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub inout_id_m_inout:Option<MInout>,
+	pub inout:Option<MInout>,
 	/// has one
-	pub c_order_id_c_order:Option<COrder>,
+	pub c_order:Option<COrder>,
 	/// has one
-	pub c_doctype_id_c_doctype:Option<CDoctype>,
+	pub c_doctype:Option<CDoctype>,
 	/// has one
-	pub salesrep_id_ad_user:Option<AdUser>,
+	pub salesrep:Option<AdUser>,
 	/// has one
-	pub m_rmatype_id_m_rmatype:Option<MRmatype>,
+	pub m_rmatype:Option<MRmatype>,
 	/// has one
-	pub c_currency_id_c_currency:Option<CCurrency>,
+	pub c_currency:Option<CCurrency>,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 	/// has many
 	pub c_invoice:Option<Vec<CInvoice>>,
 	/// has many
@@ -33687,11 +33694,11 @@ pub struct MRmaline {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub m_rma_id_m_rma:Option<MRma>,
+	pub m_rma:Option<MRma>,
 	/// has one
-	pub m_inoutline_id_m_inoutline:Option<MInoutline>,
+	pub m_inoutline:Option<MInoutline>,
 	/// has one
-	pub c_charge_id_c_charge:Option<CCharge>,
+	pub c_charge:Option<CCharge>,
 	/// has many
 	pub c_invoiceline:Option<Vec<CInvoiceline>>,
 	/// has many
@@ -33797,9 +33804,9 @@ pub struct MSernoctlexclude {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub m_sernoctl_id_m_sernoctl:Option<MSernoctl>,
+	pub m_sernoctl:Option<MSernoctl>,
 	/// has one
-	pub ad_table_id_ad_table:Option<AdTable>,
+	pub ad_table:Option<AdTable>,
 }
 
 #[derive(Debug)]
@@ -33830,7 +33837,7 @@ pub struct MShipper {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 	/// has many
 	pub c_order:Option<Vec<COrder>>,
 	/// has many
@@ -33854,15 +33861,15 @@ pub struct MShipper {
 #[derive(Debug)]
 pub struct MStorage {
 	/// primary
+	/// defaults to: 0
 	/// not nullable 
-	pub m_product_id:f64,
+	pub m_attributesetinstance_id:f64,
 	/// primary
 	/// not nullable 
 	pub m_locator_id:f64,
 	/// primary
-	/// defaults to: 0
 	/// not nullable 
-	pub m_attributesetinstance_id:f64,
+	pub m_product_id:f64,
 	/// not nullable 
 	pub ad_client_id:f64,
 	/// not nullable 
@@ -33891,15 +33898,15 @@ pub struct MStorage {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has one
-	pub m_locator_id_m_locator:Option<MLocator>,
+	pub m_locator:Option<MLocator>,
 	/// has one
-	pub ad_client_id_ad_client:Option<AdClient>,
+	pub ad_client:Option<AdClient>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 	/// has one
-	pub m_attributesetinstance_id_m_attributesetinstance:Option<MAttributesetinstance>,
+	pub m_attributesetinstance:Option<MAttributesetinstance>,
 }
 
 #[derive(Debug)]
@@ -33930,13 +33937,13 @@ pub struct MSubstitute {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has one
-	pub substitute_id_m_product:Option<MProduct>,
+	pub substitute:Option<MProduct>,
 	/// has one
-	pub ad_client_id_ad_client:Option<AdClient>,
+	pub ad_client:Option<AdClient>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 }
 
 #[derive(Debug)]
@@ -33982,23 +33989,25 @@ pub struct MTransaction {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub m_locator_id_m_locator:Option<MLocator>,
+	pub m_locator:Option<MLocator>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has one
-	pub m_inventoryline_id_m_inventoryline:Option<MInventoryline>,
+	pub m_inventoryline:Option<MInventoryline>,
 	/// has one
-	pub m_movementline_id_m_movementline:Option<MMovementline>,
+	pub m_movementline:Option<MMovementline>,
 	/// has one
-	pub m_inoutline_id_m_inoutline:Option<MInoutline>,
+	pub m_inoutline:Option<MInoutline>,
 	/// has one
-	pub m_productionline_id_m_productionline:Option<MProductionline>,
+	pub m_productionline:Option<MProductionline>,
 	/// has one
-	pub c_projectissue_id_c_projectissue:Option<CProjectissue>,
+	pub c_projectissue:Option<CProjectissue>,
 	/// has one
-	pub m_attributesetinstance_id_m_attributesetinstance:Option<MAttributesetinstance>,
-	/// has many
-	pub m_transactionallocation:Option<Vec<MTransactionallocation>>,
+	pub m_attributesetinstance:Option<MAttributesetinstance>,
+	/// has one, extension table
+	pub m_transactionallocation:Option<Box<MTransactionallocation>>,
+	/// has one, extension table
+	pub m_transactionallocation:Option<Box<MTransactionallocation>>,
 	/// has many
 	pub t_transaction:Option<Vec<TTransaction>>,
 }
@@ -34007,10 +34016,10 @@ pub struct MTransaction {
 pub struct MTransactionallocation {
 	/// primary
 	/// not nullable 
-	pub m_transaction_id:f64,
+	pub allocationstrategytype:String,
 	/// primary
 	/// not nullable 
-	pub allocationstrategytype:String,
+	pub m_transaction_id:f64,
 	/// not nullable 
 	pub ad_client_id:f64,
 	/// not nullable 
@@ -34050,25 +34059,25 @@ pub struct MTransactionallocation {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub m_transaction_id_m_transaction:Option<MTransaction>,
+	pub m_transaction:Option<MTransaction>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has one
-	pub m_attributesetinstance_id_m_attributesetinstance:Option<MAttributesetinstance>,
+	pub m_attributesetinstance:Option<MAttributesetinstance>,
 	/// has one
-	pub m_inoutline_id_m_inoutline:Option<MInoutline>,
+	pub m_inoutline:Option<MInoutline>,
 	/// has one
-	pub m_productionline_id_m_productionline:Option<MProductionline>,
+	pub m_productionline:Option<MProductionline>,
 	/// has one
-	pub m_inventoryline_id_m_inventoryline:Option<MInventoryline>,
+	pub m_inventoryline:Option<MInventoryline>,
 	/// has one
-	pub out_m_transaction_id_m_transaction:Option<MTransaction>,
+	pub out:Option<MTransaction>,
 	/// has one
-	pub out_m_inoutline_id_m_inoutline:Option<MInoutline>,
+	pub out:Option<MInoutline>,
 	/// has one
-	pub out_m_productionline_id_m_productionline:Option<MProductionline>,
+	pub out:Option<MProductionline>,
 	/// has one
-	pub out_m_inventoryline_id_m_inventoryline:Option<MInventoryline>,
+	pub out:Option<MInventoryline>,
 }
 
 #[derive(Debug)]
@@ -34107,13 +34116,13 @@ pub struct MWarehouse {
 	/// not nullable 
 	pub value:String,
 	/// has one
-	pub ad_client_id_ad_client:Option<AdClient>,
+	pub ad_client:Option<AdClient>,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 	/// has one
-	pub c_location_id_c_location:Option<CLocation>,
+	pub c_location:Option<CLocation>,
 	/// has one, self referential
-	pub m_warehousesource_id_m_warehouse:Option<Box<MWarehouse>>,
+	pub m_warehousesource:Option<Box<MWarehouse>>,
 	/// has many
 	pub ad_orginfo:Option<Vec<AdOrginfo>>,
 	/// has many
@@ -34178,10 +34187,10 @@ pub struct MWarehouse {
 pub struct MWarehouseAcct {
 	/// primary
 	/// not nullable 
-	pub m_warehouse_id:f64,
+	pub c_acctschema_id:f64,
 	/// primary
 	/// not nullable 
-	pub c_acctschema_id:f64,
+	pub m_warehouse_id:f64,
 	/// not nullable 
 	pub ad_client_id:f64,
 	/// not nullable 
@@ -34208,17 +34217,17 @@ pub struct MWarehouseAcct {
 	/// not nullable 
 	pub w_revaluation_acct:f64,
 	/// has one
-	pub m_warehouse_id_m_warehouse:Option<MWarehouse>,
+	pub m_warehouse:Option<MWarehouse>,
 	/// has one
-	pub c_acctschema_id_c_acctschema:Option<CAcctschema>,
+	pub c_acctschema:Option<CAcctschema>,
 	/// has one
-	pub w_inventory_acct_c_validcombination:Option<CValidcombination>,
+	pub w_inventory_acct:Option<CValidcombination>,
 	/// has one
-	pub w_invactualadjust_acct_c_validcombination:Option<CValidcombination>,
+	pub w_invactualadjust_acct:Option<CValidcombination>,
 	/// has one
-	pub w_differences_acct_c_validcombination:Option<CValidcombination>,
+	pub w_differences_acct:Option<CValidcombination>,
 	/// has one
-	pub w_revaluation_acct_c_validcombination:Option<CValidcombination>,
+	pub w_revaluation_acct:Option<CValidcombination>,
 }
 
 #[derive(Debug)]
@@ -34456,7 +34465,7 @@ pub struct PaAchievement {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub pa_measure_id_pa_measure:Option<PaMeasure>,
+	pub pa_measure:Option<PaMeasure>,
 }
 
 #[derive(Debug)]
@@ -34525,7 +34534,7 @@ pub struct PaBenchmarkdata {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub pa_benchmark_id_pa_benchmark:Option<PaBenchmark>,
+	pub pa_benchmark:Option<PaBenchmark>,
 }
 
 #[derive(Debug)]
@@ -34572,15 +34581,15 @@ pub struct PaColorschema {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_printcolor1_id_ad_printcolor:Option<AdPrintcolor>,
+	pub ad_printcolor1:Option<AdPrintcolor>,
 	/// has one
-	pub ad_printcolor2_id_ad_printcolor:Option<AdPrintcolor>,
+	pub ad_printcolor2:Option<AdPrintcolor>,
 	/// has one
-	pub ad_printcolor3_id_ad_printcolor:Option<AdPrintcolor>,
+	pub ad_printcolor3:Option<AdPrintcolor>,
 	/// has one
-	pub ad_printcolor4_id_ad_printcolor:Option<AdPrintcolor>,
+	pub ad_printcolor4:Option<AdPrintcolor>,
 	/// has one
-	pub entitytype_ad_entitytype:Option<AdEntitytype>,
+	pub entitytype:Option<AdEntitytype>,
 	/// has many
 	pub pa_goal:Option<Vec<PaGoal>>,
 }
@@ -34620,9 +34629,9 @@ pub struct PaDashboardcontent {
 	pub updatedby:f64,
 	pub zulfilepath:Option<String>,
 	/// has one
-	pub ad_window_id_ad_window:Option<AdWindow>,
+	pub ad_window:Option<AdWindow>,
 	/// has one
-	pub pa_goal_id_pa_goal:Option<PaGoal>,
+	pub pa_goal:Option<PaGoal>,
 }
 
 #[derive(Debug)]
@@ -34680,15 +34689,15 @@ pub struct PaGoal {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_user_id_ad_user:Option<AdUser>,
+	pub ad_user:Option<AdUser>,
 	/// has one
-	pub pa_colorschema_id_pa_colorschema:Option<PaColorschema>,
+	pub pa_colorschema:Option<PaColorschema>,
 	/// has one, self referential
-	pub pa_goalparent_id_pa_goal:Option<Box<PaGoal>>,
+	pub pa_goalparent:Option<Box<PaGoal>>,
 	/// has one
-	pub pa_measure_id_pa_measure:Option<PaMeasure>,
+	pub pa_measure:Option<PaMeasure>,
 	/// has one
-	pub ad_role_id_ad_role:Option<AdRole>,
+	pub ad_role:Option<AdRole>,
 	/// has many
 	pub pa_dashboardcontent:Option<Vec<PaDashboardcontent>>,
 	/// has many
@@ -34731,19 +34740,19 @@ pub struct PaGoalrestriction {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 	/// has one
-	pub pa_goal_id_pa_goal:Option<PaGoal>,
+	pub pa_goal:Option<PaGoal>,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has one
-	pub org_id_ad_org:Option<AdOrg>,
+	pub org:Option<AdOrg>,
 	/// has one
-	pub c_bp_group_id_c_bp_group:Option<CBpGroup>,
+	pub c_bp_group:Option<CBpGroup>,
 	/// has one
-	pub m_product_category_id_m_product_category:Option<MProductCategory>,
+	pub m_product_category:Option<MProductCategory>,
 }
 
 #[derive(Debug)]
@@ -34789,21 +34798,21 @@ pub struct PaHierarchy {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_tree_org_id_ad_tree:Option<AdTree>,
+	pub ad_tree_org:Option<AdTree>,
 	/// has one
-	pub ad_tree_bpartner_id_ad_tree:Option<AdTree>,
+	pub ad_tree_bpartner:Option<AdTree>,
 	/// has one
-	pub ad_tree_project_id_ad_tree:Option<AdTree>,
+	pub ad_tree_project:Option<AdTree>,
 	/// has one
-	pub ad_tree_salesregion_id_ad_tree:Option<AdTree>,
+	pub ad_tree_salesregion:Option<AdTree>,
 	/// has one
-	pub ad_tree_product_id_ad_tree:Option<AdTree>,
+	pub ad_tree_product:Option<AdTree>,
 	/// has one
-	pub ad_tree_campaign_id_ad_tree:Option<AdTree>,
+	pub ad_tree_campaign:Option<AdTree>,
 	/// has one
-	pub ad_tree_activity_id_ad_tree:Option<AdTree>,
+	pub ad_tree_activity:Option<AdTree>,
 	/// has one
-	pub ad_tree_account_id_ad_tree:Option<AdTree>,
+	pub ad_tree_account:Option<AdTree>,
 	/// has many
 	pub pa_measure:Option<Vec<PaMeasure>>,
 }
@@ -34847,17 +34856,17 @@ pub struct PaMeasure {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub pa_measurecalc_id_pa_measurecalc:Option<PaMeasurecalc>,
+	pub pa_measurecalc:Option<PaMeasurecalc>,
 	/// has one
-	pub pa_benchmark_id_pa_benchmark:Option<PaBenchmark>,
+	pub pa_benchmark:Option<PaBenchmark>,
 	/// has one
-	pub pa_ratio_id_pa_ratio:Option<PaRatio>,
+	pub pa_ratio:Option<PaRatio>,
 	/// has one
-	pub pa_hierarchy_id_pa_hierarchy:Option<PaHierarchy>,
+	pub pa_hierarchy:Option<PaHierarchy>,
 	/// has one
-	pub r_requesttype_id_r_requesttype:Option<RRequesttype>,
+	pub r_requesttype:Option<RRequesttype>,
 	/// has one
-	pub c_projecttype_id_c_projecttype:Option<CProjecttype>,
+	pub c_projecttype:Option<CProjecttype>,
 	/// has many
 	pub pa_achievement:Option<Vec<PaAchievement>>,
 	/// has many
@@ -34905,9 +34914,9 @@ pub struct PaMeasurecalc {
 	/// not nullable 
 	pub whereclause:String,
 	/// has one
-	pub ad_table_id_ad_table:Option<AdTable>,
+	pub ad_table:Option<AdTable>,
 	/// has one
-	pub entitytype_ad_entitytype:Option<AdEntitytype>,
+	pub entitytype:Option<AdEntitytype>,
 	/// has many
 	pub pa_measure:Option<Vec<PaMeasure>>,
 	/// has many
@@ -34943,7 +34952,7 @@ pub struct PaRatio {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_acctschema_id_c_acctschema:Option<CAcctschema>,
+	pub c_acctschema:Option<CAcctschema>,
 	/// has many
 	pub pa_measure:Option<Vec<PaMeasure>>,
 	/// has many
@@ -34989,13 +34998,13 @@ pub struct PaRatioelement {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub pa_ratio_id_pa_ratio:Option<PaRatio>,
+	pub pa_ratio:Option<PaRatio>,
 	/// has one
-	pub account_id_c_elementvalue:Option<CElementvalue>,
+	pub account:Option<CElementvalue>,
 	/// has one
-	pub pa_ratioused_id_pa_ratio:Option<PaRatio>,
+	pub pa_ratioused:Option<PaRatio>,
 	/// has one
-	pub pa_measurecalc_id_pa_measurecalc:Option<PaMeasurecalc>,
+	pub pa_measurecalc:Option<PaMeasurecalc>,
 }
 
 #[derive(Debug)]
@@ -35044,19 +35053,19 @@ pub struct PaReport {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_org_id_ad_org:Option<AdOrg>,
+	pub ad_org:Option<AdOrg>,
 	/// has one
-	pub pa_reportlineset_id_pa_reportlineset:Option<PaReportlineset>,
+	pub pa_reportlineset:Option<PaReportlineset>,
 	/// has one
-	pub pa_reportcolumnset_id_pa_reportcolumnset:Option<PaReportcolumnset>,
+	pub pa_reportcolumnset:Option<PaReportcolumnset>,
 	/// has one
-	pub c_acctschema_id_c_acctschema:Option<CAcctschema>,
+	pub c_acctschema:Option<CAcctschema>,
 	/// has one
-	pub c_calendar_id_c_calendar:Option<CCalendar>,
+	pub c_calendar:Option<CCalendar>,
 	/// has one
-	pub ad_printformat_id_ad_printformat:Option<AdPrintformat>,
+	pub ad_printformat:Option<AdPrintformat>,
 	/// has one
-	pub jasperprocess_id_ad_process:Option<AdProcess>,
+	pub jasperprocess:Option<AdProcess>,
 }
 
 #[derive(Debug)]
@@ -35157,33 +35166,33 @@ pub struct PaReportcolumn {
 	pub userelement1_id:Option<f64>,
 	pub userelement2_id:Option<f64>,
 	/// has one
-	pub pa_reportcolumnset_id_pa_reportcolumnset:Option<PaReportcolumnset>,
+	pub pa_reportcolumnset:Option<PaReportcolumnset>,
 	/// has one
-	pub gl_budget_id_gl_budget:Option<GlBudget>,
+	pub gl_budget:Option<GlBudget>,
 	/// has one
-	pub c_currency_id_c_currency:Option<CCurrency>,
+	pub c_currency:Option<CCurrency>,
 	/// has one, self referential
-	pub oper_1_id_pa_reportcolumn:Option<Box<PaReportcolumn>>,
+	pub oper_1:Option<Box<PaReportcolumn>>,
 	/// has one, self referential
-	pub oper_2_id_pa_reportcolumn:Option<Box<PaReportcolumn>>,
+	pub oper_2:Option<Box<PaReportcolumn>>,
 	/// has one
-	pub org_id_ad_org:Option<AdOrg>,
+	pub org:Option<AdOrg>,
 	/// has one
-	pub c_elementvalue_id_c_elementvalue:Option<CElementvalue>,
+	pub c_elementvalue:Option<CElementvalue>,
 	/// has one
-	pub c_project_id_c_project:Option<CProject>,
+	pub c_project:Option<CProject>,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has one
-	pub c_campaign_id_c_campaign:Option<CCampaign>,
+	pub c_campaign:Option<CCampaign>,
 	/// has one
-	pub c_location_id_c_location:Option<CLocation>,
+	pub c_location:Option<CLocation>,
 	/// has one
-	pub c_salesregion_id_c_salesregion:Option<CSalesregion>,
+	pub c_salesregion:Option<CSalesregion>,
 	/// has one
-	pub c_activity_id_c_activity:Option<CActivity>,
+	pub c_activity:Option<CActivity>,
 	/// has many
 	pub pa_reportcolumn:Option<Vec<PaReportcolumn>>,
 }
@@ -35331,15 +35340,15 @@ pub struct PaReportline {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub pa_reportlineset_id_pa_reportlineset:Option<PaReportlineset>,
+	pub pa_reportlineset:Option<PaReportlineset>,
 	/// has one, self referential
-	pub parent_id_pa_reportline:Option<Box<PaReportline>>,
+	pub parent:Option<Box<PaReportline>>,
 	/// has one, self referential
-	pub oper_1_id_pa_reportline:Option<Box<PaReportline>>,
+	pub oper_1:Option<Box<PaReportline>>,
 	/// has one, self referential
-	pub oper_2_id_pa_reportline:Option<Box<PaReportline>>,
+	pub oper_2:Option<Box<PaReportline>>,
 	/// has one
-	pub gl_budget_id_gl_budget:Option<GlBudget>,
+	pub gl_budget:Option<GlBudget>,
 	/// has many
 	pub i_reportline:Option<Vec<IReportline>>,
 	/// has many
@@ -35461,25 +35470,25 @@ pub struct PaReportsource {
 	pub userelement1_id:Option<f64>,
 	pub userelement2_id:Option<f64>,
 	/// has one
-	pub pa_reportline_id_pa_reportline:Option<PaReportline>,
+	pub pa_reportline:Option<PaReportline>,
 	/// has one
-	pub org_id_ad_org:Option<AdOrg>,
+	pub org:Option<AdOrg>,
 	/// has one
-	pub c_elementvalue_id_c_elementvalue:Option<CElementvalue>,
+	pub c_elementvalue:Option<CElementvalue>,
 	/// has one
-	pub c_project_id_c_project:Option<CProject>,
+	pub c_project:Option<CProject>,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has one
-	pub c_campaign_id_c_campaign:Option<CCampaign>,
+	pub c_campaign:Option<CCampaign>,
 	/// has one
-	pub c_location_id_c_location:Option<CLocation>,
+	pub c_location:Option<CLocation>,
 	/// has one
-	pub c_salesregion_id_c_salesregion:Option<CSalesregion>,
+	pub c_salesregion:Option<CSalesregion>,
 	/// has one
-	pub c_activity_id_c_activity:Option<CActivity>,
+	pub c_activity:Option<CActivity>,
 	/// has many
 	pub i_reportline:Option<Vec<IReportline>>,
 }
@@ -35562,9 +35571,9 @@ pub struct PaSlaGoal {
 	pub validfrom:Option<NaiveDateTime>,
 	pub validto:Option<NaiveDateTime>,
 	/// has one
-	pub pa_sla_criteria_id_pa_sla_criteria:Option<PaSlaCriteria>,
+	pub pa_sla_criteria:Option<PaSlaCriteria>,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 	/// has many
 	pub pa_sla_measure:Option<Vec<PaSlaMeasure>>,
 }
@@ -35606,9 +35615,9 @@ pub struct PaSlaMeasure {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub pa_sla_goal_id_pa_sla_goal:Option<PaSlaGoal>,
+	pub pa_sla_goal:Option<PaSlaGoal>,
 	/// has one
-	pub ad_table_id_ad_table:Option<AdTable>,
+	pub ad_table:Option<AdTable>,
 }
 
 #[derive(Debug)]
@@ -35725,41 +35734,41 @@ pub struct PpCostCollector {
 	pub user1_id:Option<f64>,
 	pub user2_id:Option<f64>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has one
-	pub ad_orgtrx_id_ad_org:Option<AdOrg>,
+	pub ad_orgtrx:Option<AdOrg>,
 	/// has one
-	pub ad_user_id_ad_user:Option<AdUser>,
+	pub ad_user:Option<AdUser>,
 	/// has one
-	pub c_activity_id_c_activity:Option<CActivity>,
+	pub c_activity:Option<CActivity>,
 	/// has one
-	pub c_campaign_id_c_campaign:Option<CCampaign>,
+	pub c_campaign:Option<CCampaign>,
 	/// has one
-	pub c_doctypetarget_id_c_doctype:Option<CDoctype>,
+	pub c_doctypetarget:Option<CDoctype>,
 	/// has one
-	pub c_doctype_id_c_doctype:Option<CDoctype>,
+	pub c_doctype:Option<CDoctype>,
 	/// has one
-	pub c_project_id_c_project:Option<CProject>,
+	pub c_project:Option<CProject>,
 	/// has one
-	pub c_uom_id_c_uom:Option<CUom>,
+	pub c_uom:Option<CUom>,
 	/// has one
-	pub m_warehouse_id_m_warehouse:Option<MWarehouse>,
+	pub m_warehouse:Option<MWarehouse>,
 	/// has one
-	pub pp_order_bomline_id_pp_order_bomline:Option<PpOrderBomline>,
+	pub pp_order_bomline:Option<PpOrderBomline>,
 	/// has one
-	pub pp_order_id_pp_order:Option<PpOrder>,
+	pub pp_order:Option<PpOrder>,
 	/// has one
-	pub pp_order_node_id_pp_order_node:Option<PpOrderNode>,
+	pub pp_order_node:Option<PpOrderNode>,
 	/// has one
-	pub pp_order_workflow_id_pp_order_workflow:Option<PpOrderWorkflow>,
+	pub pp_order_workflow:Option<PpOrderWorkflow>,
 	/// has one
-	pub s_resource_id_s_resource:Option<SResource>,
+	pub s_resource:Option<SResource>,
 	/// has one
-	pub user1_id_ad_user:Option<AdUser>,
+	pub user1:Option<AdUser>,
 	/// has one
-	pub user2_id_ad_user:Option<AdUser>,
+	pub user2:Option<AdUser>,
 	/// has one, self referential
-	pub reversal_id_pp_cost_collector:Option<Box<PpCostCollector>>,
+	pub reversal:Option<Box<PpCostCollector>>,
 	/// has many
 	pub hr_movement:Option<Vec<HrMovement>>,
 	/// has many
@@ -35794,7 +35803,7 @@ pub struct PpCostCollectorma {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub pp_cost_collector_id_pp_cost_collector:Option<PpCostCollector>,
+	pub pp_cost_collector:Option<PpCostCollector>,
 }
 
 #[derive(Debug)]
@@ -35853,35 +35862,35 @@ pub struct PpMrp {
 	pub value:String,
 	pub version:Option<f64>,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 	/// has one
-	pub c_orderline_id_c_orderline:Option<COrderline>,
+	pub c_orderline:Option<COrderline>,
 	/// has one
-	pub c_order_id_c_order:Option<COrder>,
+	pub c_order:Option<COrder>,
 	/// has one
-	pub m_forecastline_id_m_forecastline:Option<MForecastline>,
+	pub m_forecastline:Option<MForecastline>,
 	/// has one
-	pub m_forecast_id_m_forecast:Option<MForecast>,
+	pub m_forecast:Option<MForecast>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has one
-	pub m_requisitionline_id_m_requisitionline:Option<MRequisitionline>,
+	pub m_requisitionline:Option<MRequisitionline>,
 	/// has one
-	pub m_requisition_id_m_requisition:Option<MRequisition>,
+	pub m_requisition:Option<MRequisition>,
 	/// has one
-	pub m_warehouse_id_m_warehouse:Option<MWarehouse>,
+	pub m_warehouse:Option<MWarehouse>,
 	/// has one
-	pub pp_order_bomline_id_pp_order_bomline:Option<PpOrderBomline>,
+	pub pp_order_bomline:Option<PpOrderBomline>,
 	/// has one
-	pub pp_order_id_pp_order:Option<PpOrder>,
+	pub pp_order:Option<PpOrder>,
 	/// has one
-	pub planner_id_ad_user:Option<AdUser>,
+	pub planner:Option<AdUser>,
 	/// has one
-	pub s_resource_id_s_resource:Option<SResource>,
+	pub s_resource:Option<SResource>,
 	/// has one
-	pub dd_order_id_dd_order:Option<DdOrder>,
+	pub dd_order:Option<DdOrder>,
 	/// has one
-	pub dd_orderline_id_dd_orderline:Option<DdOrderline>,
+	pub dd_orderline:Option<DdOrderline>,
 }
 
 #[derive(Debug)]
@@ -36004,37 +36013,37 @@ pub struct PpOrder {
 	/// not nullable 
 	pub yield_:f64,
 	/// has one
-	pub s_resource_id_s_resource:Option<SResource>,
+	pub s_resource:Option<SResource>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has one
-	pub m_warehouse_id_m_warehouse:Option<MWarehouse>,
+	pub m_warehouse:Option<MWarehouse>,
 	/// has one
-	pub c_activity_id_c_activity:Option<CActivity>,
+	pub c_activity:Option<CActivity>,
 	/// has one
-	pub c_campaign_id_c_campaign:Option<CCampaign>,
+	pub c_campaign:Option<CCampaign>,
 	/// has one
-	pub c_doctypetarget_id_c_doctype:Option<CDoctype>,
+	pub c_doctypetarget:Option<CDoctype>,
 	/// has one
-	pub c_doctype_id_c_doctype:Option<CDoctype>,
+	pub c_doctype:Option<CDoctype>,
 	/// has one
-	pub c_orderline_id_c_orderline:Option<COrderline>,
+	pub c_orderline:Option<COrderline>,
 	/// has one
-	pub c_project_id_c_project:Option<CProject>,
+	pub c_project:Option<CProject>,
 	/// has one
-	pub c_uom_id_c_uom:Option<CUom>,
+	pub c_uom:Option<CUom>,
 	/// has one
-	pub pp_product_bom_id_pp_product_bom:Option<PpProductBom>,
+	pub pp_product_bom:Option<PpProductBom>,
 	/// has one
-	pub planner_id_ad_user:Option<AdUser>,
+	pub planner:Option<AdUser>,
 	/// has one
-	pub user1_id_c_elementvalue:Option<CElementvalue>,
+	pub user1:Option<CElementvalue>,
 	/// has one
-	pub user2_id_c_elementvalue:Option<CElementvalue>,
+	pub user2:Option<CElementvalue>,
 	/// has one
-	pub ad_orgtrx_id_ad_org:Option<AdOrg>,
+	pub ad_orgtrx:Option<AdOrg>,
 	/// has one
-	pub ad_workflow_id_ad_workflow:Option<AdWorkflow>,
+	pub ad_workflow:Option<AdWorkflow>,
 	/// has many
 	pub pp_cost_collector:Option<Vec<PpCostCollector>>,
 	/// has many
@@ -36100,13 +36109,13 @@ pub struct PpOrderBom {
 	/// not nullable 
 	pub value:String,
 	/// has one
-	pub c_uom_id_c_uom:Option<CUom>,
+	pub c_uom:Option<CUom>,
 	/// has one
-	pub m_changenotice_id_m_changenotice:Option<MChangenotice>,
+	pub m_changenotice:Option<MChangenotice>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has one
-	pub pp_order_id_pp_order:Option<PpOrder>,
+	pub pp_order:Option<PpOrder>,
 	/// has many
 	pub pp_order_bomline:Option<Vec<PpOrderBomline>>,
 }
@@ -36218,19 +36227,19 @@ pub struct PpOrderBomline {
 	pub validfrom:NaiveDateTime,
 	pub validto:Option<NaiveDateTime>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has one
-	pub c_uom_id_c_uom:Option<CUom>,
+	pub c_uom:Option<CUom>,
 	/// has one
-	pub m_changenotice_id_m_changenotice:Option<MChangenotice>,
+	pub m_changenotice:Option<MChangenotice>,
 	/// has one
-	pub m_warehouse_id_m_warehouse:Option<MWarehouse>,
+	pub m_warehouse:Option<MWarehouse>,
 	/// has one
-	pub pp_order_bom_id_pp_order_bom:Option<PpOrderBom>,
+	pub pp_order_bom:Option<PpOrderBom>,
 	/// has one
-	pub pp_order_id_pp_order:Option<PpOrder>,
+	pub pp_order:Option<PpOrder>,
 	/// has one
-	pub ad_user_id_ad_user:Option<AdUser>,
+	pub ad_user:Option<AdUser>,
 	/// has many
 	pub pp_cost_collector:Option<Vec<PpCostCollector>>,
 	/// has many
@@ -36310,17 +36319,17 @@ pub struct PpOrderCost {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_workflow_id_ad_workflow:Option<AdWorkflow>,
+	pub ad_workflow:Option<AdWorkflow>,
 	/// has one
-	pub c_acctschema_id_c_acctschema:Option<CAcctschema>,
+	pub c_acctschema:Option<CAcctschema>,
 	/// has one
-	pub m_costelement_id_m_costelement:Option<MCostelement>,
+	pub m_costelement:Option<MCostelement>,
 	/// has one
-	pub m_costtype_id_m_costtype:Option<MCosttype>,
+	pub m_costtype:Option<MCosttype>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has one
-	pub pp_order_id_pp_order:Option<PpOrder>,
+	pub pp_order:Option<PpOrder>,
 }
 
 #[derive(Debug)]
@@ -36428,37 +36437,37 @@ pub struct PpOrderNode {
 	/// not nullable 
 	pub yposition:f64,
 	/// has one
-	pub ad_column_id_ad_column:Option<AdColumn>,
+	pub ad_column:Option<AdColumn>,
 	/// has one
-	pub ad_form_id_ad_form:Option<AdForm>,
+	pub ad_form:Option<AdForm>,
 	/// has one
-	pub ad_image_id_ad_image:Option<AdImage>,
+	pub ad_image:Option<AdImage>,
 	/// has one
-	pub ad_process_id_ad_process:Option<AdProcess>,
+	pub ad_process:Option<AdProcess>,
 	/// has one
-	pub ad_task_id_ad_task:Option<AdTask>,
+	pub ad_task:Option<AdTask>,
 	/// has one
-	pub ad_wf_block_id_ad_wf_block:Option<AdWfBlock>,
+	pub ad_wf_block:Option<AdWfBlock>,
 	/// has one
-	pub ad_wf_node_id_ad_wf_node:Option<AdWfNode>,
+	pub ad_wf_node:Option<AdWfNode>,
 	/// has one
-	pub ad_wf_responsible_id_ad_wf_responsible:Option<AdWfResponsible>,
+	pub ad_wf_responsible:Option<AdWfResponsible>,
 	/// has one
-	pub ad_window_id_ad_window:Option<AdWindow>,
+	pub ad_window:Option<AdWindow>,
 	/// has one
-	pub ad_workflow_id_ad_workflow:Option<AdWorkflow>,
+	pub ad_workflow:Option<AdWorkflow>,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 	/// has one
-	pub entitytype_ad_entitytype:Option<AdEntitytype>,
+	pub entitytype:Option<AdEntitytype>,
 	/// has one
-	pub pp_order_id_pp_order:Option<PpOrder>,
+	pub pp_order:Option<PpOrder>,
 	/// has one
-	pub pp_order_workflow_id_pp_order_workflow:Option<PpOrderWorkflow>,
+	pub pp_order_workflow:Option<PpOrderWorkflow>,
 	/// has one
-	pub s_resource_id_s_resource:Option<SResource>,
+	pub s_resource:Option<SResource>,
 	/// has one
-	pub workflow_id_ad_workflow:Option<AdWorkflow>,
+	pub workflow:Option<AdWorkflow>,
 	/// has many
 	pub pp_cost_collector:Option<Vec<PpCostCollector>>,
 	/// has many
@@ -36499,13 +36508,13 @@ pub struct PpOrderNodeAsset {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub a_asset_id_a_asset:Option<AAsset>,
+	pub a_asset:Option<AAsset>,
 	/// has one
-	pub pp_order_id_pp_order:Option<PpOrder>,
+	pub pp_order:Option<PpOrder>,
 	/// has one
-	pub pp_order_node_id_pp_order_node:Option<PpOrderNode>,
+	pub pp_order_node:Option<PpOrderNode>,
 	/// has one
-	pub pp_order_workflow_id_pp_order_workflow:Option<PpOrderWorkflow>,
+	pub pp_order_workflow:Option<PpOrderWorkflow>,
 }
 
 #[derive(Debug)]
@@ -36540,13 +36549,13 @@ pub struct PpOrderNodeProduct {
 	pub updatedby:f64,
 	pub yield_:Option<f64>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has one
-	pub pp_order_id_pp_order:Option<PpOrder>,
+	pub pp_order:Option<PpOrder>,
 	/// has one
-	pub pp_order_node_id_pp_order_node:Option<PpOrderNode>,
+	pub pp_order_node:Option<PpOrderNode>,
 	/// has one
-	pub pp_order_workflow_id_pp_order_workflow:Option<PpOrderWorkflow>,
+	pub pp_order_workflow:Option<PpOrderWorkflow>,
 }
 
 #[derive(Debug)]
@@ -36618,17 +36627,17 @@ pub struct PpOrderNodenext {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_wf_next_id_ad_wf_node:Option<AdWfNode>,
+	pub ad_wf_next:Option<AdWfNode>,
 	/// has one
-	pub ad_wf_node_id_ad_wf_node:Option<AdWfNode>,
+	pub ad_wf_node:Option<AdWfNode>,
 	/// has one
-	pub entitytype_ad_entitytype:Option<AdEntitytype>,
+	pub entitytype:Option<AdEntitytype>,
 	/// has one
-	pub pp_order_id_pp_order:Option<PpOrder>,
+	pub pp_order:Option<PpOrder>,
 	/// has one
-	pub pp_order_next_id_pp_order_node:Option<PpOrderNode>,
+	pub pp_order_next:Option<PpOrderNode>,
 	/// has one
-	pub pp_order_node_id_pp_order_node:Option<PpOrderNode>,
+	pub pp_order_node:Option<PpOrderNode>,
 }
 
 #[derive(Debug)]
@@ -36709,23 +36718,23 @@ pub struct PpOrderWorkflow {
 	/// defaults to: (100)::numeric
 	pub yield_:Option<f64>,
 	/// has one
-	pub ad_table_id_ad_table:Option<AdTable>,
+	pub ad_table:Option<AdTable>,
 	/// has one
-	pub ad_wf_node_id_ad_wf_node:Option<AdWfNode>,
+	pub ad_wf_node:Option<AdWfNode>,
 	/// has one
-	pub ad_wf_responsible_id_ad_wf_responsible:Option<AdWfResponsible>,
+	pub ad_wf_responsible:Option<AdWfResponsible>,
 	/// has one
-	pub ad_workflowprocessor_id_ad_workflowprocessor:Option<AdWorkflowprocessor>,
+	pub ad_workflowprocessor:Option<AdWorkflowprocessor>,
 	/// has one
-	pub ad_workflow_id_ad_workflow:Option<AdWorkflow>,
+	pub ad_workflow:Option<AdWorkflow>,
 	/// has one
-	pub entitytype_ad_entitytype:Option<AdEntitytype>,
+	pub entitytype:Option<AdEntitytype>,
 	/// has one
-	pub pp_order_id_pp_order:Option<PpOrder>,
+	pub pp_order:Option<PpOrder>,
 	/// has one
-	pub pp_order_node_id_pp_order_node:Option<PpOrderNode>,
+	pub pp_order_node:Option<PpOrderNode>,
 	/// has one
-	pub s_resource_id_s_resource:Option<SResource>,
+	pub s_resource:Option<SResource>,
 	/// has many
 	pub pp_cost_collector:Option<Vec<PpCostCollector>>,
 	/// has many
@@ -36813,11 +36822,11 @@ pub struct PpProductBom {
 	/// not nullable 
 	pub value:String,
 	/// has one
-	pub m_changenotice_id_m_changenotice:Option<MChangenotice>,
+	pub m_changenotice:Option<MChangenotice>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has one
-	pub c_uom_id_c_uom:Option<CUom>,
+	pub c_uom:Option<CUom>,
 	/// has many
 	pub pp_order:Option<Vec<PpOrder>>,
 	/// has many
@@ -36913,13 +36922,13 @@ pub struct PpProductBomline {
 	pub validfrom:NaiveDateTime,
 	pub validto:Option<NaiveDateTime>,
 	/// has one
-	pub c_uom_id_c_uom:Option<CUom>,
+	pub c_uom:Option<CUom>,
 	/// has one
-	pub m_changenotice_id_m_changenotice:Option<MChangenotice>,
+	pub m_changenotice:Option<MChangenotice>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has one
-	pub pp_product_bom_id_pp_product_bom:Option<PpProductBom>,
+	pub pp_product_bom:Option<PpProductBom>,
 }
 
 #[derive(Debug)]
@@ -37012,7 +37021,7 @@ pub struct PpProductPlanning {
 	/// defaults to: (100)::numeric
 	pub yield_:Option<f64>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 }
 
 #[derive(Debug)]
@@ -37041,9 +37050,9 @@ pub struct PpWfNodeAsset {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_wf_node_id_ad_wf_node:Option<AdWfNode>,
+	pub ad_wf_node:Option<AdWfNode>,
 	/// has one
-	pub a_asset_id_a_asset:Option<AAsset>,
+	pub a_asset:Option<AAsset>,
 }
 
 #[derive(Debug)]
@@ -37080,11 +37089,11 @@ pub struct PpWfNodeProduct {
 	pub updatedby:f64,
 	pub yield_:Option<f64>,
 	/// has one
-	pub entitytype_ad_entitytype:Option<AdEntitytype>,
+	pub entitytype:Option<AdEntitytype>,
 	/// has one
-	pub ad_wf_node_id_ad_wf_node:Option<AdWfNode>,
+	pub ad_wf_node:Option<AdWfNode>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 }
 
 #[derive(Debug)]
@@ -37118,13 +37127,13 @@ pub struct QmSpecification {
 	pub validto:Option<NaiveDateTime>,
 	pub value:Option<String>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has one
-	pub pp_product_bom_id_pp_product_bom:Option<PpProductBom>,
+	pub pp_product_bom:Option<PpProductBom>,
 	/// has one
-	pub ad_workflow_id_ad_workflow:Option<AdWorkflow>,
+	pub ad_workflow:Option<AdWorkflow>,
 	/// has one
-	pub m_attributeset_id_m_attributeset:Option<MAttributeset>,
+	pub m_attributeset:Option<MAttributeset>,
 	/// has many
 	pub qm_specificationline:Option<Vec<QmSpecificationline>>,
 }
@@ -37160,9 +37169,9 @@ pub struct QmSpecificationline {
 	pub validto:Option<NaiveDateTime>,
 	pub value:Option<String>,
 	/// has one
-	pub m_attribute_id_m_attribute:Option<MAttribute>,
+	pub m_attribute:Option<MAttribute>,
 	/// has one
-	pub qm_specification_id_qm_specification:Option<QmSpecification>,
+	pub qm_specification:Option<QmSpecification>,
 }
 
 #[derive(Debug)]
@@ -37193,7 +37202,7 @@ pub struct RCategory {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has many
 	pub r_categoryupdates:Option<Vec<RCategoryupdates>>,
 	/// has many
@@ -37231,9 +37240,9 @@ pub struct RCategoryupdates {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_user_id_ad_user:Option<AdUser>,
+	pub ad_user:Option<AdUser>,
 	/// has one
-	pub r_category_id_r_category:Option<RCategory>,
+	pub r_category:Option<RCategory>,
 }
 
 #[derive(Debug)]
@@ -37262,9 +37271,9 @@ pub struct RContactinterest {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub r_interestarea_id_r_interestarea:Option<RInterestarea>,
+	pub r_interestarea:Option<RInterestarea>,
 	/// has one
-	pub ad_user_id_ad_user:Option<AdUser>,
+	pub ad_user:Option<AdUser>,
 }
 
 #[derive(Debug)]
@@ -37297,11 +37306,11 @@ pub struct RGroup {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub m_bom_id_m_bom:Option<MBom>,
+	pub m_bom:Option<MBom>,
 	/// has one
-	pub m_changenotice_id_m_changenotice:Option<MChangenotice>,
+	pub m_changenotice:Option<MChangenotice>,
 	/// has one
-	pub pp_product_bom_id_pp_product_bom:Option<PpProductBom>,
+	pub pp_product_bom:Option<PpProductBom>,
 	/// has many
 	pub r_groupupdates:Option<Vec<RGroupupdates>>,
 	/// has many
@@ -37339,9 +37348,9 @@ pub struct RGroupupdates {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_user_id_ad_user:Option<AdUser>,
+	pub ad_user:Option<AdUser>,
 	/// has one
-	pub r_group_id_r_group:Option<RGroup>,
+	pub r_group:Option<RGroup>,
 }
 
 #[derive(Debug)]
@@ -37420,11 +37429,11 @@ pub struct RIssueknown {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub r_issuestatus_id_r_issuestatus:Option<RIssuestatus>,
+	pub r_issuestatus:Option<RIssuestatus>,
 	/// has one
-	pub r_request_id_r_request:Option<RRequest>,
+	pub r_request:Option<RRequest>,
 	/// has one
-	pub r_issuerecommendation_id_r_issuerecommendation:Option<RIssuerecommendation>,
+	pub r_issuerecommendation:Option<RIssuerecommendation>,
 	/// has many
 	pub ad_issue:Option<Vec<AdIssue>>,
 }
@@ -37461,9 +37470,9 @@ pub struct RIssueproject {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub a_asset_id_a_asset:Option<AAsset>,
+	pub a_asset:Option<AAsset>,
 	/// has one
-	pub c_project_id_c_project:Option<CProject>,
+	pub c_project:Option<CProject>,
 	/// has many
 	pub ad_issue:Option<Vec<AdIssue>>,
 	/// has many
@@ -37531,11 +37540,11 @@ pub struct RIssuesource {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub r_issuesystem_id_r_issuesystem:Option<RIssuesystem>,
+	pub r_issuesystem:Option<RIssuesystem>,
 	/// has one
-	pub r_issueproject_id_r_issueproject:Option<RIssueproject>,
+	pub r_issueproject:Option<RIssueproject>,
 	/// has one
-	pub r_issueuser_id_r_issueuser:Option<RIssueuser>,
+	pub r_issueuser:Option<RIssueuser>,
 }
 
 #[derive(Debug)]
@@ -37597,7 +37606,7 @@ pub struct RIssuesystem {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub a_asset_id_a_asset:Option<AAsset>,
+	pub a_asset:Option<AAsset>,
 	/// has many
 	pub ad_issue:Option<Vec<AdIssue>>,
 	/// has many
@@ -37631,7 +37640,7 @@ pub struct RIssueuser {
 	/// not nullable 
 	pub username:String,
 	/// has one
-	pub ad_user_id_ad_user:Option<AdUser>,
+	pub ad_user:Option<AdUser>,
 	/// has many
 	pub ad_issue:Option<Vec<AdIssue>>,
 	/// has many
@@ -37688,10 +37697,10 @@ pub struct RMailtext {
 pub struct RMailtextTrl {
 	/// primary
 	/// not nullable 
-	pub r_mailtext_id:f64,
+	pub ad_language:String,
 	/// primary
 	/// not nullable 
-	pub ad_language:String,
+	pub r_mailtext_id:f64,
 	/// not nullable 
 	pub ad_client_id:f64,
 	/// not nullable 
@@ -37720,9 +37729,9 @@ pub struct RMailtextTrl {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub r_mailtext_id_r_mailtext:Option<RMailtext>,
+	pub r_mailtext:Option<RMailtext>,
 	/// has one
-	pub ad_language_ad_language:Option<AdLanguage>,
+	pub ad_language:Option<AdLanguage>,
 }
 
 #[derive(Debug)]
@@ -37825,59 +37834,59 @@ pub struct RRequest {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub r_requesttype_id_r_requesttype:Option<RRequesttype>,
+	pub r_requesttype:Option<RRequesttype>,
 	/// has one
-	pub r_group_id_r_group:Option<RGroup>,
+	pub r_group:Option<RGroup>,
 	/// has one
-	pub r_category_id_r_category:Option<RCategory>,
+	pub r_category:Option<RCategory>,
 	/// has one
-	pub r_status_id_r_status:Option<RStatus>,
+	pub r_status:Option<RStatus>,
 	/// has one
-	pub r_resolution_id_r_resolution:Option<RResolution>,
+	pub r_resolution:Option<RResolution>,
 	/// has one, self referential
-	pub r_requestrelated_id_r_request:Option<Box<RRequest>>,
+	pub r_requestrelated:Option<Box<RRequest>>,
 	/// has one
-	pub salesrep_id_ad_user:Option<AdUser>,
+	pub salesrep:Option<AdUser>,
 	/// has one
-	pub ad_role_id_ad_role:Option<AdRole>,
+	pub ad_role:Option<AdRole>,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 	/// has one
-	pub ad_user_id_ad_user:Option<AdUser>,
+	pub ad_user:Option<AdUser>,
 	/// has one
-	pub c_campaign_id_c_campaign:Option<CCampaign>,
+	pub c_campaign:Option<CCampaign>,
 	/// has one
-	pub c_order_id_c_order:Option<COrder>,
+	pub c_order:Option<COrder>,
 	/// has one
-	pub c_invoice_id_c_invoice:Option<CInvoice>,
+	pub c_invoice:Option<CInvoice>,
 	/// has one
-	pub c_payment_id_c_payment:Option<CPayment>,
+	pub c_payment:Option<CPayment>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has one
-	pub c_project_id_c_project:Option<CProject>,
+	pub c_project:Option<CProject>,
 	/// has one
-	pub a_asset_id_a_asset:Option<AAsset>,
+	pub a_asset:Option<AAsset>,
 	/// has one
-	pub m_inout_id_m_inout:Option<MInout>,
+	pub m_inout:Option<MInout>,
 	/// has one
-	pub m_rma_id_m_rma:Option<MRma>,
+	pub m_rma:Option<MRma>,
 	/// has one
-	pub ad_table_id_ad_table:Option<AdTable>,
+	pub ad_table:Option<AdTable>,
 	/// has one
-	pub r_mailtext_id_r_mailtext:Option<RMailtext>,
+	pub r_mailtext:Option<RMailtext>,
 	/// has one
-	pub r_standardresponse_id_r_standardresponse:Option<RStandardresponse>,
+	pub r_standardresponse:Option<RStandardresponse>,
 	/// has one
-	pub m_productspent_id_m_product:Option<MProduct>,
+	pub m_productspent:Option<MProduct>,
 	/// has one
-	pub c_activity_id_c_activity:Option<CActivity>,
+	pub c_activity:Option<CActivity>,
 	/// has one
-	pub c_invoicerequest_id_c_invoice:Option<CInvoice>,
+	pub c_invoicerequest:Option<CInvoice>,
 	/// has one
-	pub m_changerequest_id_m_changerequest:Option<MChangerequest>,
+	pub m_changerequest:Option<MChangerequest>,
 	/// has one
-	pub m_fixchangenotice_id_m_changenotice:Option<MChangenotice>,
+	pub m_fixchangenotice:Option<MChangenotice>,
 	/// has many
 	pub ad_issue:Option<Vec<AdIssue>>,
 	/// has many
@@ -37953,45 +37962,45 @@ pub struct RRequestaction {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub r_request_id_r_request:Option<RRequest>,
+	pub r_request:Option<RRequest>,
 	/// has one
-	pub r_group_id_r_group:Option<RGroup>,
+	pub r_group:Option<RGroup>,
 	/// has one
-	pub r_category_id_r_category:Option<RCategory>,
+	pub r_category:Option<RCategory>,
 	/// has one
-	pub r_status_id_r_status:Option<RStatus>,
+	pub r_status:Option<RStatus>,
 	/// has one
-	pub r_resolution_id_r_resolution:Option<RResolution>,
+	pub r_resolution:Option<RResolution>,
 	/// has one
-	pub salesrep_id_ad_user:Option<AdUser>,
+	pub salesrep:Option<AdUser>,
 	/// has one
-	pub ad_role_id_ad_role:Option<AdRole>,
+	pub ad_role:Option<AdRole>,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 	/// has one
-	pub ad_user_id_ad_user:Option<AdUser>,
+	pub ad_user:Option<AdUser>,
 	/// has one
-	pub c_order_id_c_order:Option<COrder>,
+	pub c_order:Option<COrder>,
 	/// has one
-	pub c_invoice_id_c_invoice:Option<CInvoice>,
+	pub c_invoice:Option<CInvoice>,
 	/// has one
-	pub c_payment_id_c_payment:Option<CPayment>,
+	pub c_payment:Option<CPayment>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has one
-	pub c_project_id_c_project:Option<CProject>,
+	pub c_project:Option<CProject>,
 	/// has one
-	pub c_activity_id_c_activity:Option<CActivity>,
+	pub c_activity:Option<CActivity>,
 	/// has one
-	pub r_requesttype_id_r_requesttype:Option<RRequesttype>,
+	pub r_requesttype:Option<RRequesttype>,
 	/// has one
-	pub a_asset_id_a_asset:Option<AAsset>,
+	pub a_asset:Option<AAsset>,
 	/// has one
-	pub m_inout_id_m_inout:Option<MInout>,
+	pub m_inout:Option<MInout>,
 	/// has one
-	pub m_rma_id_m_rma:Option<MRma>,
+	pub m_rma:Option<MRma>,
 	/// has one
-	pub m_productspent_id_m_product:Option<MProduct>,
+	pub m_productspent:Option<MProduct>,
 }
 
 #[derive(Debug)]
@@ -38042,13 +38051,13 @@ pub struct RRequestprocessor {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub supervisor_id_ad_user:Option<AdUser>,
+	pub supervisor:Option<AdUser>,
 	/// has one
-	pub r_requesttype_id_r_requesttype:Option<RRequesttype>,
+	pub r_requesttype:Option<RRequesttype>,
+	/// has one, extension table
+	pub r_requestprocessorlog:Option<Box<RRequestprocessorlog>>,
 	/// has many
 	pub r_requestprocessor_route:Option<Vec<RRequestprocessorRoute>>,
-	/// has many
-	pub r_requestprocessorlog:Option<Vec<RRequestprocessorlog>>,
 }
 
 #[derive(Debug)]
@@ -38082,11 +38091,11 @@ pub struct RRequestprocessorRoute {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub r_requestprocessor_id_r_requestprocessor:Option<RRequestprocessor>,
+	pub r_requestprocessor:Option<RRequestprocessor>,
 	/// has one
-	pub ad_user_id_ad_user:Option<AdUser>,
+	pub ad_user:Option<AdUser>,
 	/// has one
-	pub r_requesttype_id_r_requesttype:Option<RRequesttype>,
+	pub r_requesttype:Option<RRequesttype>,
 }
 
 #[derive(Debug)]
@@ -38123,7 +38132,7 @@ pub struct RRequestprocessorlog {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub r_requestprocessor_id_r_requestprocessor:Option<RRequestprocessor>,
+	pub r_requestprocessor:Option<RRequestprocessor>,
 }
 
 #[derive(Debug)]
@@ -38183,7 +38192,7 @@ pub struct RRequesttype {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub r_statuscategory_id_r_statuscategory:Option<RStatuscategory>,
+	pub r_statuscategory:Option<RStatuscategory>,
 	/// has many
 	pub ad_userbpaccess:Option<Vec<AdUserbpaccess>>,
 	/// has many
@@ -38233,9 +38242,9 @@ pub struct RRequesttypeupdates {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_user_id_ad_user:Option<AdUser>,
+	pub ad_user:Option<AdUser>,
 	/// has one
-	pub r_requesttype_id_r_requesttype:Option<RRequesttype>,
+	pub r_requesttype:Option<RRequesttype>,
 }
 
 #[derive(Debug)]
@@ -38273,9 +38282,9 @@ pub struct RRequestupdate {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub r_request_id_r_request:Option<RRequest>,
+	pub r_request:Option<RRequest>,
 	/// has one
-	pub m_productspent_id_m_product:Option<MProduct>,
+	pub m_productspent:Option<MProduct>,
 }
 
 #[derive(Debug)]
@@ -38307,9 +38316,9 @@ pub struct RRequestupdates {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_user_id_ad_user:Option<AdUser>,
+	pub ad_user:Option<AdUser>,
 	/// has one
-	pub r_request_id_r_request:Option<RRequest>,
+	pub r_request:Option<RRequest>,
 }
 
 #[derive(Debug)]
@@ -38426,11 +38435,11 @@ pub struct RStatus {
 	/// not nullable 
 	pub value:String,
 	/// has one, self referential
-	pub next_status_id_r_status:Option<Box<RStatus>>,
+	pub next_status:Option<Box<RStatus>>,
 	/// has one, self referential
-	pub update_status_id_r_status:Option<Box<RStatus>>,
+	pub update_status:Option<Box<RStatus>>,
 	/// has one
-	pub r_statuscategory_id_r_statuscategory:Option<RStatuscategory>,
+	pub r_statuscategory:Option<RStatuscategory>,
 	/// has many
 	pub r_request:Option<Vec<RRequest>>,
 	/// has many
@@ -38541,11 +38550,11 @@ pub struct SExpensetype {
 	/// not nullable 
 	pub value:String,
 	/// has one
-	pub c_uom_id_c_uom:Option<CUom>,
+	pub c_uom:Option<CUom>,
 	/// has one
-	pub m_product_category_id_m_product_category:Option<MProductCategory>,
+	pub m_product_category:Option<MProductCategory>,
 	/// has one
-	pub c_taxcategory_id_c_taxcategory:Option<CTaxcategory>,
+	pub c_taxcategory:Option<CTaxcategory>,
 	/// has many
 	pub m_product:Option<Vec<MProduct>>,
 }
@@ -38599,11 +38608,11 @@ pub struct SResource {
 	pub value:String,
 	pub waitingtime:Option<f64>,
 	/// has one
-	pub s_resourcetype_id_s_resourcetype:Option<SResourcetype>,
+	pub s_resourcetype:Option<SResourcetype>,
 	/// has one
-	pub m_warehouse_id_m_warehouse:Option<MWarehouse>,
+	pub m_warehouse:Option<MWarehouse>,
 	/// has one
-	pub ad_user_id_ad_user:Option<AdUser>,
+	pub ad_user:Option<AdUser>,
 	/// has many
 	pub ad_wf_node:Option<Vec<AdWfNode>>,
 	/// has many
@@ -38662,7 +38671,7 @@ pub struct SResourceassignment {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub s_resource_id_s_resource:Option<SResource>,
+	pub s_resource:Option<SResource>,
 	/// has many
 	pub c_invoiceline:Option<Vec<CInvoiceline>>,
 	/// has many
@@ -38742,11 +38751,11 @@ pub struct SResourcetype {
 	/// not nullable 
 	pub value:String,
 	/// has one
-	pub c_uom_id_c_uom:Option<CUom>,
+	pub c_uom:Option<CUom>,
 	/// has one
-	pub m_product_category_id_m_product_category:Option<MProductCategory>,
+	pub m_product_category:Option<MProductCategory>,
 	/// has one
-	pub c_taxcategory_id_c_taxcategory:Option<CTaxcategory>,
+	pub c_taxcategory:Option<CTaxcategory>,
 	/// has many
 	pub s_resource:Option<Vec<SResource>>,
 }
@@ -38780,7 +38789,7 @@ pub struct SResourceunavailable {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub s_resource_id_s_resource:Option<SResource>,
+	pub s_resource:Option<SResource>,
 }
 
 #[derive(Debug)]
@@ -38829,11 +38838,11 @@ pub struct STimeexpense {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 	/// has one
-	pub m_pricelist_id_m_pricelist:Option<MPricelist>,
+	pub m_pricelist:Option<MPricelist>,
 	/// has one
-	pub m_warehouse_id_m_warehouse:Option<MWarehouse>,
+	pub m_warehouse:Option<MWarehouse>,
 	/// has many
 	pub s_timeexpenseline:Option<Vec<STimeexpenseline>>,
 }
@@ -38902,33 +38911,33 @@ pub struct STimeexpenseline {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub s_timeexpense_id_s_timeexpense:Option<STimeexpense>,
+	pub s_timeexpense:Option<STimeexpense>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has one
-	pub c_currency_id_c_currency:Option<CCurrency>,
+	pub c_currency:Option<CCurrency>,
 	/// has one
-	pub s_resourceassignment_id_s_resourceassignment:Option<SResourceassignment>,
+	pub s_resourceassignment:Option<SResourceassignment>,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 	/// has one
-	pub c_project_id_c_project:Option<CProject>,
+	pub c_project:Option<CProject>,
 	/// has one
-	pub c_activity_id_c_activity:Option<CActivity>,
+	pub c_activity:Option<CActivity>,
 	/// has one
-	pub c_campaign_id_c_campaign:Option<CCampaign>,
+	pub c_campaign:Option<CCampaign>,
 	/// has one
-	pub c_invoiceline_id_c_invoiceline:Option<CInvoiceline>,
+	pub c_invoiceline:Option<CInvoiceline>,
 	/// has one
-	pub c_uom_id_c_uom:Option<CUom>,
+	pub c_uom:Option<CUom>,
 	/// has one
-	pub c_orderline_id_c_orderline:Option<COrderline>,
+	pub c_orderline:Option<COrderline>,
 	/// has one
-	pub c_projectphase_id_c_projectphase:Option<CProjectphase>,
+	pub c_projectphase:Option<CProjectphase>,
 	/// has one
-	pub c_projecttask_id_c_projecttask:Option<CProjecttask>,
+	pub c_projecttask:Option<CProjecttask>,
 	/// has one
-	pub s_timetype_id_s_timetype:Option<STimetype>,
+	pub s_timetype:Option<STimetype>,
 	/// has many
 	pub c_projectissue:Option<Vec<CProjectissue>>,
 }
@@ -39000,11 +39009,11 @@ pub struct STraining {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub m_product_category_id_m_product_category:Option<MProductCategory>,
+	pub m_product_category:Option<MProductCategory>,
 	/// has one
-	pub c_taxcategory_id_c_taxcategory:Option<CTaxcategory>,
+	pub c_taxcategory:Option<CTaxcategory>,
 	/// has one
-	pub c_uom_id_c_uom:Option<CUom>,
+	pub c_uom:Option<CUom>,
 	/// has many
 	pub s_training_class:Option<Vec<STrainingClass>>,
 }
@@ -39040,9 +39049,9 @@ pub struct STrainingClass {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub s_training_id_s_training:Option<STraining>,
+	pub s_training:Option<STraining>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 }
 
 #[derive(Debug)]
@@ -39165,19 +39174,19 @@ pub struct TAging {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_pinstance_id_ad_pinstance:Option<AdPinstance>,
+	pub ad_pinstance:Option<AdPinstance>,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 	/// has one
-	pub c_currency_id_c_currency:Option<CCurrency>,
+	pub c_currency:Option<CCurrency>,
 	/// has one
-	pub c_bp_group_id_c_bp_group:Option<CBpGroup>,
+	pub c_bp_group:Option<CBpGroup>,
 	/// has one
-	pub c_project_id_c_project:Option<CProject>,
+	pub c_project:Option<CProject>,
 	/// has one
-	pub c_campaign_id_c_campaign:Option<CCampaign>,
+	pub c_campaign:Option<CCampaign>,
 	/// has one
-	pub c_activity_id_c_activity:Option<CActivity>,
+	pub c_activity:Option<CActivity>,
 }
 
 #[derive(Debug)]
@@ -39239,16 +39248,16 @@ pub struct TBomline {
 pub struct TDistributionrundetail {
 	/// primary
 	/// not nullable 
-	pub m_distributionrun_id:f64,
-	/// primary
-	/// not nullable 
-	pub m_distributionrunline_id:f64,
-	/// primary
-	/// not nullable 
 	pub m_distributionlist_id:f64,
 	/// primary
 	/// not nullable 
 	pub m_distributionlistline_id:f64,
+	/// primary
+	/// not nullable 
+	pub m_distributionrun_id:f64,
+	/// primary
+	/// not nullable 
+	pub m_distributionrunline_id:f64,
 	/// not nullable 
 	pub ad_client_id:f64,
 	/// not nullable 
@@ -39281,19 +39290,19 @@ pub struct TDistributionrundetail {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub m_distributionrun_id_m_distributionrun:Option<MDistributionrun>,
+	pub m_distributionrun:Option<MDistributionrun>,
 	/// has one
-	pub m_distributionrunline_id_m_distributionrunline:Option<MDistributionrunline>,
+	pub m_distributionrunline:Option<MDistributionrunline>,
 	/// has one
-	pub m_distributionlist_id_m_distributionlist:Option<MDistributionlist>,
+	pub m_distributionlist:Option<MDistributionlist>,
 	/// has one
-	pub m_distributionlistline_id_m_distributionlistline:Option<MDistributionlistline>,
+	pub m_distributionlistline:Option<MDistributionlistline>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 	/// has one
-	pub c_bpartner_location_id_c_bpartner_location:Option<CBpartnerLocation>,
+	pub c_bpartner_location:Option<CBpartnerLocation>,
 }
 
 #[derive(Debug)]
@@ -39303,13 +39312,13 @@ pub struct TInventoryvalue {
 	pub ad_pinstance_id:f64,
 	/// primary
 	/// not nullable 
-	pub m_warehouse_id:f64,
+	pub m_attributesetinstance_id:f64,
 	/// primary
 	/// not nullable 
 	pub m_product_id:f64,
 	/// primary
 	/// not nullable 
-	pub m_attributesetinstance_id:f64,
+	pub m_warehouse_id:f64,
 	pub ad_client_id:Option<f64>,
 	pub ad_org_id:Option<f64>,
 	pub c_currency_id:Option<f64>,
@@ -39343,19 +39352,19 @@ pub struct TInventoryvalue {
 	/// defaults to: 0
 	pub qtyonhand:Option<f64>,
 	/// has one
-	pub ad_pinstance_id_ad_pinstance:Option<AdPinstance>,
+	pub ad_pinstance:Option<AdPinstance>,
 	/// has one
-	pub m_warehouse_id_m_warehouse:Option<MWarehouse>,
+	pub m_warehouse:Option<MWarehouse>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has one
-	pub m_attributesetinstance_id_m_attributesetinstance:Option<MAttributesetinstance>,
+	pub m_attributesetinstance:Option<MAttributesetinstance>,
 	/// has one
-	pub m_pricelist_version_id_m_pricelist_version:Option<MPricelistVersion>,
+	pub m_pricelist_version:Option<MPricelistVersion>,
 	/// has one
-	pub c_currency_id_c_currency:Option<CCurrency>,
+	pub c_currency:Option<CCurrency>,
 	/// has one
-	pub m_costelement_id_m_costelement:Option<MCostelement>,
+	pub m_costelement:Option<MCostelement>,
 }
 
 #[derive(Debug)]
@@ -39421,15 +39430,15 @@ pub struct TInvoicegl {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_pinstance_id_ad_pinstance:Option<AdPinstance>,
+	pub ad_pinstance:Option<AdPinstance>,
 	/// has one
-	pub c_invoice_id_c_invoice:Option<CInvoice>,
+	pub c_invoice:Option<CInvoice>,
 	/// has one
-	pub fact_acct_id_fact_acct:Option<FactAcct>,
+	pub fact_acct:Option<FactAcct>,
 	/// has one
-	pub c_conversiontypereval_id_c_conversiontype:Option<CConversiontype>,
+	pub c_conversiontypereval:Option<CConversiontype>,
 	/// has one
-	pub c_doctypereval_id_c_doctype:Option<CDoctype>,
+	pub c_doctypereval:Option<CDoctype>,
 }
 
 #[derive(Debug)]
@@ -39462,10 +39471,10 @@ pub struct TReplenish {
 	pub ad_pinstance_id:f64,
 	/// primary
 	/// not nullable 
-	pub m_warehouse_id:f64,
+	pub m_product_id:f64,
 	/// primary
 	/// not nullable 
-	pub m_product_id:f64,
+	pub m_warehouse_id:f64,
 	/// not nullable 
 	pub ad_client_id:f64,
 	/// not nullable 
@@ -39504,15 +39513,15 @@ pub struct TReplenish {
 	pub updated:Option<NaiveDateTime>,
 	pub updatedby:Option<f64>,
 	/// has one
-	pub ad_pinstance_id_ad_pinstance:Option<AdPinstance>,
+	pub ad_pinstance:Option<AdPinstance>,
 	/// has one
-	pub m_warehouse_id_m_warehouse:Option<MWarehouse>,
+	pub m_warehouse:Option<MWarehouse>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has one
-	pub m_warehousesource_id_m_warehouse:Option<MWarehouse>,
+	pub m_warehousesource:Option<MWarehouse>,
 	/// has one
-	pub c_doctype_id_c_doctype:Option<CDoctype>,
+	pub c_doctype:Option<CDoctype>,
 }
 
 #[derive(Debug)]
@@ -39522,13 +39531,13 @@ pub struct TReport {
 	pub ad_pinstance_id:f64,
 	/// primary
 	/// not nullable 
+	pub fact_acct_id:f64,
+	/// primary
+	/// not nullable 
 	pub pa_reportline_id:f64,
 	/// primary
 	/// not nullable 
 	pub record_id:f64,
-	/// primary
-	/// not nullable 
-	pub fact_acct_id:f64,
 	pub col_0:Option<f64>,
 	pub col_1:Option<f64>,
 	pub col_10:Option<f64>,
@@ -39556,9 +39565,9 @@ pub struct TReport {
 	pub name:Option<String>,
 	pub seqno:Option<f64>,
 	/// has one
-	pub ad_pinstance_id_ad_pinstance:Option<AdPinstance>,
+	pub ad_pinstance:Option<AdPinstance>,
 	/// has one
-	pub pa_reportline_id_pa_reportline:Option<PaReportline>,
+	pub pa_reportline:Option<PaReportline>,
 }
 
 #[derive(Debug)]
@@ -39584,7 +39593,7 @@ pub struct TReportstatement {
 	/// defaults to: 0
 	pub qty:Option<f64>,
 	/// has one
-	pub ad_pinstance_id_ad_pinstance:Option<AdPinstance>,
+	pub ad_pinstance:Option<AdPinstance>,
 }
 
 #[derive(Debug)]
@@ -39621,7 +39630,7 @@ pub struct TSpool {
 	/// not nullable 
 	pub msgtext:String,
 	/// has one
-	pub ad_pinstance_id_ad_pinstance:Option<AdPinstance>,
+	pub ad_pinstance:Option<AdPinstance>,
 }
 
 #[derive(Debug)]
@@ -39676,25 +39685,25 @@ pub struct TTransaction {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub ad_pinstance_id_ad_pinstance:Option<AdPinstance>,
+	pub ad_pinstance:Option<AdPinstance>,
 	/// has one
-	pub m_transaction_id_m_transaction:Option<MTransaction>,
+	pub m_transaction:Option<MTransaction>,
 	/// has one
-	pub m_locator_id_m_locator:Option<MLocator>,
+	pub m_locator:Option<MLocator>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 	/// has one
-	pub m_attributesetinstance_id_m_attributesetinstance:Option<MAttributesetinstance>,
+	pub m_attributesetinstance:Option<MAttributesetinstance>,
 	/// has one
-	pub m_inoutline_id_m_inoutline:Option<MInoutline>,
+	pub m_inoutline:Option<MInoutline>,
 	/// has one
-	pub m_movementline_id_m_movementline:Option<MMovementline>,
+	pub m_movementline:Option<MMovementline>,
 	/// has one
-	pub m_inventoryline_id_m_inventoryline:Option<MInventoryline>,
+	pub m_inventoryline:Option<MInventoryline>,
 	/// has one
-	pub m_productionline_id_m_productionline:Option<MProductionline>,
+	pub m_productionline:Option<MProductionline>,
 	/// has one
-	pub c_projectissue_id_c_projectissue:Option<CProjectissue>,
+	pub c_projectissue:Option<CProjectissue>,
 }
 
 #[derive(Debug)]
@@ -39759,7 +39768,7 @@ pub struct TTrialbalance {
 	pub user1_id:Option<f64>,
 	pub user2_id:Option<f64>,
 	/// has one
-	pub ad_pinstance_id_ad_pinstance:Option<AdPinstance>,
+	pub ad_pinstance:Option<AdPinstance>,
 }
 
 #[derive(Debug)]
@@ -39811,7 +39820,7 @@ pub struct Test {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub account_acct_c_validcombination:Option<CValidcombination>,
+	pub account_acct:Option<CValidcombination>,
 }
 
 #[derive(Debug)]
@@ -39993,9 +40002,9 @@ pub struct URolemenu {
 	/// not nullable 
 	pub updatedby:i32,
 	/// has one
-	pub ad_role_id_ad_role:Option<AdRole>,
+	pub ad_role:Option<AdRole>,
 	/// has one
-	pub u_webmenu_id_u_webmenu:Option<UWebmenu>,
+	pub u_webmenu:Option<UWebmenu>,
 }
 
 #[derive(Debug)]
@@ -40065,7 +40074,7 @@ pub struct UWebmenu {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one, self referential
-	pub parentmenu_id_u_webmenu:Option<Box<UWebmenu>>,
+	pub parentmenu:Option<Box<UWebmenu>>,
 	/// has many
 	pub u_rolemenu:Option<Vec<URolemenu>>,
 	/// has many
@@ -40226,13 +40235,13 @@ pub struct WAdvertisement {
 	pub webparam3:Option<String>,
 	pub webparam4:Option<String>,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 	/// has one
-	pub ad_user_id_ad_user:Option<AdUser>,
+	pub ad_user:Option<AdUser>,
 	/// has one
-	pub w_clickcount_id_w_clickcount:Option<WClickcount>,
+	pub w_clickcount:Option<WClickcount>,
 	/// has one
-	pub w_countercount_id_w_countercount:Option<WCountercount>,
+	pub w_countercount:Option<WCountercount>,
 }
 
 #[derive(Debug)]
@@ -40265,11 +40274,11 @@ pub struct WBasket {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 	/// has one
-	pub m_pricelist_id_m_pricelist:Option<MPricelist>,
+	pub m_pricelist:Option<MPricelist>,
 	/// has one
-	pub ad_user_id_ad_user:Option<AdUser>,
+	pub ad_user:Option<AdUser>,
 	/// has many
 	pub w_basketline:Option<Vec<WBasketline>>,
 }
@@ -40312,9 +40321,9 @@ pub struct WBasketline {
 	/// not nullable 
 	pub w_basket_id:f64,
 	/// has one
-	pub w_basket_id_w_basket:Option<WBasket>,
+	pub w_basket:Option<WBasket>,
 	/// has one
-	pub m_product_id_m_product:Option<MProduct>,
+	pub m_product:Option<MProduct>,
 }
 
 #[derive(Debug)]
@@ -40352,9 +40361,9 @@ pub struct WClick {
 	pub useragent:Option<String>,
 	pub w_clickcount_id:Option<f64>,
 	/// has one
-	pub w_clickcount_id_w_clickcount:Option<WClickcount>,
+	pub w_clickcount:Option<WClickcount>,
 	/// has one
-	pub ad_user_id_ad_user:Option<AdUser>,
+	pub ad_user:Option<AdUser>,
 }
 
 #[derive(Debug)]
@@ -40386,7 +40395,7 @@ pub struct WClickcount {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 	/// has many
 	pub w_advertisement:Option<Vec<WAdvertisement>>,
 	/// has many
@@ -40429,9 +40438,9 @@ pub struct WCounter {
 	pub useragent:Option<String>,
 	pub w_countercount_id:Option<f64>,
 	/// has one
-	pub w_countercount_id_w_countercount:Option<WCountercount>,
+	pub w_countercount:Option<WCountercount>,
 	/// has one
-	pub ad_user_id_ad_user:Option<AdUser>,
+	pub ad_user:Option<AdUser>,
 }
 
 #[derive(Debug)]
@@ -40463,7 +40472,7 @@ pub struct WCountercount {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub c_bpartner_id_c_bpartner:Option<CBpartner>,
+	pub c_bpartner:Option<CBpartner>,
 	/// has many
 	pub w_advertisement:Option<Vec<WAdvertisement>>,
 	/// has many
@@ -40506,7 +40515,7 @@ pub struct WMailmsg {
 	/// not nullable 
 	pub w_store_id:f64,
 	/// has one
-	pub w_store_id_w_store:Option<WStore>,
+	pub w_store:Option<WStore>,
 	/// has many
 	pub ad_usermail:Option<Vec<AdUsermail>>,
 	/// has many
@@ -40517,10 +40526,10 @@ pub struct WMailmsg {
 pub struct WMailmsgTrl {
 	/// primary
 	/// not nullable 
-	pub w_mailmsg_id:f64,
+	pub ad_language:String,
 	/// primary
 	/// not nullable 
-	pub ad_language:String,
+	pub w_mailmsg_id:f64,
 	/// not nullable 
 	pub ad_client_id:f64,
 	/// not nullable 
@@ -40548,9 +40557,9 @@ pub struct WMailmsgTrl {
 	/// not nullable 
 	pub updatedby:f64,
 	/// has one
-	pub w_mailmsg_id_w_mailmsg:Option<WMailmsg>,
+	pub w_mailmsg:Option<WMailmsg>,
 	/// has one
-	pub ad_language_ad_language:Option<AdLanguage>,
+	pub ad_language:Option<AdLanguage>,
 }
 
 #[derive(Debug)]
@@ -40639,15 +40648,15 @@ pub struct WStore {
 	pub wstoreuser:Option<String>,
 	pub wstoreuserpw:Option<String>,
 	/// has one
-	pub ad_client_id_ad_client:Option<AdClient>,
+	pub ad_client:Option<AdClient>,
 	/// has one
-	pub salesrep_id_ad_user:Option<AdUser>,
+	pub salesrep:Option<AdUser>,
 	/// has one
-	pub m_warehouse_id_m_warehouse:Option<MWarehouse>,
+	pub m_warehouse:Option<MWarehouse>,
 	/// has one
-	pub m_pricelist_id_m_pricelist:Option<MPricelist>,
+	pub m_pricelist:Option<MPricelist>,
 	/// has one
-	pub c_paymentterm_id_c_paymentterm:Option<CPaymentterm>,
+	pub c_paymentterm:Option<CPaymentterm>,
 	/// has many
 	pub w_mailmsg:Option<Vec<WMailmsg>>,
 	/// has many
@@ -40658,10 +40667,10 @@ pub struct WStore {
 pub struct WStoreTrl {
 	/// primary
 	/// not nullable 
-	pub w_store_id:f64,
+	pub ad_language:String,
 	/// primary
 	/// not nullable 
-	pub ad_language:String,
+	pub w_store_id:f64,
 	/// not nullable 
 	pub ad_client_id:f64,
 	/// not nullable 
@@ -40692,9 +40701,9 @@ pub struct WStoreTrl {
 	pub webparam5:Option<String>,
 	pub webparam6:Option<String>,
 	/// has one
-	pub w_store_id_w_store:Option<WStore>,
+	pub w_store:Option<WStore>,
 	/// has one
-	pub ad_language_ad_language:Option<AdLanguage>,
+	pub ad_language:Option<AdLanguage>,
 }
 
 #[derive(Debug)]

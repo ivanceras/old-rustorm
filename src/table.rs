@@ -253,6 +253,14 @@ impl Table{
 		false
 	}
 	
+	/// determines if the table is owned by some other table
+	/// say order_line is owned by orders
+	/// which doesn't make sense to be a stand alone window on its own
+	/// characteristic: if it has only 1 has_one which is its owning parent table
+	pub fn is_owned(){
+		
+	}
+	
 	/// when there is a linker table, bypass the 1:1 relation to the linker table
 	/// then create a 1:M relation to the other linked table
 	/// Algorithmn: determine whether a table is a linker then get the other linked table
@@ -318,21 +326,49 @@ impl Table{
 	pub fn extension_tables<'a>(&self, tables: &'a Vec<Table>)->Vec<&'a Table>{
 		let mut extension_tables = Vec::new();
 		for (rt, _) in self.referring_tables(tables){
-			let rt_pk = rt.primary_columns();
-			let rt_fk = rt.foreign_columns();
+			let pkfk = rt.primary_and_foreign_columns();
 			//if the referring tables's foreign columns are also its primary columns
 			//that refer to the primary columns of this table
 			//then that table is just an extension table of this table
-			if rt_pk == rt_fk {
+			//if rt_pk == rt_fk {
+			if pkfk.len() > 0 {
 				//if all fk refer to the primary of this table
-				if self.are_these_foreign_column_refer_to_primary_of_this_table(&rt_fk){
+				if self.are_these_foreign_column_refer_to_primary_of_this_table(&pkfk){
 					extension_tables.push(rt);
 				}
 			}
 		}
 		extension_tables
 	}
-
+	
+	/// returns only columns that are both primary and foreign
+	/// FIXME: don't have to do this if the function getmeta data has merged this.
+	fn primary_and_foreign_columns(&self)->Vec<&Column>{
+		let mut both = Vec::new();
+		let pk = self.primary_columns();
+		let fk = self.foreign_columns();
+		for f in fk{
+			if pk.contains(&f){
+				//println!("{}.{} is both primary and foreign", self.name, f.name);
+				both.push(f);
+			}
+		}
+		both
+	}
+	
+	///if all the primary columns are also foreign column 
+	fn are_all_primary_also_foreign_keys(&self)->bool{
+		let pk = self.primary_columns();
+		let fk = self.foreign_columns();
+		let mut cnt = 0;
+		for p in &pk{
+			if fk.contains(p){
+				cnt +=1
+			}
+		}
+		cnt == pk.len()
+	}
+	
 	fn are_these_foreign_column_refer_to_primary_of_this_table(&self, rt_fk:&Vec<&Column>)->bool{
 		let mut cnt = 0;
 		for fk in rt_fk{

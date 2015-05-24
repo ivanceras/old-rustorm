@@ -250,8 +250,8 @@ pub trait DatabaseDev{
 		}
 		
 		//extension tables
-		let mut included_has_many = Vec::new();
-		for ext in table.extension_tables(all_tables){
+		let extension_tables = table.extension_tables(all_tables);
+		for ext in &extension_tables{
 				w.tab();
 				w.append("/// has one, extension table");
 				w.ln();
@@ -266,7 +266,7 @@ pub trait DatabaseDev{
 				w.append(">");
 				w.comma();
 				w.ln();
-				included_has_many.push(&ext.name);//put to included in hasMany to prevent it from putting it there
+				//included_has_many.push(&ext.name);//put to included in hasMany to prevent it from putting it there
 		}
 		//indirect referring table
 		let mut linker_tables = Vec::new();
@@ -289,13 +289,15 @@ pub trait DatabaseDev{
 				w.append(">");
 				w.comma();
 				w.ln();
-				included_has_many.push(&indirect.name);//put to included in hasMany to prevent it from putting it there
+				//included_has_many.push(&indirect.name);//put to included in hasMany to prevent it from putting it there
 		}
 		
 		// referring table, has_many
+		let mut included_has_many = Vec::new();
 		for (ref_table, _) in table.referring_tables(all_tables){
-			if !included_has_many.contains(&&ref_table.name) &&
-			 !linker_tables.contains(&ref_table) {
+			if !linker_tables.contains(&ref_table) &&
+			   !extension_tables.contains(&ref_table) &&
+			   !included_has_many.contains(&&ref_table.name){
 				w.tab();
 				w.append("/// has many");
 				w.ln();

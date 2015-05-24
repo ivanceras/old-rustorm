@@ -291,7 +291,39 @@ impl Postgres{
 	    		};
 	    	columns.push(column);
     	}
-		columns
+    	//unify due to the fact that postgresql return a separate row for 
+    	// both primary and foreign columns
+		Self::unify_primary_and_foreign_column(&columns)
+	}
+	
+	/// column that is both primary and foreign should be unified
+	fn unify_primary_and_foreign_column(columns:&Vec<Column>)->Vec<Column>{
+		let mut unified_columns = Vec::new();
+		let mut primary_columns = Vec::new();
+		let mut foreign_columns = Vec::new();
+		for c in columns{
+			if c.is_primary{
+				primary_columns.push(c.name.clone());
+			}
+			if c.foreign.is_some(){
+				foreign_columns.push(c.name.clone());
+			}
+		}
+		//if both primary and foreign, push only the modified foreign
+		for c in columns{
+			if primary_columns.contains(&c.name) && foreign_columns.contains(&c.name){
+				if c.foreign.is_some(){
+					let mut clone_column = c.clone();
+					clone_column.is_primary = true;
+					unified_columns.push(clone_column);
+				}
+			}
+			else{
+				unified_columns.push(c.clone());
+			}	
+		}
+		unified_columns
+
 	}
 	
 }
@@ -391,14 +423,17 @@ impl DatabaseDev for Postgres{
     	None
 	}
 	
+
+	
 	fn get_table_metadata(&self, schema:&str, table:&str)->Table{
 		
 		let mut columns = self.get_table_columns(schema, table);
 		let comment = self.get_table_comment(schema, table);
 		let parent = self.get_parent_table(schema, table);
 		let subclass = self.get_table_sub_class(schema, table);
-		// #FIXME column that is both primary and foreign should be unified
-		if parent.is_some(){//mutate columns to mark those which are inherited
+		
+		//mutate columns to mark those which are inherited
+		if parent.is_some(){
 			let inherited_columns = self.get_inherited_columns(schema, table);
 			for i in inherited_columns{
 				for c in &mut columns{

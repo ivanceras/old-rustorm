@@ -145,6 +145,8 @@ pub struct Cart {
 	pub updated:DateTime<UTC>,
 	/// --inherited-- 
 	pub updatedby:Option<Uuid>,
+	/// has many
+	pub cart_line:Option<Vec<CartLine>>,
 }
 
 #[derive(Debug)]
@@ -184,6 +186,8 @@ pub struct CartLine {
 	pub updated:DateTime<UTC>,
 	/// --inherited-- 
 	pub updatedby:Option<Uuid>,
+	/// has one
+	pub cart:Option<Cart>,
 }
 
 #[derive(Debug)]
@@ -616,10 +620,10 @@ pub struct Photo {
 	pub updated:DateTime<UTC>,
 	/// --inherited-- 
 	pub updatedby:Option<Uuid>,
+	/// has one, extension table
+	pub photo_sizes:Option<Box<PhotoSizes>>,
 	/// has many, indirect referring table, derived from linker table: product_photo
 	pub product:Option<Vec<Product>>,
-	/// has many
-	pub photo_sizes:Option<Vec<PhotoSizes>>,
 	/// has many
 	pub user_info:Option<Vec<UserInfo>>,
 }
@@ -1200,6 +1204,8 @@ pub struct Users {
 	/// --inherited-- 
 	pub updatedby:Option<Uuid>,
 	/// has one, extension table
+	pub user_info:Option<Box<UserInfo>>,
+	/// has one, extension table
 	pub user_location:Option<Box<UserLocation>>,
 	/// has many, indirect referring table, derived from linker table: user_review
 	pub review:Option<Vec<Review>>,
@@ -1209,8 +1215,6 @@ pub struct Users {
 	pub product:Option<Vec<Product>>,
 	/// has many
 	pub settings:Option<Vec<Settings>>,
-	/// has many
-	pub user_info:Option<Vec<UserInfo>>,
 }
 
 #[derive(Debug)]
