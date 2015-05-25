@@ -322,11 +322,12 @@ impl IsTable for ApiKey{
                     is_primary:false, is_unique:false, not_null:true, is_inherited:false, 
                     default:None,
                     comment:None,
-                    foreign:Some(                    Foreign{
-                        schema:"bazaar".to_string(),
-                        table:"users".to_string(),
-                        column:"user_id".to_string(),
-                    }),
+                    foreign:Some(
+                        Foreign{
+                            schema:"bazaar".to_string(),
+                            table:"users".to_string(),
+                            column:"user_id".to_string(),
+                        }),
                 },
                 Column{
                     name:"valid_starting".to_string(),
@@ -674,11 +675,12 @@ impl IsTable for CartLine{
                     is_primary:false, is_unique:false, not_null:false, is_inherited:false, 
                     default:None,
                     comment:None,
-                    foreign:Some(                    Foreign{
-                        schema:"bazaar".to_string(),
-                        table:"cart".to_string(),
-                        column:"cart_id".to_string(),
-                    }),
+                    foreign:Some(
+                        Foreign{
+                            schema:"bazaar".to_string(),
+                            table:"cart".to_string(),
+                            column:"cart_id".to_string(),
+                        }),
                 },
                 Column{
                     name:"cart_line_id".to_string(),
@@ -1214,11 +1216,12 @@ impl IsTable for Currency{
                     is_primary:false, is_unique:false, not_null:false, is_inherited:false, 
                     default:None,
                     comment:Some("which country uses this currency".to_string()),
-                    foreign:Some(                    Foreign{
-                        schema:"payment".to_string(),
-                        table:"country".to_string(),
-                        column:"country_id".to_string(),
-                    }),
+                    foreign:Some(
+                        Foreign{
+                            schema:"payment".to_string(),
+                            table:"country".to_string(),
+                            column:"country_id".to_string(),
+                        }),
                 },
                 Column{
                     name:"symbol".to_string(),
@@ -1370,11 +1373,12 @@ impl IsTable for ExchangeRate{
                     is_primary:false, is_unique:false, not_null:false, is_inherited:false, 
                     default:None,
                     comment:None,
-                    foreign:Some(                    Foreign{
-                        schema:"payment".to_string(),
-                        table:"currency".to_string(),
-                        column:"currency_id".to_string(),
-                    }),
+                    foreign:Some(
+                        Foreign{
+                            schema:"payment".to_string(),
+                            table:"currency".to_string(),
+                            column:"currency_id".to_string(),
+                        }),
                 },
                 Column{
                     name:"exchange_rate".to_string(),
@@ -1392,11 +1396,12 @@ impl IsTable for ExchangeRate{
                     is_primary:false, is_unique:false, not_null:false, is_inherited:false, 
                     default:None,
                     comment:None,
-                    foreign:Some(                    Foreign{
-                        schema:"payment".to_string(),
-                        table:"currency".to_string(),
-                        column:"currency_id".to_string(),
-                    }),
+                    foreign:Some(
+                        Foreign{
+                            schema:"payment".to_string(),
+                            table:"currency".to_string(),
+                            column:"currency_id".to_string(),
+                        }),
                 },
             ],
         }
@@ -1664,11 +1669,12 @@ impl IsTable for OrderLine{
                     is_primary:false, is_unique:false, not_null:false, is_inherited:false, 
                     default:None,
                     comment:None,
-                    foreign:Some(                    Foreign{
-                        schema:"bazaar".to_string(),
-                        table:"orders".to_string(),
-                        column:"order_id".to_string(),
-                    }),
+                    foreign:Some(
+                        Foreign{
+                            schema:"bazaar".to_string(),
+                            table:"orders".to_string(),
+                            column:"order_id".to_string(),
+                        }),
                 },
                 Column{
                     name:"product_id".to_string(),
@@ -2116,11 +2122,12 @@ impl IsTable for Organization{
                     is_primary:false, is_unique:false, not_null:false, is_inherited:false, 
                     default:None,
                     comment:None,
-                    foreign:Some(                    Foreign{
-                        schema:"bazaar".to_string(),
-                        table:"organization".to_string(),
-                        column:"organization_id".to_string(),
-                    }),
+                    foreign:Some(
+                        Foreign{
+                            schema:"bazaar".to_string(),
+                            table:"organization".to_string(),
+                            column:"organization_id".to_string(),
+                        }),
                 },
                 Column{
                     name:"address_id".to_string(),
@@ -2451,11 +2458,12 @@ impl IsTable for PhotoSizes{
                     is_primary:true, is_unique:false, not_null:true, is_inherited:false, 
                     default:None,
                     comment:None,
-                    foreign:Some(                    Foreign{
-                        schema:"bazaar".to_string(),
-                        table:"photo".to_string(),
-                        column:"photo_id".to_string(),
-                    }),
+                    foreign:Some(
+                        Foreign{
+                            schema:"bazaar".to_string(),
+                            table:"photo".to_string(),
+                            column:"photo_id".to_string(),
+                        }),
                 },
                 Column{
                     name:"photo_size_id".to_string(),
@@ -2697,11 +2705,12 @@ weightUnit:\"kg\"
                     is_primary:false, is_unique:false, not_null:false, is_inherited:false, 
                     default:None,
                     comment:Some("Whom this product belongs, since createdby can be someone else create the product list in behalf of the owner of the product".to_string()),
-                    foreign:Some(                    Foreign{
-                        schema:"bazaar".to_string(),
-                        table:"users".to_string(),
-                        column:"user_id".to_string(),
-                    }),
+                    foreign:Some(
+                        Foreign{
+                            schema:"bazaar".to_string(),
+                            table:"users".to_string(),
+                            column:"user_id".to_string(),
+                        }),
                 },
                 Column{
                     name:"currency_id".to_string(),
@@ -2710,11 +2719,12 @@ weightUnit:\"kg\"
                     is_primary:false, is_unique:false, not_null:false, is_inherited:false, 
                     default:None,
                     comment:None,
-                    foreign:Some(                    Foreign{
-                        schema:"payment".to_string(),
-                        table:"currency".to_string(),
-                        column:"currency_id".to_string(),
-                    }),
+                    foreign:Some(
+                        Foreign{
+                            schema:"payment".to_string(),
+                            table:"currency".to_string(),
+                            column:"currency_id".to_string(),
+                        }),
                 },
             ],
         }
@@ -2803,11 +2813,12 @@ impl IsTable for ProductAvailability{
                     is_primary:true, is_unique:false, not_null:true, is_inherited:false, 
                     default:None,
                     comment:None,
-                    foreign:Some(                    Foreign{
-                        schema:"bazaar".to_string(),
-                        table:"product".to_string(),
-                        column:"product_id".to_string(),
-                    }),
+                    foreign:Some(
+                        Foreign{
+                            schema:"bazaar".to_string(),
+                            table:"product".to_string(),
+                            column:"product_id".to_string(),
+                        }),
                 },
                 Column{
                     name:"available".to_string(),
@@ -2968,11 +2979,12 @@ impl IsTable for ProductCategory{
                     is_primary:true, is_unique:false, not_null:true, is_inherited:false, 
                     default:None,
                     comment:None,
-                    foreign:Some(                    Foreign{
-                        schema:"bazaar".to_string(),
-                        table:"product".to_string(),
-                        column:"product_id".to_string(),
-                    }),
+                    foreign:Some(
+                        Foreign{
+                            schema:"bazaar".to_string(),
+                            table:"product".to_string(),
+                            column:"product_id".to_string(),
+                        }),
                 },
                 Column{
                     name:"category_id".to_string(),
@@ -2981,11 +2993,12 @@ impl IsTable for ProductCategory{
                     is_primary:true, is_unique:false, not_null:true, is_inherited:false, 
                     default:None,
                     comment:None,
-                    foreign:Some(                    Foreign{
-                        schema:"bazaar".to_string(),
-                        table:"category".to_string(),
-                        column:"category_id".to_string(),
-                    }),
+                    foreign:Some(
+                        Foreign{
+                            schema:"bazaar".to_string(),
+                            table:"category".to_string(),
+                            column:"category_id".to_string(),
+                        }),
                 },
             ],
         }
@@ -3074,11 +3087,12 @@ impl IsTable for ProductPhoto{
                     is_primary:true, is_unique:false, not_null:true, is_inherited:false, 
                     default:None,
                     comment:None,
-                    foreign:Some(                    Foreign{
-                        schema:"bazaar".to_string(),
-                        table:"product".to_string(),
-                        column:"product_id".to_string(),
-                    }),
+                    foreign:Some(
+                        Foreign{
+                            schema:"bazaar".to_string(),
+                            table:"product".to_string(),
+                            column:"product_id".to_string(),
+                        }),
                 },
                 Column{
                     name:"photo_id".to_string(),
@@ -3087,11 +3101,12 @@ impl IsTable for ProductPhoto{
                     is_primary:true, is_unique:false, not_null:true, is_inherited:false, 
                     default:None,
                     comment:None,
-                    foreign:Some(                    Foreign{
-                        schema:"bazaar".to_string(),
-                        table:"photo".to_string(),
-                        column:"photo_id".to_string(),
-                    }),
+                    foreign:Some(
+                        Foreign{
+                            schema:"bazaar".to_string(),
+                            table:"photo".to_string(),
+                            column:"photo_id".to_string(),
+                        }),
                 },
             ],
         }
@@ -3180,11 +3195,12 @@ impl IsTable for ProductReview{
                     is_primary:true, is_unique:false, not_null:true, is_inherited:false, 
                     default:None,
                     comment:None,
-                    foreign:Some(                    Foreign{
-                        schema:"bazaar".to_string(),
-                        table:"product".to_string(),
-                        column:"product_id".to_string(),
-                    }),
+                    foreign:Some(
+                        Foreign{
+                            schema:"bazaar".to_string(),
+                            table:"product".to_string(),
+                            column:"product_id".to_string(),
+                        }),
                 },
                 Column{
                     name:"review_id".to_string(),
@@ -3193,11 +3209,12 @@ impl IsTable for ProductReview{
                     is_primary:true, is_unique:false, not_null:true, is_inherited:false, 
                     default:None,
                     comment:None,
-                    foreign:Some(                    Foreign{
-                        schema:"bazaar".to_string(),
-                        table:"review".to_string(),
-                        column:"review_id".to_string(),
-                    }),
+                    foreign:Some(
+                        Foreign{
+                            schema:"bazaar".to_string(),
+                            table:"review".to_string(),
+                            column:"review_id".to_string(),
+                        }),
                 },
             ],
         }
@@ -3608,11 +3625,12 @@ impl IsTable for Settings{
                     is_primary:false, is_unique:false, not_null:false, is_inherited:false, 
                     default:None,
                     comment:None,
-                    foreign:Some(                    Foreign{
-                        schema:"bazaar".to_string(),
-                        table:"users".to_string(),
-                        column:"user_id".to_string(),
-                    }),
+                    foreign:Some(
+                        Foreign{
+                            schema:"bazaar".to_string(),
+                            table:"users".to_string(),
+                            column:"user_id".to_string(),
+                        }),
                 },
                 Column{
                     name:"value".to_string(),
@@ -3764,11 +3782,12 @@ impl IsTable for UserInfo{
                     is_primary:true, is_unique:false, not_null:true, is_inherited:false, 
                     default:None,
                     comment:None,
-                    foreign:Some(                    Foreign{
-                        schema:"bazaar".to_string(),
-                        table:"users".to_string(),
-                        column:"user_id".to_string(),
-                    }),
+                    foreign:Some(
+                        Foreign{
+                            schema:"bazaar".to_string(),
+                            table:"users".to_string(),
+                            column:"user_id".to_string(),
+                        }),
                 },
                 Column{
                     name:"address_id".to_string(),
@@ -3777,11 +3796,12 @@ impl IsTable for UserInfo{
                     is_primary:false, is_unique:false, not_null:false, is_inherited:false, 
                     default:None,
                     comment:None,
-                    foreign:Some(                    Foreign{
-                        schema:"bazaar".to_string(),
-                        table:"address".to_string(),
-                        column:"address_id".to_string(),
-                    }),
+                    foreign:Some(
+                        Foreign{
+                            schema:"bazaar".to_string(),
+                            table:"address".to_string(),
+                            column:"address_id".to_string(),
+                        }),
                 },
                 Column{
                     name:"current_location".to_string(),
@@ -3808,11 +3828,12 @@ impl IsTable for UserInfo{
                     is_primary:false, is_unique:false, not_null:false, is_inherited:false, 
                     default:None,
                     comment:None,
-                    foreign:Some(                    Foreign{
-                        schema:"bazaar".to_string(),
-                        table:"photo".to_string(),
-                        column:"photo_id".to_string(),
-                    }),
+                    foreign:Some(
+                        Foreign{
+                            schema:"bazaar".to_string(),
+                            table:"photo".to_string(),
+                            column:"photo_id".to_string(),
+                        }),
                 },
             ],
         }
@@ -3991,11 +4012,12 @@ impl IsTable for UserLocation{
                     is_primary:true, is_unique:false, not_null:true, is_inherited:false, 
                     default:None,
                     comment:None,
-                    foreign:Some(                    Foreign{
-                        schema:"bazaar".to_string(),
-                        table:"users".to_string(),
-                        column:"user_id".to_string(),
-                    }),
+                    foreign:Some(
+                        Foreign{
+                            schema:"bazaar".to_string(),
+                            table:"users".to_string(),
+                            column:"user_id".to_string(),
+                        }),
                 },
             ],
         }
@@ -4120,11 +4142,12 @@ impl IsTable for UserReview{
                     is_primary:true, is_unique:false, not_null:true, is_inherited:false, 
                     default:None,
                     comment:Some("The user id of the seller being reviewed".to_string()),
-                    foreign:Some(                    Foreign{
-                        schema:"bazaar".to_string(),
-                        table:"users".to_string(),
-                        column:"user_id".to_string(),
-                    }),
+                    foreign:Some(
+                        Foreign{
+                            schema:"bazaar".to_string(),
+                            table:"users".to_string(),
+                            column:"user_id".to_string(),
+                        }),
                 },
                 Column{
                     name:"review_id".to_string(),
@@ -4133,11 +4156,12 @@ impl IsTable for UserReview{
                     is_primary:true, is_unique:false, not_null:true, is_inherited:false, 
                     default:None,
                     comment:None,
-                    foreign:Some(                    Foreign{
-                        schema:"bazaar".to_string(),
-                        table:"review".to_string(),
-                        column:"review_id".to_string(),
-                    }),
+                    foreign:Some(
+                        Foreign{
+                            schema:"bazaar".to_string(),
+                            table:"review".to_string(),
+                            column:"review_id".to_string(),
+                        }),
                 },
             ],
         }
@@ -4545,11 +4569,12 @@ impl IsTable for WishlistLine{
                     is_primary:false, is_unique:false, not_null:false, is_inherited:false, 
                     default:None,
                     comment:None,
-                    foreign:Some(                    Foreign{
-                        schema:"bazaar".to_string(),
-                        table:"wishlist".to_string(),
-                        column:"wishlist_id".to_string(),
-                    }),
+                    foreign:Some(
+                        Foreign{
+                            schema:"bazaar".to_string(),
+                            table:"wishlist".to_string(),
+                            column:"wishlist_id".to_string(),
+                        }),
                 },
                 Column{
                     name:"price_momentary".to_string(),

@@ -11,22 +11,23 @@ pub struct Foreign{
 impl Foreign{
     pub fn to_source_code(&self)->String{
         let mut w = Writer::new();
-        w.tabs(5);
-        w.append("Foreign{");
         w.ln();
         w.tabs(6);
+        w.append("Foreign{");
+        w.ln();
+        w.tabs(7);
         w.append("schema:");
         w.append(&format!("\"{}\".to_string(),",self.schema));
         w.ln();
-        w.tabs(6);
+        w.tabs(7);
         w.append("table:");
         w.append(&format!("\"{}\".to_string(),",self.table));
         w.ln();
-        w.tabs(6);
+        w.tabs(7);
         w.append("column:");
         w.append(&format!("\"{}\".to_string(),",self.column));
         w.ln();
-        w.tabs(5);
+        w.tabs(6);
         w.append("}");
         w.src
     }
@@ -92,6 +93,7 @@ impl Column{
     
     pub fn to_source_code(&self)->String{
         let mut w = Writer::new();
+        w.ln();
         w.tabs(4);
         w.append("Column{");
         w.ln();
@@ -525,7 +527,6 @@ impl Table{
         w.tabs(3);
         w.append("vec![");
         for c in &self.columns{
-            w.ln();
             w.append(&c.to_source_code());
             w.append(",");
         }

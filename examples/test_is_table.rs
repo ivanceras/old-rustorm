@@ -15,7 +15,8 @@ use rustorm::gen::is_table::*;
 
 
 fn retrieve<T:IsTable>(dao: T){
-    let sql = format!("SELECT * FROM {}.{}", T::schema(), T::table_name());
+    let table = T::table();
+    let sql = format!("SELECT * FROM {}.{}", table.schema, table.name);
     println!("sql: {}", sql);
 }
 
