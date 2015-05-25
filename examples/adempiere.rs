@@ -1,5 +1,6 @@
-use chrono::naive::date::NaiveDate;
+use chrono::datetime::DateTime;
 use chrono::naive::datetime::NaiveDateTime;
+use chrono::offset::utc::UTC;
 
 #[derive(Debug)]
 pub struct AAsset {
@@ -1183,6 +1184,7 @@ pub struct ADepreciationBuild {
     pub periodno:Option<f64>,
     /// defaults to: 'A'::bpchar
     pub postingtype:Option<String>,
+    /// defaults to: 'N'::bpchar
     pub processed:Option<String>,
     pub processing:Option<String>,
     pub updated:Option<NaiveDateTime>,
@@ -1213,8 +1215,10 @@ pub struct ADepreciationConvention {
     /// not nullable 
     pub isactive:String,
     pub name:Option<String>,
+    /// defaults to: 'N'::bpchar
     /// not nullable 
     pub processed:String,
+    pub processing:Option<String>,
     pub textmsg:Option<String>,
     /// not nullable 
     pub updated:NaiveDateTime,
@@ -1263,6 +1267,7 @@ pub struct ADepreciationEntry {
     /// defaults to: 'A'::bpchar
     /// not nullable 
     pub postingtype:String,
+    /// defaults to: 'N'::bpchar
     /// not nullable 
     pub processed:String,
     /// not nullable 
@@ -1462,7 +1467,7 @@ pub struct ADepreciationWorkfile {
     /// primary
     /// not nullable 
     pub a_depreciation_workfile_id:f64,
-    /// defaults to: (0)::numeric
+    /// defaults to: 0
     pub a_accumulated_depr:Option<f64>,
     pub a_asset_cost:Option<f64>,
     /// not nullable 
@@ -1471,7 +1476,7 @@ pub struct ADepreciationWorkfile {
     /// not nullable 
     pub a_asset_life_years:f64,
     pub a_base_amount:Option<f64>,
-    /// defaults to: (0)::numeric
+    /// defaults to: 0
     pub a_calc_accumulated_depr:Option<f64>,
     pub a_curr_dep_exp:Option<f64>,
     pub a_current_period:Option<f64>,
@@ -2119,6 +2124,300 @@ pub struct AdAttributeValue {
 }
 
 #[derive(Debug)]
+pub struct AdBrowse {
+    /// primary
+    /// not nullable 
+    pub ad_browse_id:f64,
+    /// defaults to: '4'::bpchar
+    /// not nullable 
+    pub accesslevel:String,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// defaults to: NULL::numeric
+    pub ad_process_id:Option<f64>,
+    /// not nullable 
+    pub ad_view_id:f64,
+    /// defaults to: NULL::numeric
+    pub ad_window_id:Option<f64>,
+    pub copyfrom:Option<String>,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    /// defaults to: NULL::character varying
+    pub description:Option<String>,
+    /// not nullable 
+    pub entitytype:String,
+    /// defaults to: NULL::character varying
+    pub help:Option<String>,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// defaults to: NULL::bpchar
+    pub isbetafunctionality:Option<String>,
+    /// defaults to: 'N'::bpchar
+    pub iscollapsiblebydefault:Option<String>,
+    /// defaults to: 'N'::bpchar
+    pub isdeleteable:Option<String>,
+    /// defaults to: 'N'::bpchar
+    pub isexecutedquerybydefault:Option<String>,
+    /// defaults to: 'N'::bpchar
+    pub isselectedbydefault:Option<String>,
+    /// defaults to: 'N'::bpchar
+    pub isshowtotal:Option<String>,
+    /// not nullable 
+    pub name:String,
+    /// defaults to: NULL::bpchar
+    pub processing:Option<String>,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// defaults to: NULL::character varying
+    pub value:Option<String>,
+    /// defaults to: NULL::character varying
+    pub whereclause:Option<String>,
+    /// has one
+    pub entitytype:Option<AdEntitytype>,
+    /// has one
+    pub ad_view:Option<AdView>,
+    /// has one
+    pub ad_process:Option<AdProcess>,
+    /// has one
+    pub ad_window:Option<AdWindow>,
+    /// has many
+    pub ad_browse_access:Option<Vec<AdBrowseAccess>>,
+    /// has many
+    pub ad_browse_field:Option<Vec<AdBrowseField>>,
+    /// has many
+    pub ad_browse_trl:Option<Vec<AdBrowseTrl>>,
+    /// has many
+    pub ad_menu:Option<Vec<AdMenu>>,
+    /// has many
+    pub ad_package_exp_detail:Option<Vec<AdPackageExpDetail>>,
+    /// has many
+    pub ad_wf_node:Option<Vec<AdWfNode>>,
+    /// has many
+    pub pa_dashboardcontent:Option<Vec<PaDashboardcontent>>,
+}
+
+#[derive(Debug)]
+pub struct AdBrowseAccess {
+    /// primary
+    /// not nullable 
+    pub ad_browse_id:f64,
+    /// primary
+    /// not nullable 
+    pub ad_role_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isreadwrite:String,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// has one
+    pub ad_browse:Option<AdBrowse>,
+    /// has one
+    pub ad_role:Option<AdRole>,
+}
+
+#[derive(Debug)]
+pub struct AdBrowseField {
+    /// primary
+    /// not nullable 
+    pub ad_browse_field_id:f64,
+    /// defaults to: NULL::numeric
+    /// not nullable 
+    pub ad_browse_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_element_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// not nullable 
+    pub ad_reference_id:f64,
+    /// defaults to: NULL::numeric
+    pub ad_reference_value_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub ad_val_rule_id:Option<f64>,
+    /// not nullable 
+    pub ad_view_column_id:f64,
+    /// defaults to: NULL::numeric
+    pub axis_column_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub axis_parent_column_id:Option<f64>,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    /// defaults to: NULL::character varying
+    pub defaultvalue:Option<String>,
+    /// defaults to: NULL::character varying
+    pub defaultvalue2:Option<String>,
+    /// defaults to: NULL::character varying
+    pub description:Option<String>,
+    /// defaults to: NULL::character varying
+    pub displaylogic:Option<String>,
+    /// not nullable 
+    pub entitytype:String,
+    /// defaults to: NULL::numeric
+    pub fieldlength:Option<f64>,
+    /// defaults to: NULL::character varying
+    pub help:Option<String>,
+    /// defaults to: NULL::character varying
+    pub infofactoryclass:Option<String>,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// defaults to: 'Y'::bpchar
+    pub iscentrallymaintained:Option<String>,
+    /// defaults to: 'Y'::bpchar
+    pub isdisplayed:Option<String>,
+    /// defaults to: NULL::bpchar
+    pub isidentifier:Option<String>,
+    /// defaults to: NULL::bpchar
+    pub iskey:Option<String>,
+    /// defaults to: 'Y'::bpchar
+    pub ismandatory:Option<String>,
+    /// defaults to: 'N'::bpchar
+    pub isorderby:Option<String>,
+    /// defaults to: 'N'::bpchar
+    pub isquerycriteria:Option<String>,
+    /// defaults to: NULL::bpchar
+    pub isrange:Option<String>,
+    /// defaults to: 'Y'::bpchar
+    pub isreadonly:Option<String>,
+    /// not nullable 
+    pub name:String,
+    /// defaults to: NULL::character varying
+    pub readonlylogic:Option<String>,
+    /// defaults to: NULL::numeric
+    pub seqno:Option<f64>,
+    pub sortno:Option<f64>,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// defaults to: NULL::character varying
+    pub valuemax:Option<String>,
+    /// defaults to: NULL::character varying
+    pub valuemin:Option<String>,
+    /// defaults to: NULL::character varying
+    pub vformat:Option<String>,
+    /// has one
+    pub ad_element:Option<AdElement>,
+    /// has one
+    pub ad_reference:Option<AdReference>,
+    /// has one
+    pub ad_view_column:Option<AdViewColumn>,
+    /// has one
+    pub entitytype:Option<AdEntitytype>,
+    /// has one
+    pub ad_browse:Option<AdBrowse>,
+    /// has one
+    pub ad_reference_value:Option<AdReference>,
+    /// has one
+    pub axis_column:Option<AdViewColumn>,
+    /// has one
+    pub axis_parent_column:Option<AdViewColumn>,
+    /// has one
+    pub ad_val_rule:Option<AdValRule>,
+    /// has many
+    pub ad_browse_field_trl:Option<Vec<AdBrowseFieldTrl>>,
+    /// has many
+    pub pa_dashboardcontent:Option<Vec<PaDashboardcontent>>,
+}
+
+#[derive(Debug)]
+pub struct AdBrowseFieldTrl {
+    /// primary
+    /// not nullable 
+    pub ad_browse_field_id:f64,
+    /// primary
+    /// not nullable 
+    pub ad_language:String,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    /// defaults to: NULL::character varying
+    pub description:Option<String>,
+    /// defaults to: NULL::character varying
+    pub help:Option<String>,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// not nullable 
+    pub istranslated:String,
+    /// not nullable 
+    pub name:String,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// has one
+    pub ad_browse_field:Option<AdBrowseField>,
+    /// has one
+    pub ad_language:Option<AdLanguage>,
+}
+
+#[derive(Debug)]
+pub struct AdBrowseTrl {
+    /// primary
+    /// not nullable 
+    pub ad_browse_id:f64,
+    /// primary
+    /// not nullable 
+    pub ad_language:String,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    /// defaults to: NULL::character varying
+    pub description:Option<String>,
+    /// defaults to: NULL::character varying
+    pub help:Option<String>,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// not nullable 
+    pub istranslated:String,
+    /// not nullable 
+    pub name:String,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// has one
+    pub ad_browse:Option<AdBrowse>,
+    /// has one
+    pub ad_language:Option<AdLanguage>,
+}
+
+#[derive(Debug)]
 pub struct AdChangelog {
     /// primary
     /// not nullable 
@@ -2170,16 +2469,19 @@ pub struct AdChangelog {
 }
 
 #[derive(Debug)]
-pub struct AdClass {
+pub struct AdChart {
     /// primary
     /// not nullable 
-    pub ad_class_id:f64,
+    pub ad_chart_id:f64,
     /// not nullable 
     pub ad_client_id:f64,
     /// not nullable 
     pub ad_org_id:f64,
-    /// defaults to: NULL::numeric
-    pub classpackage_id:Option<f64>,
+    /// defaults to: 'V'::bpchar
+    /// not nullable 
+    pub chartorientation:String,
+    /// not nullable 
+    pub charttype:String,
     /// not nullable 
     pub created:NaiveDateTime,
     /// not nullable 
@@ -2187,20 +2489,84 @@ pub struct AdClass {
     /// defaults to: NULL::character varying
     pub description:Option<String>,
     /// defaults to: NULL::character varying
-    pub help:Option<String>,
+    pub domainlabel:Option<String>,
+    /// defaults to: NULL::bpchar
+    pub isactive:Option<String>,
     /// defaults to: 'Y'::bpchar
     /// not nullable 
-    pub isactive:String,
+    pub isdisplaylegend:String,
+    /// defaults to: 'N'::bpchar
+    /// not nullable 
+    pub istimeseries:String,
     /// not nullable 
     pub name:String,
     /// defaults to: NULL::character varying
-    pub packagename:Option<String>,
+    pub rangelabel:Option<String>,
+    pub timescope:Option<f64>,
+    /// defaults to: NULL::bpchar
+    pub timeunit:Option<String>,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// defaults to: NULL::numeric
+    pub winheight:Option<f64>,
+    /// has many
+    pub ad_chartdatasource:Option<Vec<AdChartdatasource>>,
+    /// has many
+    pub ad_column:Option<Vec<AdColumn>>,
+}
+
+#[derive(Debug)]
+pub struct AdChartdatasource {
+    /// primary
+    /// not nullable 
+    pub ad_chartdatasource_id:f64,
+    /// not nullable 
+    pub ad_chart_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    pub ad_table_id:Option<f64>,
+    pub categorycolumn:Option<String>,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    /// defaults to: NULL::character varying
+    pub datecolumn:Option<String>,
+    /// defaults to: NULL::character varying
+    pub description:Option<String>,
+    /// defaults to: 'D'::character varying
+    /// not nullable 
+    pub entitytype:String,
+    /// not nullable 
+    pub fromclause:String,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    pub keycolumn:Option<String>,
+    /// not nullable 
+    pub name:String,
+    /// defaults to: NULL::character varying
+    pub seriescolumn:Option<String>,
+    pub timeoffset:Option<f64>,
     /// not nullable 
     pub updated:NaiveDateTime,
     /// not nullable 
     pub updatedby:f64,
     /// not nullable 
-    pub value:String,
+    pub valuecolumn:String,
+    /// defaults to: 'WHERE ...'::character varying
+    /// not nullable 
+    pub whereclause:String,
+    /// has one
+    pub ad_chart:Option<AdChart>,
+    /// has one
+    pub ad_table:Option<AdTable>,
+    /// has one
+    pub entitytype:Option<AdEntitytype>,
 }
 
 #[derive(Debug)]
@@ -2377,6 +2743,8 @@ pub struct AdClient {
     /// has many
     pub c_nonbusinessday:Option<Vec<CNonbusinessday>>,
     /// has many
+    pub c_ordersource:Option<Vec<COrdersource>>,
+    /// has many
     pub c_period:Option<Vec<CPeriod>>,
     /// has many
     pub c_project:Option<Vec<CProject>>,
@@ -2448,11 +2816,8 @@ pub struct AdClientinfo {
     /// not nullable 
     pub isdiscountlineamt:String,
     pub keeplogdays:Option<f64>,
-    /// defaults to: NULL::numeric
     pub logo_id:Option<f64>,
-    /// defaults to: NULL::numeric
     pub logoreport_id:Option<f64>,
-    /// defaults to: NULL::numeric
     pub logoweb_id:Option<f64>,
     pub m_productfreight_id:Option<f64>,
     /// defaults to: now()
@@ -2494,6 +2859,12 @@ pub struct AdClientinfo {
     pub ad_tree_activity:Option<AdTree>,
     /// has one
     pub ad_tree_campaign:Option<AdTree>,
+    /// has one
+    pub logo:Option<AdImage>,
+    /// has one
+    pub logoreport:Option<AdImage>,
+    /// has one
+    pub logoweb:Option<AdImage>,
 }
 
 #[derive(Debug)]
@@ -2596,6 +2967,8 @@ pub struct AdColumn {
     /// primary
     /// not nullable 
     pub ad_column_id:f64,
+    /// defaults to: NULL::numeric
+    pub ad_chart_id:Option<f64>,
     /// not nullable 
     pub ad_client_id:f64,
     pub ad_element_id:Option<f64>,
@@ -2608,8 +2981,6 @@ pub struct AdColumn {
     /// not nullable 
     pub ad_table_id:f64,
     pub ad_val_rule_id:Option<f64>,
-    /// defaults to: NULL::numeric
-    pub attribute_id:Option<f64>,
     pub callout:Option<String>,
     /// not nullable 
     pub columnname:String,
@@ -2656,6 +3027,9 @@ pub struct AdColumn {
     pub isparent:String,
     /// defaults to: 'N'::bpchar
     /// not nullable 
+    pub isrange:String,
+    /// defaults to: 'N'::bpchar
+    /// not nullable 
     pub isselectioncolumn:String,
     /// defaults to: 'N'::bpchar
     pub issyncdatabase:Option<String>,
@@ -2698,6 +3072,8 @@ pub struct AdColumn {
     pub ad_element:Option<AdElement>,
     /// has one
     pub ad_process:Option<AdProcess>,
+    /// has one
+    pub ad_chart:Option<AdChart>,
     /// has many
     pub ad_accesslog:Option<Vec<AdAccesslog>>,
     /// has many
@@ -2713,6 +3089,8 @@ pub struct AdColumn {
     /// has many
     pub ad_impformat_row:Option<Vec<AdImpformatRow>>,
     /// has many
+    pub ad_migrationdata:Option<Vec<AdMigrationdata>>,
+    /// has many
     pub ad_package_imp_backup:Option<Vec<AdPackageImpBackup>>,
     /// has many
     pub ad_printformatitem:Option<Vec<AdPrintformatitem>>,
@@ -2723,7 +3101,11 @@ pub struct AdColumn {
     /// has many
     pub ad_reportview_col:Option<Vec<AdReportviewCol>>,
     /// has many
+    pub ad_searchdefinition:Option<Vec<AdSearchdefinition>>,
+    /// has many
     pub ad_tab:Option<Vec<AdTab>>,
+    /// has many
+    pub ad_view_column:Option<Vec<AdViewColumn>>,
     /// has many
     pub ad_wf_nextcondition:Option<Vec<AdWfNextcondition>>,
     /// has many
@@ -2736,6 +3118,8 @@ pub struct AdColumn {
     pub exp_formatline:Option<Vec<ExpFormatline>>,
     /// has many
     pub i_elementvalue:Option<Vec<IElementvalue>>,
+    /// has many
+    pub i_workflow:Option<Vec<IWorkflow>>,
     /// has many
     pub pp_order_node:Option<Vec<PpOrderNode>>,
 }
@@ -2928,19 +3312,22 @@ pub struct AdDesktopworkbench {
 
 #[derive(Debug)]
 pub struct AdDocumentActionAccess {
+    /// primary
+    /// not nullable 
+    pub ad_ref_list_id:f64,
+    /// primary
+    /// not nullable 
+    pub ad_role_id:f64,
+    /// primary
+    /// not nullable 
+    pub c_doctype_id:f64,
     /// not nullable 
     pub ad_client_id:f64,
     /// not nullable 
     pub ad_org_id:f64,
-    /// not nullable 
-    pub ad_ref_list_id:f64,
-    /// not nullable 
-    pub ad_role_id:f64,
-    /// not nullable 
-    pub c_doctype_id:f64,
     /// defaults to: now()
     /// not nullable 
-    pub created:NaiveDate,
+    pub created:NaiveDateTime,
     /// not nullable 
     pub createdby:f64,
     /// defaults to: 'Y'::bpchar
@@ -2948,7 +3335,7 @@ pub struct AdDocumentActionAccess {
     pub isactive:String,
     /// defaults to: now()
     /// not nullable 
-    pub updated:NaiveDate,
+    pub updated:NaiveDateTime,
     /// not nullable 
     pub updatedby:f64,
     /// has one
@@ -2968,6 +3355,10 @@ pub struct AdElement {
     pub ad_client_id:f64,
     /// not nullable 
     pub ad_org_id:f64,
+    /// defaults to: NULL::numeric
+    pub ad_reference_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub ad_reference_value_id:Option<f64>,
     /// not nullable 
     pub columnname:String,
     /// not nullable 
@@ -2978,6 +3369,8 @@ pub struct AdElement {
     /// defaults to: 'D'::character varying
     /// not nullable 
     pub entitytype:String,
+    /// defaults to: NULL::numeric
+    pub fieldlength:Option<f64>,
     pub help:Option<String>,
     /// defaults to: 'Y'::bpchar
     /// not nullable 
@@ -2997,6 +3390,12 @@ pub struct AdElement {
     pub updatedby:f64,
     /// has one
     pub entitytype:Option<AdEntitytype>,
+    /// has one
+    pub ad_reference:Option<AdReference>,
+    /// has one
+    pub ad_reference_value:Option<AdReference>,
+    /// has many
+    pub ad_browse_field:Option<Vec<AdBrowseField>>,
     /// has many
     pub ad_column:Option<Vec<AdColumn>>,
     /// has many
@@ -3085,6 +3484,12 @@ pub struct AdEntitytype {
     pub updatedby:f64,
     pub version:Option<String>,
     /// has many
+    pub ad_browse:Option<Vec<AdBrowse>>,
+    /// has many
+    pub ad_browse_field:Option<Vec<AdBrowseField>>,
+    /// has many
+    pub ad_chartdatasource:Option<Vec<AdChartdatasource>>,
+    /// has many
     pub ad_column:Option<Vec<AdColumn>>,
     /// has many
     pub ad_element:Option<Vec<AdElement>>,
@@ -3104,6 +3509,8 @@ pub struct AdEntitytype {
     pub ad_menu:Option<Vec<AdMenu>>,
     /// has many
     pub ad_message:Option<Vec<AdMessage>>,
+    /// has many
+    pub ad_migration:Option<Vec<AdMigration>>,
     /// has many
     pub ad_modelvalidator:Option<Vec<AdModelvalidator>>,
     /// has many
@@ -3133,9 +3540,13 @@ pub struct AdEntitytype {
     /// has many
     pub ad_table:Option<Vec<AdTable>>,
     /// has many
+    pub ad_table_process:Option<Vec<AdTableProcess>>,
+    /// has many
     pub ad_task:Option<Vec<AdTask>>,
     /// has many
     pub ad_val_rule:Option<Vec<AdValRule>>,
+    /// has many
+    pub ad_view_column:Option<Vec<AdViewColumn>>,
     /// has many
     pub ad_wf_nextcondition:Option<Vec<AdWfNextcondition>>,
     /// has many
@@ -3154,6 +3565,8 @@ pub struct AdEntitytype {
     pub ad_workbenchwindow:Option<Vec<AdWorkbenchwindow>>,
     /// has many
     pub ad_workflow:Option<Vec<AdWorkflow>>,
+    /// has many
+    pub i_workflow:Option<Vec<IWorkflow>>,
     /// has many
     pub pa_colorschema:Option<Vec<PaColorschema>>,
     /// has many
@@ -3238,6 +3651,11 @@ pub struct AdField {
     /// defaults to: 'Y'::bpchar
     /// not nullable 
     pub isdisplayed:String,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isdisplayedgrid:String,
+    /// defaults to: 'N'::bpchar
+    pub isembedded:Option<String>,
     /// defaults to: 'N'::bpchar
     /// not nullable 
     pub isencrypted:String,
@@ -3257,7 +3675,9 @@ pub struct AdField {
     /// not nullable 
     pub name:String,
     pub obscuretype:Option<String>,
+    pub preferredwidth:Option<f64>,
     pub seqno:Option<f64>,
+    pub seqnogrid:Option<f64>,
     pub sortno:Option<f64>,
     /// defaults to: now()
     /// not nullable 
@@ -3278,6 +3698,8 @@ pub struct AdField {
     pub entitytype:Option<AdEntitytype>,
     /// has one
     pub ad_reference:Option<AdReference>,
+    /// has one
+    pub included_tab:Option<AdTab>,
     /// has one
     pub ad_reference_value:Option<AdReference>,
     /// has one
@@ -3492,6 +3914,8 @@ pub struct AdForm {
     /// has many
     pub ad_package_exp_detail:Option<Vec<AdPackageExpDetail>>,
     /// has many
+    pub ad_process:Option<Vec<AdProcess>>,
+    /// has many
     pub ad_wf_node:Option<Vec<AdWfNode>>,
     /// has many
     pub ad_workbenchwindow:Option<Vec<AdWorkbenchwindow>>,
@@ -3499,6 +3923,8 @@ pub struct AdForm {
     pub asp_clientexception:Option<Vec<AspClientexception>>,
     /// has many
     pub asp_form:Option<Vec<AspForm>>,
+    /// has many
+    pub i_workflow:Option<Vec<IWorkflow>>,
     /// has many
     pub pp_order_node:Option<Vec<PpOrderNode>>,
 }
@@ -3580,10 +4006,8 @@ pub struct AdHousekeeping {
     /// primary
     /// not nullable 
     pub ad_housekeeping_id:f64,
-    /// defaults to: NULL::numeric
     /// not nullable 
     pub ad_client_id:f64,
-    /// defaults to: NULL::numeric
     /// not nullable 
     pub ad_org_id:f64,
     /// not nullable 
@@ -3612,6 +4036,8 @@ pub struct AdHousekeeping {
     /// not nullable 
     pub value:String,
     pub whereclause:Option<String>,
+    /// has one
+    pub ad_table:Option<AdTable>,
 }
 
 #[derive(Debug)]
@@ -3647,9 +4073,15 @@ pub struct AdImage {
     /// has one
     pub entitytype:Option<AdEntitytype>,
     /// has many
+    pub ad_clientinfo:Option<Vec<AdClientinfo>>,
+    /// has many
     pub ad_color:Option<Vec<AdColor>>,
     /// has many
     pub ad_desktop:Option<Vec<AdDesktop>>,
+    /// has many
+    pub ad_orginfo:Option<Vec<AdOrginfo>>,
+    /// has many
+    pub ad_printtableformat:Option<Vec<AdPrinttableformat>>,
     /// has many
     pub ad_tab:Option<Vec<AdTab>>,
     /// has many
@@ -3658,6 +4090,14 @@ pub struct AdImage {
     pub ad_window:Option<Vec<AdWindow>>,
     /// has many
     pub ad_workbench:Option<Vec<AdWorkbench>>,
+    /// has many
+    pub c_bpartner:Option<Vec<CBpartner>>,
+    /// has many
+    pub c_poskey:Option<Vec<CPoskey>>,
+    /// has many
+    pub cm_media:Option<Vec<CmMedia>>,
+    /// has many
+    pub i_workflow:Option<Vec<IWorkflow>>,
     /// has many
     pub pp_order_node:Option<Vec<PpOrderNode>>,
 }
@@ -3688,6 +4128,7 @@ pub struct AdImpformat {
     pub name:String,
     /// not nullable 
     pub processing:String,
+    pub separatorchar:Option<String>,
     /// defaults to: now()
     /// not nullable 
     pub updated:NaiveDateTime,
@@ -3728,6 +4169,8 @@ pub struct AdImpformatRow {
     pub datatype:String,
     /// not nullable 
     pub decimalpoint:String,
+    /// defaults to: NULL::character varying
+    pub defaultvalue:Option<String>,
     /// defaults to: 'N'::bpchar
     /// not nullable 
     pub divideby100:String,
@@ -3981,6 +4424,7 @@ pub struct AdIssue {
     pub r_issueuser_id:Option<f64>,
     pub r_request_id:Option<f64>,
     pub record_id:Option<f64>,
+    /// defaults to: '.'::character varying
     /// not nullable 
     pub releaseno:String,
     pub releasetag:Option<String>,
@@ -4139,6 +4583,10 @@ pub struct AdLanguage {
     /// has one
     pub ad_org:Option<AdOrg>,
     /// has many
+    pub ad_browse_field_trl:Option<Vec<AdBrowseFieldTrl>>,
+    /// has many
+    pub ad_browse_trl:Option<Vec<AdBrowseTrl>>,
+    /// has many
     pub ad_client:Option<Vec<AdClient>>,
     /// has many
     pub ad_column_trl:Option<Vec<AdColumnTrl>>,
@@ -4183,6 +4631,10 @@ pub struct AdLanguage {
     /// has many
     pub ad_userdef_win:Option<Vec<AdUserdefWin>>,
     /// has many
+    pub ad_view_column_trl:Option<Vec<AdViewColumnTrl>>,
+    /// has many
+    pub ad_view_trl:Option<Vec<AdViewTrl>>,
+    /// has many
     pub ad_wf_node_trl:Option<Vec<AdWfNodeTrl>>,
     /// has many
     pub ad_window_trl:Option<Vec<AdWindowTrl>>,
@@ -4192,6 +4644,8 @@ pub struct AdLanguage {
     pub ad_workflow_trl:Option<Vec<AdWorkflowTrl>>,
     /// has many
     pub c_bpartner:Option<Vec<CBpartner>>,
+    /// has many
+    pub c_charge_trl:Option<Vec<CChargeTrl>>,
     /// has many
     pub c_country:Option<Vec<CCountry>>,
     /// has many
@@ -4228,6 +4682,20 @@ pub struct AdLanguage {
     pub k_synonym:Option<Vec<KSynonym>>,
     /// has many
     pub m_product_trl:Option<Vec<MProductTrl>>,
+    /// has many
+    pub pa_dashboardcontent_trl:Option<Vec<PaDashboardcontentTrl>>,
+    /// has many
+    pub pp_order_bom_trl:Option<Vec<PpOrderBomTrl>>,
+    /// has many
+    pub pp_order_bomline_trl:Option<Vec<PpOrderBomlineTrl>>,
+    /// has many
+    pub pp_order_node_trl:Option<Vec<PpOrderNodeTrl>>,
+    /// has many
+    pub pp_order_workflow_trl:Option<Vec<PpOrderWorkflowTrl>>,
+    /// has many
+    pub pp_product_bom_trl:Option<Vec<PpProductBomTrl>>,
+    /// has many
+    pub pp_product_bomline_trl:Option<Vec<PpProductBomlineTrl>>,
     /// has many
     pub r_mailtext_trl:Option<Vec<RMailtextTrl>>,
     /// has many
@@ -4357,11 +4825,67 @@ pub struct AdLdapprocessorlog {
 }
 
 #[derive(Debug)]
+pub struct AdMemo {
+    /// primary
+    /// not nullable 
+    pub ad_memo_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// not nullable 
+    pub ad_table_id:f64,
+    pub ad_user_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub c_activity_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub c_bpartner_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub c_campaign_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub c_project_id:Option<f64>,
+    pub comments:Option<String>,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// defaults to: NULL::bpchar
+    pub isalert:Option<String>,
+    /// defaults to: NULL::numeric
+    pub m_product_id:Option<f64>,
+    /// not nullable 
+    pub record_id:f64,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// has one
+    pub ad_table:Option<AdTable>,
+    /// has one
+    pub ad_user:Option<AdUser>,
+    /// has one
+    pub c_activity:Option<CActivity>,
+    /// has one
+    pub c_bpartner:Option<CBpartner>,
+    /// has one
+    pub c_campaign:Option<CCampaign>,
+    /// has one
+    pub c_project:Option<CProject>,
+    /// has one
+    pub m_product:Option<MProduct>,
+}
+
+#[derive(Debug)]
 pub struct AdMenu {
     /// primary
     /// not nullable 
     pub ad_menu_id:f64,
     pub action:Option<String>,
+    /// defaults to: NULL::numeric
+    pub ad_browse_id:Option<f64>,
     /// not nullable 
     pub ad_client_id:f64,
     pub ad_form_id:Option<f64>,
@@ -4384,6 +4908,8 @@ pub struct AdMenu {
     /// defaults to: 'Y'::bpchar
     /// not nullable 
     pub isactive:String,
+    /// defaults to: 'Y'::bpchar
+    pub iscentrallymaintained:Option<String>,
     /// defaults to: 'N'::bpchar
     /// not nullable 
     pub isreadonly:String,
@@ -4418,6 +4944,8 @@ pub struct AdMenu {
     pub ad_workbench:Option<AdWorkbench>,
     /// has one
     pub entitytype:Option<AdEntitytype>,
+    /// has one
+    pub ad_browse:Option<AdBrowse>,
     /// has many
     pub ad_menu_trl:Option<Vec<AdMenuTrl>>,
     /// has many
@@ -4551,6 +5079,91 @@ pub struct AdMessageTrl {
 }
 
 #[derive(Debug)]
+pub struct AdMigration {
+    /// primary
+    /// not nullable 
+    pub ad_migration_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// defaults to: NULL::bpchar
+    pub apply:Option<String>,
+    /// defaults to: NULL::character varying
+    pub comments:Option<String>,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    /// defaults to: 'U'::character varying
+    /// not nullable 
+    pub entitytype:String,
+    /// defaults to: NULL::bpchar
+    pub exportxml:Option<String>,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// not nullable 
+    pub name:String,
+    /// defaults to: NULL::bpchar
+    pub processing:Option<String>,
+    /// defaults to: NULL::character varying
+    pub releaseno:Option<String>,
+    /// not nullable 
+    pub seqno:f64,
+    /// defaults to: NULL::bpchar
+    pub statuscode:Option<String>,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// has one
+    pub entitytype:Option<AdEntitytype>,
+    /// has many
+    pub ad_migrationstep:Option<Vec<AdMigrationstep>>,
+}
+
+#[derive(Debug)]
+pub struct AdMigrationdata {
+    /// primary
+    /// not nullable 
+    pub ad_migrationdata_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_column_id:f64,
+    /// not nullable 
+    pub ad_migrationstep_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    pub backupvalue:Option<String>,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// defaults to: NULL::bpchar
+    pub isbackupnull:Option<String>,
+    /// defaults to: NULL::bpchar
+    pub isnewnull:Option<String>,
+    /// defaults to: NULL::bpchar
+    pub isoldnull:Option<String>,
+    pub newvalue:Option<String>,
+    /// defaults to: NULL::character varying
+    pub oldvalue:Option<String>,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// has one
+    pub ad_column:Option<AdColumn>,
+    /// has one
+    pub ad_migrationstep:Option<AdMigrationstep>,
+}
+
+#[derive(Debug)]
 pub struct AdMigrationscript {
     /// primary
     /// not nullable 
@@ -4590,6 +5203,57 @@ pub struct AdMigrationscript {
 }
 
 #[derive(Debug)]
+pub struct AdMigrationstep {
+    /// primary
+    /// not nullable 
+    pub ad_migrationstep_id:f64,
+    pub action:Option<String>,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_migration_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// defaults to: NULL::numeric
+    pub ad_table_id:Option<f64>,
+    /// defaults to: NULL::bpchar
+    pub apply:Option<String>,
+    /// defaults to: NULL::character varying
+    pub comments:Option<String>,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    /// defaults to: 'ALL'::character varying
+    pub dbtype:Option<String>,
+    /// defaults to: NULL::character varying
+    pub errormsg:Option<String>,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// defaults to: NULL::numeric
+    pub record_id:Option<f64>,
+    pub rollbackstatement:Option<String>,
+    /// not nullable 
+    pub seqno:f64,
+    pub sqlstatement:Option<String>,
+    /// defaults to: NULL::bpchar
+    pub statuscode:Option<String>,
+    /// not nullable 
+    pub steptype:String,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// has one
+    pub ad_migration:Option<AdMigration>,
+    /// has one
+    pub ad_table:Option<AdTable>,
+    /// has many
+    pub ad_migrationdata:Option<Vec<AdMigrationdata>>,
+}
+
+#[derive(Debug)]
 pub struct AdModelvalidator {
     /// primary
     /// not nullable 
@@ -4616,7 +5280,7 @@ pub struct AdModelvalidator {
     pub name:String,
     pub seqno:Option<f64>,
     /// not nullable 
-    pub updated:NaiveDate,
+    pub updated:NaiveDateTime,
     /// not nullable 
     pub updatedby:f64,
     /// has one
@@ -4826,6 +5490,8 @@ pub struct AdOrg {
     /// has many
     pub c_cash:Option<Vec<CCash>>,
     /// has many
+    pub c_cashflow:Option<Vec<CCashflow>>,
+    /// has many
     pub c_city:Option<Vec<CCity>>,
     /// has many
     pub c_commissionline:Option<Vec<CCommissionline>>,
@@ -4856,6 +5522,8 @@ pub struct AdOrg {
     /// has many
     pub c_orderline:Option<Vec<COrderline>>,
     /// has many
+    pub c_ordersource:Option<Vec<COrdersource>>,
+    /// has many
     pub c_orgassignment:Option<Vec<COrgassignment>>,
     /// has many
     pub c_payment:Option<Vec<CPayment>>,
@@ -4880,6 +5548,8 @@ pub struct AdOrg {
     /// has many
     pub fact_acct:Option<Vec<FactAcct>>,
     /// has many
+    pub fact_acct_summary:Option<Vec<FactAcctSummary>>,
+    /// has many
     pub gl_distribution:Option<Vec<GlDistribution>>,
     /// has many
     pub gl_distributionline:Option<Vec<GlDistributionline>>,
@@ -4893,6 +5563,8 @@ pub struct AdOrg {
     pub i_gljournal:Option<Vec<IGljournal>>,
     /// has many
     pub i_invoice:Option<Vec<IInvoice>>,
+    /// has many
+    pub i_movement:Option<Vec<IMovement>>,
     /// has many
     pub i_order:Option<Vec<IOrder>>,
     /// has many
@@ -4933,6 +5605,10 @@ pub struct AdOrg {
     pub pp_cost_collector:Option<Vec<PpCostCollector>>,
     /// has many
     pub pp_order:Option<Vec<PpOrder>>,
+    /// has many
+    pub wm_inoutbound:Option<Vec<WmInoutbound>>,
+    /// has many
+    pub wm_inoutboundline:Option<Vec<WmInoutboundline>>,
 }
 
 #[derive(Debug)]
@@ -4953,14 +5629,17 @@ pub struct AdOrginfo {
     pub dropship_warehouse_id:Option<f64>,
     /// not nullable 
     pub duns:String,
+    pub email:Option<String>,
+    pub fax:Option<String>,
     /// defaults to: 'Y'::bpchar
     /// not nullable 
     pub isactive:String,
-    /// defaults to: NULL::numeric
     pub logo_id:Option<f64>,
     pub m_warehouse_id:Option<f64>,
     pub pa_goal_id:Option<f64>,
     pub parent_org_id:Option<f64>,
+    pub phone:Option<String>,
+    pub phone2:Option<String>,
     pub receiptfootermsg:Option<String>,
     pub supervisor_id:Option<f64>,
     /// not nullable 
@@ -4988,6 +5667,12 @@ pub struct AdOrginfo {
     pub transferbank:Option<CBank>,
     /// has one
     pub transfercashbook:Option<CCashbook>,
+    /// has one
+    pub dropship_warehouse:Option<MWarehouse>,
+    /// has one
+    pub c_calendar:Option<CCalendar>,
+    /// has one
+    pub logo:Option<AdImage>,
 }
 
 #[derive(Debug)]
@@ -5068,6 +5753,8 @@ pub struct AdPackageExp {
     pub username:String,
     /// not nullable 
     pub version:String,
+    /// has many
+    pub ad_package_exp_detail:Option<Vec<AdPackageExpDetail>>,
 }
 
 #[derive(Debug)]
@@ -5142,15 +5829,14 @@ pub struct AdPackageExpDetail {
     /// primary
     /// not nullable 
     pub ad_package_exp_detail_id:f64,
+    pub ad_browse_id:Option<f64>,
     /// not nullable 
     pub ad_client_id:f64,
-    /// defaults to: NULL::numeric
     pub ad_entitytype_id:Option<f64>,
     pub ad_form_id:Option<f64>,
     pub ad_impformat_id:Option<f64>,
     pub ad_menu_id:Option<f64>,
     pub ad_message_id:Option<f64>,
-    /// defaults to: NULL::numeric
     pub ad_modelvalidator_id:Option<f64>,
     /// not nullable 
     pub ad_org_id:f64,
@@ -5165,6 +5851,8 @@ pub struct AdPackageExpDetail {
     pub ad_role_id:Option<f64>,
     pub ad_table_id:Option<f64>,
     pub ad_val_rule_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub ad_view_id:Option<f64>,
     pub ad_window_id:Option<f64>,
     pub ad_workbench_id:Option<f64>,
     pub ad_workflow_id:Option<f64>,
@@ -5219,6 +5907,8 @@ pub struct AdPackageExpDetail {
     /// has one
     pub ad_reportview:Option<AdReportview>,
     /// has one
+    pub ad_package_exp:Option<AdPackageExp>,
+    /// has one
     pub ad_message:Option<AdMessage>,
     /// has one
     pub ad_printformat:Option<AdPrintformat>,
@@ -5226,6 +5916,10 @@ pub struct AdPackageExpDetail {
     pub ad_reference:Option<AdReference>,
     /// has one
     pub ad_modelvalidator:Option<AdModelvalidator>,
+    /// has one
+    pub ad_view:Option<AdView>,
+    /// has one
+    pub ad_browse:Option<AdBrowse>,
 }
 
 #[derive(Debug)]
@@ -5429,6 +6123,8 @@ pub struct AdPinstance {
     /// defaults to: 'N'::bpchar
     /// not nullable 
     pub isprocessing:String,
+    /// defaults to: NULL::character varying
+    pub name:Option<String>,
     /// not nullable 
     pub record_id:f64,
     pub result:Option<f64>,
@@ -5594,6 +6290,8 @@ pub struct AdPrintcolor {
     /// has many
     pub c_poskey:Option<Vec<CPoskey>>,
     /// has many
+    pub c_poskeylayout:Option<Vec<CPoskeylayout>>,
+    /// has many
     pub m_product_category:Option<Vec<MProductCategory>>,
     /// has many
     pub pa_colorschema:Option<Vec<PaColorschema>>,
@@ -5634,6 +6332,10 @@ pub struct AdPrintfont {
     pub ad_printformatitem:Option<Vec<AdPrintformatitem>>,
     /// has many
     pub ad_printtableformat:Option<Vec<AdPrinttableformat>>,
+    /// has many
+    pub c_poskey:Option<Vec<CPoskey>>,
+    /// has many
+    pub c_poskeylayout:Option<Vec<CPoskeylayout>>,
 }
 
 #[derive(Debug)]
@@ -5696,6 +6398,14 @@ pub struct AdPrintform {
     pub project_mailtext:Option<RMailtext>,
     /// has one
     pub project_printformat:Option<AdPrintformat>,
+    /// has one
+    pub manuf_orde:Option<RMailtext>,
+    /// has one
+    pub manuf_order_printformat:Option<AdPrintformat>,
+    /// has one
+    pub distrib_orde:Option<RMailtext>,
+    /// has one
+    pub distrib_order_printformat:Option<AdPrintformat>,
 }
 
 #[derive(Debug)]
@@ -6307,6 +7017,8 @@ pub struct AdPrinttableformat {
     pub functfg_printcolor:Option<AdPrintcolor>,
     /// has one
     pub line_printcolor:Option<AdPrintcolor>,
+    /// has one
+    pub ad_image:Option<AdImage>,
     /// has many
     pub ad_printformat:Option<Vec<AdPrintformat>>,
 }
@@ -6352,6 +7064,8 @@ pub struct AdProcess {
     pub ad_process_id:f64,
     /// not nullable 
     pub accesslevel:String,
+    /// defaults to: NULL::numeric
+    pub ad_browse_id:Option<f64>,
     /// not nullable 
     pub ad_client_id:f64,
     pub ad_form_id:Option<f64>,
@@ -6361,7 +7075,6 @@ pub struct AdProcess {
     pub ad_reportview_id:Option<f64>,
     pub ad_workflow_id:Option<f64>,
     pub classname:Option<String>,
-    /// defaults to: NULL::bpchar
     pub copyfromprocess:Option<String>,
     /// defaults to: now()
     /// not nullable 
@@ -6411,8 +7124,12 @@ pub struct AdProcess {
     pub ad_printformat:Option<AdPrintformat>,
     /// has one
     pub ad_workflow:Option<AdWorkflow>,
+    /// has one
+    pub ad_form:Option<AdForm>,
     /// has many
     pub ad_archive:Option<Vec<AdArchive>>,
+    /// has many
+    pub ad_browse:Option<Vec<AdBrowse>>,
     /// has many
     pub ad_column:Option<Vec<AdColumn>>,
     /// has many
@@ -6438,6 +7155,8 @@ pub struct AdProcess {
     /// has many
     pub ad_tab:Option<Vec<AdTab>>,
     /// has many
+    pub ad_table_process:Option<Vec<AdTableProcess>>,
+    /// has many
     pub ad_wf_node:Option<Vec<AdWfNode>>,
     /// has many
     pub ad_workbenchwindow:Option<Vec<AdWorkbenchwindow>>,
@@ -6445,6 +7164,8 @@ pub struct AdProcess {
     pub asp_clientexception:Option<Vec<AspClientexception>>,
     /// has many
     pub asp_process:Option<Vec<AspProcess>>,
+    /// has many
+    pub i_workflow:Option<Vec<IWorkflow>>,
     /// has many
     pub pa_report:Option<Vec<PaReport>>,
     /// has many
@@ -6788,7 +7509,6 @@ pub struct AdRefTable {
     pub ad_key:f64,
     /// not nullable 
     pub ad_org_id:f64,
-    pub ad_ref_table_id:Option<f64>,
     /// not nullable 
     pub ad_table_id:f64,
     pub ad_window_id:Option<f64>,
@@ -6797,12 +7517,19 @@ pub struct AdRefTable {
     pub created:NaiveDateTime,
     /// not nullable 
     pub createdby:f64,
+    pub displaysql:Option<String>,
     /// defaults to: 'D'::character varying
     /// not nullable 
     pub entitytype:String,
     /// defaults to: 'Y'::bpchar
     /// not nullable 
     pub isactive:String,
+    /// defaults to: 'N'::bpchar
+    /// not nullable 
+    pub isalert:String,
+    /// defaults to: 'N'::bpchar
+    /// not nullable 
+    pub isdisplayidentifier:String,
     /// defaults to: 'N'::bpchar
     /// not nullable 
     pub isvaluedisplayed:String,
@@ -6878,7 +7605,11 @@ pub struct AdReference {
     /// has many
     pub ad_attribute:Option<Vec<AdAttribute>>,
     /// has many
+    pub ad_browse_field:Option<Vec<AdBrowseField>>,
+    /// has many
     pub ad_column:Option<Vec<AdColumn>>,
+    /// has many
+    pub ad_element:Option<Vec<AdElement>>,
     /// has many
     pub ad_field:Option<Vec<AdField>>,
     /// has many
@@ -6893,6 +7624,8 @@ pub struct AdReference {
     pub ad_ref_list:Option<Vec<AdRefList>>,
     /// has many
     pub ad_reference_trl:Option<Vec<AdReferenceTrl>>,
+    /// has many
+    pub ad_relationtype:Option<Vec<AdRelationtype>>,
     /// has many
     pub hr_concept:Option<Vec<HrConcept>>,
 }
@@ -6991,7 +7724,48 @@ pub struct AdRegistration {
     /// has one
     pub ad_system:Option<AdSystem>,
     /// has one
+    pub c_location:Option<CLocation>,
+    /// has one
     pub c_currency:Option<CCurrency>,
+}
+
+#[derive(Debug)]
+pub struct AdRelationtype {
+    /// primary
+    /// not nullable 
+    pub ad_relationtype_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    pub ad_reference_source_id:Option<f64>,
+    pub ad_reference_target_id:Option<f64>,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    pub description:Option<String>,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// defaults to: 'N'::bpchar
+    /// not nullable 
+    pub isdirected:String,
+    /// not nullable 
+    pub name:String,
+    pub role_source:Option<String>,
+    pub role_target:Option<String>,
+    /// defaults to: 'I'::bpchar
+    /// not nullable 
+    pub type_:String,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// has one
+    pub ad_reference_source:Option<AdReference>,
+    /// has one
+    pub ad_reference_target:Option<AdReference>,
 }
 
 #[derive(Debug)]
@@ -7158,11 +7932,8 @@ pub struct AdReplicationstrategy {
     /// primary
     /// not nullable 
     pub ad_replicationstrategy_id:f64,
-    /// unique
     /// not nullable 
     pub ad_client_id:f64,
-    /// unique
-    pub value:Option<String>,
     /// not nullable 
     pub ad_org_id:f64,
     /// defaults to: now()
@@ -7186,6 +7957,7 @@ pub struct AdReplicationstrategy {
     pub updated:NaiveDateTime,
     /// not nullable 
     pub updatedby:f64,
+    pub value:Option<String>,
     /// has one
     pub entitytype:Option<AdEntitytype>,
     /// has one
@@ -7338,43 +8110,43 @@ pub struct AdRole {
     pub ad_org_id:f64,
     pub ad_tree_menu_id:Option<f64>,
     pub ad_tree_org_id:Option<f64>,
-    /// defaults to: 'N'::bpchar
+    /// defaults to: 'Y'::bpchar
     /// not nullable 
     pub allow_info_account:String,
-    /// defaults to: 'N'::bpchar
+    /// defaults to: 'Y'::bpchar
     /// not nullable 
     pub allow_info_asset:String,
-    /// defaults to: 'N'::bpchar
+    /// defaults to: 'Y'::bpchar
     /// not nullable 
     pub allow_info_bpartner:String,
-    /// defaults to: 'N'::bpchar
+    /// defaults to: 'Y'::bpchar
     /// not nullable 
     pub allow_info_cashjournal:String,
     /// defaults to: 'Y'::bpchar
     /// not nullable 
     pub allow_info_crp:String,
-    /// defaults to: 'N'::bpchar
+    /// defaults to: 'Y'::bpchar
     /// not nullable 
     pub allow_info_inout:String,
-    /// defaults to: 'N'::bpchar
+    /// defaults to: 'Y'::bpchar
     /// not nullable 
     pub allow_info_invoice:String,
     /// defaults to: 'Y'::bpchar
     /// not nullable 
     pub allow_info_mrp:String,
-    /// defaults to: 'N'::bpchar
+    /// defaults to: 'Y'::bpchar
     /// not nullable 
     pub allow_info_order:String,
-    /// defaults to: 'N'::bpchar
+    /// defaults to: 'Y'::bpchar
     /// not nullable 
     pub allow_info_payment:String,
     /// defaults to: 'Y'::bpchar
     /// not nullable 
     pub allow_info_product:String,
-    /// defaults to: 'N'::bpchar
+    /// defaults to: 'Y'::bpchar
     /// not nullable 
     pub allow_info_resource:String,
-    /// defaults to: 'N'::bpchar
+    /// defaults to: 'Y'::bpchar
     /// not nullable 
     pub allow_info_schedule:String,
     /// defaults to: 0
@@ -7462,8 +8234,14 @@ pub struct AdRole {
     pub supervisor:Option<AdUser>,
     /// has one
     pub ad_tree_org:Option<AdTree>,
+    /// has one, extension table
+    pub ad_role_included:Option<Box<AdRoleIncluded>>,
+    /// has one, extension table
+    pub ad_role_included:Option<Box<AdRoleIncluded>>,
     /// has many
     pub ad_alertrecipient:Option<Vec<AdAlertrecipient>>,
+    /// has many
+    pub ad_browse_access:Option<Vec<AdBrowseAccess>>,
     /// has many
     pub ad_column_access:Option<Vec<AdColumnAccess>>,
     /// has many
@@ -7508,6 +8286,37 @@ pub struct AdRole {
     pub r_requestaction:Option<Vec<RRequestaction>>,
     /// has many
     pub u_rolemenu:Option<Vec<URolemenu>>,
+}
+
+#[derive(Debug)]
+pub struct AdRoleIncluded {
+    /// primary
+    /// not nullable 
+    pub ad_role_id:f64,
+    /// primary
+    /// not nullable 
+    pub included_role_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// not nullable 
+    pub seqno:f64,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// has one
+    pub ad_role:Option<AdRole>,
+    /// has one
+    pub included_role:Option<AdRole>,
 }
 
 #[derive(Debug)]
@@ -7586,6 +8395,10 @@ pub struct AdRule {
     pub hr_movement:Option<Vec<HrMovement>>,
     /// has many
     pub hr_payrollconcept:Option<Vec<HrPayrollconcept>>,
+    /// has many
+    pub pp_forecastrule:Option<Vec<PpForecastrule>>,
+    /// has many
+    pub wm_rule:Option<Vec<WmRule>>,
 }
 
 #[derive(Debug)]
@@ -7599,11 +8412,13 @@ pub struct AdScheduler {
     pub ad_org_id:f64,
     /// not nullable 
     pub ad_process_id:f64,
+    pub ad_table_id:Option<f64>,
     /// defaults to: now()
     /// not nullable 
     pub created:NaiveDateTime,
     /// not nullable 
     pub createdby:f64,
+    pub cronpattern:Option<String>,
     pub datelastrun:Option<NaiveDateTime>,
     pub datenextrun:Option<NaiveDateTime>,
     pub description:Option<String>,
@@ -7614,12 +8429,15 @@ pub struct AdScheduler {
     /// defaults to: 'Y'::bpchar
     /// not nullable 
     pub isactive:String,
+    /// defaults to: 'N'::bpchar
+    pub isignoreprocessingtime:Option<String>,
     /// not nullable 
     pub keeplogdays:f64,
     pub monthday:Option<f64>,
     /// not nullable 
     pub name:String,
     pub processing:Option<String>,
+    pub record_id:Option<f64>,
     /// defaults to: 'F'::bpchar
     /// not nullable 
     pub scheduletype:String,
@@ -7635,6 +8453,8 @@ pub struct AdScheduler {
     pub ad_process:Option<AdProcess>,
     /// has one
     pub supervisor:Option<AdUser>,
+    /// has one
+    pub ad_table:Option<AdTable>,
     /// has one, extension table
     pub ad_schedulerlog:Option<Box<AdSchedulerlog>>,
     /// has many
@@ -7752,11 +8572,9 @@ pub struct AdSearchdefinition {
     /// primary
     /// not nullable 
     pub ad_searchdefinition_id:f64,
-    /// defaults to: NULL::numeric
     /// not nullable 
     pub ad_client_id:f64,
     pub ad_column_id:Option<f64>,
-    /// defaults to: NULL::numeric
     /// not nullable 
     pub ad_org_id:f64,
     /// not nullable 
@@ -7784,6 +8602,14 @@ pub struct AdSearchdefinition {
     pub updated:NaiveDateTime,
     /// not nullable 
     pub updatedby:f64,
+    /// has one
+    pub ad_column:Option<AdColumn>,
+    /// has one
+    pub ad_table:Option<AdTable>,
+    /// has one
+    pub ad_window:Option<AdWindow>,
+    /// has one
+    pub po_window:Option<AdWindow>,
 }
 
 #[derive(Debug)]
@@ -8049,8 +8875,7 @@ pub struct AdSystem {
     pub processing:Option<String>,
     pub profileinfo:Option<String>,
     pub record_id:Option<f64>,
-    /// not nullable 
-    pub releaseno:String,
+    pub releaseno:Option<String>,
     /// defaults to: 'L'::bpchar
     /// not nullable 
     pub replicationtype:String,
@@ -8137,7 +8962,6 @@ pub struct AdTab {
     /// not nullable 
     pub name:String,
     pub orderbyclause:Option<String>,
-    /// defaults to: NULL::numeric
     pub parent_column_id:Option<f64>,
     pub processing:Option<String>,
     pub readonlylogic:Option<String>,
@@ -8173,6 +8997,8 @@ pub struct AdTab {
     pub entitytype:Option<AdEntitytype>,
     /// has one, self referential
     pub included_tab:Option<Box<AdTab>>,
+    /// has one
+    pub parent_column:Option<AdColumn>,
     /// has many
     pub ad_field:Option<Vec<AdField>>,
     /// has many
@@ -8187,6 +9013,8 @@ pub struct AdTab {
     pub asp_clientexception:Option<Vec<AspClientexception>>,
     /// has many
     pub asp_tab:Option<Vec<AspTab>>,
+    /// has many
+    pub pa_dashboardcontent:Option<Vec<PaDashboardcontent>>,
 }
 
 #[derive(Debug)]
@@ -8235,14 +9063,14 @@ pub struct AdTable {
     pub ad_table_id:f64,
     /// not nullable 
     pub accesslevel:String,
+    /// defaults to: (0)::numeric
+    pub actriggerlength:Option<f64>,
     /// not nullable 
     pub ad_client_id:f64,
     /// not nullable 
     pub ad_org_id:f64,
     pub ad_val_rule_id:Option<f64>,
     pub ad_window_id:Option<f64>,
-    /// defaults to: NULL::numeric
-    pub attribute_id:Option<f64>,
     pub copycolumnsfromtable:Option<String>,
     /// defaults to: now()
     /// not nullable 
@@ -8258,6 +9086,8 @@ pub struct AdTable {
     /// defaults to: 'Y'::bpchar
     /// not nullable 
     pub isactive:String,
+    /// defaults to: 'Y'::bpchar
+    pub iscentrallymaintained:Option<String>,
     /// defaults to: 'N'::bpchar
     /// not nullable 
     pub ischangelog:String,
@@ -8276,8 +9106,6 @@ pub struct AdTable {
     pub loadseq:Option<f64>,
     /// not nullable 
     pub name:String,
-    /// defaults to: NULL::numeric
-    pub parent_id:Option<f64>,
     pub po_window_id:Option<f64>,
     /// defaults to: 'L'::bpchar
     /// not nullable 
@@ -8314,15 +9142,23 @@ pub struct AdTable {
     /// has many
     pub ad_changelog:Option<Vec<AdChangelog>>,
     /// has many
+    pub ad_chartdatasource:Option<Vec<AdChartdatasource>>,
+    /// has many
     pub ad_clientshare:Option<Vec<AdClientshare>>,
     /// has many
     pub ad_column:Option<Vec<AdColumn>>,
     /// has many
     pub ad_column_access:Option<Vec<AdColumnAccess>>,
     /// has many
+    pub ad_housekeeping:Option<Vec<AdHousekeeping>>,
+    /// has many
     pub ad_impformat:Option<Vec<AdImpformat>>,
     /// has many
     pub ad_infowindow:Option<Vec<AdInfowindow>>,
+    /// has many
+    pub ad_memo:Option<Vec<AdMemo>>,
+    /// has many
+    pub ad_migrationstep:Option<Vec<AdMigrationstep>>,
     /// has many
     pub ad_note:Option<Vec<AdNote>>,
     /// has many
@@ -8346,17 +9182,25 @@ pub struct AdTable {
     /// has many
     pub ad_reportview:Option<Vec<AdReportview>>,
     /// has many
+    pub ad_scheduler:Option<Vec<AdScheduler>>,
+    /// has many
+    pub ad_searchdefinition:Option<Vec<AdSearchdefinition>>,
+    /// has many
     pub ad_sequence_audit:Option<Vec<AdSequenceAudit>>,
     /// has many
     pub ad_tab:Option<Vec<AdTab>>,
     /// has many
     pub ad_table_access:Option<Vec<AdTableAccess>>,
     /// has many
+    pub ad_table_process:Option<Vec<AdTableProcess>>,
+    /// has many
     pub ad_table_scriptvalidator:Option<Vec<AdTableScriptvalidator>>,
     /// has many
     pub ad_table_trl:Option<Vec<AdTableTrl>>,
     /// has many
     pub ad_userquery:Option<Vec<AdUserquery>>,
+    /// has many
+    pub ad_view_definition:Option<Vec<AdViewDefinition>>,
     /// has many
     pub ad_wf_activity:Option<Vec<AdWfActivity>>,
     /// has many
@@ -8379,6 +9223,8 @@ pub struct AdTable {
     pub exp_format:Option<Vec<ExpFormat>>,
     /// has many
     pub fact_acct:Option<Vec<FactAcct>>,
+    /// has many
+    pub i_workflow:Option<Vec<IWorkflow>>,
     /// has many
     pub k_index:Option<Vec<KIndex>>,
     /// has many
@@ -8446,6 +9292,39 @@ pub struct AdTableAccess {
     pub ad_client:Option<AdClient>,
     /// has one
     pub ad_org:Option<AdOrg>,
+}
+
+#[derive(Debug)]
+pub struct AdTableProcess {
+    /// primary
+    /// not nullable 
+    pub ad_process_id:f64,
+    /// primary
+    /// not nullable 
+    pub ad_table_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// not nullable 
+    pub created:DateTime<UTC>,
+    /// not nullable 
+    pub createdby:f64,
+    /// defaults to: 'U'::character varying
+    /// not nullable 
+    pub entitytype:String,
+    /// not nullable 
+    pub isactive:String,
+    /// not nullable 
+    pub updated:DateTime<UTC>,
+    /// not nullable 
+    pub updatedby:f64,
+    /// has one
+    pub ad_process:Option<AdProcess>,
+    /// has one
+    pub ad_table:Option<AdTable>,
+    /// has one
+    pub entitytype:Option<AdEntitytype>,
 }
 
 #[derive(Debug)]
@@ -8577,6 +9456,8 @@ pub struct AdTask {
     pub asp_clientexception:Option<Vec<AspClientexception>>,
     /// has many
     pub asp_task:Option<Vec<AspTask>>,
+    /// has many
+    pub i_workflow:Option<Vec<IWorkflow>>,
     /// has many
     pub pp_order_node:Option<Vec<PpOrderNode>>,
 }
@@ -9200,10 +10081,18 @@ pub struct AdUser {
     pub ad_org_id:f64,
     pub ad_orgtrx_id:Option<f64>,
     pub birthday:Option<NaiveDateTime>,
+    /// defaults to: NULL::numeric
+    pub bp_location_id:Option<f64>,
+    /// defaults to: NULL::character varying
+    pub bpname:Option<String>,
     pub c_bpartner_id:Option<f64>,
     pub c_bpartner_location_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub c_campaign_id:Option<f64>,
     pub c_greeting_id:Option<f64>,
     pub c_job_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub c_location_id:Option<f64>,
     pub comments:Option<String>,
     pub connectionprofile:Option<String>,
     /// defaults to: now()
@@ -9227,9 +10116,20 @@ pub struct AdUser {
     /// defaults to: 'N'::bpchar
     /// not nullable 
     pub isinpayroll:String,
+    /// defaults to: 'N'::bpchar
+    /// not nullable 
+    pub issaleslead:String,
     pub lastcontact:Option<NaiveDateTime>,
     pub lastresult:Option<String>,
     pub ldapuser:Option<String>,
+    /// defaults to: NULL::character varying
+    pub leadsource:Option<String>,
+    /// defaults to: NULL::character varying
+    pub leadsourcedescription:Option<String>,
+    /// defaults to: NULL::character varying
+    pub leadstatus:Option<String>,
+    /// defaults to: NULL::character varying
+    pub leadstatusdescription:Option<String>,
     /// not nullable 
     pub name:String,
     /// defaults to: 'E'::bpchar
@@ -9239,6 +10139,9 @@ pub struct AdUser {
     pub phone:Option<String>,
     pub phone2:Option<String>,
     pub processing:Option<String>,
+    pub salesrep_id:Option<f64>,
+    /// defaults to: NULL::character varying
+    pub salt:Option<String>,
     pub supervisor_id:Option<f64>,
     pub title:Option<String>,
     /// defaults to: now()
@@ -9264,6 +10167,10 @@ pub struct AdUser {
     pub ad_orgtrx:Option<AdOrg>,
     /// has one
     pub c_job:Option<CJob>,
+    /// has one
+    pub c_campaign:Option<CCampaign>,
+    /// has one, self referential
+    pub salesrep:Option<Box<AdUser>>,
     /// has one, extension table
     pub b_buyer:Option<Box<BBuyer>>,
     /// has one, extension table
@@ -9286,6 +10193,8 @@ pub struct AdUser {
     pub ad_ldapaccess:Option<Vec<AdLdapaccess>>,
     /// has many
     pub ad_ldapprocessor:Option<Vec<AdLdapprocessor>>,
+    /// has many
+    pub ad_memo:Option<Vec<AdMemo>>,
     /// has many
     pub ad_note:Option<Vec<AdNote>>,
     /// has many
@@ -9347,6 +10256,8 @@ pub struct AdUser {
     /// has many
     pub c_bpartner:Option<Vec<CBpartner>>,
     /// has many
+    pub c_contactactivity:Option<Vec<CContactactivity>>,
+    /// has many
     pub c_dunningrunentry:Option<Vec<CDunningrunentry>>,
     /// has many
     pub c_invoice:Option<Vec<CInvoice>>,
@@ -9357,7 +10268,11 @@ pub struct AdUser {
     /// has many
     pub c_jobassignment:Option<Vec<CJobassignment>>,
     /// has many
+    pub c_opportunity:Option<Vec<COpportunity>>,
+    /// has many
     pub c_order:Option<Vec<COrder>>,
+    /// has many
+    pub c_ordersource:Option<Vec<COrdersource>>,
     /// has many
     pub c_orgassignment:Option<Vec<COrgassignment>>,
     /// has many
@@ -9370,6 +10285,8 @@ pub struct AdUser {
     pub c_rfq_topicsubscriber:Option<Vec<CRfqTopicsubscriber>>,
     /// has many
     pub c_rfqresponse:Option<Vec<CRfqresponse>>,
+    /// has many
+    pub c_saleshistory:Option<Vec<CSaleshistory>>,
     /// has many
     pub c_salesregion:Option<Vec<CSalesregion>>,
     /// has many
@@ -9385,13 +10302,27 @@ pub struct AdUser {
     /// has many
     pub dd_order:Option<Vec<DdOrder>>,
     /// has many
+    pub hr_employee:Option<Vec<HrEmployee>>,
+    /// has many
     pub hr_job:Option<Vec<HrJob>>,
+    /// has many
+    pub hr_jobopening:Option<Vec<HrJobopening>>,
+    /// has many
+    pub hr_jobopeninghistory:Option<Vec<HrJobopeninghistory>>,
     /// has many
     pub i_bpartner:Option<Vec<IBpartner>>,
     /// has many
+    pub i_forecast:Option<Vec<IForecast>>,
+    /// has many
     pub i_invoice:Option<Vec<IInvoice>>,
     /// has many
+    pub i_movement:Option<Vec<IMovement>>,
+    /// has many
     pub i_order:Option<Vec<IOrder>>,
+    /// has many
+    pub i_productplanning:Option<Vec<IProductplanning>>,
+    /// has many
+    pub i_saleshistory:Option<Vec<ISaleshistory>>,
     /// has many
     pub m_inout:Option<Vec<MInout>>,
     /// has many
@@ -9412,6 +10343,8 @@ pub struct AdUser {
     pub pp_order:Option<Vec<PpOrder>>,
     /// has many
     pub pp_order_bomline:Option<Vec<PpOrderBomline>>,
+    /// has many
+    pub pp_product_planning:Option<Vec<PpProductPlanning>>,
     /// has many
     pub r_categoryupdates:Option<Vec<RCategoryupdates>>,
     /// has many
@@ -9435,6 +10368,8 @@ pub struct AdUser {
     /// has many
     pub s_resource:Option<Vec<SResource>>,
     /// has many
+    pub u_posterminal:Option<Vec<UPosterminal>>,
+    /// has many
     pub w_advertisement:Option<Vec<WAdvertisement>>,
     /// has many
     pub w_basket:Option<Vec<WBasket>>,
@@ -9444,6 +10379,8 @@ pub struct AdUser {
     pub w_counter:Option<Vec<WCounter>>,
     /// has many
     pub w_store:Option<Vec<WStore>>,
+    /// has many
+    pub wm_inoutbound:Option<Vec<WmInoutbound>>,
 }
 
 #[derive(Debug)]
@@ -9860,6 +10797,8 @@ pub struct AdValRule {
     /// has many
     pub ad_attribute:Option<Vec<AdAttribute>>,
     /// has many
+    pub ad_browse_field:Option<Vec<AdBrowseField>>,
+    /// has many
     pub ad_column:Option<Vec<AdColumn>>,
     /// has many
     pub ad_field:Option<Vec<AdField>>,
@@ -9867,6 +10806,218 @@ pub struct AdValRule {
     pub ad_process_para:Option<Vec<AdProcessPara>>,
     /// has many
     pub ad_table:Option<Vec<AdTable>>,
+}
+
+#[derive(Debug)]
+pub struct AdView {
+    /// primary
+    /// not nullable 
+    pub ad_view_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    pub copyfrom:Option<String>,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    /// defaults to: NULL::character varying
+    pub description:Option<String>,
+    /// not nullable 
+    pub entitytype:String,
+    /// defaults to: NULL::character varying
+    pub help:Option<String>,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// not nullable 
+    pub name:String,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// defaults to: NULL::character varying
+    pub value:Option<String>,
+    /// has many
+    pub ad_browse:Option<Vec<AdBrowse>>,
+    /// has many
+    pub ad_package_exp_detail:Option<Vec<AdPackageExpDetail>>,
+    /// has many
+    pub ad_view_column:Option<Vec<AdViewColumn>>,
+    /// has many
+    pub ad_view_definition:Option<Vec<AdViewDefinition>>,
+    /// has many
+    pub ad_view_trl:Option<Vec<AdViewTrl>>,
+    /// has many
+    pub ad_wf_node:Option<Vec<AdWfNode>>,
+}
+
+#[derive(Debug)]
+pub struct AdViewColumn {
+    /// primary
+    /// not nullable 
+    pub ad_view_column_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// defaults to: NULL::numeric
+    pub ad_column_id:Option<f64>,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// defaults to: NULL::numeric
+    /// not nullable 
+    pub ad_view_definition_id:f64,
+    /// defaults to: NULL::numeric
+    pub ad_view_id:Option<f64>,
+    pub columnname:Option<String>,
+    /// defaults to: NULL::character varying
+    pub columnsql:Option<String>,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    pub description:Option<String>,
+    /// not nullable 
+    pub entitytype:String,
+    /// defaults to: NULL::character varying
+    pub help:Option<String>,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// not nullable 
+    pub name:String,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// has one
+    pub ad_view_definition:Option<AdViewDefinition>,
+    /// has one
+    pub entitytype:Option<AdEntitytype>,
+    /// has one
+    pub ad_view:Option<AdView>,
+    /// has one
+    pub ad_column:Option<AdColumn>,
+    /// has many
+    pub ad_browse_field:Option<Vec<AdBrowseField>>,
+    /// has many
+    pub ad_view_column_trl:Option<Vec<AdViewColumnTrl>>,
+}
+
+#[derive(Debug)]
+pub struct AdViewColumnTrl {
+    /// primary
+    /// not nullable 
+    pub ad_language:String,
+    /// primary
+    /// not nullable 
+    pub ad_view_column_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    /// defaults to: NULL::character varying
+    pub description:Option<String>,
+    /// defaults to: NULL::character varying
+    pub help:Option<String>,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// not nullable 
+    pub istranslated:String,
+    /// not nullable 
+    pub name:String,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// has one
+    pub ad_view_column:Option<AdViewColumn>,
+    /// has one
+    pub ad_language:Option<AdLanguage>,
+}
+
+#[derive(Debug)]
+pub struct AdViewDefinition {
+    /// primary
+    /// not nullable 
+    pub ad_view_definition_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// defaults to: NULL::numeric
+    /// not nullable 
+    pub ad_table_id:f64,
+    /// defaults to: NULL::numeric
+    /// not nullable 
+    pub ad_view_id:f64,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// defaults to: NULL::character varying
+    pub joinclause:Option<String>,
+    /// defaults to: NULL::bpchar
+    pub processing:Option<String>,
+    /// defaults to: NULL::numeric
+    pub seqno:Option<f64>,
+    /// not nullable 
+    pub tablealias:String,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// has one
+    pub ad_view:Option<AdView>,
+    /// has one
+    pub ad_table:Option<AdTable>,
+    /// has many
+    pub ad_view_column:Option<Vec<AdViewColumn>>,
+}
+
+#[derive(Debug)]
+pub struct AdViewTrl {
+    /// primary
+    /// not nullable 
+    pub ad_language:String,
+    /// primary
+    /// not nullable 
+    pub ad_view_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    /// defaults to: NULL::character varying
+    pub description:Option<String>,
+    /// defaults to: NULL::character varying
+    pub help:Option<String>,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// not nullable 
+    pub istranslated:String,
+    /// not nullable 
+    pub name:String,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// has one
+    pub ad_view:Option<AdView>,
+    /// has one
+    pub ad_language:Option<AdLanguage>,
 }
 
 #[derive(Debug)]
@@ -10112,6 +11263,8 @@ pub struct AdWfNode {
     pub ad_wf_node_id:f64,
     /// not nullable 
     pub action:String,
+    /// defaults to: NULL::numeric
+    pub ad_browse_id:Option<f64>,
     /// not nullable 
     pub ad_client_id:f64,
     pub ad_column_id:Option<f64>,
@@ -10121,6 +11274,8 @@ pub struct AdWfNode {
     pub ad_org_id:f64,
     pub ad_process_id:Option<f64>,
     pub ad_task_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub ad_view_id:Option<f64>,
     pub ad_wf_block_id:Option<f64>,
     pub ad_wf_responsible_id:Option<f64>,
     pub ad_window_id:Option<f64>,
@@ -10179,7 +11334,7 @@ pub struct AdWfNode {
     pub splitelement:String,
     pub startmode:Option<String>,
     pub subflowexecution:Option<String>,
-    /// defaults to: (0)::numeric
+    /// defaults to: 0
     pub unitscycles:Option<f64>,
     /// defaults to: now()
     /// not nullable 
@@ -10199,7 +11354,7 @@ pub struct AdWfNode {
     /// defaults to: 0
     /// not nullable 
     pub xposition:f64,
-    /// defaults to: (100)::numeric
+    /// defaults to: 100
     pub yield_:Option<f64>,
     /// defaults to: 0
     /// not nullable 
@@ -10236,6 +11391,10 @@ pub struct AdWfNode {
     pub c_bpartner:Option<CBpartner>,
     /// has one
     pub s_resource:Option<SResource>,
+    /// has one
+    pub ad_view:Option<AdView>,
+    /// has one
+    pub ad_browse:Option<AdBrowse>,
     /// has many
     pub ad_wf_activity:Option<Vec<AdWfActivity>>,
     /// has many
@@ -10250,6 +11409,8 @@ pub struct AdWfNode {
     pub ad_workflow:Option<Vec<AdWorkflow>>,
     /// has many
     pub asp_clientexception:Option<Vec<AspClientexception>>,
+    /// has many
+    pub i_workflow:Option<Vec<IWorkflow>>,
     /// has many
     pub pp_order_node:Option<Vec<PpOrderNode>>,
     /// has many
@@ -10537,6 +11698,8 @@ pub struct AdWfResponsible {
     /// has many
     pub ad_workflow:Option<Vec<AdWorkflow>>,
     /// has many
+    pub i_workflow:Option<Vec<IWorkflow>>,
+    /// has many
     pub pp_order_node:Option<Vec<PpOrderNode>>,
     /// has many
     pub pp_order_workflow:Option<Vec<PpOrderWorkflow>>,
@@ -10597,6 +11760,8 @@ pub struct AdWindow {
     /// has one
     pub ad_color:Option<AdColor>,
     /// has many
+    pub ad_browse:Option<Vec<AdBrowse>>,
+    /// has many
     pub ad_issue:Option<Vec<AdIssue>>,
     /// has many
     pub ad_menu:Option<Vec<AdMenu>>,
@@ -10608,6 +11773,8 @@ pub struct AdWindow {
     pub ad_preference:Option<Vec<AdPreference>>,
     /// has many
     pub ad_ref_table:Option<Vec<AdRefTable>>,
+    /// has many
+    pub ad_searchdefinition:Option<Vec<AdSearchdefinition>>,
     /// has many
     pub ad_tab:Option<Vec<AdTab>>,
     /// has many
@@ -10627,6 +11794,8 @@ pub struct AdWindow {
     /// has many
     pub asp_window:Option<Vec<AspWindow>>,
     /// has many
+    pub i_workflow:Option<Vec<IWorkflow>>,
+    /// has many
     pub pa_dashboardcontent:Option<Vec<PaDashboardcontent>>,
     /// has many
     pub pp_order_node:Option<Vec<PpOrderNode>>,
@@ -10644,8 +11813,6 @@ pub struct AdWindowAccess {
     pub ad_client_id:f64,
     /// not nullable 
     pub ad_org_id:f64,
-    /// defaults to: NULL::numeric
-    pub ad_window_access_id:Option<f64>,
     /// defaults to: now()
     /// not nullable 
     pub created:NaiveDateTime,
@@ -10910,7 +12077,7 @@ pub struct AdWorkflow {
     pub processtype:Option<String>,
     /// not nullable 
     pub publishstatus:String,
-    /// defaults to: (1)::numeric
+    /// defaults to: 1
     pub qtybatchsize:Option<f64>,
     pub queuingtime:Option<f64>,
     pub s_resource_id:Option<f64>,
@@ -10938,7 +12105,7 @@ pub struct AdWorkflow {
     /// defaults to: 0
     /// not nullable 
     pub workingtime:f64,
-    /// defaults to: (100)::numeric
+    /// defaults to: 100
     pub yield_:Option<f64>,
     /// has one
     pub ad_client:Option<AdClient>,
@@ -10983,6 +12150,8 @@ pub struct AdWorkflow {
     /// has many
     pub hr_process:Option<Vec<HrProcess>>,
     /// has many
+    pub i_workflow:Option<Vec<IWorkflow>>,
+    /// has many
     pub pp_order:Option<Vec<PpOrder>>,
     /// has many
     pub pp_order_cost:Option<Vec<PpOrderCost>>,
@@ -10990,6 +12159,8 @@ pub struct AdWorkflow {
     pub pp_order_node:Option<Vec<PpOrderNode>>,
     /// has many
     pub pp_order_workflow:Option<Vec<PpOrderWorkflow>>,
+    /// has many
+    pub pp_product_planning:Option<Vec<PpProductPlanning>>,
     /// has many
     pub qm_specification:Option<Vec<QmSpecification>>,
 }
@@ -11117,6 +12288,8 @@ pub struct AdWorkflowprocessor {
     pub ad_workflowprocessorlog:Option<Box<AdWorkflowprocessorlog>>,
     /// has many
     pub ad_workflow:Option<Vec<AdWorkflow>>,
+    /// has many
+    pub i_workflow:Option<Vec<IWorkflow>>,
     /// has many
     pub pp_order_workflow:Option<Vec<PpOrderWorkflow>>,
 }
@@ -11588,70 +12761,6 @@ pub struct AspWorkflow {
     pub ad_workflow:Option<AdWorkflow>,
     /// has one
     pub asp_level:Option<AspLevel>,
-}
-
-#[derive(Debug)]
-pub struct Attribute {
-    /// primary
-    /// not nullable 
-    pub attribute_id:f64,
-    /// not nullable 
-    pub ad_client_id:f64,
-    /// not nullable 
-    pub ad_org_id:f64,
-    /// not nullable 
-    pub created:NaiveDateTime,
-    /// not nullable 
-    pub createdby:f64,
-    /// defaults to: NULL::numeric
-    pub datatype_id:Option<f64>,
-    pub description:Option<String>,
-    pub help:Option<String>,
-    /// defaults to: 'Y'::bpchar
-    /// not nullable 
-    pub isactive:String,
-    /// defaults to: NULL::numeric
-    pub maxlength:Option<f64>,
-    /// defaults to: NULL::numeric
-    pub minlength:Option<f64>,
-    /// not nullable 
-    pub name:String,
-    /// defaults to: NULL::numeric
-    pub parent_id:Option<f64>,
-    /// not nullable 
-    pub updated:NaiveDateTime,
-    /// not nullable 
-    pub updatedby:f64,
-    /// not nullable 
-    pub value:String,
-}
-
-#[derive(Debug)]
-pub struct AttributeView {
-    /// primary
-    /// not nullable 
-    pub attribute_view_id:f64,
-    /// defaults to: NULL::numeric
-    pub ad_class_id:Option<f64>,
-    /// not nullable 
-    pub ad_client_id:f64,
-    /// not nullable 
-    pub ad_org_id:f64,
-    /// defaults to: NULL::numeric
-    pub attribute_id:Option<f64>,
-    /// not nullable 
-    pub created:NaiveDateTime,
-    /// not nullable 
-    pub createdby:f64,
-    /// defaults to: 'Y'::bpchar
-    /// not nullable 
-    pub isactive:String,
-    /// not nullable 
-    pub updated:NaiveDateTime,
-    /// not nullable 
-    pub updatedby:f64,
-    /// defaults to: NULL::numeric
-    pub view_id:Option<f64>,
 }
 
 #[derive(Debug)]
@@ -12308,6 +13417,8 @@ pub struct CAcctschema {
     /// has many
     pub fact_acct:Option<Vec<FactAcct>>,
     /// has many
+    pub fact_acct_summary:Option<Vec<FactAcctSummary>>,
+    /// has many
     pub gl_budgetcontrol:Option<Vec<GlBudgetcontrol>>,
     /// has many
     pub gl_distribution:Option<Vec<GlDistribution>>,
@@ -12418,6 +13529,7 @@ pub struct CAcctschemaDefault {
     pub notinvoicedrevenue_acct:f64,
     /// not nullable 
     pub p_asset_acct:f64,
+    pub p_averagecostvariance_acct:Option<f64>,
     pub p_burden_acct:Option<f64>,
     /// not nullable 
     pub p_cogs_acct:f64,
@@ -12616,6 +13728,38 @@ pub struct CAcctschemaDefault {
     pub cb_expense_acct:Option<CValidcombination>,
     /// has one
     pub cb_receipt_acct:Option<CValidcombination>,
+    /// has one
+    pub c_receivable_services_acct:Option<CValidcombination>,
+    /// has one
+    pub p_inventoryclearing_acct:Option<CValidcombination>,
+    /// has one
+    pub p_costadjustment_acct:Option<CValidcombination>,
+    /// has one
+    pub p_wip_acct:Option<CValidcombination>,
+    /// has one
+    pub p_methodchangevariance_acct:Option<CValidcombination>,
+    /// has one
+    pub p_usagevariance_acct:Option<CValidcombination>,
+    /// has one
+    pub p_ratevariance_acct:Option<CValidcombination>,
+    /// has one
+    pub p_mixvariance_acct:Option<CValidcombination>,
+    /// has one
+    pub p_floorstock_acct:Option<CValidcombination>,
+    /// has one
+    pub p_costofproduction_acct:Option<CValidcombination>,
+    /// has one
+    pub p_labor_acct:Option<CValidcombination>,
+    /// has one
+    pub p_burden_acct:Option<CValidcombination>,
+    /// has one
+    pub p_outsideprocessing_acct:Option<CValidcombination>,
+    /// has one
+    pub p_overhead_acct:Option<CValidcombination>,
+    /// has one
+    pub p_scrap_acct:Option<CValidcombination>,
+    /// has one
+    pub p_averagecostvariance_acct:Option<CValidcombination>,
 }
 
 #[derive(Debug)]
@@ -12761,6 +13905,10 @@ pub struct CAcctschemaGl {
     pub intercompanyduefrom_acct:Option<CValidcombination>,
     /// has one
     pub ppvoffset_acct:Option<CValidcombination>,
+    /// has one
+    pub commitmentoffset_acct:Option<CValidcombination>,
+    /// has one
+    pub commitmentoffsetsales_acct:Option<CValidcombination>,
 }
 
 #[derive(Debug)]
@@ -12795,6 +13943,8 @@ pub struct CActivity {
     /// not nullable 
     pub value:String,
     /// has many
+    pub ad_memo:Option<Vec<AdMemo>>,
+    /// has many
     pub c_acctschema_element:Option<Vec<CAcctschemaElement>>,
     /// has many
     pub c_cash:Option<Vec<CCash>>,
@@ -12811,6 +13961,8 @@ pub struct CActivity {
     /// has many
     pub c_payment:Option<Vec<CPayment>>,
     /// has many
+    pub c_saleshistory:Option<Vec<CSaleshistory>>,
+    /// has many
     pub c_validcombination:Option<Vec<CValidcombination>>,
     /// has many
     pub dd_order:Option<Vec<DdOrder>>,
@@ -12819,9 +13971,13 @@ pub struct CActivity {
     /// has many
     pub fact_acct:Option<Vec<FactAcct>>,
     /// has many
+    pub fact_acct_summary:Option<Vec<FactAcctSummary>>,
+    /// has many
     pub gl_distribution:Option<Vec<GlDistribution>>,
     /// has many
     pub gl_distributionline:Option<Vec<GlDistributionline>>,
+    /// has many
+    pub gl_journalline:Option<Vec<GlJournalline>>,
     /// has many
     pub hr_department:Option<Vec<HrDepartment>>,
     /// has many
@@ -12837,6 +13993,8 @@ pub struct CActivity {
     /// has many
     pub i_order:Option<Vec<IOrder>>,
     /// has many
+    pub i_saleshistory:Option<Vec<ISaleshistory>>,
+    /// has many
     pub m_inout:Option<Vec<MInout>>,
     /// has many
     pub m_inoutline:Option<Vec<MInoutline>>,
@@ -12846,6 +14004,8 @@ pub struct CActivity {
     pub m_movement:Option<Vec<MMovement>>,
     /// has many
     pub m_production:Option<Vec<MProduction>>,
+    /// has many
+    pub m_promotionprecondition:Option<Vec<MPromotionprecondition>>,
     /// has many
     pub pa_reportcolumn:Option<Vec<PaReportcolumn>>,
     /// has many
@@ -12862,6 +14022,10 @@ pub struct CActivity {
     pub s_timeexpenseline:Option<Vec<STimeexpenseline>>,
     /// has many
     pub t_aging:Option<Vec<TAging>>,
+    /// has many
+    pub wm_inoutbound:Option<Vec<WmInoutbound>>,
+    /// has many
+    pub wm_inoutboundline:Option<Vec<WmInoutboundline>>,
 }
 
 #[derive(Debug)]
@@ -12909,6 +14073,7 @@ pub struct CAllocationhdr {
     /// defaults to: 'N'::bpchar
     /// not nullable 
     pub processed:String,
+    pub processedon:Option<f64>,
     pub processing:Option<String>,
     /// defaults to: now()
     /// not nullable 
@@ -12938,6 +14103,8 @@ pub struct CAllocationline {
     pub c_allocationhdr_id:f64,
     pub c_bpartner_id:Option<f64>,
     pub c_cashline_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub c_charge_id:Option<f64>,
     pub c_invoice_id:Option<f64>,
     pub c_order_id:Option<f64>,
     pub c_payment_id:Option<f64>,
@@ -12957,8 +14124,6 @@ pub struct CAllocationline {
     pub ismanual:Option<String>,
     /// defaults to: 0
     pub overunderamt:Option<f64>,
-    /// defaults to: 'N'::bpchar
-    pub posted:Option<String>,
     /// defaults to: now()
     /// not nullable 
     pub updated:NaiveDateTime,
@@ -12979,6 +14144,8 @@ pub struct CAllocationline {
     pub c_cashline:Option<CCashline>,
     /// has one
     pub c_allocationhdr:Option<CAllocationhdr>,
+    /// has one
+    pub c_charge:Option<CCharge>,
     /// has many
     pub c_paymentallocate:Option<Vec<CPaymentallocate>>,
     /// has many
@@ -13064,6 +14231,7 @@ pub struct CBankaccount {
     /// defaults to: 'N'::bpchar
     /// not nullable 
     pub isdefault:String,
+    pub paymentexportclass:Option<String>,
     /// defaults to: now()
     /// not nullable 
     pub updated:NaiveDateTime,
@@ -13082,6 +14250,8 @@ pub struct CBankaccount {
     /// has many
     pub c_bankstatementloader:Option<Vec<CBankstatementloader>>,
     /// has many
+    pub c_cashflow:Option<Vec<CCashflow>>,
+    /// has many
     pub c_cashline:Option<Vec<CCashline>>,
     /// has many
     pub c_elementvalue:Option<Vec<CElementvalue>>,
@@ -13094,9 +14264,13 @@ pub struct CBankaccount {
     /// has many
     pub c_pos:Option<Vec<CPos>>,
     /// has many
+    pub hr_payselection:Option<Vec<HrPayselection>>,
+    /// has many
     pub i_bankstatement:Option<Vec<IBankstatement>>,
     /// has many
     pub i_payment:Option<Vec<IPayment>>,
+    /// has many
+    pub u_posterminal:Option<Vec<UPosterminal>>,
 }
 
 #[derive(Debug)]
@@ -13264,6 +14438,7 @@ pub struct CBankstatement {
     /// defaults to: 'N'::bpchar
     /// not nullable 
     pub processed:String,
+    pub processedon:Option<f64>,
     pub processing:Option<String>,
     /// not nullable 
     pub statementdate:NaiveDateTime,
@@ -13511,6 +14686,10 @@ pub struct CBpBankaccount {
     pub c_payment:Option<Vec<CPayment>>,
     /// has many
     pub c_payselectioncheck:Option<Vec<CPayselectioncheck>>,
+    /// has many
+    pub hr_movement:Option<Vec<HrMovement>>,
+    /// has many
+    pub hr_payselectioncheck:Option<Vec<HrPayselectioncheck>>,
 }
 
 #[derive(Debug)]
@@ -13549,6 +14728,8 @@ pub struct CBpCustomerAcct {
     pub c_receivable_acct:Option<CValidcombination>,
     /// has one
     pub c_prepayment_acct:Option<CValidcombination>,
+    /// has one
+    pub c_receivable_services_acct:Option<CValidcombination>,
 }
 
 #[derive(Debug)]
@@ -13720,17 +14901,29 @@ pub struct CBpGroup {
     /// has many
     pub c_commissionline:Option<Vec<CCommissionline>>,
     /// has many
+    pub c_saleshistory:Option<Vec<CSaleshistory>>,
+    /// has many
     pub c_taxdefinition:Option<Vec<CTaxdefinition>>,
     /// has many
     pub cm_accesslistbpgroup:Option<Vec<CmAccesslistbpgroup>>,
     /// has many
     pub hr_concept_acct:Option<Vec<HrConceptAcct>>,
     /// has many
+    pub hr_movement:Option<Vec<HrMovement>>,
+    /// has many
     pub i_bpartner:Option<Vec<IBpartner>>,
+    /// has many
+    pub i_saleshistory:Option<Vec<ISaleshistory>>,
+    /// has many
+    pub m_promotionprecondition:Option<Vec<MPromotionprecondition>>,
     /// has many
     pub pa_goalrestriction:Option<Vec<PaGoalrestriction>>,
     /// has many
+    pub pp_forecastdefinitionline:Option<Vec<PpForecastdefinitionline>>,
+    /// has many
     pub t_aging:Option<Vec<TAging>>,
+    /// has many
+    pub wm_definition:Option<Vec<WmDefinition>>,
 }
 
 #[derive(Debug)]
@@ -13812,6 +15005,8 @@ pub struct CBpGroupAcct {
     pub notinvoicedrevenue_acct:Option<CValidcombination>,
     /// has one
     pub notinvoicedreceivables_acct:Option<CValidcombination>,
+    /// has one
+    pub c_receivable_services_acct:Option<CValidcombination>,
 }
 
 #[derive(Debug)]
@@ -13978,10 +15173,8 @@ pub struct CBpartner {
     pub deliveryviarule:Option<String>,
     pub description:Option<String>,
     pub documentcopies:Option<f64>,
-    pub dunninggrace:Option<NaiveDate>,
+    pub dunninggrace:Option<NaiveDateTime>,
     pub duns:Option<String>,
-    /// defaults to: NULL::numeric
-    pub edu_department_id:Option<f64>,
     pub firstsale:Option<NaiveDateTime>,
     pub flatdiscount:Option<f64>,
     pub freightcostrule:Option<String>,
@@ -13990,20 +15183,16 @@ pub struct CBpartner {
     /// defaults to: 'Y'::bpchar
     /// not nullable 
     pub isactive:String,
-    /// defaults to: NULL::bpchar
-    pub iscashier:Option<String>,
     /// defaults to: 'Y'::bpchar
     /// not nullable 
     pub iscustomer:String,
-    /// defaults to: NULL::bpchar
-    pub isdean:Option<String>,
     /// defaults to: 'Y'::bpchar
     pub isdiscountprinted:Option<String>,
     /// defaults to: 'N'::bpchar
     /// not nullable 
     pub isemployee:String,
-    /// defaults to: NULL::bpchar
-    pub isfaculty:Option<String>,
+    /// defaults to: 'N'::bpchar
+    pub ismanufacturer:Option<String>,
     /// defaults to: 'N'::bpchar
     /// not nullable 
     pub isonetime:String,
@@ -14013,12 +15202,9 @@ pub struct CBpartner {
     /// defaults to: 'Y'::bpchar
     /// not nullable 
     pub isprospect:String,
-    /// defaults to: NULL::bpchar
-    pub isregistrar:Option<String>,
     /// defaults to: 'N'::bpchar
     /// not nullable 
     pub issalesrep:String,
-    pub isstudent:Option<String>,
     /// defaults to: 'N'::bpchar
     /// not nullable 
     pub issummary:String,
@@ -14027,7 +15213,6 @@ pub struct CBpartner {
     /// defaults to: 'N'::bpchar
     /// not nullable 
     pub isvendor:String,
-    /// defaults to: NULL::numeric
     pub logo_id:Option<f64>,
     pub m_discountschema_id:Option<f64>,
     pub m_pricelist_id:Option<f64>,
@@ -14106,6 +15291,8 @@ pub struct CBpartner {
     pub ad_orgbp:Option<AdOrg>,
     /// has one
     pub c_taxgroup:Option<CTaxgroup>,
+    /// has one
+    pub logo:Option<AdImage>,
     /// has many
     pub a_asset:Option<Vec<AAsset>>,
     /// has many
@@ -14114,6 +15301,8 @@ pub struct CBpartner {
     pub ad_archive:Option<Vec<AdArchive>>,
     /// has many
     pub ad_clientinfo:Option<Vec<AdClientinfo>>,
+    /// has many
+    pub ad_memo:Option<Vec<AdMemo>>,
     /// has many
     pub ad_user:Option<Vec<AdUser>>,
     /// has many
@@ -14145,6 +15334,8 @@ pub struct CBpartner {
     /// has many
     pub c_bpartner_product:Option<Vec<CBpartnerProduct>>,
     /// has many
+    pub c_cashflow:Option<Vec<CCashflow>>,
+    /// has many
     pub c_charge:Option<Vec<CCharge>>,
     /// has many
     pub c_commission:Option<Vec<CCommission>>,
@@ -14156,6 +15347,8 @@ pub struct CBpartner {
     pub c_invoice:Option<Vec<CInvoice>>,
     /// has many
     pub c_invoicebatchline:Option<Vec<CInvoicebatchline>>,
+    /// has many
+    pub c_opportunity:Option<Vec<COpportunity>>,
     /// has many
     pub c_order:Option<Vec<COrder>>,
     /// has many
@@ -14175,6 +15368,8 @@ pub struct CBpartner {
     /// has many
     pub c_rfqresponse:Option<Vec<CRfqresponse>>,
     /// has many
+    pub c_saleshistory:Option<Vec<CSaleshistory>>,
+    /// has many
     pub c_subscription:Option<Vec<CSubscription>>,
     /// has many
     pub c_taxdeclarationline:Option<Vec<CTaxdeclarationline>>,
@@ -14189,17 +15384,29 @@ pub struct CBpartner {
     /// has many
     pub fact_acct:Option<Vec<FactAcct>>,
     /// has many
+    pub fact_acct_summary:Option<Vec<FactAcctSummary>>,
+    /// has many
     pub gl_distribution:Option<Vec<GlDistribution>>,
     /// has many
     pub gl_distributionline:Option<Vec<GlDistributionline>>,
+    /// has many
+    pub gl_journalline:Option<Vec<GlJournalline>>,
     /// has many
     pub hr_attribute:Option<Vec<HrAttribute>>,
     /// has many
     pub hr_contract:Option<Vec<HrContract>>,
     /// has many
+    pub hr_department:Option<Vec<HrDepartment>>,
+    /// has many
     pub hr_employee:Option<Vec<HrEmployee>>,
     /// has many
+    pub hr_interview:Option<Vec<HrInterview>>,
+    /// has many
+    pub hr_jobapplication:Option<Vec<HrJobapplication>>,
+    /// has many
     pub hr_movement:Option<Vec<HrMovement>>,
+    /// has many
+    pub hr_payselectioncheck:Option<Vec<HrPayselectioncheck>>,
     /// has many
     pub hr_process:Option<Vec<HrProcess>>,
     /// has many
@@ -14213,13 +15420,25 @@ pub struct CBpartner {
     /// has many
     pub i_gljournal:Option<Vec<IGljournal>>,
     /// has many
+    pub i_hr_movement:Option<Vec<IHrMovement>>,
+    /// has many
     pub i_invoice:Option<Vec<IInvoice>>,
+    /// has many
+    pub i_movement:Option<Vec<IMovement>>,
     /// has many
     pub i_order:Option<Vec<IOrder>>,
     /// has many
     pub i_payment:Option<Vec<IPayment>>,
     /// has many
+    pub i_pricelist:Option<Vec<IPricelist>>,
+    /// has many
     pub i_product:Option<Vec<IProduct>>,
+    /// has many
+    pub i_productplanning:Option<Vec<IProductplanning>>,
+    /// has many
+    pub i_saleshistory:Option<Vec<ISaleshistory>>,
+    /// has many
+    pub m_bp_price:Option<Vec<MBpPrice>>,
     /// has many
     pub m_discountschemaline:Option<Vec<MDiscountschemaline>>,
     /// has many
@@ -14233,6 +15452,12 @@ pub struct CBpartner {
     /// has many
     pub m_product_po:Option<Vec<MProductPo>>,
     /// has many
+    pub m_productpricevendorbreak:Option<Vec<MProductpricevendorbreak>>,
+    /// has many
+    pub m_promotionprecondition:Option<Vec<MPromotionprecondition>>,
+    /// has many
+    pub m_requisitionline:Option<Vec<MRequisitionline>>,
+    /// has many
     pub m_rma:Option<Vec<MRma>>,
     /// has many
     pub m_shipper:Option<Vec<MShipper>>,
@@ -14244,6 +15469,8 @@ pub struct CBpartner {
     pub pa_reportsource:Option<Vec<PaReportsource>>,
     /// has many
     pub pa_sla_goal:Option<Vec<PaSlaGoal>>,
+    /// has many
+    pub pp_forecastdefinitionline:Option<Vec<PpForecastdefinitionline>>,
     /// has many
     pub pp_mrp:Option<Vec<PpMrp>>,
     /// has many
@@ -14261,6 +15488,8 @@ pub struct CBpartner {
     /// has many
     pub t_distributionrundetail:Option<Vec<TDistributionrundetail>>,
     /// has many
+    pub u_posterminal:Option<Vec<UPosterminal>>,
+    /// has many
     pub w_advertisement:Option<Vec<WAdvertisement>>,
     /// has many
     pub w_basket:Option<Vec<WBasket>>,
@@ -14268,6 +15497,10 @@ pub struct CBpartner {
     pub w_clickcount:Option<Vec<WClickcount>>,
     /// has many
     pub w_countercount:Option<Vec<WCountercount>>,
+    /// has many
+    pub wm_definition:Option<Vec<WmDefinition>>,
+    /// has many
+    pub wm_inoutbound:Option<Vec<WmInoutbound>>,
 }
 
 #[derive(Debug)]
@@ -14283,12 +15516,16 @@ pub struct CBpartnerLocation {
     pub c_bpartner_id:f64,
     pub c_location_id:Option<f64>,
     pub c_salesregion_id:Option<f64>,
+    pub contactperson:Option<String>,
+    pub contacttype:Option<String>,
     /// defaults to: now()
     /// not nullable 
     pub created:NaiveDateTime,
     /// not nullable 
     pub createdby:f64,
+    pub email:Option<String>,
     pub fax:Option<String>,
+    pub hr_relationship_id:Option<f64>,
     /// defaults to: 'Y'::bpchar
     /// not nullable 
     pub isactive:String,
@@ -14305,6 +15542,7 @@ pub struct CBpartnerLocation {
     /// defaults to: 'Y'::bpchar
     /// not nullable 
     pub isshipto:String,
+    pub mobilephone:Option<String>,
     /// not nullable 
     pub name:String,
     pub phone:Option<String>,
@@ -14324,6 +15562,8 @@ pub struct CBpartnerLocation {
     pub c_bpartner:Option<CBpartner>,
     /// has one
     pub c_location:Option<CLocation>,
+    /// has one
+    pub hr_relationship:Option<HrRelationship>,
     /// has many
     pub a_asset:Option<Vec<AAsset>>,
     /// has many
@@ -14351,6 +15591,8 @@ pub struct CBpartnerLocation {
     /// has many
     pub c_rfqresponse:Option<Vec<CRfqresponse>>,
     /// has many
+    pub c_saleshistory:Option<Vec<CSaleshistory>>,
+    /// has many
     pub dd_order:Option<Vec<DdOrder>>,
     /// has many
     pub i_asset:Option<Vec<IAsset>>,
@@ -14361,6 +15603,8 @@ pub struct CBpartnerLocation {
     /// has many
     pub i_order:Option<Vec<IOrder>>,
     /// has many
+    pub i_saleshistory:Option<Vec<ISaleshistory>>,
+    /// has many
     pub m_distributionlistline:Option<Vec<MDistributionlistline>>,
     /// has many
     pub m_distributionrun:Option<Vec<MDistributionrun>>,
@@ -14368,6 +15612,8 @@ pub struct CBpartnerLocation {
     pub m_inout:Option<Vec<MInout>>,
     /// has many
     pub t_distributionrundetail:Option<Vec<TDistributionrundetail>>,
+    /// has many
+    pub wm_inoutbound:Option<Vec<WmInoutbound>>,
 }
 
 #[derive(Debug)]
@@ -14391,6 +15637,9 @@ pub struct CBpartnerProduct {
     /// defaults to: 'Y'::bpchar
     /// not nullable 
     pub isactive:String,
+    /// defaults to: 'N'::bpchar
+    /// not nullable 
+    pub ismanufacturer:String,
     pub manufacturer:Option<String>,
     pub qualityrating:Option<f64>,
     /// not nullable 
@@ -14442,6 +15691,8 @@ pub struct CCalendar {
     /// has many
     pub ad_clientinfo:Option<Vec<AdClientinfo>>,
     /// has many
+    pub ad_orginfo:Option<Vec<AdOrginfo>>,
+    /// has many
     pub c_nonbusinessday:Option<Vec<CNonbusinessday>>,
     /// has many
     pub c_year:Option<Vec<CYear>>,
@@ -14451,6 +15702,8 @@ pub struct CCalendar {
     pub m_forecast:Option<Vec<MForecast>>,
     /// has many
     pub pa_report:Option<Vec<PaReport>>,
+    /// has many
+    pub pa_reportcube:Option<Vec<PaReportcube>>,
 }
 
 #[derive(Debug)]
@@ -14492,6 +15745,10 @@ pub struct CCampaign {
     /// has one
     pub c_channel:Option<CChannel>,
     /// has many
+    pub ad_memo:Option<Vec<AdMemo>>,
+    /// has many
+    pub ad_user:Option<Vec<AdUser>>,
+    /// has many
     pub c_acctschema_element:Option<Vec<CAcctschemaElement>>,
     /// has many
     pub c_cash:Option<Vec<CCash>>,
@@ -14499,6 +15756,8 @@ pub struct CCampaign {
     pub c_invoice:Option<Vec<CInvoice>>,
     /// has many
     pub c_invoiceline:Option<Vec<CInvoiceline>>,
+    /// has many
+    pub c_opportunity:Option<Vec<COpportunity>>,
     /// has many
     pub c_order:Option<Vec<COrder>>,
     /// has many
@@ -14508,6 +15767,8 @@ pub struct CCampaign {
     /// has many
     pub c_project:Option<Vec<CProject>>,
     /// has many
+    pub c_saleshistory:Option<Vec<CSaleshistory>>,
+    /// has many
     pub c_validcombination:Option<Vec<CValidcombination>>,
     /// has many
     pub dd_order:Option<Vec<DdOrder>>,
@@ -14516,9 +15777,13 @@ pub struct CCampaign {
     /// has many
     pub fact_acct:Option<Vec<FactAcct>>,
     /// has many
+    pub fact_acct_summary:Option<Vec<FactAcctSummary>>,
+    /// has many
     pub gl_distribution:Option<Vec<GlDistribution>>,
     /// has many
     pub gl_distributionline:Option<Vec<GlDistributionline>>,
+    /// has many
+    pub gl_journalline:Option<Vec<GlJournalline>>,
     /// has many
     pub hr_contract:Option<Vec<HrContract>>,
     /// has many
@@ -14530,7 +15795,13 @@ pub struct CCampaign {
     /// has many
     pub i_invoice:Option<Vec<IInvoice>>,
     /// has many
+    pub i_movement:Option<Vec<IMovement>>,
+    /// has many
     pub i_order:Option<Vec<IOrder>>,
+    /// has many
+    pub i_saleshistory:Option<Vec<ISaleshistory>>,
+    /// has many
+    pub m_forecast:Option<Vec<MForecast>>,
     /// has many
     pub m_inout:Option<Vec<MInout>>,
     /// has many
@@ -14542,11 +15813,15 @@ pub struct CCampaign {
     /// has many
     pub m_production:Option<Vec<MProduction>>,
     /// has many
+    pub m_promotion:Option<Vec<MPromotion>>,
+    /// has many
     pub pa_reportcolumn:Option<Vec<PaReportcolumn>>,
     /// has many
     pub pa_reportsource:Option<Vec<PaReportsource>>,
     /// has many
     pub pp_cost_collector:Option<Vec<PpCostCollector>>,
+    /// has many
+    pub pp_forecastdefinitionline:Option<Vec<PpForecastdefinitionline>>,
     /// has many
     pub pp_order:Option<Vec<PpOrder>>,
     /// has many
@@ -14555,6 +15830,10 @@ pub struct CCampaign {
     pub s_timeexpenseline:Option<Vec<STimeexpenseline>>,
     /// has many
     pub t_aging:Option<Vec<TAging>>,
+    /// has many
+    pub wm_inoutbound:Option<Vec<WmInoutbound>>,
+    /// has many
+    pub wm_inoutboundline:Option<Vec<WmInoutboundline>>,
 }
 
 #[derive(Debug)]
@@ -14604,6 +15883,7 @@ pub struct CCash {
     /// defaults to: 'N'::bpchar
     /// not nullable 
     pub processed:String,
+    pub processedon:Option<f64>,
     pub processing:Option<String>,
     /// not nullable 
     pub statementdate:NaiveDateTime,
@@ -14678,6 +15958,8 @@ pub struct CCashbook {
     pub c_payment:Option<Vec<CPayment>>,
     /// has many
     pub c_pos:Option<Vec<CPos>>,
+    /// has many
+    pub u_posterminal:Option<Vec<UPosterminal>>,
 }
 
 #[derive(Debug)]
@@ -14729,6 +16011,70 @@ pub struct CCashbookAcct {
     pub cb_expense_acct:Option<CValidcombination>,
     /// has one
     pub cb_receipt_acct:Option<CValidcombination>,
+}
+
+#[derive(Debug)]
+pub struct CCashflow {
+    /// primary
+    /// defaults to: NULL::numeric
+    /// not nullable 
+    pub c_cashflow_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// not nullable 
+    pub ad_orgtrx_id:f64,
+    /// defaults to: NULL::numeric
+    pub c_bankaccount_id:Option<f64>,
+    /// not nullable 
+    pub c_bpartner_id:f64,
+    /// defaults to: NULL::numeric
+    pub c_conversiontype_id:Option<f64>,
+    /// not nullable 
+    pub c_currency_id:f64,
+    /// not nullable 
+    pub c_paymentterm_id:f64,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    /// not nullable 
+    pub dateinvoiced:NaiveDateTime,
+    /// defaults to: NULL::character varying
+    pub description:Option<String>,
+    /// not nullable 
+    pub documentno:String,
+    pub duedate:Option<NaiveDateTime>,
+    pub grandtotal:Option<f64>,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// defaults to: NULL::bpchar
+    pub issotrx:Option<String>,
+    /// defaults to: NULL::character varying
+    pub name:Option<String>,
+    /// defaults to: 'N'::bpchar
+    pub processed:Option<String>,
+    pub processedon:Option<f64>,
+    /// defaults to: NULL::bpchar
+    pub processing:Option<String>,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// has one
+    pub c_conversiontype:Option<CConversiontype>,
+    /// has one
+    pub c_currency:Option<CCurrency>,
+    /// has one
+    pub c_paymentterm:Option<CPaymentterm>,
+    /// has one
+    pub ad_orgtrx:Option<AdOrg>,
+    /// has one
+    pub c_bpartner:Option<CBpartner>,
+    /// has one
+    pub c_bankaccount:Option<CBankaccount>,
 }
 
 #[derive(Debug)]
@@ -14873,12 +16219,18 @@ pub struct CCharge {
     pub c_taxcategory:Option<CTaxcategory>,
     /// has one
     pub c_bpartner:Option<CBpartner>,
+    /// has one
+    pub c_chargetype:Option<CChargetype>,
+    /// has many
+    pub c_allocationline:Option<Vec<CAllocationline>>,
     /// has many
     pub c_bankstatementline:Option<Vec<CBankstatementline>>,
     /// has many
     pub c_cashline:Option<Vec<CCashline>>,
     /// has many
     pub c_charge_acct:Option<Vec<CChargeAcct>>,
+    /// has many
+    pub c_charge_trl:Option<Vec<CChargeTrl>>,
     /// has many
     pub c_commission:Option<Vec<CCommission>>,
     /// has many
@@ -14898,13 +16250,19 @@ pub struct CCharge {
     /// has many
     pub dd_orderline:Option<Vec<DdOrderline>>,
     /// has many
+    pub hr_attribute:Option<Vec<HrAttribute>>,
+    /// has many
     pub hr_payroll:Option<Vec<HrPayroll>>,
     /// has many
     pub hr_process:Option<Vec<HrProcess>>,
     /// has many
     pub i_bankstatement:Option<Vec<IBankstatement>>,
     /// has many
+    pub i_elementvalue:Option<Vec<IElementvalue>>,
+    /// has many
     pub i_invoice:Option<Vec<IInvoice>>,
+    /// has many
+    pub i_order:Option<Vec<IOrder>>,
     /// has many
     pub i_payment:Option<Vec<IPayment>>,
     /// has many
@@ -14916,9 +16274,13 @@ pub struct CCharge {
     /// has many
     pub m_movement:Option<Vec<MMovement>>,
     /// has many
+    pub m_promotionreward:Option<Vec<MPromotionreward>>,
+    /// has many
     pub m_requisitionline:Option<Vec<MRequisitionline>>,
     /// has many
     pub m_rmaline:Option<Vec<MRmaline>>,
+    /// has many
+    pub wm_inoutboundline:Option<Vec<WmInoutboundline>>,
 }
 
 #[derive(Debug)]
@@ -14990,6 +16352,10 @@ pub struct CChargeTrl {
     pub updated:NaiveDateTime,
     /// not nullable 
     pub updatedby:f64,
+    /// has one
+    pub ad_language:Option<AdLanguage>,
+    /// has one
+    pub c_charge:Option<CCharge>,
 }
 
 #[derive(Debug)]
@@ -14997,10 +16363,8 @@ pub struct CChargetype {
     /// primary
     /// not nullable 
     pub c_chargetype_id:f64,
-    /// defaults to: NULL::numeric
     /// not nullable 
     pub ad_client_id:f64,
-    /// defaults to: NULL::numeric
     /// not nullable 
     pub ad_org_id:f64,
     /// not nullable 
@@ -15020,6 +16384,10 @@ pub struct CChargetype {
     pub updatedby:f64,
     /// not nullable 
     pub value:String,
+    /// has many
+    pub c_charge:Option<Vec<CCharge>>,
+    /// has many
+    pub c_chargetype_doctype:Option<Vec<CChargetypeDoctype>>,
 }
 
 #[derive(Debug)]
@@ -15030,10 +16398,8 @@ pub struct CChargetypeDoctype {
     /// primary
     /// not nullable 
     pub c_doctype_id:f64,
-    /// defaults to: NULL::numeric
     /// not nullable 
     pub ad_client_id:f64,
-    /// defaults to: NULL::numeric
     /// not nullable 
     pub ad_org_id:f64,
     /// not nullable 
@@ -15053,6 +16419,10 @@ pub struct CChargetypeDoctype {
     pub updated:NaiveDateTime,
     /// not nullable 
     pub updatedby:f64,
+    /// has one
+    pub c_chargetype:Option<CChargetype>,
+    /// has one
+    pub c_doctype:Option<CDoctype>,
 }
 
 #[derive(Debug)]
@@ -15351,6 +16721,48 @@ pub struct CCommissionrun {
 }
 
 #[derive(Debug)]
+pub struct CContactactivity {
+    /// primary
+    /// not nullable 
+    pub c_contactactivity_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    pub ad_user_id:Option<f64>,
+    pub c_opportunity_id:Option<f64>,
+    pub comments:Option<String>,
+    /// not nullable 
+    pub contactactivitytype:String,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    /// defaults to: NULL::character varying
+    /// not nullable 
+    pub description:String,
+    pub enddate:Option<NaiveDateTime>,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// defaults to: NULL::bpchar
+    pub iscomplete:Option<String>,
+    pub salesrep_id:Option<f64>,
+    /// not nullable 
+    pub startdate:NaiveDateTime,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// has one
+    pub salesrep:Option<AdUser>,
+    /// has one
+    pub ad_user:Option<AdUser>,
+    /// has one
+    pub c_opportunity:Option<COpportunity>,
+}
+
+#[derive(Debug)]
 pub struct CConversionRate {
     /// primary
     /// not nullable 
@@ -15432,6 +16844,8 @@ pub struct CConversiontype {
     /// not nullable 
     pub value:String,
     /// has many
+    pub c_cashflow:Option<Vec<CCashflow>>,
+    /// has many
     pub c_conversion_rate:Option<Vec<CConversionRate>>,
     /// has many
     pub c_invoice:Option<Vec<CInvoice>>,
@@ -15465,7 +16879,10 @@ pub struct CCountry {
     pub ad_language:Option<String>,
     /// not nullable 
     pub ad_org_id:f64,
+    /// defaults to: 'Y'::bpchar
+    pub allowcitiesoutoflist:Option<String>,
     pub c_currency_id:Option<f64>,
+    pub capturesequence:Option<String>,
     /// not nullable 
     pub countrycode:String,
     /// defaults to: now()
@@ -15535,6 +16952,8 @@ pub struct CCountry {
     pub c_region:Option<Vec<CRegion>>,
     /// has many
     pub c_tax:Option<Vec<CTax>>,
+    /// has many
+    pub hr_employee:Option<Vec<HrEmployee>>,
     /// has many
     pub i_bpartner:Option<Vec<IBpartner>>,
     /// has many
@@ -15647,6 +17066,8 @@ pub struct CCurrency {
     /// has many
     pub c_cashbook:Option<Vec<CCashbook>>,
     /// has many
+    pub c_cashflow:Option<Vec<CCashflow>>,
+    /// has many
     pub c_cashline:Option<Vec<CCashline>>,
     /// has many
     pub c_commission:Option<Vec<CCommission>>,
@@ -15670,6 +17091,8 @@ pub struct CCurrency {
     pub c_invoice:Option<Vec<CInvoice>>,
     /// has many
     pub c_invoicebatch:Option<Vec<CInvoicebatch>>,
+    /// has many
+    pub c_opportunity:Option<Vec<COpportunity>>,
     /// has many
     pub c_order:Option<Vec<COrder>>,
     /// has many
@@ -15711,7 +17134,11 @@ pub struct CCurrency {
     /// has many
     pub i_payment:Option<Vec<IPayment>>,
     /// has many
+    pub i_pricelist:Option<Vec<IPricelist>>,
+    /// has many
     pub i_product:Option<Vec<IProduct>>,
+    /// has many
+    pub m_bp_price:Option<Vec<MBpPrice>>,
     /// has many
     pub m_freight:Option<Vec<MFreight>>,
     /// has many
@@ -15977,6 +17404,9 @@ pub struct CDoctype {
     /// defaults to: 'N'::bpchar
     /// not nullable 
     pub ispickqaconfirm:String,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub ispreparesplitdocument:String,
     /// defaults to: 'N'::bpchar
     /// not nullable 
     pub isshipconfirm:String,
@@ -16020,6 +17450,8 @@ pub struct CDoctype {
     /// has many
     pub ad_replicationdocument:Option<Vec<AdReplicationdocument>>,
     /// has many
+    pub c_chargetype_doctype:Option<Vec<CChargetypeDoctype>>,
+    /// has many
     pub c_doctype:Option<Vec<CDoctype>>,
     /// has many
     pub c_doctype_trl:Option<Vec<CDoctypeTrl>>,
@@ -16044,6 +17476,10 @@ pub struct CDoctype {
     /// has many
     pub gl_journalbatch:Option<Vec<GlJournalbatch>>,
     /// has many
+    pub hr_attribute:Option<Vec<HrAttribute>>,
+    /// has many
+    pub hr_jobopening:Option<Vec<HrJobopening>>,
+    /// has many
     pub hr_process:Option<Vec<HrProcess>>,
     /// has many
     pub i_fajournal:Option<Vec<IFajournal>>,
@@ -16051,6 +17487,8 @@ pub struct CDoctype {
     pub i_gljournal:Option<Vec<IGljournal>>,
     /// has many
     pub i_invoice:Option<Vec<IInvoice>>,
+    /// has many
+    pub i_movement:Option<Vec<IMovement>>,
     /// has many
     pub i_order:Option<Vec<IOrder>>,
     /// has many
@@ -16077,6 +17515,8 @@ pub struct CDoctype {
     pub t_invoicegl:Option<Vec<TInvoicegl>>,
     /// has many
     pub t_replenish:Option<Vec<TReplenish>>,
+    /// has many
+    pub wm_inoutbound:Option<Vec<WmInoutbound>>,
 }
 
 #[derive(Debug)]
@@ -16200,6 +17640,8 @@ pub struct CDunning {
     pub c_bpartner:Option<Vec<CBpartner>>,
     /// has many
     pub c_dunninglevel:Option<Vec<CDunninglevel>>,
+    /// has many
+    pub c_dunningrun:Option<Vec<CDunningrun>>,
 }
 
 #[derive(Debug)]
@@ -16235,6 +17677,7 @@ pub struct CDunninglevel {
     pub feeamt:Option<f64>,
     /// defaults to: 0
     pub interestpercent:Option<f64>,
+    pub invoicecollectiontype:Option<String>,
     /// defaults to: 'Y'::bpchar
     /// not nullable 
     pub isactive:String,
@@ -16250,6 +17693,9 @@ pub struct CDunninglevel {
     /// defaults to: 'N'::bpchar
     /// not nullable 
     pub isshownotdue:String,
+    /// defaults to: 'N'::bpchar
+    /// not nullable 
+    pub isstatement:String,
     /// defaults to: 'x'::character varying
     /// not nullable 
     pub name:String,
@@ -16272,7 +17718,11 @@ pub struct CDunninglevel {
     /// has many
     pub c_dunningrun:Option<Vec<CDunningrun>>,
     /// has many
+    pub c_dunningrunentry:Option<Vec<CDunningrunentry>>,
+    /// has many
     pub c_invoice:Option<Vec<CInvoice>>,
+    /// has many
+    pub i_invoice:Option<Vec<IInvoice>>,
 }
 
 #[derive(Debug)]
@@ -16322,7 +17772,8 @@ pub struct CDunningrun {
     /// not nullable 
     pub ad_org_id:f64,
     /// not nullable 
-    pub c_dunninglevel_id:f64,
+    pub c_dunning_id:f64,
+    pub c_dunninglevel_id:Option<f64>,
     /// defaults to: now()
     /// not nullable 
     pub created:NaiveDateTime,
@@ -16346,6 +17797,8 @@ pub struct CDunningrun {
     pub updatedby:f64,
     /// has one
     pub c_dunninglevel:Option<CDunninglevel>,
+    /// has one
+    pub c_dunning:Option<CDunning>,
     /// has many
     pub c_dunningrunentry:Option<Vec<CDunningrunentry>>,
 }
@@ -16369,6 +17822,8 @@ pub struct CDunningrunentry {
     pub c_bpartner_location_id:f64,
     /// not nullable 
     pub c_currency_id:f64,
+    /// not nullable 
+    pub c_dunninglevel_id:f64,
     /// not nullable 
     pub c_dunningrun_id:f64,
     /// defaults to: now()
@@ -16405,6 +17860,8 @@ pub struct CDunningrunentry {
     pub c_currency:Option<CCurrency>,
     /// has one
     pub salesrep:Option<AdUser>,
+    /// has one
+    pub c_dunninglevel:Option<CDunninglevel>,
     /// has many
     pub c_dunningrunline:Option<Vec<CDunningrunline>>,
 }
@@ -16611,6 +18068,8 @@ pub struct CElementvalue {
     /// has many
     pub c_payment:Option<Vec<CPayment>>,
     /// has many
+    pub c_saleshistory:Option<Vec<CSaleshistory>>,
+    /// has many
     pub c_subacct:Option<Vec<CSubacct>>,
     /// has many
     pub c_validcombination:Option<Vec<CValidcombination>>,
@@ -16621,11 +18080,15 @@ pub struct CElementvalue {
     /// has many
     pub fact_acct:Option<Vec<FactAcct>>,
     /// has many
+    pub fact_acct_summary:Option<Vec<FactAcctSummary>>,
+    /// has many
     pub gl_distribution:Option<Vec<GlDistribution>>,
     /// has many
     pub gl_distributionline:Option<Vec<GlDistributionline>>,
     /// has many
     pub gl_fundrestriction:Option<Vec<GlFundrestriction>>,
+    /// has many
+    pub gl_journalline:Option<Vec<GlJournalline>>,
     /// has many
     pub hr_concept_acct:Option<Vec<HrConceptAcct>>,
     /// has many
@@ -16638,6 +18101,8 @@ pub struct CElementvalue {
     pub i_gljournal:Option<Vec<IGljournal>>,
     /// has many
     pub i_reportline:Option<Vec<IReportline>>,
+    /// has many
+    pub i_saleshistory:Option<Vec<ISaleshistory>>,
     /// has many
     pub m_inout:Option<Vec<MInout>>,
     /// has many
@@ -16656,6 +18121,10 @@ pub struct CElementvalue {
     pub pa_reportsource:Option<Vec<PaReportsource>>,
     /// has many
     pub pp_order:Option<Vec<PpOrder>>,
+    /// has many
+    pub wm_inoutbound:Option<Vec<WmInoutbound>>,
+    /// has many
+    pub wm_inoutboundline:Option<Vec<WmInoutboundline>>,
 }
 
 #[derive(Debug)]
@@ -16774,6 +18243,60 @@ pub struct CGreetingTrl {
 }
 
 #[derive(Debug)]
+pub struct CHrPayselectionCheckV {
+    /// defaults to: NULL::numeric
+    pub ad_client_id:Option<f64>,
+    /// defaults to: NULL::character varying
+    pub ad_language:Option<String>,
+    /// defaults to: NULL::numeric
+    pub ad_org_id:Option<f64>,
+    pub amtinwords:Option<f64>,
+    /// defaults to: NULL::character varying
+    pub bpgreeting:Option<String>,
+    /// defaults to: NULL::character varying
+    pub bptaxid:Option<String>,
+    /// defaults to: NULL::character varying
+    pub bpvalue:Option<String>,
+    /// defaults to: NULL::numeric
+    pub c_bpartner_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub c_doctype_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub c_location_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub c_payselection_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub c_payselectioncheck_id:Option<f64>,
+    /// defaults to: NULL::character varying
+    pub documentno:Option<String>,
+    /// defaults to: NULL::character varying
+    pub duns:Option<String>,
+    /// defaults to: NULL::numeric
+    pub hr_payselection_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub hr_payselectioncheck_id:Option<f64>,
+    /// defaults to: NULL::character varying
+    pub naics:Option<String>,
+    /// defaults to: NULL::character varying
+    pub name:Option<String>,
+    /// defaults to: NULL::character varying
+    pub name2:Option<String>,
+    /// defaults to: NULL::numeric
+    pub org_location_id:Option<f64>,
+    pub payamt:Option<f64>,
+    pub paydate:Option<NaiveDateTime>,
+    /// defaults to: NULL::bpchar
+    pub paymentrule:Option<String>,
+    /// defaults to: NULL::character varying
+    pub poreference:Option<String>,
+    pub qty:Option<f64>,
+    /// defaults to: NULL::character varying
+    pub referenceno:Option<String>,
+    /// defaults to: NULL::character varying
+    pub taxid:Option<String>,
+}
+
+#[derive(Debug)]
 pub struct CInterorgAcct {
     /// primary
     /// not nullable 
@@ -16869,7 +18392,7 @@ pub struct CInvoice {
     pub docstatus:String,
     /// not nullable 
     pub documentno:String,
-    pub dunninggrace:Option<NaiveDate>,
+    pub dunninggrace:Option<NaiveDateTime>,
     pub generateto:Option<String>,
     /// defaults to: 0
     /// not nullable 
@@ -16920,6 +18443,7 @@ pub struct CInvoice {
     /// defaults to: 'N'::bpchar
     /// not nullable 
     pub processed:String,
+    pub processedon:Option<f64>,
     pub processing:Option<String>,
     pub ref_invoice_id:Option<f64>,
     pub reversal_id:Option<f64>,
@@ -17021,6 +18545,8 @@ pub struct CInvoice {
     pub c_taxdeclarationline:Option<Vec<CTaxdeclarationline>>,
     /// has many
     pub dd_order:Option<Vec<DdOrder>>,
+    /// has many
+    pub hr_attribute:Option<Vec<HrAttribute>>,
     /// has many
     pub i_bankstatement:Option<Vec<IBankstatement>>,
     /// has many
@@ -17233,6 +18759,7 @@ pub struct CInvoiceline {
     /// not nullable 
     pub createdby:f64,
     pub description:Option<String>,
+    pub generateto:Option<String>,
     /// defaults to: 'Y'::bpchar
     /// not nullable 
     pub isactive:String,
@@ -17346,6 +18873,8 @@ pub struct CInvoiceline {
     pub c_landedcostallocation:Option<Vec<CLandedcostallocation>>,
     /// has many
     pub c_revenuerecognition_plan:Option<Vec<CRevenuerecognitionPlan>>,
+    /// has many
+    pub c_saleshistory:Option<Vec<CSaleshistory>>,
     /// has many
     pub c_taxdeclarationline:Option<Vec<CTaxdeclarationline>>,
     /// has many
@@ -17709,9 +19238,14 @@ pub struct CLandedcostallocation {
     pub created:NaiveDateTime,
     /// not nullable 
     pub createdby:f64,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
     pub m_attributesetinstance_id:Option<f64>,
     /// not nullable 
     pub m_costelement_id:f64,
+    /// defaults to: NULL::numeric
+    pub m_inoutline_id:Option<f64>,
     /// not nullable 
     pub m_product_id:f64,
     /// defaults to: 0
@@ -17730,6 +19264,10 @@ pub struct CLandedcostallocation {
     pub m_attributesetinstance:Option<MAttributesetinstance>,
     /// has one
     pub m_costelement:Option<MCostelement>,
+    /// has one
+    pub m_inoutline:Option<MInoutline>,
+    /// has many
+    pub m_costdetail:Option<Vec<MCostdetail>>,
 }
 
 #[derive(Debug)]
@@ -17783,6 +19321,8 @@ pub struct CLocation {
     /// has many
     pub ad_orginfo:Option<Vec<AdOrginfo>>,
     /// has many
+    pub ad_registration:Option<Vec<AdRegistration>>,
+    /// has many
     pub c_acctschema_element:Option<Vec<CAcctschemaElement>>,
     /// has many
     pub c_bank:Option<Vec<CBank>>,
@@ -17793,9 +19333,13 @@ pub struct CLocation {
     /// has many
     pub fact_acct:Option<Vec<FactAcct>>,
     /// has many
+    pub fact_acct_summary:Option<Vec<FactAcctSummary>>,
+    /// has many
     pub gl_distribution:Option<Vec<GlDistribution>>,
     /// has many
     pub gl_distributionline:Option<Vec<GlDistributionline>>,
+    /// has many
+    pub gl_journalline:Option<Vec<GlJournalline>>,
     /// has many
     pub i_asset:Option<Vec<IAsset>>,
     /// has many
@@ -17804,6 +19348,8 @@ pub struct CLocation {
     pub i_invoice:Option<Vec<IInvoice>>,
     /// has many
     pub i_order:Option<Vec<IOrder>>,
+    /// has many
+    pub m_movement:Option<Vec<MMovement>>,
     /// has many
     pub m_warehouse:Option<Vec<MWarehouse>>,
     /// has many
@@ -17848,6 +19394,70 @@ pub struct CNonbusinessday {
 }
 
 #[derive(Debug)]
+pub struct COpportunity {
+    /// primary
+    /// not nullable 
+    pub c_opportunity_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    pub ad_user_id:Option<f64>,
+    /// not nullable 
+    pub c_bpartner_id:f64,
+    /// defaults to: NULL::numeric
+    pub c_campaign_id:Option<f64>,
+    /// not nullable 
+    pub c_currency_id:f64,
+    pub c_order_id:Option<f64>,
+    /// not nullable 
+    pub c_salesstage_id:f64,
+    pub closedate:Option<NaiveDateTime>,
+    pub comments:Option<String>,
+    pub cost:Option<f64>,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    /// defaults to: NULL::character varying
+    pub description:Option<String>,
+    /// not nullable 
+    pub documentno:String,
+    /// not nullable 
+    pub expectedclosedate:NaiveDateTime,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// not nullable 
+    pub opportunityamt:f64,
+    /// not nullable 
+    pub probability:f64,
+    pub salesrep_id:Option<f64>,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// has one
+    pub c_bpartner:Option<CBpartner>,
+    /// has one
+    pub ad_user:Option<AdUser>,
+    /// has one
+    pub c_campaign:Option<CCampaign>,
+    /// has one
+    pub salesrep:Option<AdUser>,
+    /// has one
+    pub c_currency:Option<CCurrency>,
+    /// has one
+    pub c_salesstage:Option<CSalesstage>,
+    /// has one
+    pub c_order:Option<COrder>,
+    /// has many
+    pub c_contactactivity:Option<Vec<CContactactivity>>,
+    /// has many
+    pub c_order:Option<Vec<COrder>>,
+}
+
+#[derive(Debug)]
 pub struct COrder {
     /// primary
     /// not nullable 
@@ -17878,6 +19488,9 @@ pub struct COrder {
     pub c_doctype_id:f64,
     /// not nullable 
     pub c_doctypetarget_id:f64,
+    /// defaults to: NULL::numeric
+    pub c_opportunity_id:Option<f64>,
+    pub c_ordersource_id:Option<f64>,
     pub c_payment_id:Option<f64>,
     /// not nullable 
     pub c_paymentterm_id:f64,
@@ -17960,7 +19573,6 @@ pub struct COrder {
     /// not nullable 
     pub istransferred:String,
     pub link_order_id:Option<f64>,
-    /// defaults to: NULL::numeric
     pub m_freightcategory_id:Option<f64>,
     /// not nullable 
     pub m_pricelist_id:f64,
@@ -17981,6 +19593,7 @@ pub struct COrder {
     /// defaults to: 'N'::bpchar
     /// not nullable 
     pub processed:String,
+    pub processedon:Option<f64>,
     pub processing:Option<String>,
     pub promotioncode:Option<String>,
     pub ref_order_id:Option<f64>,
@@ -18062,6 +19675,16 @@ pub struct COrder {
     pub link_order:Option<Box<COrder>>,
     /// has one
     pub m_freightcategory:Option<MFreightcategory>,
+    /// has one
+    pub dropship_bpartner:Option<CBpartner>,
+    /// has one
+    pub dropship_location:Option<CBpartnerLocation>,
+    /// has one
+    pub dropship_user:Option<AdUser>,
+    /// has one
+    pub c_ordersource:Option<COrdersource>,
+    /// has one
+    pub c_opportunity:Option<COpportunity>,
     /// has many
     pub b_buyerfunds:Option<Vec<BBuyerfunds>>,
     /// has many
@@ -18070,6 +19693,8 @@ pub struct COrder {
     pub c_allocationline:Option<Vec<CAllocationline>>,
     /// has many
     pub c_invoice:Option<Vec<CInvoice>>,
+    /// has many
+    pub c_opportunity:Option<Vec<COpportunity>>,
     /// has many
     pub c_order:Option<Vec<COrder>>,
     /// has many
@@ -18137,6 +19762,8 @@ pub struct COrderline {
     pub created:NaiveDateTime,
     /// not nullable 
     pub createdby:f64,
+    pub createfrom:Option<String>,
+    pub createshipment:Option<String>,
     pub datedelivered:Option<NaiveDateTime>,
     pub dateinvoiced:Option<NaiveDateTime>,
     /// not nullable 
@@ -18150,6 +19777,8 @@ pub struct COrderline {
     /// defaults to: 'Y'::bpchar
     /// not nullable 
     pub isactive:String,
+    /// defaults to: 'Y'::bpchar
+    pub isconsumesforecast:Option<String>,
     /// defaults to: 'N'::bpchar
     /// not nullable 
     pub isdescription:String,
@@ -18256,6 +19885,10 @@ pub struct COrderline {
     pub ad_orgtrx:Option<AdOrg>,
     /// has one, self referential
     pub link_orderline:Option<Box<COrderline>>,
+    /// has one
+    pub pp_cost_collector:Option<PpCostCollector>,
+    /// has one
+    pub m_promotion:Option<MPromotion>,
     /// has many
     pub c_commissiondetail:Option<Vec<CCommissiondetail>>,
     /// has many
@@ -18273,6 +19906,8 @@ pub struct COrderline {
     /// has many
     pub m_matchpo:Option<Vec<MMatchpo>>,
     /// has many
+    pub m_production:Option<Vec<MProduction>>,
+    /// has many
     pub m_requisitionline:Option<Vec<MRequisitionline>>,
     /// has many
     pub pp_mrp:Option<Vec<PpMrp>>,
@@ -18280,6 +19915,50 @@ pub struct COrderline {
     pub pp_order:Option<Vec<PpOrder>>,
     /// has many
     pub s_timeexpenseline:Option<Vec<STimeexpenseline>>,
+    /// has many
+    pub wm_inoutboundline:Option<Vec<WmInoutboundline>>,
+}
+
+#[derive(Debug)]
+pub struct COrdersource {
+    /// primary
+    /// not nullable 
+    pub c_ordersource_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// defaults to: now()
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    pub description:Option<String>,
+    pub help:Option<String>,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// not nullable 
+    pub name:String,
+    /// defaults to: now()
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// not nullable 
+    pub value:String,
+    /// has one
+    pub ad_client:Option<AdClient>,
+    /// has one
+    pub ad_org:Option<AdOrg>,
+    /// has one
+    pub createdby:Option<AdUser>,
+    /// has one
+    pub updatedby:Option<AdUser>,
+    /// has many
+    pub c_order:Option<Vec<COrder>>,
+    /// has many
+    pub i_order:Option<Vec<IOrder>>,
 }
 
 #[derive(Debug)]
@@ -18437,7 +20116,7 @@ pub struct CPayment {
     /// defaults to: 'N'::bpchar
     /// not nullable 
     pub isonline:String,
-    /// defaults to: 'N'::bpchar
+    /// defaults to: 'Y'::bpchar
     /// not nullable 
     pub isoverunderpayment:String,
     /// defaults to: 'N'::bpchar
@@ -18467,6 +20146,7 @@ pub struct CPayment {
     /// defaults to: 'N'::bpchar
     /// not nullable 
     pub processed:String,
+    pub processedon:Option<f64>,
     pub processing:Option<String>,
     pub r_authcode:Option<String>,
     pub r_authcode_dc:Option<String>,
@@ -18564,6 +20244,8 @@ pub struct CPayment {
     pub c_recurring:Option<Vec<CRecurring>>,
     /// has many
     pub c_recurring_run:Option<Vec<CRecurringRun>>,
+    /// has many
+    pub hr_payselectioncheck:Option<Vec<HrPayselectioncheck>>,
     /// has many
     pub i_bankstatement:Option<Vec<IBankstatement>>,
     /// has many
@@ -18812,6 +20494,8 @@ pub struct CPaymentterm {
     /// has many
     pub c_bpartner:Option<Vec<CBpartner>>,
     /// has many
+    pub c_cashflow:Option<Vec<CCashflow>>,
+    /// has many
     pub c_dunninglevel:Option<Vec<CDunninglevel>>,
     /// has many
     pub c_invoice:Option<Vec<CInvoice>>,
@@ -19040,6 +20724,7 @@ pub struct CPayselectionline {
     pub ad_org_id:f64,
     /// not nullable 
     pub c_invoice_id:f64,
+    pub c_invoicepayschedule_id:Option<f64>,
     /// not nullable 
     pub c_payselection_id:f64,
     pub c_payselectioncheck_id:Option<f64>,
@@ -19149,6 +20834,8 @@ pub struct CPeriod {
     /// has many
     pub fact_acct:Option<Vec<FactAcct>>,
     /// has many
+    pub fact_acct_summary:Option<Vec<FactAcctSummary>>,
+    /// has many
     pub gl_journal:Option<Vec<GlJournal>>,
     /// has many
     pub gl_journalbatch:Option<Vec<GlJournalbatch>>,
@@ -19255,6 +20942,7 @@ pub struct CPos {
     pub ad_client_id:f64,
     /// not nullable 
     pub ad_org_id:f64,
+    pub autologoutdelay:Option<f64>,
     pub c_bankaccount_id:Option<f64>,
     pub c_bpartnercashtrx_id:Option<f64>,
     /// not nullable 
@@ -19281,6 +20969,8 @@ pub struct CPos {
     pub m_warehouse_id:f64,
     /// not nullable 
     pub name:String,
+    pub osk_keylayout_id:Option<f64>,
+    pub osnp_keylayout_id:Option<f64>,
     pub printername:Option<String>,
     /// not nullable 
     pub salesrep_id:f64,
@@ -19305,6 +20995,10 @@ pub struct CPos {
     pub c_doctype:Option<CDoctype>,
     /// has one
     pub c_bankaccount:Option<CBankaccount>,
+    /// has one
+    pub osk_keylayout:Option<CPoskeylayout>,
+    /// has one
+    pub osnp_keylayout:Option<CPoskeylayout>,
     /// has many
     pub c_order:Option<Vec<COrder>>,
 }
@@ -19316,9 +21010,11 @@ pub struct CPoskey {
     pub c_poskey_id:f64,
     /// not nullable 
     pub ad_client_id:f64,
+    pub ad_image_id:Option<f64>,
     /// not nullable 
     pub ad_org_id:f64,
     pub ad_printcolor_id:Option<f64>,
+    pub ad_printfont_id:Option<f64>,
     /// not nullable 
     pub c_poskeylayout_id:f64,
     /// defaults to: now()
@@ -19330,15 +21026,17 @@ pub struct CPoskey {
     /// defaults to: 'Y'::bpchar
     /// not nullable 
     pub isactive:String,
-    /// not nullable 
-    pub m_product_id:f64,
+    pub m_product_id:Option<f64>,
     /// not nullable 
     pub name:String,
-    /// not nullable 
-    pub qty:f64,
+    pub qty:Option<f64>,
     /// defaults to: 0
     /// not nullable 
     pub seqno:f64,
+    pub spanx:Option<f64>,
+    pub spany:Option<f64>,
+    pub subkeylayout_id:Option<f64>,
+    pub text:Option<String>,
     /// defaults to: now()
     /// not nullable 
     pub updated:NaiveDateTime,
@@ -19350,6 +21048,12 @@ pub struct CPoskey {
     pub m_product:Option<MProduct>,
     /// has one
     pub ad_printcolor:Option<AdPrintcolor>,
+    /// has one
+    pub subkeylayout:Option<CPoskeylayout>,
+    /// has one
+    pub ad_image:Option<AdImage>,
+    /// has one
+    pub ad_printfont:Option<AdPrintfont>,
 }
 
 #[derive(Debug)]
@@ -19361,6 +21065,9 @@ pub struct CPoskeylayout {
     pub ad_client_id:f64,
     /// not nullable 
     pub ad_org_id:f64,
+    pub ad_printcolor_id:Option<f64>,
+    pub ad_printfont_id:Option<f64>,
+    pub columns:Option<f64>,
     /// defaults to: now()
     /// not nullable 
     pub created:NaiveDateTime,
@@ -19373,11 +21080,16 @@ pub struct CPoskeylayout {
     pub isactive:String,
     /// not nullable 
     pub name:String,
+    pub poskeylayouttype:Option<String>,
     /// defaults to: now()
     /// not nullable 
     pub updated:NaiveDateTime,
     /// not nullable 
     pub updatedby:f64,
+    /// has one
+    pub ad_printcolor:Option<AdPrintcolor>,
+    /// has one
+    pub ad_printfont:Option<AdPrintfont>,
     /// has many
     pub c_pos:Option<Vec<CPos>>,
     /// has many
@@ -19506,6 +21218,8 @@ pub struct CProject {
     /// has many
     pub a_asset:Option<Vec<AAsset>>,
     /// has many
+    pub ad_memo:Option<Vec<AdMemo>>,
+    /// has many
     pub c_acctschema_element:Option<Vec<CAcctschemaElement>>,
     /// has many
     pub c_cash:Option<Vec<CCash>>,
@@ -19534,6 +21248,8 @@ pub struct CProject {
     /// has many
     pub c_recurring_run:Option<Vec<CRecurringRun>>,
     /// has many
+    pub c_saleshistory:Option<Vec<CSaleshistory>>,
+    /// has many
     pub c_validcombination:Option<Vec<CValidcombination>>,
     /// has many
     pub dd_order:Option<Vec<DdOrder>>,
@@ -19542,9 +21258,13 @@ pub struct CProject {
     /// has many
     pub fact_acct:Option<Vec<FactAcct>>,
     /// has many
+    pub fact_acct_summary:Option<Vec<FactAcctSummary>>,
+    /// has many
     pub gl_distribution:Option<Vec<GlDistribution>>,
     /// has many
     pub gl_distributionline:Option<Vec<GlDistributionline>>,
+    /// has many
+    pub gl_journalline:Option<Vec<GlJournalline>>,
     /// has many
     pub hr_contract:Option<Vec<HrContract>>,
     /// has many
@@ -19556,7 +21276,13 @@ pub struct CProject {
     /// has many
     pub i_invoice:Option<Vec<IInvoice>>,
     /// has many
+    pub i_movement:Option<Vec<IMovement>>,
+    /// has many
     pub i_order:Option<Vec<IOrder>>,
+    /// has many
+    pub i_saleshistory:Option<Vec<ISaleshistory>>,
+    /// has many
+    pub m_forecast:Option<Vec<MForecast>>,
     /// has many
     pub m_inout:Option<Vec<MInout>>,
     /// has many
@@ -19574,6 +21300,8 @@ pub struct CProject {
     /// has many
     pub pp_cost_collector:Option<Vec<PpCostCollector>>,
     /// has many
+    pub pp_mrp:Option<Vec<PpMrp>>,
+    /// has many
     pub pp_order:Option<Vec<PpOrder>>,
     /// has many
     pub r_issueproject:Option<Vec<RIssueproject>>,
@@ -19585,6 +21313,8 @@ pub struct CProject {
     pub s_timeexpenseline:Option<Vec<STimeexpenseline>>,
     /// has many
     pub t_aging:Option<Vec<TAging>>,
+    /// has many
+    pub wm_inoutboundline:Option<Vec<WmInoutboundline>>,
 }
 
 #[derive(Debug)]
@@ -19666,6 +21396,7 @@ pub struct CProjectissue {
     /// defaults to: 'N'::bpchar
     /// not nullable 
     pub processed:String,
+    pub processedon:Option<f64>,
     pub processing:Option<String>,
     pub s_timeexpenseline_id:Option<f64>,
     /// defaults to: now()
@@ -19883,13 +21614,27 @@ pub struct CProjectphase {
     /// has many
     pub c_projecttask:Option<Vec<CProjecttask>>,
     /// has many
+    pub c_saleshistory:Option<Vec<CSaleshistory>>,
+    /// has many
     pub fact_acct:Option<Vec<FactAcct>>,
+    /// has many
+    pub fact_acct_summary:Option<Vec<FactAcctSummary>>,
     /// has many
     pub hr_movement:Option<Vec<HrMovement>>,
     /// has many
+    pub i_saleshistory:Option<Vec<ISaleshistory>>,
+    /// has many
+    pub m_forecast:Option<Vec<MForecast>>,
+    /// has many
     pub m_inoutline:Option<Vec<MInoutline>>,
     /// has many
+    pub pp_mrp:Option<Vec<PpMrp>>,
+    /// has many
+    pub pp_order:Option<Vec<PpOrder>>,
+    /// has many
     pub s_timeexpenseline:Option<Vec<STimeexpenseline>>,
+    /// has many
+    pub wm_inoutboundline:Option<Vec<WmInoutboundline>>,
 }
 
 #[derive(Debug)]
@@ -19946,13 +21691,25 @@ pub struct CProjecttask {
     /// has many
     pub c_projectline:Option<Vec<CProjectline>>,
     /// has many
+    pub c_saleshistory:Option<Vec<CSaleshistory>>,
+    /// has many
     pub fact_acct:Option<Vec<FactAcct>>,
+    /// has many
+    pub fact_acct_summary:Option<Vec<FactAcctSummary>>,
     /// has many
     pub hr_movement:Option<Vec<HrMovement>>,
     /// has many
+    pub i_saleshistory:Option<Vec<ISaleshistory>>,
+    /// has many
     pub m_inoutline:Option<Vec<MInoutline>>,
     /// has many
+    pub pp_mrp:Option<Vec<PpMrp>>,
+    /// has many
+    pub pp_order:Option<Vec<PpOrder>>,
+    /// has many
     pub s_timeexpenseline:Option<Vec<STimeexpenseline>>,
+    /// has many
+    pub wm_inoutboundline:Option<Vec<WmInoutboundline>>,
 }
 
 #[derive(Debug)]
@@ -20792,6 +22549,117 @@ pub struct CRfqresponselineqty {
 }
 
 #[derive(Debug)]
+pub struct CSaleshistory {
+    /// primary
+    /// not nullable 
+    pub c_saleshistory_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// defaults to: NULL::numeric
+    pub c_activity_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub c_bp_group_id:Option<f64>,
+    /// not nullable 
+    pub c_bpartner_id:f64,
+    /// defaults to: NULL::numeric
+    pub c_bpartner_location_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub c_campaign_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub c_invoiceline_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub c_project_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub c_projectphase_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub c_projecttask_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub c_salesregion_id:Option<f64>,
+    pub costamt:Option<f64>,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    pub dateinvoiced:Option<NaiveDateTime>,
+    /// defaults to: NULL::character varying
+    pub documentno:Option<String>,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// defaults to: NULL::numeric
+    pub m_product_category_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub m_product_class_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub m_product_classification_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub m_product_group_id:Option<f64>,
+    /// not nullable 
+    pub m_product_id:f64,
+    /// defaults to: NULL::numeric
+    pub m_warehouse_id:Option<f64>,
+    pub priceinvoiced:Option<f64>,
+    pub qty:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub salesrep_id:Option<f64>,
+    pub totalinvamt:Option<f64>,
+    pub totalinvcost:Option<f64>,
+    pub totalinvqty:Option<f64>,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// defaults to: NULL::numeric
+    pub user1_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub user2_id:Option<f64>,
+    /// has one
+    pub m_product:Option<MProduct>,
+    /// has one
+    pub c_bpartner:Option<CBpartner>,
+    /// has one
+    pub m_warehouse:Option<MWarehouse>,
+    /// has one
+    pub m_product_category:Option<MProductCategory>,
+    /// has one
+    pub m_product_class:Option<MProductClass>,
+    /// has one
+    pub m_product_group:Option<MProductGroup>,
+    /// has one
+    pub m_product_classification:Option<MProductClassification>,
+    /// has one
+    pub c_bpartner_location:Option<CBpartnerLocation>,
+    /// has one
+    pub c_activity:Option<CActivity>,
+    /// has one
+    pub c_campaign:Option<CCampaign>,
+    /// has one
+    pub c_project:Option<CProject>,
+    /// has one
+    pub c_projecttask:Option<CProjecttask>,
+    /// has one
+    pub c_projectphase:Option<CProjectphase>,
+    /// has one
+    pub c_salesregion:Option<CSalesregion>,
+    /// has one
+    pub salesrep:Option<AdUser>,
+    /// has one
+    pub c_bp_group:Option<CBpGroup>,
+    /// has one
+    pub user1:Option<CElementvalue>,
+    /// has one
+    pub user2:Option<CElementvalue>,
+    /// has one
+    pub c_invoiceline:Option<CInvoiceline>,
+    /// has many
+    pub i_saleshistory:Option<Vec<ISaleshistory>>,
+    /// has many
+    pub pp_forecastrunline:Option<Vec<PpForecastrunline>>,
+}
+
+#[derive(Debug)]
 pub struct CSalesregion {
     /// primary
     /// not nullable 
@@ -20834,21 +22702,68 @@ pub struct CSalesregion {
     /// has many
     pub c_commissionline:Option<Vec<CCommissionline>>,
     /// has many
+    pub c_saleshistory:Option<Vec<CSaleshistory>>,
+    /// has many
     pub c_validcombination:Option<Vec<CValidcombination>>,
     /// has many
     pub fact_acct:Option<Vec<FactAcct>>,
+    /// has many
+    pub fact_acct_summary:Option<Vec<FactAcctSummary>>,
     /// has many
     pub gl_distribution:Option<Vec<GlDistribution>>,
     /// has many
     pub gl_distributionline:Option<Vec<GlDistributionline>>,
     /// has many
+    pub gl_journalline:Option<Vec<GlJournalline>>,
+    /// has many
     pub i_fajournal:Option<Vec<IFajournal>>,
     /// has many
     pub i_gljournal:Option<Vec<IGljournal>>,
     /// has many
+    pub i_saleshistory:Option<Vec<ISaleshistory>>,
+    /// has many
     pub pa_reportcolumn:Option<Vec<PaReportcolumn>>,
     /// has many
     pub pa_reportsource:Option<Vec<PaReportsource>>,
+    /// has many
+    pub pp_forecastdefinitionline:Option<Vec<PpForecastdefinitionline>>,
+}
+
+#[derive(Debug)]
+pub struct CSalesstage {
+    /// primary
+    /// not nullable 
+    pub c_salesstage_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    /// defaults to: NULL::character varying
+    pub description:Option<String>,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// defaults to: 'N'::bpchar
+    /// not nullable 
+    pub isclosed:String,
+    /// defaults to: NULL::bpchar
+    pub iswon:Option<String>,
+    /// not nullable 
+    pub name:String,
+    /// not nullable 
+    pub probability:f64,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// not nullable 
+    pub value:String,
+    /// has many
+    pub c_opportunity:Option<Vec<COpportunity>>,
 }
 
 #[derive(Debug)]
@@ -20964,6 +22879,10 @@ pub struct CSubacct {
     pub c_validcombination:Option<Vec<CValidcombination>>,
     /// has many
     pub fact_acct:Option<Vec<FactAcct>>,
+    /// has many
+    pub fact_acct_summary:Option<Vec<FactAcctSummary>>,
+    /// has many
+    pub gl_journalline:Option<Vec<GlJournalline>>,
 }
 
 #[derive(Debug)]
@@ -21380,6 +23299,8 @@ pub struct CTaxcategory {
     /// has many
     pub c_taxdefinition:Option<Vec<CTaxdefinition>>,
     /// has many
+    pub i_elementvalue:Option<Vec<IElementvalue>>,
+    /// has many
     pub m_product:Option<Vec<MProduct>>,
     /// has many
     pub s_expensetype:Option<Vec<SExpensetype>>,
@@ -21751,7 +23672,6 @@ pub struct CUom {
     /// not nullable 
     pub stdprecision:f64,
     pub uomsymbol:Option<String>,
-    /// defaults to: NULL::character varying
     pub uomtype:Option<String>,
     /// defaults to: now()
     /// not nullable 
@@ -21789,13 +23709,19 @@ pub struct CUom {
     /// has many
     pub i_order:Option<Vec<IOrder>>,
     /// has many
+    pub i_pricelist:Option<Vec<IPricelist>>,
+    /// has many
     pub i_product:Option<Vec<IProduct>>,
+    /// has many
+    pub i_product_bom:Option<Vec<IProductBom>>,
     /// has many
     pub m_inoutline:Option<Vec<MInoutline>>,
     /// has many
     pub m_product:Option<Vec<MProduct>>,
     /// has many
     pub m_product_po:Option<Vec<MProductPo>>,
+    /// has many
+    pub m_requisitionline:Option<Vec<MRequisitionline>>,
     /// has many
     pub pp_cost_collector:Option<Vec<PpCostCollector>>,
     /// has many
@@ -21816,6 +23742,8 @@ pub struct CUom {
     pub s_timeexpenseline:Option<Vec<STimeexpenseline>>,
     /// has many
     pub s_training:Option<Vec<STraining>>,
+    /// has many
+    pub wm_inoutboundline:Option<Vec<WmInoutboundline>>,
 }
 
 #[derive(Debug)]
@@ -22060,6 +23988,12 @@ pub struct CValidcombination {
     /// has many
     pub gl_journalline:Option<Vec<GlJournalline>>,
     /// has many
+    pub hr_attribute:Option<Vec<HrAttribute>>,
+    /// has many
+    pub hr_concept_acct:Option<Vec<HrConceptAcct>>,
+    /// has many
+    pub hr_concept_category:Option<Vec<HrConceptCategory>>,
+    /// has many
     pub i_fajournal:Option<Vec<IFajournal>>,
     /// has many
     pub i_gljournal:Option<Vec<IGljournal>>,
@@ -22207,6 +24141,10 @@ pub struct CYear {
     /// has many
     pub c_period:Option<Vec<CPeriod>>,
     /// has many
+    pub hr_leaveassign:Option<Vec<HrLeaveassign>>,
+    /// has many
+    pub hr_leavecredithistory:Option<Vec<HrLeavecredithistory>>,
+    /// has many
     pub hr_period:Option<Vec<HrPeriod>>,
     /// has many
     pub hr_year:Option<Vec<HrYear>>,
@@ -22214,36 +24152,6 @@ pub struct CYear {
     pub m_demand:Option<Vec<MDemand>>,
     /// has many
     pub m_forecast:Option<Vec<MForecast>>,
-}
-
-#[derive(Debug)]
-pub struct Classpackage {
-    /// primary
-    /// not nullable 
-    pub classpackage_id:f64,
-    /// not nullable 
-    pub ad_client_id:f64,
-    /// not nullable 
-    pub ad_org_id:f64,
-    /// not nullable 
-    pub created:NaiveDateTime,
-    /// not nullable 
-    pub createdby:f64,
-    /// defaults to: NULL::character varying
-    pub description:Option<String>,
-    /// defaults to: NULL::character varying
-    pub help:Option<String>,
-    /// defaults to: 'Y'::bpchar
-    /// not nullable 
-    pub isactive:String,
-    /// not nullable 
-    pub name:String,
-    /// not nullable 
-    pub updated:NaiveDateTime,
-    /// not nullable 
-    pub updatedby:f64,
-    /// not nullable 
-    pub value:String,
 }
 
 #[derive(Debug)]
@@ -23346,6 +25254,8 @@ pub struct CmMedia {
     pub updatedby:f64,
     /// has one
     pub cm_webproject:Option<CmWebproject>,
+    /// has one
+    pub ad_image:Option<AdImage>,
     /// has many
     pub cm_accessmedia:Option<Vec<CmAccessmedia>>,
     /// has many
@@ -23850,100 +25760,6 @@ pub struct CmWikitoken {
 }
 
 #[derive(Debug)]
-pub struct Company {
-    /// primary
-    /// not nullable 
-    pub company_id:f64,
-    /// not nullable 
-    pub ad_client_id:f64,
-    /// not nullable 
-    pub ad_org_id:f64,
-    /// not nullable 
-    pub created:NaiveDateTime,
-    /// not nullable 
-    pub createdby:f64,
-    /// defaults to: NULL::character varying
-    pub description:Option<String>,
-    /// defaults to: NULL::character varying
-    pub help:Option<String>,
-    /// defaults to: 'Y'::bpchar
-    /// not nullable 
-    pub isactive:String,
-    /// not nullable 
-    pub name:String,
-    /// not nullable 
-    pub updated:NaiveDateTime,
-    /// not nullable 
-    pub updatedby:f64,
-    /// not nullable 
-    pub value:String,
-}
-
-#[derive(Debug)]
-pub struct Datatype {
-    /// primary
-    /// not nullable 
-    pub datatype_id:f64,
-    /// defaults to: NULL::numeric
-    pub ad_class_id:Option<f64>,
-    /// not nullable 
-    pub ad_client_id:f64,
-    /// not nullable 
-    pub ad_org_id:f64,
-    /// not nullable 
-    pub created:NaiveDateTime,
-    /// not nullable 
-    pub createdby:f64,
-    /// defaults to: NULL::character varying
-    pub description:Option<String>,
-    /// defaults to: NULL::character varying
-    pub help:Option<String>,
-    /// defaults to: 'Y'::bpchar
-    /// not nullable 
-    pub isactive:String,
-    /// not nullable 
-    pub name:String,
-    /// not nullable 
-    pub updated:NaiveDateTime,
-    /// not nullable 
-    pub updatedby:f64,
-    /// not nullable 
-    pub value:String,
-}
-
-#[derive(Debug)]
-pub struct DatatypeView {
-    /// primary
-    /// not nullable 
-    pub datatype_view_id:f64,
-    /// defaults to: NULL::numeric
-    pub ad_class_id:Option<f64>,
-    /// not nullable 
-    pub ad_client_id:f64,
-    /// not nullable 
-    pub ad_org_id:f64,
-    /// not nullable 
-    pub created:NaiveDateTime,
-    /// not nullable 
-    pub createdby:f64,
-    /// defaults to: NULL::numeric
-    pub datatype_id:Option<f64>,
-    /// defaults to: NULL::character varying
-    pub description:Option<String>,
-    /// defaults to: NULL::character varying
-    pub help:Option<String>,
-    /// defaults to: 'Y'::bpchar
-    /// not nullable 
-    pub isactive:String,
-    /// not nullable 
-    pub updated:NaiveDateTime,
-    /// not nullable 
-    pub updatedby:f64,
-    /// defaults to: NULL::numeric
-    pub view_id:Option<f64>,
-}
-
-#[derive(Debug)]
 pub struct DdNetworkdistribution {
     /// primary
     /// not nullable 
@@ -23979,6 +25795,8 @@ pub struct DdNetworkdistribution {
     pub m_changenotice:Option<MChangenotice>,
     /// has many
     pub dd_networkdistributionline:Option<Vec<DdNetworkdistributionline>>,
+    /// has many
+    pub pp_product_planning:Option<Vec<PpProductPlanning>>,
 }
 
 #[derive(Debug)]
@@ -24006,7 +25824,7 @@ pub struct DdNetworkdistributionline {
     pub m_warehousesource_id:f64,
     pub percent:Option<f64>,
     pub priorityno:Option<f64>,
-    pub transferttime:Option<f64>,
+    pub transfertime:Option<f64>,
     /// not nullable 
     pub updated:NaiveDateTime,
     /// not nullable 
@@ -24033,12 +25851,12 @@ pub struct DdOrder {
     /// not nullable 
     pub ad_org_id:f64,
     pub ad_orgtrx_id:Option<f64>,
-    /// defaults to: (- (1)::numeric)
     pub ad_user_id:Option<f64>,
     pub c_activity_id:Option<f64>,
     /// not nullable 
     pub c_bpartner_id:f64,
-    pub c_bpartner_location_id:Option<f64>,
+    /// not nullable 
+    pub c_bpartner_location_id:f64,
     pub c_campaign_id:Option<f64>,
     pub c_charge_id:Option<f64>,
     /// not nullable 
@@ -24054,9 +25872,11 @@ pub struct DdOrder {
     pub createdby:f64,
     pub createfrom:Option<String>,
     pub createpackage:Option<String>,
-    pub dateordered:Option<NaiveDateTime>,
+    /// not nullable 
+    pub dateordered:NaiveDateTime,
     pub dateprinted:Option<NaiveDateTime>,
-    pub datepromised:Option<NaiveDateTime>,
+    /// not nullable 
+    pub datepromised:NaiveDateTime,
     pub datereceived:Option<NaiveDateTime>,
     /// defaults to: 'A'::bpchar
     /// not nullable 
@@ -24107,6 +25927,7 @@ pub struct DdOrder {
     pub priorityrule:String,
     /// not nullable 
     pub processed:String,
+    pub processedon:Option<f64>,
     pub processing:Option<String>,
     pub ref_order_id:Option<f64>,
     pub salesrep_id:Option<f64>,
@@ -24208,20 +26029,18 @@ pub struct DdOrderline {
     /// not nullable 
     pub m_locatorto_id:f64,
     pub m_product_id:Option<f64>,
+    pub m_shipper_id:Option<f64>,
     pub pickedqty:Option<f64>,
     /// not nullable 
     pub processed:String,
     pub qtydelivered:Option<f64>,
-    /// defaults to: (1)::numeric
     /// not nullable 
     pub qtyentered:f64,
-    /// defaults to: (1)::numeric
     pub qtyintransit:Option<f64>,
-    /// defaults to: (1)::numeric
     /// not nullable 
     pub qtyordered:f64,
     pub qtyreserved:Option<f64>,
-    /// defaults to: (0)::numeric
+    /// defaults to: 0
     pub scrappedqty:Option<f64>,
     pub targetqty:Option<f64>,
     /// not nullable 
@@ -24230,6 +26049,7 @@ pub struct DdOrderline {
     pub updatedby:f64,
     pub user1_id:Option<f64>,
     pub user2_id:Option<f64>,
+    pub wm_inoutboundline_id:Option<f64>,
     /// has one
     pub m_product:Option<MProduct>,
     /// has one
@@ -24240,6 +26060,10 @@ pub struct DdOrderline {
     pub c_project:Option<CProject>,
     /// has one
     pub c_uom:Option<CUom>,
+    /// has one
+    pub m_attributesetinstanceto:Option<MAttributesetinstance>,
+    /// has one
+    pub m_attributesetinstance:Option<MAttributesetinstance>,
     /// has one
     pub m_locatorto:Option<MLocator>,
     /// has one
@@ -24254,551 +26078,14 @@ pub struct DdOrderline {
     pub c_activity:Option<CActivity>,
     /// has one
     pub c_campaign:Option<CCampaign>,
+    /// has one
+    pub m_shipper:Option<MShipper>,
+    /// has one
+    pub wm_inoutboundline:Option<WmInoutboundline>,
     /// has many
     pub m_movementline:Option<Vec<MMovementline>>,
     /// has many
     pub pp_mrp:Option<Vec<PpMrp>>,
-}
-
-#[derive(Debug)]
-pub struct EdChoice {
-    /// primary
-    /// not nullable 
-    pub ed_choice_id:f64,
-    /// not nullable 
-    pub ad_client_id:f64,
-    /// not nullable 
-    pub ad_org_id:f64,
-    /// not nullable 
-    pub created:NaiveDateTime,
-    /// not nullable 
-    pub createdby:f64,
-    /// defaults to: NULL::character varying
-    pub description:Option<String>,
-    /// defaults to: NULL::numeric
-    pub ed_question_id:Option<f64>,
-    /// defaults to: NULL::character varying
-    pub help:Option<String>,
-    /// defaults to: 'Y'::bpchar
-    /// not nullable 
-    pub isactive:String,
-    /// defaults to: NULL::bpchar
-    pub iscorrect:Option<String>,
-    /// not nullable 
-    pub text:String,
-    /// not nullable 
-    pub updated:NaiveDateTime,
-    /// not nullable 
-    pub updatedby:f64,
-    /// not nullable 
-    pub value:String,
-}
-
-#[derive(Debug)]
-pub struct EdQuestion {
-    /// primary
-    /// not nullable 
-    pub ed_question_id:f64,
-    /// not nullable 
-    pub ad_client_id:f64,
-    /// not nullable 
-    pub ad_org_id:f64,
-    /// not nullable 
-    pub created:NaiveDateTime,
-    /// not nullable 
-    pub createdby:f64,
-    /// defaults to: NULL::character varying
-    pub description:Option<String>,
-    /// defaults to: NULL::numeric
-    pub ed_questionnaire_id:Option<f64>,
-    /// defaults to: NULL::character varying
-    pub help:Option<String>,
-    /// defaults to: 'Y'::bpchar
-    /// not nullable 
-    pub isactive:String,
-    pub text:Option<String>,
-    /// not nullable 
-    pub updated:NaiveDateTime,
-    /// not nullable 
-    pub updatedby:f64,
-    /// not nullable 
-    pub value:String,
-}
-
-#[derive(Debug)]
-pub struct EdQuestionnaire {
-    /// primary
-    /// not nullable 
-    pub ed_questionnaire_id:f64,
-    /// not nullable 
-    pub ad_client_id:f64,
-    /// not nullable 
-    pub ad_org_id:f64,
-    /// not nullable 
-    pub created:NaiveDateTime,
-    /// not nullable 
-    pub createdby:f64,
-    /// defaults to: NULL::character varying
-    pub description:Option<String>,
-    /// defaults to: NULL::character varying
-    pub help:Option<String>,
-    /// defaults to: 'Y'::bpchar
-    /// not nullable 
-    pub isactive:String,
-    /// not nullable 
-    pub title:String,
-    /// not nullable 
-    pub updated:NaiveDateTime,
-    /// not nullable 
-    pub updatedby:f64,
-    /// not nullable 
-    pub value:String,
-}
-
-#[derive(Debug)]
-pub struct EduCourse {
-    /// primary
-    /// not nullable 
-    pub edu_course_id:f64,
-    /// not nullable 
-    pub ad_client_id:f64,
-    /// not nullable 
-    pub ad_org_id:f64,
-    /// not nullable 
-    pub created:NaiveDateTime,
-    /// not nullable 
-    pub createdby:f64,
-    pub description:Option<String>,
-    pub edu_department_id:Option<f64>,
-    pub help:Option<String>,
-    /// defaults to: 'Y'::bpchar
-    /// not nullable 
-    pub isactive:String,
-    /// not nullable 
-    pub name:String,
-    /// not nullable 
-    pub updated:NaiveDateTime,
-    /// not nullable 
-    pub updatedby:f64,
-    /// not nullable 
-    pub value:String,
-}
-
-#[derive(Debug)]
-pub struct EduCourseSubject {
-    /// primary
-    /// not nullable 
-    pub edu_course_subject_id:f64,
-    /// not nullable 
-    pub ad_client_id:f64,
-    /// not nullable 
-    pub ad_org_id:f64,
-    /// not nullable 
-    pub created:NaiveDateTime,
-    /// not nullable 
-    pub createdby:f64,
-    /// defaults to: NULL::character varying
-    pub description:Option<String>,
-    /// defaults to: NULL::numeric
-    pub edu_course_id:Option<f64>,
-    /// defaults to: NULL::numeric
-    pub edu_semester_id:Option<f64>,
-    /// defaults to: NULL::numeric
-    pub edu_subject_id:Option<f64>,
-    /// defaults to: NULL::numeric
-    pub edu_yearlevel_id:Option<f64>,
-    /// defaults to: NULL::character varying
-    pub help:Option<String>,
-    /// defaults to: 'Y'::bpchar
-    /// not nullable 
-    pub isactive:String,
-    /// not nullable 
-    pub name:String,
-    /// not nullable 
-    pub updated:NaiveDateTime,
-    /// not nullable 
-    pub updatedby:f64,
-    /// not nullable 
-    pub value:String,
-}
-
-#[derive(Debug)]
-pub struct EduCurriculum {
-    /// primary
-    /// not nullable 
-    pub edu_curriculum_id:f64,
-    /// not nullable 
-    pub ad_client_id:f64,
-    /// not nullable 
-    pub ad_org_id:f64,
-    /// not nullable 
-    pub created:NaiveDateTime,
-    /// not nullable 
-    pub createdby:f64,
-    /// defaults to: NULL::character varying
-    pub description:Option<String>,
-    /// defaults to: NULL::numeric
-    pub edu_semester_id:Option<f64>,
-    /// defaults to: NULL::numeric
-    pub edu_yearlevel_id:Option<f64>,
-    /// defaults to: NULL::character varying
-    pub help:Option<String>,
-    /// defaults to: 'Y'::bpchar
-    /// not nullable 
-    pub isactive:String,
-    /// not nullable 
-    pub name:String,
-    /// not nullable 
-    pub updated:NaiveDateTime,
-    /// not nullable 
-    pub updatedby:f64,
-    /// not nullable 
-    pub value:String,
-}
-
-#[derive(Debug)]
-pub struct EduDepartment {
-    /// primary
-    /// not nullable 
-    pub edu_department_id:f64,
-    /// not nullable 
-    pub ad_client_id:f64,
-    /// not nullable 
-    pub ad_org_id:f64,
-    /// not nullable 
-    pub created:NaiveDateTime,
-    /// not nullable 
-    pub createdby:f64,
-    pub dean:Option<String>,
-    /// defaults to: NULL::character varying
-    pub description:Option<String>,
-    /// defaults to: NULL::character varying
-    pub help:Option<String>,
-    /// defaults to: 'Y'::bpchar
-    /// not nullable 
-    pub isactive:String,
-    /// not nullable 
-    pub name:String,
-    /// not nullable 
-    pub updated:NaiveDateTime,
-    /// not nullable 
-    pub updatedby:f64,
-    /// not nullable 
-    pub value:String,
-}
-
-#[derive(Debug)]
-pub struct EduSchedule {
-    /// primary
-    /// not nullable 
-    pub edu_schedule_id:f64,
-    /// not nullable 
-    pub ad_client_id:f64,
-    /// not nullable 
-    pub ad_org_id:f64,
-    /// not nullable 
-    pub created:NaiveDateTime,
-    /// not nullable 
-    pub createdby:f64,
-    /// defaults to: NULL::bpchar
-    pub day:Option<String>,
-    /// defaults to: NULL::character varying
-    pub description:Option<String>,
-    /// defaults to: NULL::character varying
-    pub help:Option<String>,
-    /// defaults to: NULL::character varying
-    pub hour:Option<String>,
-    /// defaults to: 'Y'::bpchar
-    /// not nullable 
-    pub isactive:String,
-    /// defaults to: NULL::character varying
-    pub minute:Option<String>,
-    /// not nullable 
-    pub name:String,
-    /// not nullable 
-    pub updated:NaiveDateTime,
-    /// not nullable 
-    pub updatedby:f64,
-    /// not nullable 
-    pub value:String,
-}
-
-#[derive(Debug)]
-pub struct EduScheduleBreakdown {
-    /// primary
-    /// not nullable 
-    pub edu_schedule_breakdown_id:f64,
-    /// not nullable 
-    pub ad_client_id:f64,
-    /// not nullable 
-    pub ad_org_id:f64,
-    /// not nullable 
-    pub created:NaiveDateTime,
-    /// not nullable 
-    pub createdby:f64,
-    /// defaults to: NULL::character varying
-    pub description:Option<String>,
-    /// defaults to: NULL::numeric
-    pub edu_schedule_id:Option<f64>,
-    /// defaults to: NULL::character varying
-    pub help:Option<String>,
-    /// defaults to: NULL::character varying
-    pub hour:Option<String>,
-    /// defaults to: 'Y'::bpchar
-    /// not nullable 
-    pub isactive:String,
-    /// defaults to: NULL::character varying
-    pub minute:Option<String>,
-    /// defaults to: NULL::character varying
-    pub tohour:Option<String>,
-    /// defaults to: '00'::character varying
-    pub tominute:Option<String>,
-    /// not nullable 
-    pub updated:NaiveDateTime,
-    /// not nullable 
-    pub updatedby:f64,
-    /// not nullable 
-    pub value:String,
-    /// defaults to: NULL::bpchar
-    pub weekday:Option<String>,
-}
-
-#[derive(Debug)]
-pub struct EduSemester {
-    /// primary
-    /// not nullable 
-    pub edu_semester_id:f64,
-    /// not nullable 
-    pub ad_client_id:f64,
-    /// not nullable 
-    pub ad_org_id:f64,
-    /// not nullable 
-    pub created:NaiveDateTime,
-    /// not nullable 
-    pub createdby:f64,
-    /// defaults to: NULL::character varying
-    pub description:Option<String>,
-    /// defaults to: NULL::character varying
-    pub help:Option<String>,
-    /// defaults to: 'Y'::bpchar
-    /// not nullable 
-    pub isactive:String,
-    /// not nullable 
-    pub name:String,
-    /// not nullable 
-    pub updated:NaiveDateTime,
-    /// not nullable 
-    pub updatedby:f64,
-    /// not nullable 
-    pub value:String,
-}
-
-#[derive(Debug)]
-pub struct EduSubject {
-    /// primary
-    /// not nullable 
-    pub edu_subject_id:f64,
-    /// not nullable 
-    pub ad_client_id:f64,
-    /// not nullable 
-    pub ad_org_id:f64,
-    /// not nullable 
-    pub created:NaiveDateTime,
-    /// not nullable 
-    pub createdby:f64,
-    /// defaults to: NULL::character varying
-    pub description:Option<String>,
-    /// defaults to: NULL::numeric
-    pub edu_department_id:Option<f64>,
-    /// defaults to: NULL::bpchar
-    pub haslab:Option<String>,
-    /// defaults to: NULL::bpchar
-    pub haslect:Option<String>,
-    /// defaults to: NULL::character varying
-    pub help:Option<String>,
-    /// defaults to: 'Y'::bpchar
-    /// not nullable 
-    pub isactive:String,
-    pub labhours:Option<f64>,
-    pub lecthours:Option<f64>,
-    /// not nullable 
-    pub name:String,
-    /// defaults to: NULL::numeric
-    pub units:Option<f64>,
-    /// not nullable 
-    pub updated:NaiveDateTime,
-    /// not nullable 
-    pub updatedby:f64,
-    /// not nullable 
-    pub value:String,
-}
-
-#[derive(Debug)]
-pub struct EduSubjectOfferring {
-    /// primary
-    /// not nullable 
-    pub edu_subject_offerring_id:f64,
-    /// not nullable 
-    pub ad_client_id:f64,
-    /// not nullable 
-    pub ad_org_id:f64,
-    /// not nullable 
-    pub created:NaiveDateTime,
-    /// not nullable 
-    pub createdby:f64,
-    /// defaults to: NULL::character varying
-    pub description:Option<String>,
-    pub edu_course_id:Option<f64>,
-    /// defaults to: NULL::numeric
-    pub edu_semester_id:Option<f64>,
-    /// defaults to: NULL::numeric
-    pub edu_yearlevel_id:Option<f64>,
-    /// defaults to: NULL::character varying
-    pub help:Option<String>,
-    /// defaults to: 'Y'::bpchar
-    /// not nullable 
-    pub isactive:String,
-    /// not nullable 
-    pub updated:NaiveDateTime,
-    /// not nullable 
-    pub updatedby:f64,
-    /// not nullable 
-    pub value:String,
-}
-
-#[derive(Debug)]
-pub struct EduSubjectRequisite {
-    /// primary
-    /// not nullable 
-    pub edu_subject_requisite_id:f64,
-    /// not nullable 
-    pub ad_client_id:f64,
-    /// not nullable 
-    pub ad_org_id:f64,
-    /// not nullable 
-    pub created:NaiveDateTime,
-    /// not nullable 
-    pub createdby:f64,
-    /// defaults to: NULL::character varying
-    pub description:Option<String>,
-    /// defaults to: NULL::numeric
-    pub edu_subject_id:Option<f64>,
-    /// defaults to: NULL::character varying
-    pub help:Option<String>,
-    /// defaults to: 'Y'::bpchar
-    /// not nullable 
-    pub isactive:String,
-    /// defaults to: NULL::character varying
-    pub requisitetype:Option<String>,
-    /// defaults to: NULL::character varying
-    pub subject_req:Option<String>,
-    /// not nullable 
-    pub updated:NaiveDateTime,
-    /// not nullable 
-    pub updatedby:f64,
-    /// not nullable 
-    pub value:String,
-}
-
-#[derive(Debug)]
-pub struct EduSubjectsOffered {
-    /// primary
-    /// not nullable 
-    pub edu_subjects_offered_id:f64,
-    /// not nullable 
-    pub ad_client_id:f64,
-    /// not nullable 
-    pub ad_org_id:f64,
-    /// defaults to: NULL::numeric
-    pub c_bpartner_id:Option<f64>,
-    /// not nullable 
-    pub created:NaiveDateTime,
-    /// not nullable 
-    pub createdby:f64,
-    /// defaults to: NULL::character varying
-    pub description:Option<String>,
-    /// defaults to: NULL::numeric
-    pub edu_subject_id:Option<f64>,
-    /// defaults to: NULL::numeric
-    pub edu_subject_offerring_id:Option<f64>,
-    /// defaults to: NULL::character varying
-    pub help:Option<String>,
-    /// defaults to: 'Y'::bpchar
-    /// not nullable 
-    pub isactive:String,
-    /// defaults to: 'Y'::bpchar
-    pub isofferred:Option<String>,
-    /// not nullable 
-    pub name:String,
-    pub schedule:Option<String>,
-    /// defaults to: NULL::numeric
-    pub seqno:Option<f64>,
-    /// not nullable 
-    pub updated:NaiveDateTime,
-    /// not nullable 
-    pub updatedby:f64,
-    /// not nullable 
-    pub value:String,
-}
-
-#[derive(Debug)]
-pub struct EduYearlevel {
-    /// primary
-    /// not nullable 
-    pub edu_yearlevel_id:f64,
-    /// not nullable 
-    pub ad_client_id:f64,
-    /// not nullable 
-    pub ad_org_id:f64,
-    /// not nullable 
-    pub created:NaiveDateTime,
-    /// not nullable 
-    pub createdby:f64,
-    /// defaults to: NULL::character varying
-    pub description:Option<String>,
-    /// defaults to: NULL::character varying
-    pub help:Option<String>,
-    /// defaults to: 'Y'::bpchar
-    /// not nullable 
-    pub isactive:String,
-    /// not nullable 
-    pub name:String,
-    /// not nullable 
-    pub updated:NaiveDateTime,
-    /// not nullable 
-    pub updatedby:f64,
-    /// not nullable 
-    pub value:String,
-}
-
-#[derive(Debug)]
-pub struct Entity {
-    /// primary
-    /// not nullable 
-    pub entity_id:f64,
-    /// not nullable 
-    pub ad_client_id:f64,
-    /// not nullable 
-    pub ad_org_id:f64,
-    /// not nullable 
-    pub created:NaiveDateTime,
-    /// not nullable 
-    pub createdby:f64,
-    /// defaults to: NULL::character varying
-    pub description:Option<String>,
-    /// defaults to: NULL::character varying
-    pub help:Option<String>,
-    /// defaults to: 'Y'::bpchar
-    /// not nullable 
-    pub isactive:String,
-    /// not nullable 
-    pub name:String,
-    /// not nullable 
-    pub updated:NaiveDateTime,
-    /// not nullable 
-    pub updatedby:f64,
-    /// not nullable 
-    pub value:String,
 }
 
 #[derive(Debug)]
@@ -25122,6 +26409,8 @@ pub struct FactAcct {
     pub c_projectphase:Option<CProjectphase>,
     /// has one
     pub c_projecttask:Option<CProjecttask>,
+    /// has one, extension table
+    pub fact_reconciliation:Option<Box<FactReconciliation>>,
     /// has many
     pub c_taxdeclarationacct:Option<Vec<CTaxdeclarationacct>>,
     /// has many
@@ -25136,7 +26425,6 @@ pub struct FactAcctSummary {
     pub ad_client_id:f64,
     /// not nullable 
     pub ad_org_id:f64,
-    /// defaults to: NULL::numeric
     pub ad_orgtrx_id:Option<f64>,
     /// not nullable 
     pub amtacctcr:f64,
@@ -25144,38 +26432,26 @@ pub struct FactAcctSummary {
     pub amtacctdr:f64,
     /// not nullable 
     pub c_acctschema_id:f64,
-    /// defaults to: NULL::numeric
     pub c_activity_id:Option<f64>,
-    /// defaults to: NULL::numeric
     pub c_bpartner_id:Option<f64>,
-    /// defaults to: NULL::numeric
     pub c_campaign_id:Option<f64>,
-    /// defaults to: NULL::numeric
     pub c_locfrom_id:Option<f64>,
-    /// defaults to: NULL::numeric
     pub c_locto_id:Option<f64>,
     /// not nullable 
     pub c_period_id:f64,
-    /// defaults to: NULL::numeric
     pub c_project_id:Option<f64>,
-    /// defaults to: NULL::numeric
     pub c_projectphase_id:Option<f64>,
-    /// defaults to: NULL::numeric
     pub c_projecttask_id:Option<f64>,
-    /// defaults to: NULL::numeric
     pub c_salesregion_id:Option<f64>,
-    /// defaults to: NULL::numeric
     pub c_subacct_id:Option<f64>,
     /// not nullable 
     pub created:NaiveDateTime,
     /// not nullable 
     pub createdby:f64,
     pub dateacct:Option<NaiveDateTime>,
-    /// defaults to: NULL::numeric
     pub gl_budget_id:Option<f64>,
     /// not nullable 
     pub isactive:String,
-    /// defaults to: NULL::numeric
     pub m_product_id:Option<f64>,
     /// not nullable 
     pub pa_reportcube_id:f64,
@@ -25187,14 +26463,74 @@ pub struct FactAcctSummary {
     pub updated:NaiveDateTime,
     /// not nullable 
     pub updatedby:f64,
-    /// defaults to: NULL::numeric
     pub user1_id:Option<f64>,
-    /// defaults to: NULL::numeric
     pub user2_id:Option<f64>,
-    /// defaults to: NULL::numeric
     pub userelement1_id:Option<f64>,
-    /// defaults to: NULL::numeric
     pub userelement2_id:Option<f64>,
+    /// has one
+    pub ad_orgtrx:Option<AdOrg>,
+    /// has one
+    pub account:Option<CElementvalue>,
+    /// has one
+    pub c_acctschema:Option<CAcctschema>,
+    /// has one
+    pub c_activity:Option<CActivity>,
+    /// has one
+    pub c_bpartner:Option<CBpartner>,
+    /// has one
+    pub c_campaign:Option<CCampaign>,
+    /// has one
+    pub c_locfrom:Option<CLocation>,
+    /// has one
+    pub c_locto:Option<CLocation>,
+    /// has one
+    pub c_period:Option<CPeriod>,
+    /// has one
+    pub c_projectphase:Option<CProjectphase>,
+    /// has one
+    pub c_projecttask:Option<CProjecttask>,
+    /// has one
+    pub c_project:Option<CProject>,
+    /// has one
+    pub c_salesregion:Option<CSalesregion>,
+    /// has one
+    pub c_subacct:Option<CSubacct>,
+    /// has one
+    pub gl_budget:Option<GlBudget>,
+    /// has one
+    pub m_product:Option<MProduct>,
+    /// has one
+    pub pa_reportcube:Option<PaReportcube>,
+    /// has one
+    pub user1:Option<CElementvalue>,
+    /// has one
+    pub user2:Option<CElementvalue>,
+}
+
+#[derive(Debug)]
+pub struct FactReconciliation {
+    /// primary
+    /// not nullable 
+    pub fact_acct_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// defaults to: NULL::character varying
+    pub matchcode:Option<String>,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// has one
+    pub fact_acct:Option<FactAcct>,
 }
 
 #[derive(Debug)]
@@ -25228,6 +26564,8 @@ pub struct GlBudget {
     pub updatedby:f64,
     /// has many
     pub fact_acct:Option<Vec<FactAcct>>,
+    /// has many
+    pub fact_acct_summary:Option<Vec<FactAcctSummary>>,
     /// has many
     pub gl_budgetcontrol:Option<Vec<GlBudgetcontrol>>,
     /// has many
@@ -25709,6 +27047,7 @@ pub struct GlJournal {
     pub postingtype:String,
     /// defaults to: 'N'::bpchar
     pub processed:Option<String>,
+    pub processedon:Option<f64>,
     pub processing:Option<String>,
     pub reversal_id:Option<f64>,
     /// defaults to: 0
@@ -25845,10 +27184,15 @@ pub struct GlJournalline {
     pub a_createasset:Option<String>,
     /// defaults to: 'N'::bpchar
     pub a_processed:Option<String>,
+    pub account_id:Option<f64>,
     /// not nullable 
     pub ad_client_id:f64,
     /// not nullable 
     pub ad_org_id:f64,
+    /// defaults to: NULL::numeric
+    pub ad_orgtrx_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub alias_validcombination_id:Option<f64>,
     /// defaults to: 0
     /// not nullable 
     pub amtacctcr:f64,
@@ -25861,13 +27205,28 @@ pub struct GlJournalline {
     /// defaults to: 0
     /// not nullable 
     pub amtsourcedr:f64,
+    /// defaults to: NULL::numeric
+    pub c_activity_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub c_bpartner_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub c_campaign_id:Option<f64>,
     /// not nullable 
     pub c_conversiontype_id:f64,
     /// not nullable 
     pub c_currency_id:f64,
+    /// defaults to: NULL::numeric
+    pub c_locfrom_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub c_locto_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub c_project_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub c_salesregion_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub c_subacct_id:Option<f64>,
     pub c_uom_id:Option<f64>,
-    /// not nullable 
-    pub c_validcombination_id:f64,
+    pub c_validcombination_id:Option<f64>,
     /// defaults to: now()
     /// not nullable 
     pub created:NaiveDateTime,
@@ -25889,6 +27248,8 @@ pub struct GlJournalline {
     pub isgenerated:String,
     /// not nullable 
     pub line:f64,
+    /// defaults to: NULL::numeric
+    pub m_product_id:Option<f64>,
     /// defaults to: 'N'::bpchar
     /// not nullable 
     pub processed:String,
@@ -25899,6 +27260,11 @@ pub struct GlJournalline {
     pub updated:NaiveDateTime,
     /// not nullable 
     pub updatedby:f64,
+    pub user1_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub user2_id:Option<f64>,
+    pub userelement1_id:Option<f64>,
+    pub userelement2_id:Option<f64>,
     /// has one
     pub ad_client:Option<AdClient>,
     /// has one
@@ -25917,6 +27283,38 @@ pub struct GlJournalline {
     pub a_asset_group:Option<AAssetGroup>,
     /// has one
     pub a_asset:Option<AAsset>,
+    /// has one
+    pub account:Option<CElementvalue>,
+    /// has one
+    pub ad_orgtrx:Option<AdOrg>,
+    /// has one
+    pub alias_validcombination:Option<CValidcombination>,
+    /// has one
+    pub c_activity:Option<CActivity>,
+    /// has one
+    pub c_bpartner:Option<CBpartner>,
+    /// has one
+    pub c_campaign:Option<CCampaign>,
+    /// has one
+    pub c_locfrom:Option<CLocation>,
+    /// has one
+    pub c_locto:Option<CLocation>,
+    /// has one
+    pub c_project:Option<CProject>,
+    /// has one
+    pub c_salesregion:Option<CSalesregion>,
+    /// has one
+    pub c_subacct:Option<CSubacct>,
+    /// has one
+    pub m_product:Option<MProduct>,
+    /// has one
+    pub user1:Option<CElementvalue>,
+    /// has one
+    pub user2:Option<CElementvalue>,
+    /// has one
+    pub userelement1:Option<CElementvalue>,
+    /// has one
+    pub userelement2:Option<CElementvalue>,
     /// has many
     pub i_fajournal:Option<Vec<IFajournal>>,
     /// has many
@@ -25935,6 +27333,12 @@ pub struct HrAttribute {
     pub ad_rule_id:Option<f64>,
     pub amount:Option<f64>,
     pub c_bpartner_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub c_charge_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub c_doctype_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub c_invoice_id:Option<f64>,
     pub columntype:Option<String>,
     /// not nullable 
     pub created:NaiveDateTime,
@@ -25968,6 +27372,8 @@ pub struct HrAttribute {
     /// has one
     pub c_bpartner:Option<CBpartner>,
     /// has one
+    pub hr_attribute_acct:Option<CValidcombination>,
+    /// has one
     pub hr_concept:Option<HrConcept>,
     /// has one
     pub hr_department:Option<HrDepartment>,
@@ -25977,6 +27383,42 @@ pub struct HrAttribute {
     pub hr_job:Option<HrJob>,
     /// has one
     pub hr_payroll:Option<HrPayroll>,
+    /// has one
+    pub c_invoice:Option<CInvoice>,
+    /// has one
+    pub c_doctype:Option<CDoctype>,
+    /// has one
+    pub c_charge:Option<CCharge>,
+}
+
+#[derive(Debug)]
+pub struct HrCareerlevel {
+    /// primary
+    /// not nullable 
+    pub hr_careerlevel_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    /// defaults to: NULL::character varying
+    pub description:Option<String>,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// not nullable 
+    pub name:String,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// defaults to: NULL::character varying
+    pub value:Option<String>,
+    /// has many
+    pub hr_jobopening:Option<Vec<HrJobopening>>,
 }
 
 #[derive(Debug)]
@@ -25989,7 +27431,6 @@ pub struct HrConcept {
     pub ad_client_id:f64,
     /// not nullable 
     pub ad_org_id:f64,
-    /// defaults to: NULL::numeric
     pub ad_reference_id:Option<f64>,
     /// not nullable 
     pub columntype:String,
@@ -26006,14 +27447,15 @@ pub struct HrConcept {
     pub isactive:String,
     pub isdefault:Option<String>,
     pub isemployee:Option<String>,
+    /// defaults to: NULL::bpchar
+    pub isinvoiced:Option<String>,
+    pub ismanual:Option<String>,
     pub ispaid:Option<String>,
     pub isprinted:Option<String>,
-    pub isreadwrite:Option<String>,
     pub isreceipt:Option<String>,
-    pub isregistered:Option<String>,
+    pub issaveinhistoric:Option<String>,
     /// not nullable 
     pub name:String,
-    /// defaults to: NULL::numeric
     pub seqno:Option<f64>,
     /// not nullable 
     pub type_:String,
@@ -26042,6 +27484,10 @@ pub struct HrConcept {
     pub hr_movement:Option<Vec<HrMovement>>,
     /// has many
     pub hr_payrollconcept:Option<Vec<HrPayrollconcept>>,
+    /// has many
+    pub hr_salarystructureline:Option<Vec<HrSalarystructureline>>,
+    /// has many
+    pub i_hr_movement:Option<Vec<IHrMovement>>,
 }
 
 #[derive(Debug)]
@@ -26080,7 +27526,13 @@ pub struct HrConceptAcct {
     /// has one
     pub user1:Option<CElementvalue>,
     /// has one
+    pub user2:Option<CValidcombination>,
+    /// has one
     pub hr_concept:Option<HrConcept>,
+    /// has one
+    pub hr_revenue_acct:Option<CValidcombination>,
+    /// has one
+    pub hr_expense_acct:Option<CValidcombination>,
     /// has one
     pub c_acctschema:Option<CAcctschema>,
 }
@@ -26110,6 +27562,8 @@ pub struct HrConceptCategory {
     /// not nullable 
     pub updatedby:f64,
     pub value:Option<String>,
+    /// has one
+    pub hr_concept_acct:Option<CValidcombination>,
     /// has many
     pub hr_concept:Option<Vec<HrConcept>>,
     /// has many
@@ -26156,6 +27610,36 @@ pub struct HrContract {
 }
 
 #[derive(Debug)]
+pub struct HrDegree {
+    /// primary
+    /// not nullable 
+    pub hr_degree_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    /// defaults to: NULL::character varying
+    pub description:Option<String>,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// not nullable 
+    pub name:String,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// defaults to: NULL::character varying
+    pub value:Option<String>,
+    /// has many
+    pub hr_education:Option<Vec<HrEducation>>,
+}
+
+#[derive(Debug)]
 pub struct HrDepartment {
     /// primary
     /// not nullable 
@@ -26165,6 +27649,8 @@ pub struct HrDepartment {
     /// not nullable 
     pub ad_org_id:f64,
     pub c_activity_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub c_bpartner_id:Option<f64>,
     /// not nullable 
     pub created:NaiveDateTime,
     /// not nullable 
@@ -26174,6 +27660,8 @@ pub struct HrDepartment {
     pub isactive:String,
     /// not nullable 
     pub name:String,
+    /// defaults to: NULL::numeric
+    pub strengthrequired:Option<f64>,
     /// not nullable 
     pub updated:NaiveDateTime,
     /// not nullable 
@@ -26181,20 +27669,146 @@ pub struct HrDepartment {
     pub value:Option<String>,
     /// has one
     pub c_activity:Option<CActivity>,
+    /// has one
+    pub c_bpartner:Option<CBpartner>,
     /// has many
     pub hr_attribute:Option<Vec<HrAttribute>>,
     /// has many
     pub hr_concept:Option<Vec<HrConcept>>,
     /// has many
+    pub hr_departmentproduct:Option<Vec<HrDepartmentproduct>>,
+    /// has many
     pub hr_employee:Option<Vec<HrEmployee>>,
     /// has many
     pub hr_job:Option<Vec<HrJob>>,
+    /// has many
+    pub hr_jobopening:Option<Vec<HrJobopening>>,
     /// has many
     pub hr_list:Option<Vec<HrList>>,
     /// has many
     pub hr_movement:Option<Vec<HrMovement>>,
     /// has many
     pub hr_process:Option<Vec<HrProcess>>,
+}
+
+#[derive(Debug)]
+pub struct HrDepartmentproduct {
+    /// primary
+    /// not nullable 
+    pub hr_departmentproduct_id:f64,
+    /// not nullable 
+    pub actualqty:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// defaults to: NULL::character varying
+    pub comments:Option<String>,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    /// not nullable 
+    pub datefrom:NaiveDateTime,
+    /// not nullable 
+    pub dateto:NaiveDateTime,
+    /// not nullable 
+    pub hr_department_id:f64,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// not nullable 
+    pub m_product_id:f64,
+    /// not nullable 
+    pub qtyplan:f64,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// has one
+    pub m_product:Option<MProduct>,
+    /// has one
+    pub hr_department:Option<HrDepartment>,
+}
+
+#[derive(Debug)]
+pub struct HrDesignation {
+    /// primary
+    /// not nullable 
+    pub hr_designation_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    /// defaults to: NULL::character varying
+    pub description:Option<String>,
+    /// defaults to: NULL::numeric
+    pub hr_employeetype_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub hr_payroll_id:Option<f64>,
+    /// not nullable 
+    pub hr_salarystructure_id:f64,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// not nullable 
+    pub name:String,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// defaults to: NULL::character varying
+    pub value:Option<String>,
+    /// has one
+    pub hr_salarystructure:Option<HrSalarystructure>,
+    /// has one
+    pub hr_employeetype:Option<HrEmployeetype>,
+    /// has one
+    pub hr_payroll:Option<HrPayroll>,
+    /// has many
+    pub hr_jobapplication:Option<Vec<HrJobapplication>>,
+    /// has many
+    pub hr_jobopening:Option<Vec<HrJobopening>>,
+}
+
+#[derive(Debug)]
+pub struct HrEducation {
+    /// primary
+    /// not nullable 
+    pub hr_education_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    pub comments:Option<String>,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    pub duration:Option<String>,
+    /// not nullable 
+    pub hr_degree_id:f64,
+    /// not nullable 
+    pub hr_employee_id:f64,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    pub schoolcollege:Option<String>,
+    pub schoolcollegeaddress:Option<String>,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// not nullable 
+    pub yearofpassing:String,
+    /// has one
+    pub hr_employee:Option<HrEmployee>,
+    /// has one
+    pub hr_degree:Option<HrDegree>,
 }
 
 #[derive(Debug)]
@@ -26206,6 +27820,9 @@ pub struct HrEmployee {
     pub ad_client_id:f64,
     /// not nullable 
     pub ad_org_id:f64,
+    pub ad_user_id:Option<f64>,
+    pub birthday:Option<NaiveDateTime>,
+    pub bloodgroup:Option<String>,
     pub c_activity_id:Option<f64>,
     /// not nullable 
     pub c_bpartner_id:f64,
@@ -26214,22 +27831,43 @@ pub struct HrEmployee {
     pub created:NaiveDateTime,
     /// not nullable 
     pub createdby:f64,
+    pub dailysalary:Option<f64>,
+    pub employeeimage_id:Option<f64>,
+    pub employeestatus:Option<String>,
     pub enddate:Option<NaiveDateTime>,
+    pub fathersname:Option<String>,
+    pub gender:Option<String>,
     /// not nullable 
     pub hr_department_id:f64,
+    pub hr_employeetype_id:Option<f64>,
     /// not nullable 
     pub hr_job_id:f64,
     pub hr_payroll_id:Option<f64>,
-    /// defaults to: NULL::character varying
+    pub hr_race_id:Option<f64>,
+    pub hr_skilltype_id:Option<f64>,
+    pub identificationmark:Option<String>,
     pub imageurl:Option<String>,
     /// not nullable 
     pub isactive:String,
+    /// defaults to: 'N'::bpchar
+    pub ismanager:Option<String>,
+    pub logo_id:Option<f64>,
+    pub maritalstatus:Option<String>,
+    pub marriageanniversarydate:Option<NaiveDateTime>,
+    pub monthlysalary:Option<f64>,
     pub name:Option<String>,
     pub name2:Option<String>,
     pub nationalcode:Option<String>,
+    pub nationality_id:Option<f64>,
+    pub partnersbirthdate:Option<NaiveDateTime>,
+    pub partnersname:Option<String>,
+    /// not nullable 
+    pub paymentrule:String,
+    pub placeofbirth:Option<String>,
     pub sscode:Option<String>,
     /// not nullable 
     pub startdate:NaiveDateTime,
+    pub thumbimage_id:Option<f64>,
     /// not nullable 
     pub updated:NaiveDateTime,
     /// not nullable 
@@ -26244,12 +27882,332 @@ pub struct HrEmployee {
     pub hr_job:Option<HrJob>,
     /// has one
     pub hr_payroll:Option<HrPayroll>,
+    /// has one
+    pub ad_user:Option<AdUser>,
+    /// has one
+    pub nationality:Option<CCountry>,
+    /// has one
+    pub hr_race:Option<HrRace>,
+    /// has one
+    pub hr_skilltype:Option<HrSkilltype>,
+    /// has one
+    pub hr_employeetype:Option<HrEmployeetype>,
     /// has many
     pub hr_attribute:Option<Vec<HrAttribute>>,
+    /// has many
+    pub hr_education:Option<Vec<HrEducation>>,
+    /// has many
+    pub hr_employeedependent:Option<Vec<HrEmployeedependent>>,
+    /// has many
+    pub hr_employeeexperience:Option<Vec<HrEmployeeexperience>>,
+    /// has many
+    pub hr_employeeinsurance:Option<Vec<HrEmployeeinsurance>>,
+    /// has many
+    pub hr_employeeweeklyoff:Option<Vec<HrEmployeeweeklyoff>>,
+    /// has many
+    pub hr_leaveassign:Option<Vec<HrLeaveassign>>,
+    /// has many
+    pub hr_leavecredithistory:Option<Vec<HrLeavecredithistory>>,
     /// has many
     pub hr_list:Option<Vec<HrList>>,
     /// has many
     pub hr_process:Option<Vec<HrProcess>>,
+}
+
+#[derive(Debug)]
+pub struct HrEmployeedependent {
+    /// primary
+    /// not nullable 
+    pub hr_employeedependent_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    pub age:Option<String>,
+    /// not nullable 
+    pub birthday:NaiveDateTime,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    /// not nullable 
+    pub hr_employee_id:f64,
+    /// not nullable 
+    pub hr_relationship_id:f64,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// not nullable 
+    pub iscollectcash:String,
+    /// not nullable 
+    pub name:String,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// has one
+    pub hr_employee:Option<HrEmployee>,
+    /// has one
+    pub hr_relationship:Option<HrRelationship>,
+}
+
+#[derive(Debug)]
+pub struct HrEmployeeexperience {
+    /// primary
+    /// not nullable 
+    pub hr_employeeexperience_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    pub comments:Option<String>,
+    /// not nullable 
+    pub company:String,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    pub datefrom:Option<NaiveDateTime>,
+    pub dateto:Option<NaiveDateTime>,
+    pub designationwhenleft:Option<String>,
+    pub designationwherejoined:Option<String>,
+    /// not nullable 
+    pub hr_employee_id:f64,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// has one
+    pub hr_employee:Option<HrEmployee>,
+}
+
+#[derive(Debug)]
+pub struct HrEmployeeinsurance {
+    /// primary
+    /// not nullable 
+    pub hr_employeeinsurance_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    pub balanceamount:Option<f64>,
+    pub claimedamount:Option<f64>,
+    /// not nullable 
+    pub coverageamount:f64,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    pub datelastpaid:Option<NaiveDateTime>,
+    pub datelastpremium:Option<NaiveDateTime>,
+    pub description:Option<String>,
+    /// not nullable 
+    pub hr_employee_id:f64,
+    /// not nullable 
+    pub hr_insurancetype_id:f64,
+    pub hr_period_id:Option<f64>,
+    pub insuranceplan:Option<String>,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// not nullable 
+    pub paydate:NaiveDateTime,
+    /// not nullable 
+    pub paymentfrequency:String,
+    /// not nullable 
+    pub premiumamount:f64,
+    /// not nullable 
+    pub reference:String,
+    /// not nullable 
+    pub sponsorname:String,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// has one
+    pub hr_employee:Option<HrEmployee>,
+    /// has one
+    pub hr_insurancetype:Option<HrInsurancetype>,
+    /// has one
+    pub hr_period:Option<HrPeriod>,
+}
+
+#[derive(Debug)]
+pub struct HrEmployeetype {
+    /// primary
+    /// not nullable 
+    pub hr_employeetype_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    /// defaults to: NULL::character varying
+    pub description:Option<String>,
+    /// not nullable 
+    pub hr_payroll_id:f64,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// not nullable 
+    pub name:String,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// defaults to: NULL::character varying
+    pub value:Option<String>,
+    /// not nullable 
+    pub wagelevel:String,
+    /// has one
+    pub hr_payroll:Option<HrPayroll>,
+    /// has many
+    pub hr_designation:Option<Vec<HrDesignation>>,
+    /// has many
+    pub hr_employee:Option<Vec<HrEmployee>>,
+    /// has many
+    pub hr_leavetypeemployeetype:Option<Vec<HrLeavetypeemployeetype>>,
+}
+
+#[derive(Debug)]
+pub struct HrEmployeeweeklyoff {
+    /// primary
+    /// not nullable 
+    pub hr_employeeweeklyoff_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    pub description:Option<String>,
+    pub hr_employee_id:Option<f64>,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    pub onfriday:Option<String>,
+    pub onmonday:Option<String>,
+    pub onsaturday:Option<String>,
+    pub onsunday:Option<String>,
+    pub onthursday:Option<String>,
+    pub ontuesday:Option<String>,
+    pub onwednesday:Option<String>,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// has one
+    pub hr_employee:Option<HrEmployee>,
+}
+
+#[derive(Debug)]
+pub struct HrGrade {
+    /// primary
+    /// not nullable 
+    pub hr_grade_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    /// defaults to: NULL::character varying
+    pub description:Option<String>,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// not nullable 
+    pub name:String,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// defaults to: NULL::character varying
+    pub value:Option<String>,
+}
+
+#[derive(Debug)]
+pub struct HrInsurancetype {
+    /// primary
+    /// not nullable 
+    pub hr_insurancetype_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    /// defaults to: NULL::character varying
+    pub description:Option<String>,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// not nullable 
+    pub name:String,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// defaults to: NULL::character varying
+    pub value:Option<String>,
+    /// has many
+    pub hr_employeeinsurance:Option<Vec<HrEmployeeinsurance>>,
+}
+
+#[derive(Debug)]
+pub struct HrInterview {
+    /// primary
+    /// not nullable 
+    pub hr_interview_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// defaults to: NULL::character varying
+    pub bpname:Option<String>,
+    /// defaults to: NULL::numeric
+    pub c_bpartner_id:Option<f64>,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    /// defaults to: NULL::character varying
+    pub feedback:Option<String>,
+    /// not nullable 
+    pub hr_jobapplication_id:f64,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// defaults to: NULL::bpchar
+    pub isinterviewover:Option<String>,
+    /// defaults to: NULL::bpchar
+    pub isselected:Option<String>,
+    /// defaults to: NULL::character varying
+    pub rating:Option<String>,
+    /// defaults to: NULL::numeric
+    pub seqno:Option<f64>,
+    /// not nullable 
+    pub startdate:NaiveDateTime,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// has one
+    pub hr_jobapplication:Option<HrJobapplication>,
+    /// has one
+    pub c_bpartner:Option<CBpartner>,
 }
 
 #[derive(Debug)]
@@ -26298,6 +28256,557 @@ pub struct HrJob {
     pub hr_movement:Option<Vec<HrMovement>>,
     /// has many
     pub hr_process:Option<Vec<HrProcess>>,
+}
+
+#[derive(Debug)]
+pub struct HrJobapplication {
+    /// primary
+    /// not nullable 
+    pub hr_jobapplication_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// defaults to: NULL::character varying
+    pub applicantsno:Option<String>,
+    pub c_bpartner_id:Option<f64>,
+    pub c_location_id:Option<f64>,
+    /// defaults to: NULL::character varying
+    pub city:Option<String>,
+    /// defaults to: NULL::character varying
+    pub comments:Option<String>,
+    /// defaults to: NULL::character varying
+    pub company:Option<String>,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    /// defaults to: NULL::character varying
+    pub email:Option<String>,
+    /// defaults to: NULL::character varying
+    pub fathername:Option<String>,
+    /// not nullable 
+    pub firstname:String,
+    /// not nullable 
+    pub highesteducation:String,
+    /// defaults to: NULL::numeric
+    pub hr_designation_id:Option<f64>,
+    /// not nullable 
+    pub hr_jobopening_id:f64,
+    /// not nullable 
+    pub identityproof:String,
+    /// not nullable 
+    pub identityproofno:String,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// defaults to: NULL::bpchar
+    pub isformeremployee:Option<String>,
+    /// defaults to: NULL::bpchar
+    pub isinterviewover:Option<String>,
+    /// defaults to: NULL::bpchar
+    pub isselected:Option<String>,
+    /// defaults to: NULL::bpchar
+    pub iswillingtorelocate:Option<String>,
+    /// defaults to: NULL::bpchar
+    pub iswillingtotravel:Option<String>,
+    /// not nullable 
+    pub jobapplicationdate:NaiveDateTime,
+    pub lastname:Option<String>,
+    pub middlename:Option<String>,
+    /// not nullable 
+    pub phone:String,
+    /// not nullable 
+    pub phone2:String,
+    /// not nullable 
+    pub processed:String,
+    /// defaults to: NULL::numeric
+    pub recruitedemployee_id:Option<f64>,
+    pub ref_bpartner_id:Option<f64>,
+    pub startdate:Option<NaiveDateTime>,
+    /// defaults to: 'Applied'::character varying
+    pub status:Option<String>,
+    pub terminationdate:Option<NaiveDateTime>,
+    /// defaults to: NULL::character varying
+    pub totalrelevantexperience:Option<String>,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// not nullable 
+    pub yearofpassing:String,
+    /// has one
+    pub c_bpartner:Option<CBpartner>,
+    /// has one
+    pub ref_bpartner:Option<CBpartner>,
+    /// has one
+    pub hr_designation:Option<HrDesignation>,
+    /// has one
+    pub hr_jobopening:Option<HrJobopening>,
+    /// has one
+    pub recruitedemployee:Option<CBpartner>,
+    /// has many
+    pub hr_interview:Option<Vec<HrInterview>>,
+    /// has many
+    pub hr_jobapplicationhistory:Option<Vec<HrJobapplicationhistory>>,
+}
+
+#[derive(Debug)]
+pub struct HrJobapplicationhistory {
+    /// primary
+    /// not nullable 
+    pub hr_jobapplicationhistory_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    pub datetrx:Option<NaiveDateTime>,
+    /// defaults to: NULL::numeric
+    pub hr_jobapplication_id:Option<f64>,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// defaults to: NULL::character varying
+    pub remarks:Option<String>,
+    /// defaults to: NULL::character varying
+    pub status:Option<String>,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// has one
+    pub hr_jobapplication:Option<HrJobapplication>,
+}
+
+#[derive(Debug)]
+pub struct HrJobeducation {
+    /// primary
+    /// not nullable 
+    pub hr_jobeducation_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    /// defaults to: NULL::character varying
+    pub description:Option<String>,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// not nullable 
+    pub name:String,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// defaults to: NULL::character varying
+    pub value:Option<String>,
+    /// has many
+    pub hr_jobopening:Option<Vec<HrJobopening>>,
+}
+
+#[derive(Debug)]
+pub struct HrJobopening {
+    /// primary
+    /// not nullable 
+    pub hr_jobopening_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// defaults to: NULL::numeric
+    pub ad_user_id:Option<f64>,
+    pub c_doctype_id:Option<f64>,
+    pub c_location_id:Option<f64>,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    /// not nullable 
+    pub datedoc:NaiveDateTime,
+    /// defaults to: NULL::character varying
+    pub description:Option<String>,
+    /// defaults to: 'CO'::bpchar
+    /// not nullable 
+    pub docaction:String,
+    /// defaults to: 'DR'::character varying
+    /// not nullable 
+    pub docstatus:String,
+    pub documentno:Option<String>,
+    pub hr_careerlevel_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub hr_department_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub hr_designation_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub hr_jobeducation_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub hr_jobtype_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub hr_salaryrange_id:Option<f64>,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// not nullable 
+    pub isapproved:String,
+    /// not nullable 
+    pub ishrapproved:String,
+    /// not nullable 
+    pub ismanagerapproved:String,
+    /// not nullable 
+    pub name:String,
+    /// defaults to: NULL::numeric
+    pub openpositions:Option<f64>,
+    /// defaults to: NULL::character varying
+    pub primaryskills:Option<String>,
+    /// not nullable 
+    pub processed:String,
+    /// not nullable 
+    pub pubdate:NaiveDateTime,
+    /// defaults to: NULL::character varying
+    pub responsibilities:Option<String>,
+    /// defaults to: NULL::character varying
+    pub secondaryskills:Option<String>,
+    /// defaults to: NULL::numeric
+    pub supervisor_id:Option<f64>,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// not nullable 
+    pub validfrom:NaiveDateTime,
+    /// not nullable 
+    pub validto:NaiveDateTime,
+    pub value:Option<String>,
+    /// defaults to: 'Requested'::character varying
+    pub wfstate:Option<String>,
+    /// has one, self referential
+    pub hr_jobopening:Option<Box<HrJobopening>>,
+    /// has one
+    pub hr_department:Option<HrDepartment>,
+    /// has one
+    pub hr_careerlevel:Option<HrCareerlevel>,
+    /// has one
+    pub hr_jobeducation:Option<HrJobeducation>,
+    /// has one
+    pub hr_jobtype:Option<HrJobtype>,
+    /// has one
+    pub c_doctype:Option<CDoctype>,
+    /// has one
+    pub hr_designation:Option<HrDesignation>,
+    /// has one
+    pub supervisor:Option<AdUser>,
+    /// has one
+    pub ad_user:Option<AdUser>,
+    /// has one
+    pub hr_salaryrange:Option<HrSalaryrange>,
+    /// has one, extension table
+    pub hr_jobopening:Option<Box<HrJobopening>>,
+    /// has many
+    pub hr_jobapplication:Option<Vec<HrJobapplication>>,
+    /// has many
+    pub hr_jobopeninghistory:Option<Vec<HrJobopeninghistory>>,
+}
+
+#[derive(Debug)]
+pub struct HrJobopeninghistory {
+    /// primary
+    /// not nullable 
+    pub hr_jobopeninghistory_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// defaults to: NULL::numeric
+    pub ad_user_id:Option<f64>,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    /// defaults to: NULL::character varying
+    pub currentstatus:Option<String>,
+    pub datetrx:Option<NaiveDateTime>,
+    /// defaults to: NULL::numeric
+    pub hr_jobopening_id:Option<f64>,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// defaults to: NULL::character varying
+    pub remarks:Option<String>,
+    /// defaults to: NULL::character varying
+    pub status:Option<String>,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// has one
+    pub hr_jobopening:Option<HrJobopening>,
+    /// has one
+    pub ad_user:Option<AdUser>,
+}
+
+#[derive(Debug)]
+pub struct HrJobtype {
+    /// primary
+    /// not nullable 
+    pub hr_jobtype_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    /// defaults to: NULL::character varying
+    pub description:Option<String>,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// not nullable 
+    pub name:String,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// defaults to: NULL::character varying
+    pub value:Option<String>,
+    /// has many
+    pub hr_jobopening:Option<Vec<HrJobopening>>,
+}
+
+#[derive(Debug)]
+pub struct HrLeaveassign {
+    /// primary
+    /// not nullable 
+    pub hr_leaveassign_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    pub balance:Option<f64>,
+    /// not nullable 
+    pub c_year_id:f64,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    pub hr_employee_id:Option<f64>,
+    /// not nullable 
+    pub hr_leavetype_id:f64,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// not nullable 
+    pub noofleavesallocated:f64,
+    pub processing:Option<String>,
+    /// not nullable 
+    pub totalleaves:f64,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    pub usedleaves:Option<f64>,
+    /// has one
+    pub hr_employee:Option<HrEmployee>,
+    /// has one
+    pub hr_leavetype:Option<HrLeavetype>,
+    /// has one
+    pub c_year:Option<CYear>,
+    /// has many
+    pub hr_leavecredithistory:Option<Vec<HrLeavecredithistory>>,
+}
+
+#[derive(Debug)]
+pub struct HrLeavecredithistory {
+    /// primary
+    /// not nullable 
+    pub hr_leavecredithistory_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// not nullable 
+    pub c_year_id:f64,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    pub hr_employee_id:Option<f64>,
+    /// not nullable 
+    pub hr_leaveassign_id:f64,
+    pub hr_leavereason_id:Option<f64>,
+    /// not nullable 
+    pub hr_leavetype_id:f64,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// not nullable 
+    pub noofleavescredited:f64,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// has one
+    pub hr_leavereason:Option<HrLeavereason>,
+    /// has one
+    pub hr_leavetype:Option<HrLeavetype>,
+    /// has one
+    pub c_year:Option<CYear>,
+    /// has one
+    pub hr_employee:Option<HrEmployee>,
+    /// has one
+    pub hr_leaveassign:Option<HrLeaveassign>,
+}
+
+#[derive(Debug)]
+pub struct HrLeavereason {
+    /// primary
+    /// not nullable 
+    pub hr_leavereason_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    pub description:Option<String>,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// not nullable 
+    pub leavereasontype:String,
+    /// not nullable 
+    pub name:String,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// defaults to: NULL::character varying
+    pub value:Option<String>,
+    /// has many
+    pub hr_leavecredithistory:Option<Vec<HrLeavecredithistory>>,
+}
+
+#[derive(Debug)]
+pub struct HrLeavetype {
+    /// primary
+    /// not nullable 
+    pub hr_leavetype_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    pub adjacentholidaytype:Option<String>,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    pub datenextrun:Option<NaiveDateTime>,
+    pub description:Option<String>,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    pub isadjacentholidayasleave:Option<String>,
+    pub isallowedencashment:Option<String>,
+    pub ishalfdayleaveallowed:Option<String>,
+    pub isleaverepeated:Option<String>,
+    pub isleavesforwardtonextyear:Option<String>,
+    pub isprovidentfund:Option<String>,
+    /// not nullable 
+    pub leavecredittimetype:String,
+    pub maxcontinousleaves:Option<f64>,
+    pub maxleavestoforward:Option<f64>,
+    /// not nullable 
+    pub minattendancerequire:f64,
+    pub minforencashmentdays:Option<f64>,
+    /// not nullable 
+    pub name:String,
+    /// not nullable 
+    pub noofleavesallocated:f64,
+    pub repeatedtype:Option<String>,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    pub value:Option<String>,
+    /// has many
+    pub hr_leaveassign:Option<Vec<HrLeaveassign>>,
+    /// has many
+    pub hr_leavecredithistory:Option<Vec<HrLeavecredithistory>>,
+    /// has many
+    pub hr_leavetypecombination:Option<Vec<HrLeavetypecombination>>,
+    /// has many
+    pub hr_leavetypeemployeetype:Option<Vec<HrLeavetypeemployeetype>>,
+}
+
+#[derive(Debug)]
+pub struct HrLeavetypecombination {
+    /// primary
+    /// not nullable 
+    pub hr_leavetypecombination_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// not nullable 
+    pub allowedleavetype_id:f64,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    /// not nullable 
+    pub hr_leavetype_id:f64,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// has one
+    pub hr_leavetype:Option<HrLeavetype>,
+    /// has one
+    pub allowedleavetype:Option<HrLeavetype>,
+}
+
+#[derive(Debug)]
+pub struct HrLeavetypeemployeetype {
+    /// primary
+    /// not nullable 
+    pub hr_leavetypeemployeetype_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    /// not nullable 
+    pub hr_employeetype_id:f64,
+    /// not nullable 
+    pub hr_leavetype_id:f64,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// has one
+    pub hr_leavetype:Option<HrLeavetype>,
+    /// has one
+    pub hr_employeetype:Option<HrEmployeetype>,
 }
 
 #[derive(Debug)]
@@ -26447,6 +28956,7 @@ pub struct HrMovement {
     /// primary
     /// not nullable 
     pub hr_movement_id:f64,
+    pub accountsign:Option<String>,
     /// not nullable 
     pub ad_client_id:f64,
     /// not nullable 
@@ -26455,6 +28965,8 @@ pub struct HrMovement {
     pub ad_rule_id:Option<f64>,
     pub amount:Option<f64>,
     pub c_activity_id:Option<f64>,
+    pub c_bp_bankaccount_id:Option<f64>,
+    pub c_bp_group_id:Option<f64>,
     pub c_bpartner_id:Option<f64>,
     pub c_campaign_id:Option<f64>,
     pub c_project_id:Option<f64>,
@@ -26474,8 +28986,8 @@ pub struct HrMovement {
     pub hr_process_id:Option<f64>,
     /// not nullable 
     pub isactive:String,
+    pub ismanual:Option<String>,
     pub isprinted:Option<String>,
-    pub isregistered:Option<String>,
     pub pp_cost_collector_id:Option<f64>,
     /// not nullable 
     pub processed:String,
@@ -26523,6 +29035,14 @@ pub struct HrMovement {
     pub user2:Option<CElementvalue>,
     /// has one
     pub pp_cost_collector:Option<PpCostCollector>,
+    /// has one
+    pub c_bp_group:Option<CBpGroup>,
+    /// has one
+    pub c_bp_bankaccount:Option<CBpBankaccount>,
+    /// has many
+    pub hr_payselectionline:Option<Vec<HrPayselectionline>>,
+    /// has many
+    pub i_hr_movement:Option<Vec<IHrMovement>>,
 }
 
 #[derive(Debug)]
@@ -26567,7 +29087,11 @@ pub struct HrPayroll {
     /// has many
     pub hr_concept:Option<Vec<HrConcept>>,
     /// has many
+    pub hr_designation:Option<Vec<HrDesignation>>,
+    /// has many
     pub hr_employee:Option<Vec<HrEmployee>>,
+    /// has many
+    pub hr_employeetype:Option<Vec<HrEmployeetype>>,
     /// has many
     pub hr_list:Option<Vec<HrList>>,
     /// has many
@@ -26621,6 +29145,168 @@ pub struct HrPayrollconcept {
 }
 
 #[derive(Debug)]
+pub struct HrPayselection {
+    /// primary
+    /// not nullable 
+    pub hr_payselection_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// not nullable 
+    pub c_bankaccount_id:f64,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    /// defaults to: NULL::bpchar
+    pub createfrom:Option<String>,
+    /// defaults to: NULL::character varying
+    pub description:Option<String>,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// not nullable 
+    pub isapproved:String,
+    /// not nullable 
+    pub name:String,
+    /// not nullable 
+    pub paydate:NaiveDateTime,
+    /// not nullable 
+    pub processed:String,
+    /// not nullable 
+    pub processing:String,
+    /// not nullable 
+    pub totalamt:f64,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// has one
+    pub c_bankaccount:Option<CBankaccount>,
+    /// has many
+    pub hr_payselectioncheck:Option<Vec<HrPayselectioncheck>>,
+    /// has many
+    pub hr_payselectionline:Option<Vec<HrPayselectionline>>,
+}
+
+#[derive(Debug)]
+pub struct HrPayselectioncheck {
+    /// primary
+    /// not nullable 
+    pub hr_payselectioncheck_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// defaults to: NULL::numeric
+    pub c_bp_bankaccount_id:Option<f64>,
+    /// not nullable 
+    pub c_bpartner_id:f64,
+    /// defaults to: NULL::numeric
+    pub c_payment_id:Option<f64>,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    /// not nullable 
+    pub discountamt:f64,
+    /// defaults to: NULL::character varying
+    pub documentno:Option<String>,
+    /// not nullable 
+    pub hr_payselection_id:f64,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// defaults to: 'N'::bpchar
+    /// not nullable 
+    pub isgenerateddraft:String,
+    /// not nullable 
+    pub isprinted:String,
+    /// not nullable 
+    pub isreceipt:String,
+    /// not nullable 
+    pub payamt:f64,
+    /// not nullable 
+    pub paymentrule:String,
+    /// defaults to: 'N'::bpchar
+    /// not nullable 
+    pub processed:String,
+    /// not nullable 
+    pub qty:f64,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// has one
+    pub c_bp_bankaccount:Option<CBpBankaccount>,
+    /// has one
+    pub c_bpartner:Option<CBpartner>,
+    /// has one
+    pub hr_payselection:Option<HrPayselection>,
+    /// has one
+    pub c_payment:Option<CPayment>,
+    /// has many
+    pub hr_payselectionline:Option<Vec<HrPayselectionline>>,
+}
+
+#[derive(Debug)]
+pub struct HrPayselectionline {
+    /// primary
+    /// not nullable 
+    pub hr_payselectionline_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    /// defaults to: NULL::character varying
+    pub description:Option<String>,
+    /// not nullable 
+    pub differenceamt:f64,
+    /// not nullable 
+    pub discountamt:f64,
+    /// defaults to: NULL::numeric
+    pub hr_movement_id:Option<f64>,
+    /// not nullable 
+    pub hr_payselection_id:f64,
+    /// defaults to: NULL::numeric
+    pub hr_payselectioncheck_id:Option<f64>,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// not nullable 
+    pub ismanual:String,
+    /// not nullable 
+    pub issotrx:String,
+    /// not nullable 
+    pub line:f64,
+    /// not nullable 
+    pub openamt:f64,
+    /// not nullable 
+    pub payamt:f64,
+    /// defaults to: 'S'::bpchar
+    /// not nullable 
+    pub paymentrule:String,
+    /// defaults to: 'N'::bpchar
+    /// not nullable 
+    pub processed:String,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// has one
+    pub hr_payselectioncheck:Option<HrPayselectioncheck>,
+    /// has one
+    pub hr_payselection:Option<HrPayselection>,
+    /// has one
+    pub hr_movement:Option<HrMovement>,
+}
+
+#[derive(Debug)]
 pub struct HrPeriod {
     /// primary
     /// not nullable 
@@ -26669,13 +29355,15 @@ pub struct HrPeriod {
     /// has one
     pub hr_year:Option<HrYear>,
     /// has many
+    pub hr_employeeinsurance:Option<Vec<HrEmployeeinsurance>>,
+    /// has many
     pub hr_process:Option<Vec<HrProcess>>,
 }
 
 #[derive(Debug)]
 pub struct HrProcess {
     /// primary
-    /// defaults to: (- (1)::numeric)
+    /// defaults to: (-1)
     /// not nullable 
     pub hr_process_id:f64,
     /// not nullable 
@@ -26719,6 +29407,7 @@ pub struct HrProcess {
     pub posted:String,
     /// not nullable 
     pub processed:String,
+    pub processedon:Option<f64>,
     pub processing:Option<String>,
     pub reversal_id:Option<f64>,
     /// not nullable 
@@ -26755,6 +29444,328 @@ pub struct HrProcess {
     pub hr_movement:Option<Vec<HrMovement>>,
     /// has many
     pub hr_process:Option<Vec<HrProcess>>,
+    /// has many
+    pub i_hr_movement:Option<Vec<IHrMovement>>,
+}
+
+#[derive(Debug)]
+pub struct HrRace {
+    /// primary
+    /// not nullable 
+    pub hr_race_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    /// defaults to: NULL::character varying
+    pub description:Option<String>,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// not nullable 
+    pub name:String,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// defaults to: NULL::character varying
+    pub value:Option<String>,
+    /// has many
+    pub hr_employee:Option<Vec<HrEmployee>>,
+}
+
+#[derive(Debug)]
+pub struct HrRelationship {
+    /// primary
+    /// not nullable 
+    pub hr_relationship_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    /// defaults to: NULL::character varying
+    pub description:Option<String>,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// not nullable 
+    pub name:String,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// defaults to: NULL::character varying
+    pub value:Option<String>,
+    /// has many
+    pub c_bpartner_location:Option<Vec<CBpartnerLocation>>,
+    /// has many
+    pub hr_employeedependent:Option<Vec<HrEmployeedependent>>,
+}
+
+#[derive(Debug)]
+pub struct HrSalaryrange {
+    /// primary
+    /// not nullable 
+    pub hr_salaryrange_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// defaults to: NULL::numeric
+    pub maxvalue:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub minvalue:Option<f64>,
+    /// not nullable 
+    pub name:String,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// defaults to: NULL::character varying
+    pub value:Option<String>,
+    /// has many
+    pub hr_jobopening:Option<Vec<HrJobopening>>,
+}
+
+#[derive(Debug)]
+pub struct HrSalarystructure {
+    /// primary
+    /// not nullable 
+    pub hr_salarystructure_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    /// defaults to: NULL::character varying
+    pub description:Option<String>,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// not nullable 
+    pub name:String,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// not nullable 
+    pub validto:NaiveDateTime,
+    /// defaults to: NULL::character varying
+    pub value:Option<String>,
+    /// has one, self referential
+    pub hr_salarystructure:Option<Box<HrSalarystructure>>,
+    /// has one, extension table
+    pub hr_salarystructure:Option<Box<HrSalarystructure>>,
+    /// has many
+    pub hr_designation:Option<Vec<HrDesignation>>,
+    /// has many
+    pub hr_salarystructureline:Option<Vec<HrSalarystructureline>>,
+}
+
+#[derive(Debug)]
+pub struct HrSalarystructureline {
+    /// primary
+    /// not nullable 
+    pub hr_salarystructureline_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// not nullable 
+    pub amount:f64,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    /// not nullable 
+    pub hr_concept_id:f64,
+    /// not nullable 
+    pub hr_salarystructure_id:f64,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// not nullable 
+    pub percentage:f64,
+    pub seqno:Option<f64>,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// has one
+    pub hr_concept:Option<HrConcept>,
+    /// has one
+    pub hr_salarystructure:Option<HrSalarystructure>,
+}
+
+#[derive(Debug)]
+pub struct HrShiftgroup {
+    /// primary
+    /// not nullable 
+    pub hr_shiftgroup_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    /// defaults to: NULL::character varying
+    pub description:Option<String>,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// not nullable 
+    pub name:String,
+    pub noofhoursthisshift:Option<f64>,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// defaults to: NULL::character varying
+    pub value:Option<String>,
+    /// has one, self referential
+    pub hr_shiftgroup:Option<Box<HrShiftgroup>>,
+    /// has one, extension table
+    pub hr_shiftgroup:Option<Box<HrShiftgroup>>,
+    /// has many
+    pub hr_workgroup:Option<Vec<HrWorkgroup>>,
+    /// has many
+    pub hr_workshift:Option<Vec<HrWorkshift>>,
+}
+
+#[derive(Debug)]
+pub struct HrSkilltype {
+    /// primary
+    /// not nullable 
+    pub hr_skilltype_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    /// defaults to: NULL::character varying
+    pub description:Option<String>,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// not nullable 
+    pub name:String,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// defaults to: NULL::character varying
+    pub value:Option<String>,
+    /// has many
+    pub hr_employee:Option<Vec<HrEmployee>>,
+}
+
+#[derive(Debug)]
+pub struct HrWorkgroup {
+    /// primary
+    /// not nullable 
+    pub hr_workgroup_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    /// defaults to: NULL::character varying
+    pub description:Option<String>,
+    /// defaults to: NULL::numeric
+    pub hr_shiftgroup_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub hr_workshift_id:Option<f64>,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// not nullable 
+    pub isshiftallocation:String,
+    /// not nullable 
+    pub name:String,
+    /// defaults to: NULL::numeric
+    pub seqno:Option<f64>,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// defaults to: NULL::character varying
+    pub value:Option<String>,
+    /// has one
+    pub hr_workshift:Option<HrWorkshift>,
+    /// has one
+    pub hr_shiftgroup:Option<HrShiftgroup>,
+}
+
+#[derive(Debug)]
+pub struct HrWorkshift {
+    /// primary
+    /// not nullable 
+    pub hr_workshift_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    /// defaults to: NULL::character varying
+    pub description:Option<String>,
+    /// defaults to: NULL::numeric
+    pub hr_shiftgroup_id:Option<f64>,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// not nullable 
+    pub ishasfixedworkgroup:String,
+    /// not nullable 
+    pub isovertimeapplicable:String,
+    /// not nullable 
+    pub name:String,
+    pub noofhours:Option<f64>,
+    pub overtimeamount:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub seqno:Option<f64>,
+    /// not nullable 
+    pub shiftfromtime:NaiveDateTime,
+    /// not nullable 
+    pub shifttotime:NaiveDateTime,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// defaults to: NULL::character varying
+    pub value:Option<String>,
+    /// has one
+    pub hr_shiftgroup:Option<HrShiftgroup>,
+    /// has many
+    pub hr_workgroup:Option<Vec<HrWorkgroup>>,
 }
 
 #[derive(Debug)]
@@ -26823,7 +29834,7 @@ pub struct IAsset {
     pub a_disposal_loss:Option<String>,
     pub a_disposal_revenue:Option<String>,
     pub a_life_period:Option<f64>,
-    /// defaults to: (0)::numeric
+    /// defaults to: 0
     pub a_parent_asset_id:Option<f64>,
     pub a_period_end:Option<f64>,
     pub a_period_posted:Option<f64>,
@@ -27035,6 +30046,9 @@ pub struct IBpartner {
     pub interestareaname:Option<String>,
     /// defaults to: 'Y'::bpchar
     pub isactive:Option<String>,
+    pub iscustomer:Option<String>,
+    pub isemployee:Option<String>,
+    pub isvendor:Option<String>,
     pub naics:Option<String>,
     pub name:Option<String>,
     pub name2:Option<String>,
@@ -27070,6 +30084,113 @@ pub struct IBpartner {
     pub ad_user:Option<AdUser>,
     /// has one
     pub r_interestarea:Option<RInterestarea>,
+}
+
+#[derive(Debug)]
+pub struct IBudget {
+    /// primary
+    /// not nullable 
+    pub i_budget_id:f64,
+    /// defaults to: NULL::numeric
+    pub a_asset_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub account_id:Option<f64>,
+    /// defaults to: NULL::character varying
+    pub accountvalue:Option<String>,
+    /// defaults to: NULL::character varying
+    pub acctschemaname:Option<String>,
+    /// defaults to: NULL::numeric
+    pub ad_client_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub ad_org_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub ad_orgtrx_id:Option<f64>,
+    /// defaults to: NULL::character varying
+    pub assetvalue:Option<String>,
+    pub batchdocumentno:Option<String>,
+    /// defaults to: NULL::character varying
+    pub bpartnervalue:Option<String>,
+    /// defaults to: NULL::character varying
+    pub budgetcode:Option<String>,
+    /// defaults to: NULL::numeric
+    pub c_acctschema_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub c_activity_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub c_bpartner_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub c_campaign_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub c_locfrom_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub c_locto_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub c_project_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub c_salesregion_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub c_validcombination_id:Option<f64>,
+    /// defaults to: NULL::character varying
+    pub campaignvalue:Option<String>,
+    pub created:Option<NaiveDateTime>,
+    /// defaults to: NULL::numeric
+    pub createdby:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub gl_budget_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub gl_journalbatch_id:Option<f64>,
+    /// defaults to: NULL::character varying
+    pub i_errormsg:Option<String>,
+    pub i_isimported:Option<String>,
+    /// defaults to: 'Y'::bpchar
+    pub isactive:Option<String>,
+    /// defaults to: NULL::character varying
+    pub jnl_line_description:Option<String>,
+    /// defaults to: NULL::numeric
+    pub m_product_id:Option<f64>,
+    pub month_0_amt:Option<f64>,
+    pub month_0_qty:Option<f64>,
+    pub month_10_amt:Option<f64>,
+    pub month_10_qty:Option<f64>,
+    pub month_11_amt:Option<f64>,
+    pub month_11_qty:Option<f64>,
+    pub month_1_amt:Option<f64>,
+    pub month_1_qty:Option<f64>,
+    pub month_2_amt:Option<f64>,
+    pub month_2_qty:Option<f64>,
+    pub month_3_amt:Option<f64>,
+    pub month_3_qty:Option<f64>,
+    pub month_4_amt:Option<f64>,
+    pub month_4_qty:Option<f64>,
+    pub month_5_amt:Option<f64>,
+    pub month_5_qty:Option<f64>,
+    pub month_6_amt:Option<f64>,
+    pub month_6_qty:Option<f64>,
+    pub month_7_amt:Option<f64>,
+    pub month_7_qty:Option<f64>,
+    pub month_8_amt:Option<f64>,
+    pub month_8_qty:Option<f64>,
+    pub month_9_amt:Option<f64>,
+    pub month_9_qty:Option<f64>,
+    /// defaults to: NULL::character varying
+    pub orgtrxvalue:Option<String>,
+    /// defaults to: NULL::bpchar
+    pub processed:Option<String>,
+    /// defaults to: NULL::bpchar
+    pub processing:Option<String>,
+    /// defaults to: NULL::character varying
+    pub productvalue:Option<String>,
+    /// defaults to: NULL::character varying
+    pub projectvalue:Option<String>,
+    /// defaults to: NULL::character varying
+    pub salesregionvalue:Option<String>,
+    pub updated:Option<NaiveDateTime>,
+    /// defaults to: NULL::numeric
+    pub updatedby:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub user1_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub user2_id:Option<f64>,
 }
 
 #[derive(Debug)]
@@ -27126,8 +30247,14 @@ pub struct IElementvalue {
     pub ad_client_id:Option<f64>,
     pub ad_column_id:Option<f64>,
     pub ad_org_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub c_charge_id:Option<f64>,
     pub c_element_id:Option<f64>,
     pub c_elementvalue_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub c_taxcategory_id:Option<f64>,
+    /// defaults to: NULL::character varying
+    pub chargename:Option<String>,
     /// defaults to: now()
     pub created:Option<NaiveDateTime>,
     pub createdby:Option<f64>,
@@ -27158,6 +30285,8 @@ pub struct IElementvalue {
     /// defaults to: 'N'::bpchar
     pub processed:Option<String>,
     pub processing:Option<String>,
+    /// defaults to: NULL::character varying
+    pub taxcategoryname:Option<String>,
     /// defaults to: now()
     pub updated:Option<NaiveDateTime>,
     pub updatedby:Option<f64>,
@@ -27170,6 +30299,10 @@ pub struct IElementvalue {
     pub parentelementvalue:Option<CElementvalue>,
     /// has one
     pub ad_column:Option<AdColumn>,
+    /// has one
+    pub c_charge:Option<CCharge>,
+    /// has one
+    pub c_taxcategory:Option<CTaxcategory>,
 }
 
 #[derive(Debug)]
@@ -27293,6 +30426,65 @@ pub struct IFajournal {
     pub c_project:Option<CProject>,
     /// has one
     pub c_salesregion:Option<CSalesregion>,
+}
+
+#[derive(Debug)]
+pub struct IForecast {
+    /// primary
+    /// not nullable 
+    pub i_forecast_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    pub ad_org_id:Option<f64>,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    pub datepromised:Option<NaiveDateTime>,
+    /// defaults to: NULL::character varying
+    pub i_errormsg:Option<String>,
+    /// defaults to: NULL::bpchar
+    pub i_isimported:Option<String>,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// defaults to: NULL::numeric
+    pub m_forecast_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub m_forecastline_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub m_product_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub m_warehouse_id:Option<f64>,
+    /// defaults to: NULL::character varying
+    pub orgvalue:Option<String>,
+    /// defaults to: NULL::bpchar
+    pub processed:Option<String>,
+    /// defaults to: NULL::bpchar
+    pub processing:Option<String>,
+    /// defaults to: NULL::character varying
+    pub productvalue:Option<String>,
+    pub qty:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub salesrep_id:Option<f64>,
+    /// defaults to: NULL::character varying
+    pub salesrep_name:Option<String>,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// defaults to: NULL::character varying
+    pub warehousevalue:Option<String>,
+    /// has one
+    pub m_product:Option<MProduct>,
+    /// has one
+    pub m_warehouse:Option<MWarehouse>,
+    /// has one
+    pub salesrep:Option<AdUser>,
+    /// has one
+    pub m_forecast:Option<MForecast>,
+    /// has one
+    pub m_forecastline:Option<MForecastline>,
 }
 
 #[derive(Debug)]
@@ -27432,6 +30624,48 @@ pub struct IGljournal {
 }
 
 #[derive(Debug)]
+pub struct IHrMovement {
+    /// primary
+    /// not nullable 
+    pub i_hr_movement_id:f64,
+    pub ad_client_id:Option<f64>,
+    pub ad_org_id:Option<f64>,
+    pub amount:Option<f64>,
+    pub bpartner_value:Option<String>,
+    pub c_bpartner_id:Option<f64>,
+    pub conceptvalue:Option<String>,
+    pub created:Option<NaiveDateTime>,
+    pub createdby:Option<f64>,
+    pub description:Option<String>,
+    pub hr_concept_id:Option<f64>,
+    pub hr_movement_id:Option<f64>,
+    pub hr_process_id:Option<f64>,
+    pub i_errormsg:Option<String>,
+    /// defaults to: 'N'::character varying
+    /// not nullable 
+    pub i_isimported:String,
+    pub isactive:Option<String>,
+    pub processed:Option<String>,
+    pub processing:Option<String>,
+    pub processname:Option<String>,
+    pub qty:Option<f64>,
+    pub servicedate:Option<NaiveDateTime>,
+    pub textmsg:Option<String>,
+    pub updated:Option<NaiveDateTime>,
+    pub updatedby:Option<f64>,
+    pub validfrom:Option<NaiveDateTime>,
+    pub validto:Option<NaiveDateTime>,
+    /// has one
+    pub c_bpartner:Option<CBpartner>,
+    /// has one
+    pub hr_concept:Option<HrConcept>,
+    /// has one
+    pub hr_process:Option<HrProcess>,
+    /// has one
+    pub hr_movement:Option<HrMovement>,
+}
+
+#[derive(Debug)]
 pub struct IInoutlineconfirm {
     /// primary
     /// not nullable 
@@ -27484,6 +30718,7 @@ pub struct IInventory {
     /// defaults to: now()
     pub created:Option<NaiveDateTime>,
     pub createdby:Option<f64>,
+    pub currentcostprice:Option<f64>,
     pub description:Option<String>,
     pub i_errormsg:Option<String>,
     /// defaults to: 'N'::bpchar
@@ -27549,6 +30784,8 @@ pub struct IInvoice {
     pub c_country_id:Option<f64>,
     pub c_currency_id:Option<f64>,
     pub c_doctype_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub c_dunninglevel_id:Option<f64>,
     pub c_invoice_id:Option<f64>,
     pub c_invoiceline_id:Option<f64>,
     pub c_location_id:Option<f64>,
@@ -27568,11 +30805,14 @@ pub struct IInvoice {
     pub description:Option<String>,
     pub doctypename:Option<String>,
     pub documentno:Option<String>,
+    pub dunninggrace:Option<NaiveDateTime>,
     pub email:Option<String>,
     pub i_errormsg:Option<String>,
     /// defaults to: 'N'::bpchar
     /// not nullable 
     pub i_isimported:String,
+    /// defaults to: NULL::bpchar
+    pub invoicecollectiontype:Option<String>,
     /// defaults to: 'Y'::bpchar
     pub isactive:Option<String>,
     /// defaults to: 'Y'::bpchar
@@ -27645,6 +30885,91 @@ pub struct IInvoice {
     pub c_invoiceline:Option<CInvoiceline>,
     /// has one
     pub c_charge:Option<CCharge>,
+    /// has one
+    pub c_dunninglevel:Option<CDunninglevel>,
+}
+
+#[derive(Debug)]
+pub struct IMovement {
+    /// primary
+    /// not nullable 
+    pub i_movement_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    pub ad_orgtrx_id:Option<f64>,
+    pub ad_user_id:Option<f64>,
+    pub bpartnervalue:Option<String>,
+    pub c_bpartner_id:Option<f64>,
+    pub c_campaign_id:Option<f64>,
+    pub c_doctype_id:Option<f64>,
+    pub c_project_id:Option<f64>,
+    pub campaignvalue:Option<String>,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    pub deliveryrule:Option<String>,
+    pub deliveryviarule:Option<String>,
+    pub doctypename:Option<String>,
+    /// not nullable 
+    pub documentno:String,
+    pub freightcostrule:Option<String>,
+    pub i_errormsg:Option<String>,
+    /// defaults to: 'N'::bpchar
+    /// not nullable 
+    pub i_isimported:String,
+    /// not nullable 
+    pub isactive:String,
+    pub locatortovalue:Option<String>,
+    pub locatorvalue:Option<String>,
+    pub m_locator_id:Option<f64>,
+    pub m_locatorto_id:Option<f64>,
+    pub m_movement_id:Option<f64>,
+    pub m_movementline_id:Option<f64>,
+    pub m_product_id:Option<f64>,
+    pub m_shipper_id:Option<f64>,
+    pub movementdate:Option<NaiveDateTime>,
+    pub movementqty:Option<f64>,
+    pub orgtrxvalue:Option<String>,
+    pub orgvalue:Option<String>,
+    pub priorityrule:Option<String>,
+    /// defaults to: 'N'::bpchar
+    /// not nullable 
+    pub processed:String,
+    /// defaults to: 'N'::bpchar
+    /// not nullable 
+    pub processing:String,
+    pub productvalue:Option<String>,
+    pub projectvalue:Option<String>,
+    pub shippername:Option<String>,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    pub user1_id:Option<String>,
+    pub user2_id:Option<String>,
+    /// has one
+    pub m_product:Option<MProduct>,
+    /// has one
+    pub c_doctype:Option<CDoctype>,
+    /// has one
+    pub c_bpartner:Option<CBpartner>,
+    /// has one
+    pub m_shipper:Option<MShipper>,
+    /// has one
+    pub ad_user:Option<AdUser>,
+    /// has one
+    pub c_project:Option<CProject>,
+    /// has one
+    pub c_campaign:Option<CCampaign>,
+    /// has one
+    pub ad_orgtrx:Option<AdOrg>,
+    /// has one
+    pub m_movement:Option<MMovement>,
+    /// has one
+    pub m_movementline:Option<MMovementline>,
 }
 
 #[derive(Debug)]
@@ -27671,6 +30996,8 @@ pub struct IOrder {
     pub c_location_id:Option<f64>,
     pub c_order_id:Option<f64>,
     pub c_orderline_id:Option<f64>,
+    pub c_ordersource_id:Option<f64>,
+    pub c_ordersourcevalue:Option<String>,
     pub c_paymentterm_id:Option<f64>,
     pub c_project_id:Option<f64>,
     pub c_region_id:Option<f64>,
@@ -27685,6 +31012,7 @@ pub struct IOrder {
     pub createdby:Option<f64>,
     pub dateacct:Option<NaiveDateTime>,
     pub dateordered:Option<NaiveDateTime>,
+    pub deliveryrule:Option<String>,
     pub description:Option<String>,
     pub doctypename:Option<String>,
     pub documentno:Option<String>,
@@ -27774,6 +31102,10 @@ pub struct IOrder {
     pub c_uom:Option<CUom>,
     /// has one
     pub c_campaign:Option<CCampaign>,
+    /// has one
+    pub c_charge:Option<CCharge>,
+    /// has one
+    pub c_ordersource:Option<COrdersource>,
 }
 
 #[derive(Debug)]
@@ -27886,9 +31218,7 @@ pub struct IPricelist {
     /// primary
     /// not nullable 
     pub i_pricelist_id:f64,
-    /// defaults to: NULL::numeric
     pub ad_client_id:Option<f64>,
-    /// defaults to: NULL::numeric
     pub ad_org_id:Option<f64>,
     pub bpartner_value:Option<String>,
     pub breakvalue:Option<f64>,
@@ -27924,6 +31254,18 @@ pub struct IPricelist {
     pub updatedby:Option<f64>,
     pub validfrom:Option<NaiveDateTime>,
     pub x12de355:Option<String>,
+    /// has one
+    pub c_bpartner:Option<CBpartner>,
+    /// has one
+    pub c_currency:Option<CCurrency>,
+    /// has one
+    pub c_uom:Option<CUom>,
+    /// has one
+    pub m_product:Option<MProduct>,
+    /// has one
+    pub m_pricelist:Option<MPricelist>,
+    /// has one
+    pub m_pricelist_version:Option<MPricelistVersion>,
 }
 
 #[derive(Debug)]
@@ -27948,6 +31290,7 @@ pub struct IProduct {
     pub descriptionurl:Option<String>,
     /// defaults to: 'N'::bpchar
     pub discontinued:Option<String>,
+    pub discontinuedat:Option<NaiveDateTime>,
     pub discontinuedby:Option<NaiveDateTime>,
     pub documentnote:Option<String>,
     pub help:Option<String>,
@@ -28012,6 +31355,250 @@ pub struct IProduct {
 }
 
 #[derive(Debug)]
+pub struct IProductAsi {
+    /// primary
+    /// not nullable 
+    pub i_product_asi_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// defaults to: NULL::character varying
+    pub attributename:Option<String>,
+    /// defaults to: NULL::character varying
+    pub attributesearchname:Option<String>,
+    /// defaults to: NULL::character varying
+    pub attributesetname:Option<String>,
+    /// defaults to: NULL::character varying
+    pub attributevalue:Option<String>,
+    /// defaults to: NULL::bpchar
+    pub attributevaluetype:Option<String>,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    /// defaults to: NULL::character varying
+    pub elementname:Option<String>,
+    /// defaults to: NULL::numeric
+    pub guaranteedays:Option<f64>,
+    /// defaults to: NULL::character varying
+    pub i_errormsg:Option<String>,
+    /// defaults to: NULL::bpchar
+    pub i_isimported:Option<String>,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// defaults to: NULL::bpchar
+    pub isguaranteedate:Option<String>,
+    /// defaults to: NULL::bpchar
+    pub isguaranteedatemandatory:Option<String>,
+    /// defaults to: NULL::bpchar
+    pub isinstanceattribute:Option<String>,
+    /// defaults to: NULL::bpchar
+    pub islot:Option<String>,
+    /// defaults to: NULL::bpchar
+    pub islotmandatory:Option<String>,
+    /// defaults to: NULL::bpchar
+    pub ismandatory:Option<String>,
+    /// defaults to: NULL::bpchar
+    pub isserno:Option<String>,
+    /// defaults to: NULL::bpchar
+    pub issernomandatory:Option<String>,
+    /// defaults to: NULL::numeric
+    pub m_attribute_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub m_attributesearch_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub m_attributeset_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub m_attributesetinstance_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub m_attributevalue_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub m_product_id:Option<f64>,
+    /// defaults to: NULL::bpchar
+    pub mandatorytype:Option<String>,
+    /// defaults to: NULL::bpchar
+    pub processed:Option<String>,
+    /// defaults to: NULL::bpchar
+    pub processing:Option<String>,
+    /// defaults to: NULL::character varying
+    pub productvalue:Option<String>,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// has one
+    pub m_product:Option<MProduct>,
+    /// has one
+    pub m_attributeset:Option<MAttributeset>,
+    /// has one
+    pub m_attributesearch:Option<MAttributesearch>,
+    /// has one
+    pub m_attribute:Option<MAttribute>,
+    /// has one
+    pub m_attributevalue:Option<MAttributevalue>,
+}
+
+#[derive(Debug)]
+pub struct IProductBom {
+    /// primary
+    /// not nullable 
+    pub i_product_bom_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    pub assay:Option<f64>,
+    pub backflushgroup:Option<String>,
+    pub bomtype:Option<String>,
+    pub bomuse:Option<String>,
+    pub c_uom_id:Option<f64>,
+    pub componenttype:Option<String>,
+    pub costallocationperc:Option<f64>,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    pub description:Option<String>,
+    pub documentno:Option<String>,
+    pub help:Option<String>,
+    pub i_errormsg:Option<String>,
+    /// defaults to: 'N'::bpchar
+    /// not nullable 
+    pub i_isimported:String,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// defaults to: 'N'::bpchar
+    pub iscritical:Option<String>,
+    pub isqtypercentage:Option<String>,
+    pub issuemethod:Option<String>,
+    pub leadtimeoffset:Option<f64>,
+    pub m_bomproduct_id:Option<f64>,
+    pub m_changenotice_id:Option<f64>,
+    pub m_product_id:Option<f64>,
+    pub name:Option<String>,
+    pub orgvalue:Option<String>,
+    pub pp_product_bom_id:Option<f64>,
+    pub pp_product_bomline_id:Option<f64>,
+    pub processed:Option<String>,
+    pub processing:Option<String>,
+    pub product_bom_value:Option<String>,
+    pub productvalue:Option<String>,
+    pub qtybatch:Option<f64>,
+    pub qtybom:Option<f64>,
+    pub scrap:Option<f64>,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    pub validfrom:Option<NaiveDateTime>,
+    pub validto:Option<NaiveDateTime>,
+    pub value:Option<String>,
+    pub x12de355:Option<String>,
+    /// has one
+    pub pp_product_bomline:Option<PpProductBomline>,
+    /// has one
+    pub m_product:Option<MProduct>,
+    /// has one
+    pub c_uom:Option<CUom>,
+    /// has one
+    pub m_changenotice:Option<MChangenotice>,
+    /// has one
+    pub m_bomproduct:Option<MProduct>,
+    /// has one
+    pub pp_product_bom:Option<PpProductBom>,
+}
+
+#[derive(Debug)]
+pub struct IProductplanning {
+    /// primary
+    /// not nullable 
+    pub i_productplanning_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    pub ad_workflow_id:Option<f64>,
+    pub bpartner_value:Option<String>,
+    pub c_bpartner_id:Option<f64>,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    pub datepromised:Option<NaiveDateTime>,
+    pub dd_networkdistribution_id:Option<f64>,
+    pub deliverytime_promised:Option<f64>,
+    pub forecastvalue:Option<String>,
+    pub i_errormsg:Option<String>,
+    /// not nullable 
+    pub i_isimported:String,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// not nullable 
+    pub iscreateplan:String,
+    pub ismps:Option<String>,
+    /// not nullable 
+    pub isphantom:String,
+    pub m_forecast_id:Option<f64>,
+    pub m_forecastline_id:Option<f64>,
+    pub m_product_id:Option<f64>,
+    pub m_warehouse_id:Option<f64>,
+    pub networkdistributionvalue:Option<String>,
+    pub order_max:Option<f64>,
+    pub order_min:Option<f64>,
+    pub order_pack:Option<f64>,
+    pub order_period:Option<f64>,
+    pub order_policy:Option<String>,
+    pub order_qty:Option<f64>,
+    pub orgvalue:Option<String>,
+    pub planner_id:Option<f64>,
+    pub plannervalue:Option<String>,
+    pub pp_product_bom_id:Option<f64>,
+    pub pp_product_planning_id:Option<f64>,
+    pub processed:Option<String>,
+    pub processing:Option<String>,
+    pub product_bom_value:Option<String>,
+    pub productvalue:Option<String>,
+    /// not nullable 
+    pub qty:f64,
+    pub resourcevalue:Option<String>,
+    pub s_resource_id:Option<f64>,
+    pub safetystock:Option<f64>,
+    pub salesrep_id:Option<f64>,
+    pub timefence:Option<f64>,
+    pub transfertime:Option<f64>,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    pub vendorproductno:Option<String>,
+    pub warehousevalue:Option<String>,
+    pub workingtime:Option<f64>,
+    pub yield_:Option<f64>,
+    /// has one
+    pub c_bpartner:Option<CBpartner>,
+    /// has one
+    pub m_product:Option<MProduct>,
+    /// has one
+    pub m_warehouse:Option<MWarehouse>,
+    /// has one
+    pub planner:Option<AdUser>,
+    /// has one
+    pub pp_product_bom:Option<PpProductBom>,
+    /// has one
+    pub s_resource:Option<SResource>,
+    /// has one
+    pub m_forecast:Option<MForecast>,
+    /// has one
+    pub m_forecastline:Option<MForecastline>,
+    /// has one
+    pub pp_product_planning:Option<PpProductPlanning>,
+}
+
+#[derive(Debug)]
 pub struct IReportline {
     /// primary
     /// not nullable 
@@ -28041,12 +31628,16 @@ pub struct IReportline {
     pub pa_reportline_id:Option<f64>,
     pub pa_reportlineset_id:Option<f64>,
     pub pa_reportsource_id:Option<f64>,
+    pub paamounttype:Option<String>,
+    pub paperiodtype:Option<String>,
     pub postingtype:Option<String>,
     /// defaults to: 'N'::bpchar
     pub processed:Option<String>,
     pub processing:Option<String>,
     pub reportlinesetname:Option<String>,
+    pub reportlinestyle:Option<String>,
     pub seqno:Option<f64>,
+    pub tablevel:Option<f64>,
     /// defaults to: now()
     pub updated:Option<NaiveDateTime>,
     pub updatedby:Option<f64>,
@@ -28058,6 +31649,338 @@ pub struct IReportline {
     pub pa_reportsource:Option<PaReportsource>,
     /// has one
     pub c_elementvalue:Option<CElementvalue>,
+}
+
+#[derive(Debug)]
+pub struct ISaleshistory {
+    /// primary
+    /// not nullable 
+    pub i_saleshistory_id:f64,
+    /// defaults to: NULL::character varying
+    pub activityvalue:Option<String>,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// defaults to: NULL::character varying
+    pub bpartnervalue:Option<String>,
+    /// defaults to: NULL::numeric
+    pub c_activity_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub c_bp_group_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub c_bpartner_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub c_bpartner_location_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub c_campaign_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub c_project_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub c_projectphase_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub c_projecttask_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub c_saleshistory_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub c_salesregion_id:Option<f64>,
+    /// defaults to: NULL::character varying
+    pub campaignvalue:Option<String>,
+    /// defaults to: NULL::character varying
+    pub categoryname:Option<String>,
+    pub costamt:Option<f64>,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    pub dateinvoiced:Option<NaiveDateTime>,
+    /// defaults to: NULL::character varying
+    pub documentno:Option<String>,
+    /// defaults to: NULL::character varying
+    pub groupvalue:Option<String>,
+    /// defaults to: NULL::character varying
+    pub i_errormsg:Option<String>,
+    /// defaults to: NULL::bpchar
+    pub i_isimported:Option<String>,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// defaults to: NULL::numeric
+    pub m_product_category_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub m_product_class_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub m_product_classification_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub m_product_group_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub m_product_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub m_warehouse_id:Option<f64>,
+    /// defaults to: NULL::character varying
+    pub orgvalue:Option<String>,
+    pub priceinvoiced:Option<f64>,
+    /// defaults to: NULL::bpchar
+    pub processed:Option<String>,
+    /// defaults to: NULL::bpchar
+    pub processing:Option<String>,
+    /// defaults to: NULL::character varying
+    pub productvalue:Option<String>,
+    /// defaults to: NULL::character varying
+    pub projectname:Option<String>,
+    /// defaults to: NULL::character varying
+    pub projectphasename:Option<String>,
+    pub qty:Option<f64>,
+    /// defaults to: NULL::character varying
+    pub regionname:Option<String>,
+    /// defaults to: NULL::numeric
+    pub salesrep_id:Option<f64>,
+    /// defaults to: NULL::character varying
+    pub salesrep_name:Option<String>,
+    pub totalinvamt:Option<f64>,
+    pub totalinvcost:Option<f64>,
+    pub totalinvqty:Option<f64>,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// defaults to: NULL::numeric
+    pub user1_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub user2_id:Option<f64>,
+    /// defaults to: NULL::character varying
+    pub warehousevalue:Option<String>,
+    /// has one
+    pub c_activity:Option<CActivity>,
+    /// has one
+    pub c_bpartner:Option<CBpartner>,
+    /// has one
+    pub c_bpartner_location:Option<CBpartnerLocation>,
+    /// has one
+    pub c_campaign:Option<CCampaign>,
+    /// has one
+    pub c_projectphase:Option<CProjectphase>,
+    /// has one
+    pub c_projecttask:Option<CProjecttask>,
+    /// has one
+    pub c_project:Option<CProject>,
+    /// has one
+    pub c_salesregion:Option<CSalesregion>,
+    /// has one
+    pub m_product_category:Option<MProductCategory>,
+    /// has one
+    pub m_product_class:Option<MProductClass>,
+    /// has one
+    pub m_product_classification:Option<MProductClassification>,
+    /// has one
+    pub m_product_group:Option<MProductGroup>,
+    /// has one
+    pub m_product:Option<MProduct>,
+    /// has one
+    pub m_warehouse:Option<MWarehouse>,
+    /// has one
+    pub salesrep:Option<AdUser>,
+    /// has one
+    pub c_saleshistory:Option<CSaleshistory>,
+    /// has one
+    pub c_bp_group:Option<CBpGroup>,
+    /// has one
+    pub user1:Option<CElementvalue>,
+    /// has one
+    pub user2:Option<CElementvalue>,
+}
+
+#[derive(Debug)]
+pub struct IWorkflow {
+    /// primary
+    /// not nullable 
+    pub i_workflow_id:f64,
+    /// defaults to: '1'::bpchar
+    pub accesslevel:Option<String>,
+    /// defaults to: 'W'::bpchar
+    pub action:Option<String>,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// defaults to: NULL::numeric
+    pub ad_column_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub ad_form_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub ad_image_id:Option<f64>,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// defaults to: NULL::numeric
+    pub ad_process_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub ad_table_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub ad_task_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub ad_wf_node_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub ad_wf_responsible_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub ad_window_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub ad_workflow_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub ad_workflowprocessor_id:Option<f64>,
+    /// defaults to: NULL::character varying
+    pub attributename:Option<String>,
+    /// defaults to: NULL::character varying
+    pub attributevalue:Option<String>,
+    /// defaults to: NULL::character varying
+    pub author:Option<String>,
+    /// defaults to: NULL::character varying
+    pub columnname:Option<String>,
+    pub cost:Option<f64>,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// defaults to: NULL::numeric
+    pub createdby:Option<f64>,
+    /// defaults to: NULL::character varying
+    pub description:Option<String>,
+    /// defaults to: NULL::character varying
+    pub docaction:Option<String>,
+    /// defaults to: NULL::character varying
+    pub documentno:Option<String>,
+    /// defaults to: NULL::character varying
+    pub docvaluelogic:Option<String>,
+    /// defaults to: NULL::numeric
+    pub duration:Option<f64>,
+    /// defaults to: NULL::bpchar
+    pub durationunit:Option<String>,
+    pub dynprioritychange:Option<f64>,
+    /// defaults to: NULL::bpchar
+    pub dynpriorityunit:Option<String>,
+    /// defaults to: NULL::character varying
+    pub email:Option<String>,
+    /// defaults to: NULL::bpchar
+    pub emailrecipient:Option<String>,
+    /// defaults to: NULL::character varying
+    pub entitytype:Option<String>,
+    /// defaults to: NULL::bpchar
+    pub finishmode:Option<String>,
+    /// defaults to: NULL::character varying
+    pub help:Option<String>,
+    /// defaults to: NULL::character varying
+    pub i_errormsg:Option<String>,
+    /// defaults to: 'N'::bpchar
+    /// not nullable 
+    pub i_isimported:String,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// defaults to: NULL::bpchar
+    pub isbetafunctionality:Option<String>,
+    /// defaults to: NULL::bpchar
+    pub iscentrallymaintained:Option<String>,
+    /// defaults to: NULL::bpchar
+    pub isdefault:Option<String>,
+    /// defaults to: NULL::bpchar
+    pub ismilestone:Option<String>,
+    /// defaults to: NULL::bpchar
+    pub issubcontracting:Option<String>,
+    /// defaults to: 'X'::bpchar
+    pub joinelement:Option<String>,
+    /// defaults to: NULL::numeric
+    pub limit:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub movingtime:Option<f64>,
+    /// defaults to: NULL::character varying
+    pub name:Option<String>,
+    /// defaults to: NULL::character varying
+    pub nodename:Option<String>,
+    /// defaults to: NULL::character varying
+    pub nodenextvalue:Option<String>,
+    /// defaults to: NULL::character varying
+    pub nodevalue:Option<String>,
+    /// defaults to: NULL::character varying
+    pub orgvalue:Option<String>,
+    /// defaults to: NULL::numeric
+    pub overlapunits:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub priority:Option<f64>,
+    /// defaults to: 'N'::bpchar
+    pub processed:Option<String>,
+    /// defaults to: 'N'::bpchar
+    pub processing:Option<String>,
+    /// defaults to: NULL::character varying
+    pub processtype:Option<String>,
+    /// defaults to: 'U'::bpchar
+    pub publishstatus:Option<String>,
+    pub qtybatchsize:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub queuingtime:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub r_mailtext_id:Option<f64>,
+    /// defaults to: NULL::character varying
+    pub resourcevalue:Option<String>,
+    /// defaults to: NULL::character varying
+    pub responsiblename:Option<String>,
+    /// defaults to: NULL::numeric
+    pub s_resource_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub setuptime:Option<f64>,
+    /// defaults to: 'X'::bpchar
+    pub splitelement:Option<String>,
+    /// defaults to: NULL::bpchar
+    pub startmode:Option<String>,
+    /// defaults to: NULL::bpchar
+    pub subflowexecution:Option<String>,
+    /// defaults to: NULL::character varying
+    pub tablename:Option<String>,
+    pub unitscycles:Option<f64>,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    pub validfrom:Option<NaiveDateTime>,
+    pub validto:Option<NaiveDateTime>,
+    /// defaults to: NULL::character varying
+    pub value:Option<String>,
+    /// defaults to: NULL::numeric
+    pub version:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub waitingtime:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub waittime:Option<f64>,
+    /// defaults to: NULL::character varying
+    pub wfprocessorname:Option<String>,
+    /// defaults to: NULL::bpchar
+    pub workflowtype:Option<String>,
+    /// defaults to: NULL::numeric
+    pub workingtime:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub yield_:Option<f64>,
+    /// has one
+    pub ad_wf_responsible:Option<AdWfResponsible>,
+    /// has one
+    pub ad_wf_node:Option<AdWfNode>,
+    /// has one
+    pub ad_workflowprocessor:Option<AdWorkflowprocessor>,
+    /// has one
+    pub ad_table:Option<AdTable>,
+    /// has one
+    pub entitytype:Option<AdEntitytype>,
+    /// has one
+    pub ad_image:Option<AdImage>,
+    /// has one
+    pub ad_window:Option<AdWindow>,
+    /// has one
+    pub ad_form:Option<AdForm>,
+    /// has one
+    pub ad_column:Option<AdColumn>,
+    /// has one
+    pub r_mailtext:Option<RMailtext>,
+    /// has one
+    pub ad_task:Option<AdTask>,
+    /// has one
+    pub ad_process:Option<AdProcess>,
+    /// has one
+    pub ad_workflow:Option<AdWorkflow>,
+    /// has one
+    pub s_resource:Option<SResource>,
 }
 
 #[derive(Debug)]
@@ -28088,7 +32011,7 @@ pub struct ImpProcessor {
     /// defaults to: 'Y'::bpchar
     /// not nullable 
     pub isactive:String,
-    /// defaults to: (7)::numeric
+    /// defaults to: 7
     /// not nullable 
     pub keeplogdays:f64,
     /// not nullable 
@@ -28686,39 +32609,6 @@ pub struct KType {
 }
 
 #[derive(Debug)]
-pub struct Length {
-    /// primary
-    /// not nullable 
-    pub length_id:f64,
-    /// not nullable 
-    pub ad_client_id:f64,
-    /// not nullable 
-    pub ad_org_id:f64,
-    /// not nullable 
-    pub created:NaiveDateTime,
-    /// not nullable 
-    pub createdby:f64,
-    /// defaults to: NULL::numeric
-    pub datatype_id:Option<f64>,
-    /// defaults to: NULL::character varying
-    pub description:Option<String>,
-    /// defaults to: NULL::character varying
-    pub help:Option<String>,
-    /// defaults to: 'Y'::bpchar
-    /// not nullable 
-    pub isactive:String,
-    pub length:Option<f64>,
-    /// not nullable 
-    pub name:String,
-    /// not nullable 
-    pub updated:NaiveDateTime,
-    /// not nullable 
-    pub updatedby:f64,
-    /// not nullable 
-    pub value:String,
-}
-
-#[derive(Debug)]
 pub struct MAttribute {
     /// primary
     /// not nullable 
@@ -28755,6 +32645,8 @@ pub struct MAttribute {
     pub updatedby:f64,
     /// has one
     pub m_attributesearch:Option<MAttributesearch>,
+    /// has many
+    pub i_product_asi:Option<Vec<IProductAsi>>,
     /// has many
     pub m_attributeinstance:Option<Vec<MAttributeinstance>>,
     /// has many
@@ -28828,6 +32720,8 @@ pub struct MAttributesearch {
     /// not nullable 
     pub updatedby:f64,
     /// has many
+    pub i_product_asi:Option<Vec<IProductAsi>>,
+    /// has many
     pub m_attribute:Option<Vec<MAttribute>>,
 }
 
@@ -28891,6 +32785,8 @@ pub struct MAttributeset {
     pub m_sernoctl:Option<MSernoctl>,
     /// has one
     pub m_lotctl:Option<MLotctl>,
+    /// has many
+    pub i_product_asi:Option<Vec<IProductAsi>>,
     /// has many
     pub m_attributesetexclude:Option<Vec<MAttributesetexclude>>,
     /// has many
@@ -28985,6 +32881,8 @@ pub struct MAttributesetinstance {
     /// has many
     pub c_rfqline:Option<Vec<CRfqline>>,
     /// has many
+    pub dd_orderline:Option<Vec<DdOrderline>>,
+    /// has many
     pub m_attributeinstance:Option<Vec<MAttributeinstance>>,
     /// has many
     pub m_bomproduct:Option<Vec<MBomproduct>>,
@@ -29003,6 +32901,10 @@ pub struct MAttributesetinstance {
     /// has many
     pub m_inventorylinema:Option<Vec<MInventorylinema>>,
     /// has many
+    pub m_matchinv:Option<Vec<MMatchinv>>,
+    /// has many
+    pub m_matchpo:Option<Vec<MMatchpo>>,
+    /// has many
     pub m_movementline:Option<Vec<MMovementline>>,
     /// has many
     pub m_movementlinema:Option<Vec<MMovementlinema>>,
@@ -29013,11 +32915,29 @@ pub struct MAttributesetinstance {
     /// has many
     pub m_productionlinema:Option<Vec<MProductionlinema>>,
     /// has many
+    pub m_requisitionline:Option<Vec<MRequisitionline>>,
+    /// has many
     pub m_storage:Option<Vec<MStorage>>,
     /// has many
     pub m_transaction:Option<Vec<MTransaction>>,
     /// has many
     pub m_transactionallocation:Option<Vec<MTransactionallocation>>,
+    /// has many
+    pub pp_cost_collector:Option<Vec<PpCostCollector>>,
+    /// has many
+    pub pp_cost_collectorma:Option<Vec<PpCostCollectorma>>,
+    /// has many
+    pub pp_order:Option<Vec<PpOrder>>,
+    /// has many
+    pub pp_order_bom:Option<Vec<PpOrderBom>>,
+    /// has many
+    pub pp_order_bomline:Option<Vec<PpOrderBomline>>,
+    /// has many
+    pub pp_order_cost:Option<Vec<PpOrderCost>>,
+    /// has many
+    pub pp_product_bom:Option<Vec<PpProductBom>>,
+    /// has many
+    pub pp_product_bomline:Option<Vec<PpProductBomline>>,
     /// has many
     pub t_inventoryvalue:Option<Vec<TInventoryvalue>>,
     /// has many
@@ -29088,6 +33008,8 @@ pub struct MAttributevalue {
     pub value:String,
     /// has one
     pub m_attribute:Option<MAttribute>,
+    /// has many
+    pub i_product_asi:Option<Vec<IProductAsi>>,
     /// has many
     pub m_attributeinstance:Option<Vec<MAttributeinstance>>,
 }
@@ -29231,6 +33153,57 @@ pub struct MBomproduct {
 }
 
 #[derive(Debug)]
+pub struct MBpPrice {
+    /// primary
+    /// not nullable 
+    pub m_bp_price_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// not nullable 
+    pub breakvalue:f64,
+    /// not nullable 
+    pub c_bpartner_id:f64,
+    /// not nullable 
+    pub c_currency_id:f64,
+    /// defaults to: NULL::character varying
+    pub comments:Option<String>,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    pub discount:Option<f64>,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// defaults to: NULL::bpchar
+    pub isnetprice:Option<String>,
+    /// not nullable 
+    pub m_product_id:f64,
+    /// not nullable 
+    pub pricelimit:f64,
+    /// not nullable 
+    pub pricelist:f64,
+    /// defaults to: NULL::bpchar
+    pub priceoverridetype:Option<String>,
+    /// not nullable 
+    pub pricestd:f64,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    pub validfrom:Option<NaiveDateTime>,
+    pub validto:Option<NaiveDateTime>,
+    /// has one
+    pub c_bpartner:Option<CBpartner>,
+    /// has one
+    pub c_currency:Option<CCurrency>,
+    /// has one
+    pub m_product:Option<MProduct>,
+}
+
+#[derive(Debug)]
 pub struct MChangenotice {
     /// primary
     /// not nullable 
@@ -29266,6 +33239,8 @@ pub struct MChangenotice {
     pub updatedby:f64,
     /// has many
     pub dd_networkdistribution:Option<Vec<DdNetworkdistribution>>,
+    /// has many
+    pub i_product_bom:Option<Vec<IProductBom>>,
     /// has many
     pub m_bom:Option<Vec<MBom>>,
     /// has many
@@ -29328,6 +33303,8 @@ pub struct MChangerequest {
     pub m_changenotice:Option<MChangenotice>,
     /// has one
     pub m_fixchangenotice:Option<MChangenotice>,
+    /// has one
+    pub pp_product_bom:Option<PpProductBom>,
     /// has many
     pub r_request:Option<Vec<RRequest>>,
 }
@@ -29362,6 +33339,7 @@ pub struct MCost {
     pub createdby:f64,
     /// defaults to: 0
     pub cumulatedamt:Option<f64>,
+    pub cumulatedamtll:Option<f64>,
     /// defaults to: 0
     pub cumulatedqty:Option<f64>,
     /// not nullable 
@@ -29379,6 +33357,7 @@ pub struct MCost {
     pub isactive:String,
     /// defaults to: 'N'::bpchar
     pub iscostfrozen:Option<String>,
+    pub m_warehouse_id:Option<f64>,
     /// defaults to: 0
     pub percent:Option<f64>,
     /// defaults to: now()
@@ -29400,6 +33379,8 @@ pub struct MCost {
     pub m_costelement:Option<MCostelement>,
     /// has one
     pub m_attributesetinstance:Option<MAttributesetinstance>,
+    /// has one
+    pub m_warehouse:Option<MWarehouse>,
 }
 
 #[derive(Debug)]
@@ -29414,16 +33395,33 @@ pub struct MCostdetail {
     /// defaults to: 0
     /// not nullable 
     pub amt:f64,
+    pub amtll:Option<f64>,
     /// not nullable 
     pub c_acctschema_id:f64,
     pub c_invoiceline_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub c_landedcostallocation_id:Option<f64>,
     pub c_orderline_id:Option<f64>,
     pub c_projectissue_id:Option<f64>,
+    pub costadjustment:Option<f64>,
+    pub costadjustmentdate:Option<NaiveDateTime>,
+    pub costadjustmentdatell:Option<NaiveDateTime>,
+    pub costadjustmentll:Option<f64>,
+    pub costamt:Option<f64>,
+    pub costamtll:Option<f64>,
+    pub costingmethod:Option<String>,
     /// defaults to: now()
     /// not nullable 
     pub created:NaiveDateTime,
     /// not nullable 
     pub createdby:f64,
+    pub cumulatedamt:Option<f64>,
+    pub cumulatedamtll:Option<f64>,
+    pub cumulatedqty:Option<f64>,
+    pub currentcostprice:Option<f64>,
+    pub currentcostpricell:Option<f64>,
+    pub currentqty:Option<f64>,
+    pub dateacct:Option<NaiveDateTime>,
     /// defaults to: 0
     pub deltaamt:Option<f64>,
     /// defaults to: 0
@@ -29432,25 +33430,36 @@ pub struct MCostdetail {
     /// defaults to: 'Y'::bpchar
     /// not nullable 
     pub isactive:String,
+    /// defaults to: 'N'::bpchar
+    pub isreversal:Option<String>,
     /// defaults to: 'Y'::bpchar
     /// not nullable 
     pub issotrx:String,
     /// not nullable 
     pub m_attributesetinstance_id:f64,
     pub m_costelement_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub m_costtype_id:Option<f64>,
     pub m_inoutline_id:Option<f64>,
     pub m_inventoryline_id:Option<f64>,
     pub m_movementline_id:Option<f64>,
     /// not nullable 
     pub m_product_id:f64,
     pub m_productionline_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub m_transaction_id:Option<f64>,
+    pub m_warehouse_id:Option<f64>,
     pub pp_cost_collector_id:Option<f64>,
     /// defaults to: 'N'::bpchar
     /// not nullable 
     pub processed:String,
+    /// defaults to: 'N'::bpchar
+    pub processing:Option<String>,
     /// defaults to: 0
     /// not nullable 
     pub qty:f64,
+    /// defaults to: NULL::numeric
+    pub seqno:Option<f64>,
     /// defaults to: now()
     /// not nullable 
     pub updated:NaiveDateTime,
@@ -29482,6 +33491,14 @@ pub struct MCostdetail {
     pub m_productionline:Option<MProductionline>,
     /// has one
     pub c_projectissue:Option<CProjectissue>,
+    /// has one
+    pub pp_cost_collector:Option<PpCostCollector>,
+    /// has one
+    pub m_costtype:Option<MCosttype>,
+    /// has one
+    pub c_landedcostallocation:Option<CLandedcostallocation>,
+    /// has one
+    pub m_warehouse:Option<MWarehouse>,
 }
 
 #[derive(Debug)]
@@ -29508,6 +33525,8 @@ pub struct MCostelement {
     /// defaults to: 'N'::bpchar
     /// not nullable 
     pub iscalculated:String,
+    /// defaults to: 'N'::bpchar
+    pub isdefault:Option<String>,
     /// not nullable 
     pub name:String,
     /// defaults to: now()
@@ -29553,6 +33572,7 @@ pub struct MCostqueue {
     /// defaults to: 0
     /// not nullable 
     pub currentqty:f64,
+    pub dateacct:Option<NaiveDateTime>,
     /// defaults to: 'Y'::bpchar
     /// not nullable 
     pub isactive:String,
@@ -29590,6 +33610,9 @@ pub struct MCosttype {
     pub ad_client_id:f64,
     /// not nullable 
     pub ad_org_id:f64,
+    /// defaults to: 'S'::bpchar
+    /// not nullable 
+    pub costingmethod:String,
     /// defaults to: now()
     /// not nullable 
     pub created:NaiveDateTime,
@@ -29611,6 +33634,8 @@ pub struct MCosttype {
     pub c_acctschema:Option<Vec<CAcctschema>>,
     /// has many
     pub m_cost:Option<Vec<MCost>>,
+    /// has many
+    pub m_costdetail:Option<Vec<MCostdetail>>,
     /// has many
     pub m_costqueue:Option<Vec<MCostqueue>>,
     /// has many
@@ -30207,10 +34232,14 @@ pub struct MForecast {
     pub ad_client_id:f64,
     /// not nullable 
     pub ad_org_id:f64,
-    /// not nullable 
-    pub c_calendar_id:f64,
-    /// not nullable 
-    pub c_year_id:f64,
+    pub c_calendar_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub c_campaign_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub c_project_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub c_projectphase_id:Option<f64>,
+    pub c_year_id:Option<f64>,
     /// defaults to: now()
     /// not nullable 
     pub created:NaiveDateTime,
@@ -30227,6 +34256,13 @@ pub struct MForecast {
     pub m_pricelist_id:Option<f64>,
     /// not nullable 
     pub name:String,
+    /// defaults to: NULL::numeric
+    pub pp_calendar_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub pp_perioddefinition_id:Option<f64>,
+    /// defaults to: NULL::bpchar
+    pub processed:Option<String>,
+    pub processedon:Option<f64>,
     pub processing:Option<String>,
     /// defaults to: now()
     /// not nullable 
@@ -30237,6 +34273,22 @@ pub struct MForecast {
     pub c_calendar:Option<CCalendar>,
     /// has one
     pub c_year:Option<CYear>,
+    /// has one
+    pub m_pricelist:Option<MPricelist>,
+    /// has one
+    pub pp_calendar:Option<PpCalendar>,
+    /// has one
+    pub pp_perioddefinition:Option<PpPerioddefinition>,
+    /// has one
+    pub c_project:Option<CProject>,
+    /// has one
+    pub c_projectphase:Option<CProjectphase>,
+    /// has one
+    pub c_campaign:Option<CCampaign>,
+    /// has many
+    pub i_forecast:Option<Vec<IForecast>>,
+    /// has many
+    pub i_productplanning:Option<Vec<IProductplanning>>,
     /// has many
     pub m_forecastline:Option<Vec<MForecastline>>,
     /// has many
@@ -30252,8 +34304,7 @@ pub struct MForecastline {
     pub ad_client_id:f64,
     /// not nullable 
     pub ad_org_id:f64,
-    /// not nullable 
-    pub c_period_id:f64,
+    pub c_period_id:Option<f64>,
     /// defaults to: now()
     /// not nullable 
     pub created:NaiveDateTime,
@@ -30270,6 +34321,8 @@ pub struct MForecastline {
     pub m_product_id:f64,
     /// not nullable 
     pub m_warehouse_id:f64,
+    /// defaults to: NULL::numeric
+    pub pp_period_id:Option<f64>,
     /// defaults to: 0
     /// not nullable 
     pub qty:f64,
@@ -30290,6 +34343,12 @@ pub struct MForecastline {
     pub m_product:Option<MProduct>,
     /// has one
     pub m_warehouse:Option<MWarehouse>,
+    /// has one
+    pub pp_period:Option<PpPeriod>,
+    /// has many
+    pub i_forecast:Option<Vec<IForecast>>,
+    /// has many
+    pub i_productplanning:Option<Vec<IProductplanning>>,
     /// has many
     pub m_demanddetail:Option<Vec<MDemanddetail>>,
     /// has many
@@ -30354,12 +34413,8 @@ pub struct MFreightcategory {
     /// primary
     /// not nullable 
     pub m_freightcategory_id:f64,
-    /// unique
     /// not nullable 
     pub ad_client_id:f64,
-    /// unique
-    /// not nullable 
-    pub value:String,
     /// not nullable 
     pub ad_org_id:f64,
     /// defaults to: now()
@@ -30379,6 +34434,8 @@ pub struct MFreightcategory {
     pub updated:NaiveDateTime,
     /// not nullable 
     pub updatedby:f64,
+    /// not nullable 
+    pub value:String,
     /// has many
     pub c_order:Option<Vec<COrder>>,
     /// has many
@@ -30483,6 +34540,7 @@ pub struct MInout {
     /// defaults to: 'N'::bpchar
     /// not nullable 
     pub processed:String,
+    pub processedon:Option<f64>,
     pub processing:Option<String>,
     pub ref_inout_id:Option<f64>,
     pub reversal_id:Option<f64>,
@@ -30541,6 +34599,12 @@ pub struct MInout {
     pub m_rma:Option<MRma>,
     /// has one, self referential
     pub reversal:Option<Box<MInout>>,
+    /// has one
+    pub dropship_bpartner:Option<CBpartner>,
+    /// has one
+    pub dropship_location:Option<CBpartnerLocation>,
+    /// has one
+    pub dropship_user:Option<AdUser>,
     /// has many
     pub c_landedcost:Option<Vec<CLandedcost>>,
     /// has many
@@ -30681,6 +34745,8 @@ pub struct MInoutline {
     pub scrappedqty:Option<f64>,
     /// defaults to: 0
     pub targetqty:Option<f64>,
+    /// defaults to: 'Y'::bpchar
+    pub tobeinvoiced:Option<String>,
     /// defaults to: now()
     /// not nullable 
     pub updated:NaiveDateTime,
@@ -30724,6 +34790,8 @@ pub struct MInoutline {
     pub ad_orgtrx:Option<AdOrg>,
     /// has one
     pub m_rmaline:Option<MRmaline>,
+    /// has one, self referential
+    pub reversalline:Option<Box<MInoutline>>,
     /// has many
     pub a_asset:Option<Vec<AAsset>>,
     /// has many
@@ -30732,6 +34800,8 @@ pub struct MInoutline {
     pub c_invoiceline:Option<Vec<CInvoiceline>>,
     /// has many
     pub c_landedcost:Option<Vec<CLandedcost>>,
+    /// has many
+    pub c_landedcostallocation:Option<Vec<CLandedcostallocation>>,
     /// has many
     pub c_projectissue:Option<Vec<CProjectissue>>,
     /// has many
@@ -30892,6 +34962,7 @@ pub struct MInventory {
     /// defaults to: 'N'::bpchar
     /// not nullable 
     pub processed:String,
+    pub processedon:Option<f64>,
     pub processing:Option<String>,
     pub reversal_id:Option<f64>,
     /// defaults to: now()
@@ -30952,6 +35023,7 @@ pub struct MInventoryline {
     pub created:NaiveDateTime,
     /// not nullable 
     pub createdby:f64,
+    pub currentcostprice:Option<f64>,
     pub description:Option<String>,
     /// defaults to: 'D'::bpchar
     /// not nullable 
@@ -30997,12 +35069,16 @@ pub struct MInventoryline {
     pub m_attributesetinstance:Option<MAttributesetinstance>,
     /// has one
     pub c_charge:Option<CCharge>,
+    /// has one, self referential
+    pub reversalline:Option<Box<MInventoryline>>,
     /// has many
     pub i_inventory:Option<Vec<IInventory>>,
     /// has many
     pub m_costdetail:Option<Vec<MCostdetail>>,
     /// has many
     pub m_inoutlineconfirm:Option<Vec<MInoutlineconfirm>>,
+    /// has many
+    pub m_inventoryline:Option<Vec<MInventoryline>>,
     /// has many
     pub m_inventorylinema:Option<Vec<MInventorylinema>>,
     /// has many
@@ -31114,9 +35190,15 @@ pub struct MLocator {
     /// has many
     pub m_productionplan:Option<Vec<MProductionplan>>,
     /// has many
+    pub m_replenish:Option<Vec<MReplenish>>,
+    /// has many
     pub m_storage:Option<Vec<MStorage>>,
     /// has many
     pub m_transaction:Option<Vec<MTransaction>>,
+    /// has many
+    pub pp_cost_collector:Option<Vec<PpCostCollector>>,
+    /// has many
+    pub pp_order_bomline:Option<Vec<PpOrderBomline>>,
     /// has many
     pub t_transaction:Option<Vec<TTransaction>>,
 }
@@ -31270,6 +35352,7 @@ pub struct MMatchinv {
     /// defaults to: 'N'::bpchar
     /// not nullable 
     pub processed:String,
+    pub processedon:Option<f64>,
     /// not nullable 
     pub processing:String,
     /// defaults to: 0
@@ -31286,6 +35369,8 @@ pub struct MMatchinv {
     pub c_invoiceline:Option<CInvoiceline>,
     /// has one
     pub m_product:Option<MProduct>,
+    /// has one
+    pub m_attributesetinstance:Option<MAttributesetinstance>,
 }
 
 #[derive(Debug)]
@@ -31325,6 +35410,7 @@ pub struct MMatchpo {
     /// defaults to: 'N'::bpchar
     /// not nullable 
     pub processed:String,
+    pub processedon:Option<f64>,
     /// not nullable 
     pub processing:String,
     /// defaults to: 0
@@ -31343,6 +35429,8 @@ pub struct MMatchpo {
     pub m_inoutline:Option<MInoutline>,
     /// has one
     pub c_invoiceline:Option<CInvoiceline>,
+    /// has one
+    pub m_attributesetinstance:Option<MAttributesetinstance>,
 }
 
 #[derive(Debug)]
@@ -31405,6 +35493,7 @@ pub struct MMovement {
     /// defaults to: 'N'::bpchar
     /// not nullable 
     pub processed:String,
+    pub processedon:Option<f64>,
     pub processing:Option<String>,
     pub reversal_id:Option<f64>,
     pub salesrep_id:Option<f64>,
@@ -31440,11 +35529,15 @@ pub struct MMovement {
     /// has one
     pub c_bpartner:Option<CBpartner>,
     /// has one
+    pub c_bpartner_location:Option<CLocation>,
+    /// has one
     pub c_charge:Option<CCharge>,
     /// has one
     pub dd_order:Option<DdOrder>,
     /// has one, self referential
     pub reversal:Option<Box<MMovement>>,
+    /// has many
+    pub i_movement:Option<Vec<IMovement>>,
     /// has many
     pub m_movement:Option<Vec<MMovement>>,
     /// has many
@@ -31561,9 +35654,17 @@ pub struct MMovementline {
     /// has one
     pub m_attributesetinstance:Option<MAttributesetinstance>,
     /// has one
+    pub m_attributesetinstanceto:Option<MAttributesetinstance>,
+    /// has one
     pub dd_orderline:Option<DdOrderline>,
+    /// has one, self referential
+    pub reversalline:Option<Box<MMovementline>>,
+    /// has many
+    pub i_movement:Option<Vec<IMovement>>,
     /// has many
     pub m_costdetail:Option<Vec<MCostdetail>>,
+    /// has many
+    pub m_movementline:Option<Vec<MMovementline>>,
     /// has many
     pub m_movementlineconfirm:Option<Vec<MMovementlineconfirm>>,
     /// has many
@@ -31782,6 +35883,34 @@ pub struct MPackageline {
 }
 
 #[derive(Debug)]
+pub struct MParttype {
+    /// primary
+    /// not nullable 
+    pub m_parttype_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    /// defaults to: NULL::character varying
+    pub description:Option<String>,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// not nullable 
+    pub name:String,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// has many
+    pub m_product:Option<Vec<MProduct>>,
+}
+
+#[derive(Debug)]
 pub struct MPerpetualinv {
     /// primary
     /// not nullable 
@@ -31859,6 +35988,9 @@ pub struct MPricelist {
     /// defaults to: 'N'::bpchar
     pub ismandatory:Option<String>,
     /// defaults to: 'N'::bpchar
+    /// not nullable 
+    pub isnetprice:String,
+    /// defaults to: 'N'::bpchar
     pub ispresentforproduct:Option<String>,
     /// defaults to: 'Y'::bpchar
     /// not nullable 
@@ -31897,13 +36029,21 @@ pub struct MPricelist {
     /// has many
     pub i_order:Option<Vec<IOrder>>,
     /// has many
+    pub i_pricelist:Option<Vec<IPricelist>>,
+    /// has many
+    pub m_forecast:Option<Vec<MForecast>>,
+    /// has many
     pub m_pricelist:Option<Vec<MPricelist>>,
     /// has many
     pub m_pricelist_version:Option<Vec<MPricelistVersion>>,
     /// has many
+    pub m_promotionprecondition:Option<Vec<MPromotionprecondition>>,
+    /// has many
     pub m_requisition:Option<Vec<MRequisition>>,
     /// has many
     pub s_timeexpense:Option<Vec<STimeexpense>>,
+    /// has many
+    pub u_posterminal:Option<Vec<UPosterminal>>,
     /// has many
     pub w_basket:Option<Vec<WBasket>>,
     /// has many
@@ -31952,9 +36092,13 @@ pub struct MPricelistVersion {
     /// has many
     pub c_project:Option<Vec<CProject>>,
     /// has many
+    pub i_pricelist:Option<Vec<IPricelist>>,
+    /// has many
     pub m_pricelist_version:Option<Vec<MPricelistVersion>>,
     /// has many
     pub m_productprice:Option<Vec<MProductprice>>,
+    /// has many
+    pub m_productpricevendorbreak:Option<Vec<MProductpricevendorbreak>>,
     /// has many
     pub t_inventoryvalue:Option<Vec<TInventoryvalue>>,
 }
@@ -31975,6 +36119,7 @@ pub struct MProduct {
     /// not nullable 
     pub c_uom_id:f64,
     pub classification:Option<String>,
+    pub copyfrom:Option<String>,
     /// defaults to: now()
     /// not nullable 
     pub created:NaiveDateTime,
@@ -31984,6 +36129,7 @@ pub struct MProduct {
     pub descriptionurl:Option<String>,
     /// defaults to: 'N'::bpchar
     pub discontinued:Option<String>,
+    pub discontinuedat:Option<NaiveDateTime>,
     pub discontinuedby:Option<NaiveDateTime>,
     pub documentnote:Option<String>,
     pub downloadurl:Option<String>,
@@ -32010,6 +36156,14 @@ pub struct MProduct {
     pub isinvoiceprintdetails:String,
     /// defaults to: 'N'::bpchar
     /// not nullable 
+    pub iskanban:String,
+    /// defaults to: 'N'::bpchar
+    /// not nullable 
+    pub ismanufactured:String,
+    /// defaults to: 'N'::bpchar
+    pub isphantom:Option<String>,
+    /// defaults to: 'N'::bpchar
+    /// not nullable 
     pub ispicklistprintdetails:String,
     /// defaults to: 'Y'::bpchar
     /// not nullable 
@@ -32033,7 +36187,7 @@ pub struct MProduct {
     /// defaults to: 'N'::bpchar
     /// not nullable 
     pub iswebstorefeatured:String,
-    /// defaults to: (0)::numeric
+    /// defaults to: 0
     /// not nullable 
     pub lowlevel:f64,
     pub m_attributeset_id:Option<f64>,
@@ -32041,8 +36195,14 @@ pub struct MProduct {
     pub m_attributesetinstance_id:Option<f64>,
     pub m_freightcategory_id:Option<f64>,
     pub m_locator_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub m_parttype_id:Option<f64>,
     /// not nullable 
     pub m_product_category_id:f64,
+    /// defaults to: NULL::numeric
+    pub m_product_class_id:Option<f64>,
+    pub m_product_classification_id:Option<f64>,
+    pub m_product_group_id:Option<f64>,
     /// not nullable 
     pub name:String,
     pub processing:Option<String>,
@@ -32104,6 +36264,14 @@ pub struct MProduct {
     pub m_locator:Option<MLocator>,
     /// has one
     pub c_subscriptiontype:Option<CSubscriptiontype>,
+    /// has one
+    pub m_parttype:Option<MParttype>,
+    /// has one
+    pub m_product_class:Option<MProductClass>,
+    /// has one
+    pub m_product_group:Option<MProductGroup>,
+    /// has one
+    pub m_product_classification:Option<MProductClassification>,
     /// has one, extension table
     pub m_relatedproduct:Option<Box<MRelatedproduct>>,
     /// has one, extension table
@@ -32120,6 +36288,8 @@ pub struct MProduct {
     pub a_registrationproduct:Option<Vec<ARegistrationproduct>>,
     /// has many
     pub ad_clientinfo:Option<Vec<AdClientinfo>>,
+    /// has many
+    pub ad_memo:Option<Vec<AdMemo>>,
     /// has many
     pub b_topictype:Option<Vec<BTopictype>>,
     /// has many
@@ -32153,6 +36323,8 @@ pub struct MProduct {
     /// has many
     pub c_rfqline:Option<Vec<CRfqline>>,
     /// has many
+    pub c_saleshistory:Option<Vec<CSaleshistory>>,
+    /// has many
     pub c_servicelevel:Option<Vec<CServicelevel>>,
     /// has many
     pub c_subscription:Option<Vec<CSubscription>>,
@@ -32169,13 +36341,21 @@ pub struct MProduct {
     /// has many
     pub fact_acct:Option<Vec<FactAcct>>,
     /// has many
+    pub fact_acct_summary:Option<Vec<FactAcctSummary>>,
+    /// has many
     pub gl_distribution:Option<Vec<GlDistribution>>,
     /// has many
     pub gl_distributionline:Option<Vec<GlDistributionline>>,
     /// has many
+    pub gl_journalline:Option<Vec<GlJournalline>>,
+    /// has many
+    pub hr_departmentproduct:Option<Vec<HrDepartmentproduct>>,
+    /// has many
     pub i_asset:Option<Vec<IAsset>>,
     /// has many
     pub i_fajournal:Option<Vec<IFajournal>>,
+    /// has many
+    pub i_forecast:Option<Vec<IForecast>>,
     /// has many
     pub i_gljournal:Option<Vec<IGljournal>>,
     /// has many
@@ -32183,15 +36363,29 @@ pub struct MProduct {
     /// has many
     pub i_invoice:Option<Vec<IInvoice>>,
     /// has many
+    pub i_movement:Option<Vec<IMovement>>,
+    /// has many
     pub i_order:Option<Vec<IOrder>>,
     /// has many
+    pub i_pricelist:Option<Vec<IPricelist>>,
+    /// has many
     pub i_product:Option<Vec<IProduct>>,
+    /// has many
+    pub i_product_asi:Option<Vec<IProductAsi>>,
+    /// has many
+    pub i_product_bom:Option<Vec<IProductBom>>,
+    /// has many
+    pub i_productplanning:Option<Vec<IProductplanning>>,
+    /// has many
+    pub i_saleshistory:Option<Vec<ISaleshistory>>,
     /// has many
     pub m_bom:Option<Vec<MBom>>,
     /// has many
     pub m_bomalternative:Option<Vec<MBomalternative>>,
     /// has many
     pub m_bomproduct:Option<Vec<MBomproduct>>,
+    /// has many
+    pub m_bp_price:Option<Vec<MBpPrice>>,
     /// has many
     pub m_cost:Option<Vec<MCost>>,
     /// has many
@@ -32231,9 +36425,13 @@ pub struct MProduct {
     /// has many
     pub m_product_po:Option<Vec<MProductPo>>,
     /// has many
+    pub m_product_qualitytest:Option<Vec<MProductQualitytest>>,
+    /// has many
     pub m_product_trl:Option<Vec<MProductTrl>>,
     /// has many
     pub m_productdownload:Option<Vec<MProductdownload>>,
+    /// has many
+    pub m_production:Option<Vec<MProduction>>,
     /// has many
     pub m_productionline:Option<Vec<MProductionline>>,
     /// has many
@@ -32242,6 +36440,10 @@ pub struct MProduct {
     pub m_productoperation:Option<Vec<MProductoperation>>,
     /// has many
     pub m_productprice:Option<Vec<MProductprice>>,
+    /// has many
+    pub m_productpricevendorbreak:Option<Vec<MProductpricevendorbreak>>,
+    /// has many
+    pub m_promotiongroupline:Option<Vec<MPromotiongroupline>>,
     /// has many
     pub m_replenish:Option<Vec<MReplenish>>,
     /// has many
@@ -32260,6 +36462,10 @@ pub struct MProduct {
     pub pa_reportsource:Option<Vec<PaReportsource>>,
     /// has many
     pub pp_cost_collector:Option<Vec<PpCostCollector>>,
+    /// has many
+    pub pp_forecastdefinitionline:Option<Vec<PpForecastdefinitionline>>,
+    /// has many
+    pub pp_forecastrunmaster:Option<Vec<PpForecastrunmaster>>,
     /// has many
     pub pp_mrp:Option<Vec<PpMrp>>,
     /// has many
@@ -32304,6 +36510,10 @@ pub struct MProduct {
     pub t_transaction:Option<Vec<TTransaction>>,
     /// has many
     pub w_basketline:Option<Vec<WBasketline>>,
+    /// has many
+    pub wm_definition:Option<Vec<WmDefinition>>,
+    /// has many
+    pub wm_inoutboundline:Option<Vec<WmInoutboundline>>,
 }
 
 #[derive(Debug)]
@@ -32328,6 +36538,7 @@ pub struct MProductAcct {
     pub isactive:String,
     /// not nullable 
     pub p_asset_acct:f64,
+    pub p_averagecostvariance_acct:Option<f64>,
     pub p_burden_acct:Option<f64>,
     /// not nullable 
     pub p_cogs_acct:f64,
@@ -32381,6 +36592,36 @@ pub struct MProductAcct {
     pub p_tradediscountrec_acct:Option<CValidcombination>,
     /// has one
     pub p_tradediscountgrant_acct:Option<CValidcombination>,
+    /// has one
+    pub p_inventoryclearing_acct:Option<CValidcombination>,
+    /// has one
+    pub p_costadjustment_acct:Option<CValidcombination>,
+    /// has one
+    pub p_wip_acct:Option<CValidcombination>,
+    /// has one
+    pub p_methodchangevariance_acct:Option<CValidcombination>,
+    /// has one
+    pub p_usagevariance_acct:Option<CValidcombination>,
+    /// has one
+    pub p_ratevariance_acct:Option<CValidcombination>,
+    /// has one
+    pub p_mixvariance_acct:Option<CValidcombination>,
+    /// has one
+    pub p_floorstock_acct:Option<CValidcombination>,
+    /// has one
+    pub p_costofproduction_acct:Option<CValidcombination>,
+    /// has one
+    pub p_labor_acct:Option<CValidcombination>,
+    /// has one
+    pub p_burden_acct:Option<CValidcombination>,
+    /// has one
+    pub p_outsideprocessing_acct:Option<CValidcombination>,
+    /// has one
+    pub p_overhead_acct:Option<CValidcombination>,
+    /// has one
+    pub p_scrap_acct:Option<CValidcombination>,
+    /// has one
+    pub p_averagecostvariance_acct:Option<CValidcombination>,
 }
 
 #[derive(Debug)]
@@ -32476,9 +36717,13 @@ pub struct MProductCategory {
     /// has many
     pub c_rfq_topicsubscriberonly:Option<Vec<CRfqTopicsubscriberonly>>,
     /// has many
+    pub c_saleshistory:Option<Vec<CSaleshistory>>,
+    /// has many
     pub c_taxdefinition:Option<Vec<CTaxdefinition>>,
     /// has many
     pub i_product:Option<Vec<IProduct>>,
+    /// has many
+    pub i_saleshistory:Option<Vec<ISaleshistory>>,
     /// has many
     pub m_discountschemabreak:Option<Vec<MDiscountschemabreak>>,
     /// has many
@@ -32494,11 +36739,15 @@ pub struct MProductCategory {
     /// has many
     pub pa_goalrestriction:Option<Vec<PaGoalrestriction>>,
     /// has many
+    pub pp_forecastdefinitionline:Option<Vec<PpForecastdefinitionline>>,
+    /// has many
     pub s_expensetype:Option<Vec<SExpensetype>>,
     /// has many
     pub s_resourcetype:Option<Vec<SResourcetype>>,
     /// has many
     pub s_training:Option<Vec<STraining>>,
+    /// has many
+    pub wm_definition:Option<Vec<WmDefinition>>,
 }
 
 #[derive(Debug)]
@@ -32525,6 +36774,7 @@ pub struct MProductCategoryAcct {
     pub isactive:String,
     /// not nullable 
     pub p_asset_acct:f64,
+    pub p_averagecostvariance_acct:Option<f64>,
     pub p_burden_acct:Option<f64>,
     /// not nullable 
     pub p_cogs_acct:f64,
@@ -32579,6 +36829,124 @@ pub struct MProductCategoryAcct {
     pub p_tradediscountrec_acct:Option<CValidcombination>,
     /// has one
     pub p_tradediscountgrant_acct:Option<CValidcombination>,
+    /// has one
+    pub p_inventoryclearing_acct:Option<CValidcombination>,
+    /// has one
+    pub p_costadjustment_acct:Option<CValidcombination>,
+    /// has one
+    pub p_floorstock_acct:Option<CValidcombination>,
+    /// has one
+    pub p_wip_acct:Option<CValidcombination>,
+    /// has one
+    pub p_methodchangevariance_acct:Option<CValidcombination>,
+    /// has one
+    pub p_usagevariance_acct:Option<CValidcombination>,
+    /// has one
+    pub p_ratevariance_acct:Option<CValidcombination>,
+    /// has one
+    pub p_mixvariance_acct:Option<CValidcombination>,
+    /// has one
+    pub p_costofproduction_acct:Option<CValidcombination>,
+    /// has one
+    pub p_labor_acct:Option<CValidcombination>,
+    /// has one
+    pub p_burden_acct:Option<CValidcombination>,
+    /// has one
+    pub p_outsideprocessing_acct:Option<CValidcombination>,
+    /// has one
+    pub p_overhead_acct:Option<CValidcombination>,
+    /// has one
+    pub p_scrap_acct:Option<CValidcombination>,
+    /// has one
+    pub p_averagecostvariance_acct:Option<CValidcombination>,
+}
+
+#[derive(Debug)]
+pub struct MProductClass {
+    /// primary
+    /// not nullable 
+    pub m_product_class_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    /// defaults to: NULL::character varying
+    pub description:Option<String>,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// not nullable 
+    pub isdefault:String,
+    /// defaults to: NULL::numeric
+    pub m_product_class_parent_id:Option<f64>,
+    /// not nullable 
+    pub name:String,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// not nullable 
+    pub value:String,
+    /// has one, self referential
+    pub m_product_class_parent:Option<Box<MProductClass>>,
+    /// has many
+    pub c_saleshistory:Option<Vec<CSaleshistory>>,
+    /// has many
+    pub i_saleshistory:Option<Vec<ISaleshistory>>,
+    /// has many
+    pub m_product:Option<Vec<MProduct>>,
+    /// has many
+    pub m_product_class:Option<Vec<MProductClass>>,
+    /// has many
+    pub pp_forecastdefinitionline:Option<Vec<PpForecastdefinitionline>>,
+}
+
+#[derive(Debug)]
+pub struct MProductClassification {
+    /// primary
+    /// not nullable 
+    pub m_product_classification_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    /// defaults to: NULL::character varying
+    pub description:Option<String>,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// not nullable 
+    pub isdefault:String,
+    /// defaults to: NULL::numeric
+    pub m_classification_parent_id:Option<f64>,
+    /// not nullable 
+    pub name:String,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// not nullable 
+    pub value:String,
+    /// has one, self referential
+    pub m_classification_parent:Option<Box<MProductClassification>>,
+    /// has many
+    pub c_saleshistory:Option<Vec<CSaleshistory>>,
+    /// has many
+    pub i_saleshistory:Option<Vec<ISaleshistory>>,
+    /// has many
+    pub m_product:Option<Vec<MProduct>>,
+    /// has many
+    pub m_product_classification:Option<Vec<MProductClassification>>,
+    /// has many
+    pub pp_forecastdefinitionline:Option<Vec<PpForecastdefinitionline>>,
 }
 
 #[derive(Debug)]
@@ -32655,6 +37023,50 @@ pub struct MProductCosting {
 }
 
 #[derive(Debug)]
+pub struct MProductGroup {
+    /// primary
+    /// not nullable 
+    pub m_product_group_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    /// defaults to: NULL::character varying
+    pub description:Option<String>,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// not nullable 
+    pub isdefault:String,
+    /// defaults to: NULL::numeric
+    pub m_product_group_parent_id:Option<f64>,
+    /// not nullable 
+    pub name:String,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// not nullable 
+    pub value:String,
+    /// has one, self referential
+    pub m_product_group_parent:Option<Box<MProductGroup>>,
+    /// has many
+    pub c_saleshistory:Option<Vec<CSaleshistory>>,
+    /// has many
+    pub i_saleshistory:Option<Vec<ISaleshistory>>,
+    /// has many
+    pub m_product:Option<Vec<MProduct>>,
+    /// has many
+    pub m_product_group:Option<Vec<MProductGroup>>,
+    /// has many
+    pub pp_forecastdefinitionline:Option<Vec<PpForecastdefinitionline>>,
+}
+
+#[derive(Debug)]
 pub struct MProductPo {
     /// primary
     /// not nullable 
@@ -32679,6 +37091,7 @@ pub struct MProductPo {
     pub deliverytime_promised:Option<f64>,
     /// defaults to: 'N'::bpchar
     pub discontinued:Option<String>,
+    pub discontinuedat:Option<NaiveDateTime>,
     pub discontinuedby:Option<NaiveDateTime>,
     /// defaults to: 'Y'::bpchar
     /// not nullable 
@@ -32724,6 +37137,38 @@ pub struct MProductPo {
     pub c_uom:Option<CUom>,
     /// has one
     pub c_currency:Option<CCurrency>,
+}
+
+#[derive(Debug)]
+pub struct MProductQualitytest {
+    /// primary
+    /// not nullable 
+    pub m_product_qualitytest_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    /// not nullable 
+    pub expectedresult:String,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// not nullable 
+    pub m_product_id:f64,
+    /// not nullable 
+    pub m_qualitytest_id:f64,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// has one
+    pub m_product:Option<MProduct>,
+    /// has one
+    pub m_qualitytest:Option<MQualitytest>,
 }
 
 #[derive(Debug)]
@@ -32810,30 +37255,44 @@ pub struct MProduction {
     pub ad_orgtrx_id:Option<f64>,
     pub c_activity_id:Option<f64>,
     pub c_campaign_id:Option<f64>,
+    pub c_orderline_id:Option<f64>,
     pub c_project_id:Option<f64>,
     /// defaults to: now()
     /// not nullable 
     pub created:NaiveDateTime,
     /// not nullable 
     pub createdby:f64,
+    /// defaults to: 'N'::bpchar
+    pub createfrom:Option<String>,
+    pub datepromised:Option<NaiveDateTime>,
     pub description:Option<String>,
+    /// not nullable 
+    pub documentno:String,
     /// defaults to: 'Y'::bpchar
     /// not nullable 
     pub isactive:String,
+    pub iscomplete:Option<String>,
     /// defaults to: 'N'::bpchar
     /// not nullable 
     pub iscreated:String,
     /// not nullable 
-    pub movementdate:NaiveDateTime,
+    pub m_locator_id:f64,
     /// not nullable 
-    pub name:String,
+    pub m_product_id:f64,
+    /// not nullable 
+    pub movementdate:NaiveDateTime,
+    pub name:Option<String>,
     /// defaults to: 'N'::bpchar
     /// not nullable 
     pub posted:String,
     /// defaults to: 'N'::bpchar
     /// not nullable 
     pub processed:String,
+    pub processedon:Option<f64>,
     pub processing:Option<String>,
+    /// defaults to: (0)::numeric
+    /// not nullable 
+    pub productionqty:f64,
     /// defaults to: now()
     /// not nullable 
     pub updated:NaiveDateTime,
@@ -32855,6 +37314,12 @@ pub struct MProduction {
     pub user1:Option<CElementvalue>,
     /// has one
     pub user2:Option<CElementvalue>,
+    /// has one
+    pub m_product:Option<MProduct>,
+    /// has one
+    pub c_orderline:Option<COrderline>,
+    /// has many
+    pub m_productionline:Option<Vec<MProductionline>>,
     /// has many
     pub m_productionplan:Option<Vec<MProductionplan>>,
 }
@@ -32877,6 +37342,8 @@ pub struct MProductionline {
     /// defaults to: 'Y'::bpchar
     /// not nullable 
     pub isactive:String,
+    /// defaults to: NULL::bpchar
+    pub isendproduct:Option<String>,
     /// not nullable 
     pub line:f64,
     /// defaults to: 0
@@ -32886,13 +37353,16 @@ pub struct MProductionline {
     /// not nullable 
     pub m_product_id:f64,
     /// not nullable 
-    pub m_productionplan_id:f64,
+    pub m_production_id:f64,
+    pub m_productionplan_id:Option<f64>,
     /// defaults to: 0
     /// not nullable 
     pub movementqty:f64,
+    pub plannedqty:Option<f64>,
     /// defaults to: 'N'::bpchar
     /// not nullable 
     pub processed:String,
+    pub qtyused:Option<f64>,
     /// defaults to: now()
     /// not nullable 
     pub updated:NaiveDateTime,
@@ -32906,6 +37376,8 @@ pub struct MProductionline {
     pub m_locator:Option<MLocator>,
     /// has one
     pub m_attributesetinstance:Option<MAttributesetinstance>,
+    /// has one
+    pub m_production:Option<MProduction>,
     /// has many
     pub m_costdetail:Option<Vec<MCostdetail>>,
     /// has many
@@ -33115,6 +37587,12 @@ pub struct MProductpricevendorbreak {
     pub updated:NaiveDateTime,
     /// not nullable 
     pub updatedby:f64,
+    /// has one
+    pub c_bpartner:Option<CBpartner>,
+    /// has one
+    pub m_pricelist_version:Option<MPricelistVersion>,
+    /// has one
+    pub m_product:Option<MProduct>,
 }
 
 #[derive(Debug)]
@@ -33122,13 +37600,10 @@ pub struct MPromotion {
     /// primary
     /// not nullable 
     pub m_promotion_id:f64,
-    /// defaults to: NULL::numeric
     /// not nullable 
     pub ad_client_id:f64,
-    /// defaults to: NULL::numeric
     /// not nullable 
     pub ad_org_id:f64,
-    /// defaults to: NULL::numeric
     pub c_campaign_id:Option<f64>,
     /// not nullable 
     pub created:NaiveDateTime,
@@ -33147,6 +37622,18 @@ pub struct MPromotion {
     pub updated:NaiveDateTime,
     /// not nullable 
     pub updatedby:f64,
+    /// has one
+    pub c_campaign:Option<CCampaign>,
+    /// has many
+    pub c_orderline:Option<Vec<COrderline>>,
+    /// has many
+    pub m_promotiondistribution:Option<Vec<MPromotiondistribution>>,
+    /// has many
+    pub m_promotionline:Option<Vec<MPromotionline>>,
+    /// has many
+    pub m_promotionprecondition:Option<Vec<MPromotionprecondition>>,
+    /// has many
+    pub m_promotionreward:Option<Vec<MPromotionreward>>,
 }
 
 #[derive(Debug)]
@@ -33154,10 +37641,8 @@ pub struct MPromotiondistribution {
     /// primary
     /// not nullable 
     pub m_promotiondistribution_id:f64,
-    /// defaults to: NULL::numeric
     /// not nullable 
     pub ad_client_id:f64,
-    /// defaults to: NULL::numeric
     /// not nullable 
     pub ad_org_id:f64,
     /// not nullable 
@@ -33179,13 +37664,18 @@ pub struct MPromotiondistribution {
     /// defaults to: 0
     /// not nullable 
     pub qty:f64,
-    /// defaults to: NULL::numeric
     /// not nullable 
     pub seqno:f64,
     /// not nullable 
     pub updated:NaiveDateTime,
     /// not nullable 
     pub updatedby:f64,
+    /// has one
+    pub m_promotionline:Option<MPromotionline>,
+    /// has one
+    pub m_promotion:Option<MPromotion>,
+    /// has many
+    pub m_promotionreward:Option<Vec<MPromotionreward>>,
 }
 
 #[derive(Debug)]
@@ -33193,10 +37683,8 @@ pub struct MPromotiongroup {
     /// primary
     /// not nullable 
     pub m_promotiongroup_id:f64,
-    /// defaults to: NULL::numeric
     /// not nullable 
     pub ad_client_id:f64,
-    /// defaults to: NULL::numeric
     /// not nullable 
     pub ad_org_id:f64,
     /// not nullable 
@@ -33213,6 +37701,10 @@ pub struct MPromotiongroup {
     pub updated:NaiveDateTime,
     /// not nullable 
     pub updatedby:f64,
+    /// has many
+    pub m_promotiongroupline:Option<Vec<MPromotiongroupline>>,
+    /// has many
+    pub m_promotionline:Option<Vec<MPromotionline>>,
 }
 
 #[derive(Debug)]
@@ -33220,10 +37712,8 @@ pub struct MPromotiongroupline {
     /// primary
     /// not nullable 
     pub m_promotiongroupline_id:f64,
-    /// defaults to: NULL::numeric
     /// not nullable 
     pub ad_client_id:f64,
-    /// defaults to: NULL::numeric
     /// not nullable 
     pub ad_org_id:f64,
     /// not nullable 
@@ -33241,6 +37731,10 @@ pub struct MPromotiongroupline {
     pub updated:NaiveDateTime,
     /// not nullable 
     pub updatedby:f64,
+    /// has one
+    pub m_product:Option<MProduct>,
+    /// has one
+    pub m_promotiongroup:Option<MPromotiongroup>,
 }
 
 #[derive(Debug)]
@@ -33248,10 +37742,8 @@ pub struct MPromotionline {
     /// primary
     /// not nullable 
     pub m_promotionline_id:f64,
-    /// defaults to: NULL::numeric
     /// not nullable 
     pub ad_client_id:f64,
-    /// defaults to: NULL::numeric
     /// not nullable 
     pub ad_org_id:f64,
     /// not nullable 
@@ -33272,6 +37764,12 @@ pub struct MPromotionline {
     pub updated:NaiveDateTime,
     /// not nullable 
     pub updatedby:f64,
+    /// has one
+    pub m_promotiongroup:Option<MPromotiongroup>,
+    /// has one
+    pub m_promotion:Option<MPromotion>,
+    /// has many
+    pub m_promotiondistribution:Option<Vec<MPromotiondistribution>>,
 }
 
 #[derive(Debug)]
@@ -33279,13 +37777,10 @@ pub struct MPromotionprecondition {
     /// primary
     /// not nullable 
     pub m_promotionprecondition_id:f64,
-    /// defaults to: NULL::numeric
     /// not nullable 
     pub ad_client_id:f64,
-    /// defaults to: NULL::numeric
     /// not nullable 
     pub ad_org_id:f64,
-    /// defaults to: NULL::numeric
     pub c_activity_id:Option<f64>,
     pub c_bp_group_id:Option<f64>,
     pub c_bpartner_id:Option<f64>,
@@ -33315,6 +37810,18 @@ pub struct MPromotionprecondition {
     pub updated:NaiveDateTime,
     /// not nullable 
     pub updatedby:f64,
+    /// has one
+    pub c_bp_group:Option<CBpGroup>,
+    /// has one
+    pub c_bpartner:Option<CBpartner>,
+    /// has one
+    pub m_pricelist:Option<MPricelist>,
+    /// has one
+    pub m_promotion:Option<MPromotion>,
+    /// has one
+    pub m_warehouse:Option<MWarehouse>,
+    /// has one
+    pub c_activity:Option<CActivity>,
 }
 
 #[derive(Debug)]
@@ -33322,10 +37829,8 @@ pub struct MPromotionreward {
     /// primary
     /// not nullable 
     pub m_promotionreward_id:f64,
-    /// defaults to: NULL::numeric
     /// not nullable 
     pub ad_client_id:f64,
-    /// defaults to: NULL::numeric
     /// not nullable 
     pub ad_org_id:f64,
     pub amount:Option<f64>,
@@ -33350,13 +37855,88 @@ pub struct MPromotionreward {
     pub qty:Option<f64>,
     /// not nullable 
     pub rewardtype:String,
-    /// defaults to: NULL::numeric
     /// not nullable 
     pub seqno:f64,
     /// not nullable 
     pub updated:NaiveDateTime,
     /// not nullable 
     pub updatedby:f64,
+    /// has one
+    pub c_charge:Option<CCharge>,
+    /// has one
+    pub m_promotiondistribution:Option<MPromotiondistribution>,
+    /// has one
+    pub m_promotion:Option<MPromotion>,
+    /// has one
+    pub m_targetdistribution:Option<MPromotiondistribution>,
+}
+
+#[derive(Debug)]
+pub struct MQualitytest {
+    /// primary
+    /// not nullable 
+    pub m_qualitytest_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    /// defaults to: NULL::character varying
+    pub description:Option<String>,
+    /// defaults to: NULL::character varying
+    pub help:Option<String>,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// not nullable 
+    pub name:String,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// has many
+    pub m_product_qualitytest:Option<Vec<MProductQualitytest>>,
+    /// has many
+    pub m_qualitytestresult:Option<Vec<MQualitytestresult>>,
+}
+
+#[derive(Debug)]
+pub struct MQualitytestresult {
+    /// primary
+    /// not nullable 
+    pub m_qualitytestresult_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// defaults to: 'N'::bpchar
+    /// not nullable 
+    pub isqcpass:String,
+    /// not nullable 
+    pub m_attributesetinstance_id:f64,
+    /// not nullable 
+    pub m_qualitytest_id:f64,
+    /// defaults to: 'N'::bpchar
+    /// not nullable 
+    pub processed:String,
+    /// defaults to: NULL::character varying
+    pub result:Option<String>,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// has one
+    pub m_qualitytest:Option<MQualitytest>,
 }
 
 #[derive(Debug)]
@@ -33437,6 +38017,8 @@ pub struct MReplenish {
     pub m_warehouse:Option<MWarehouse>,
     /// has one
     pub m_warehousesource:Option<MWarehouse>,
+    /// has one
+    pub m_locator:Option<MLocator>,
 }
 
 #[derive(Debug)]
@@ -33488,6 +38070,7 @@ pub struct MRequisition {
     /// defaults to: 'N'::bpchar
     /// not nullable 
     pub processed:String,
+    pub processedon:Option<f64>,
     pub processing:Option<String>,
     /// defaults to: 0
     /// not nullable 
@@ -33520,11 +38103,9 @@ pub struct MRequisitionline {
     pub ad_client_id:f64,
     /// not nullable 
     pub ad_org_id:f64,
-    /// defaults to: NULL::numeric
     pub c_bpartner_id:Option<f64>,
     pub c_charge_id:Option<f64>,
     pub c_orderline_id:Option<f64>,
-    /// defaults to: NULL::numeric
     pub c_uom_id:Option<f64>,
     /// defaults to: now()
     /// not nullable 
@@ -33562,7 +38143,13 @@ pub struct MRequisitionline {
     /// has one
     pub c_orderline:Option<COrderline>,
     /// has one
+    pub m_attributesetinstance:Option<MAttributesetinstance>,
+    /// has one
     pub c_charge:Option<CCharge>,
+    /// has one
+    pub c_bpartner:Option<CBpartner>,
+    /// has one
+    pub c_uom:Option<CUom>,
     /// has many
     pub m_demanddetail:Option<Vec<MDemanddetail>>,
     /// has many
@@ -33616,7 +38203,6 @@ pub struct MRma {
     /// not nullable 
     pub processed:String,
     pub processing:Option<String>,
-    /// defaults to: NULL::numeric
     pub ref_rma_id:Option<f64>,
     /// not nullable 
     pub salesrep_id:f64,
@@ -33639,10 +38225,14 @@ pub struct MRma {
     pub c_currency:Option<CCurrency>,
     /// has one
     pub c_bpartner:Option<CBpartner>,
+    /// has one, self referential
+    pub ref_rma:Option<Box<MRma>>,
     /// has many
     pub c_invoice:Option<Vec<CInvoice>>,
     /// has many
     pub m_inout:Option<Vec<MInout>>,
+    /// has many
+    pub m_rma:Option<Vec<MRma>>,
     /// has many
     pub m_rmaline:Option<Vec<MRmaline>>,
     /// has many
@@ -33686,7 +38276,6 @@ pub struct MRmaline {
     pub qty:f64,
     pub qtydelivered:Option<f64>,
     pub qtyinvoiced:Option<f64>,
-    /// defaults to: NULL::numeric
     pub ref_rmaline_id:Option<f64>,
     /// defaults to: now()
     /// not nullable 
@@ -33699,10 +38288,14 @@ pub struct MRmaline {
     pub m_inoutline:Option<MInoutline>,
     /// has one
     pub c_charge:Option<CCharge>,
+    /// has one, self referential
+    pub ref_rmaline:Option<Box<MRmaline>>,
     /// has many
     pub c_invoiceline:Option<Vec<CInvoiceline>>,
     /// has many
     pub m_inoutline:Option<Vec<MInoutline>>,
+    /// has many
+    pub m_rmaline:Option<Vec<MRmaline>>,
 }
 
 #[derive(Debug)]
@@ -33847,6 +38440,10 @@ pub struct MShipper {
     /// has many
     pub dd_order:Option<Vec<DdOrder>>,
     /// has many
+    pub dd_orderline:Option<Vec<DdOrderline>>,
+    /// has many
+    pub i_movement:Option<Vec<IMovement>>,
+    /// has many
     pub i_order:Option<Vec<IOrder>>,
     /// has many
     pub m_freight:Option<Vec<MFreight>>,
@@ -33856,6 +38453,8 @@ pub struct MShipper {
     pub m_movement:Option<Vec<MMovement>>,
     /// has many
     pub m_package:Option<Vec<MPackage>>,
+    /// has many
+    pub wm_inoutbound:Option<Vec<WmInoutbound>>,
 }
 
 #[derive(Debug)]
@@ -34004,6 +38603,8 @@ pub struct MTransaction {
     pub c_projectissue:Option<CProjectissue>,
     /// has one
     pub m_attributesetinstance:Option<MAttributesetinstance>,
+    /// has one
+    pub pp_cost_collector:Option<PpCostCollector>,
     /// has one, extension table
     pub m_transactionallocation:Option<Box<MTransactionallocation>>,
     /// has one, extension table
@@ -34136,13 +38737,25 @@ pub struct MWarehouse {
     /// has many
     pub c_project:Option<Vec<CProject>>,
     /// has many
+    pub c_saleshistory:Option<Vec<CSaleshistory>>,
+    /// has many
     pub dd_networkdistributionline:Option<Vec<DdNetworkdistributionline>>,
     /// has many
     pub dd_order:Option<Vec<DdOrder>>,
     /// has many
+    pub i_forecast:Option<Vec<IForecast>>,
+    /// has many
     pub i_inventory:Option<Vec<IInventory>>,
     /// has many
     pub i_order:Option<Vec<IOrder>>,
+    /// has many
+    pub i_productplanning:Option<Vec<IProductplanning>>,
+    /// has many
+    pub i_saleshistory:Option<Vec<ISaleshistory>>,
+    /// has many
+    pub m_cost:Option<Vec<MCost>>,
+    /// has many
+    pub m_costdetail:Option<Vec<MCostdetail>>,
     /// has many
     pub m_edi:Option<Vec<MEdi>>,
     /// has many
@@ -34156,6 +38769,8 @@ pub struct MWarehouse {
     /// has many
     pub m_perpetualinv:Option<Vec<MPerpetualinv>>,
     /// has many
+    pub m_promotionprecondition:Option<Vec<MPromotionprecondition>>,
+    /// has many
     pub m_replenish:Option<Vec<MReplenish>>,
     /// has many
     pub m_requisition:Option<Vec<MRequisition>>,
@@ -34166,11 +38781,17 @@ pub struct MWarehouse {
     /// has many
     pub pp_cost_collector:Option<Vec<PpCostCollector>>,
     /// has many
+    pub pp_forecastrun:Option<Vec<PpForecastrun>>,
+    /// has many
+    pub pp_forecastrunmaster:Option<Vec<PpForecastrunmaster>>,
+    /// has many
     pub pp_mrp:Option<Vec<PpMrp>>,
     /// has many
     pub pp_order:Option<Vec<PpOrder>>,
     /// has many
     pub pp_order_bomline:Option<Vec<PpOrderBomline>>,
+    /// has many
+    pub pp_product_planning:Option<Vec<PpProductPlanning>>,
     /// has many
     pub s_resource:Option<Vec<SResource>>,
     /// has many
@@ -34180,7 +38801,15 @@ pub struct MWarehouse {
     /// has many
     pub t_replenish:Option<Vec<TReplenish>>,
     /// has many
+    pub u_posterminal:Option<Vec<UPosterminal>>,
+    /// has many
     pub w_store:Option<Vec<WStore>>,
+    /// has many
+    pub wm_area:Option<Vec<WmArea>>,
+    /// has many
+    pub wm_inoutbound:Option<Vec<WmInoutbound>>,
+    /// has many
+    pub wm_strategy:Option<Vec<WmStrategy>>,
 }
 
 #[derive(Debug)]
@@ -34228,203 +38857,6 @@ pub struct MWarehouseAcct {
     pub w_differences_acct:Option<CValidcombination>,
     /// has one
     pub w_revaluation_acct:Option<CValidcombination>,
-}
-
-#[derive(Debug)]
-pub struct Name {
-    /// primary
-    /// not nullable 
-    pub name_id:f64,
-    /// not nullable 
-    pub ad_client_id:f64,
-    /// not nullable 
-    pub ad_org_id:f64,
-    /// not nullable 
-    pub created:NaiveDateTime,
-    /// not nullable 
-    pub createdby:f64,
-    /// defaults to: NULL::numeric
-    pub datatype_id:Option<f64>,
-    /// defaults to: NULL::character varying
-    pub description:Option<String>,
-    /// defaults to: NULL::character varying
-    pub help:Option<String>,
-    /// defaults to: 'Y'::bpchar
-    /// not nullable 
-    pub isactive:String,
-    pub length:Option<f64>,
-    /// not nullable 
-    pub name:String,
-    /// not nullable 
-    pub updated:NaiveDateTime,
-    /// not nullable 
-    pub updatedby:f64,
-    /// not nullable 
-    pub value:String,
-}
-
-#[derive(Debug)]
-pub struct Object {
-    /// primary
-    /// not nullable 
-    pub object_id:f64,
-    /// not nullable 
-    pub ad_client_id:f64,
-    /// not nullable 
-    pub ad_org_id:f64,
-    /// not nullable 
-    pub created:NaiveDateTime,
-    /// not nullable 
-    pub createdby:f64,
-    /// defaults to: NULL::character varying
-    pub description:Option<String>,
-    /// defaults to: NULL::character varying
-    pub help:Option<String>,
-    /// defaults to: 'Y'::bpchar
-    /// not nullable 
-    pub isactive:String,
-    /// not nullable 
-    pub name:String,
-    /// defaults to: (0)::numeric
-    pub parent_id:Option<f64>,
-    /// not nullable 
-    pub updated:NaiveDateTime,
-    /// not nullable 
-    pub updatedby:f64,
-    /// not nullable 
-    pub value:String,
-}
-
-#[derive(Debug)]
-pub struct ObjectAttribute {
-    /// primary
-    /// not nullable 
-    pub object_attribute_id:f64,
-    /// not nullable 
-    pub ad_client_id:f64,
-    /// not nullable 
-    pub ad_org_id:f64,
-    /// defaults to: NULL::numeric
-    pub attribute_id:Option<f64>,
-    /// not nullable 
-    pub created:NaiveDateTime,
-    /// not nullable 
-    pub createdby:f64,
-    /// defaults to: NULL::numeric
-    pub datatype_id:Option<f64>,
-    /// defaults to: NULL::character varying
-    pub description:Option<String>,
-    /// defaults to: NULL::character varying
-    pub help:Option<String>,
-    /// defaults to: 'Y'::bpchar
-    /// not nullable 
-    pub isactive:String,
-    /// defaults to: NULL::numeric
-    pub object_id:Option<f64>,
-    /// defaults to: NULL::numeric
-    pub seqno:Option<f64>,
-    /// not nullable 
-    pub updated:NaiveDateTime,
-    /// not nullable 
-    pub updatedby:f64,
-    /// not nullable 
-    pub value:String,
-}
-
-#[derive(Debug)]
-pub struct ObjectDiscriminatedAttribute {
-    /// primary
-    /// not nullable 
-    pub object_discriminated_attribute:String,
-    /// not nullable 
-    pub ad_client_id:f64,
-    /// not nullable 
-    pub ad_org_id:f64,
-    /// defaults to: NULL::numeric
-    pub attribute_id:Option<f64>,
-    /// not nullable 
-    pub created:NaiveDateTime,
-    /// not nullable 
-    pub createdby:f64,
-    /// defaults to: NULL::character varying
-    pub description:Option<String>,
-    /// defaults to: NULL::character varying
-    pub help:Option<String>,
-    /// defaults to: 'Y'::bpchar
-    /// not nullable 
-    pub isactive:String,
-    /// defaults to: NULL::numeric
-    pub object_id:Option<f64>,
-    /// not nullable 
-    pub updated:NaiveDateTime,
-    /// not nullable 
-    pub updatedby:f64,
-    /// not nullable 
-    pub value:String,
-}
-
-#[derive(Debug)]
-pub struct ObjectObject {
-    /// primary
-    /// not nullable 
-    pub object_object_id:f64,
-    /// not nullable 
-    pub ad_client_id:f64,
-    /// not nullable 
-    pub ad_org_id:f64,
-    /// not nullable 
-    pub created:NaiveDateTime,
-    /// not nullable 
-    pub createdby:f64,
-    /// defaults to: NULL::character varying
-    pub description:Option<String>,
-    /// defaults to: NULL::numeric
-    pub has_object_id:Option<f64>,
-    /// defaults to: NULL::character varying
-    pub help:Option<String>,
-    /// defaults to: 'Y'::bpchar
-    /// not nullable 
-    pub isactive:String,
-    /// defaults to: NULL::numeric
-    pub object_id:Option<f64>,
-    /// defaults to: NULL::numeric
-    pub relationship_id:Option<f64>,
-    /// defaults to: NULL::numeric
-    pub seqno:Option<f64>,
-    /// not nullable 
-    pub updated:NaiveDateTime,
-    /// not nullable 
-    pub updatedby:f64,
-    /// not nullable 
-    pub value:String,
-}
-
-#[derive(Debug)]
-pub struct ObjectView {
-    /// primary
-    /// not nullable 
-    pub object_view_id:f64,
-    /// defaults to: NULL::numeric
-    pub ad_class_id:Option<f64>,
-    /// not nullable 
-    pub ad_client_id:f64,
-    /// not nullable 
-    pub ad_org_id:f64,
-    /// not nullable 
-    pub created:NaiveDateTime,
-    /// not nullable 
-    pub createdby:f64,
-    /// defaults to: 'Y'::bpchar
-    /// not nullable 
-    pub isactive:String,
-    /// defaults to: NULL::numeric
-    pub object_id:Option<f64>,
-    /// not nullable 
-    pub updated:NaiveDateTime,
-    /// not nullable 
-    pub updatedby:f64,
-    /// defaults to: NULL::numeric
-    pub view_id:Option<f64>,
 }
 
 #[derive(Debug)]
@@ -34599,12 +39031,13 @@ pub struct PaDashboardcontent {
     /// primary
     /// not nullable 
     pub pa_dashboardcontent_id:f64,
+    pub ad_browse_id:Option<f64>,
     /// not nullable 
     pub ad_client_id:f64,
     /// not nullable 
     pub ad_org_id:f64,
     pub ad_window_id:Option<f64>,
-    /// defaults to: (1)::numeric
+    /// defaults to: 1
     pub columnno:Option<f64>,
     /// not nullable 
     pub created:NaiveDateTime,
@@ -34619,19 +39052,74 @@ pub struct PaDashboardcontent {
     /// defaults to: 'Y'::bpchar
     /// not nullable 
     pub iscollapsible:String,
+    /// defaults to: 'N'::bpchar
+    pub iseventrequired:Option<String>,
+    /// defaults to: 'Y'::bpchar
+    pub isopenbydefault:Option<String>,
     pub line:Option<f64>,
     /// not nullable 
     pub name:String,
+    pub onevent:Option<String>,
     pub pa_goal_id:Option<f64>,
+    pub pagesize:Option<f64>,
     /// not nullable 
     pub updated:NaiveDateTime,
     /// not nullable 
     pub updatedby:f64,
+    pub zoom_field_id:Option<f64>,
+    pub zoom_tab_id:Option<f64>,
+    pub zoom_window_id:Option<f64>,
     pub zulfilepath:Option<String>,
     /// has one
     pub ad_window:Option<AdWindow>,
     /// has one
     pub pa_goal:Option<PaGoal>,
+    /// has one
+    pub zoom_window:Option<AdWindow>,
+    /// has one
+    pub zoom_tab:Option<AdTab>,
+    /// has one
+    pub ad_browse:Option<AdBrowse>,
+    /// has one
+    pub zoom_field:Option<AdBrowseField>,
+    /// has many
+    pub pa_dashboardcontent_trl:Option<Vec<PaDashboardcontentTrl>>,
+}
+
+#[derive(Debug)]
+pub struct PaDashboardcontentTrl {
+    /// primary
+    /// not nullable 
+    pub ad_language:String,
+    /// primary
+    /// not nullable 
+    pub pa_dashboardcontent_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// defaults to: now()
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    pub description:Option<String>,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// not nullable 
+    pub istranslated:String,
+    /// not nullable 
+    pub name:String,
+    /// defaults to: now()
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// has one
+    pub ad_language:Option<AdLanguage>,
+    /// has one
+    pub pa_dashboardcontent:Option<PaDashboardcontent>,
 }
 
 #[derive(Debug)]
@@ -35041,10 +39529,11 @@ pub struct PaReport {
     pub name:String,
     /// not nullable 
     pub pa_reportcolumnset_id:f64,
-    /// defaults to: NULL::numeric
     pub pa_reportcube_id:Option<f64>,
     /// not nullable 
     pub pa_reportlineset_id:f64,
+    pub posperiodname:Option<String>,
+    pub preperiodname:Option<String>,
     /// not nullable 
     pub processing:String,
     /// defaults to: now()
@@ -35066,6 +39555,8 @@ pub struct PaReport {
     pub ad_printformat:Option<AdPrintformat>,
     /// has one
     pub jasperprocess:Option<AdProcess>,
+    /// has one
+    pub pa_reportcube:Option<PaReportcube>,
 }
 
 #[derive(Debug)]
@@ -35153,6 +39644,10 @@ pub struct PaReportcolumn {
     pub org_id:Option<f64>,
     /// not nullable 
     pub pa_reportcolumnset_id:f64,
+    /// defaults to: 'B'::bpchar
+    pub paamounttype:Option<String>,
+    /// defaults to: 'P'::bpchar
+    pub paperiodtype:Option<String>,
     /// not nullable 
     pub postingtype:String,
     pub relativeperiod:Option<f64>,
@@ -35193,6 +39688,8 @@ pub struct PaReportcolumn {
     pub c_salesregion:Option<CSalesregion>,
     /// has one
     pub c_activity:Option<CActivity>,
+    /// has one
+    pub ad_orgtrx:Option<AdOrg>,
     /// has many
     pub pa_reportcolumn:Option<Vec<PaReportcolumn>>,
 }
@@ -35245,43 +39742,24 @@ pub struct PaReportcube {
     pub created:NaiveDateTime,
     /// not nullable 
     pub createdby:f64,
-    /// defaults to: NULL::character varying
     pub description:Option<String>,
-    /// defaults to: NULL::bpchar
     pub isactive:Option<String>,
-    /// defaults to: NULL::bpchar
     pub isactivitydim:Option<String>,
-    /// defaults to: NULL::bpchar
     pub isbpartnerdim:Option<String>,
-    /// defaults to: NULL::bpchar
     pub iscampaigndim:Option<String>,
-    /// defaults to: NULL::bpchar
     pub isglbudgetdim:Option<String>,
-    /// defaults to: NULL::bpchar
     pub islocfromdim:Option<String>,
-    /// defaults to: NULL::bpchar
     pub isloctodim:Option<String>,
-    /// defaults to: NULL::bpchar
     pub isorgtrxdim:Option<String>,
-    /// defaults to: NULL::bpchar
     pub isproductdim:Option<String>,
-    /// defaults to: NULL::bpchar
     pub isprojectdim:Option<String>,
-    /// defaults to: NULL::bpchar
     pub isprojectphasedim:Option<String>,
-    /// defaults to: NULL::bpchar
     pub isprojecttaskdim:Option<String>,
-    /// defaults to: NULL::bpchar
     pub issalesregiondim:Option<String>,
-    /// defaults to: NULL::bpchar
     pub issubacctdim:Option<String>,
-    /// defaults to: NULL::bpchar
     pub isuser1dim:Option<String>,
-    /// defaults to: NULL::bpchar
     pub isuser2dim:Option<String>,
-    /// defaults to: NULL::bpchar
     pub isuserelement1dim:Option<String>,
-    /// defaults to: NULL::bpchar
     pub isuserelement2dim:Option<String>,
     pub lastrecalculated:Option<NaiveDateTime>,
     /// not nullable 
@@ -35293,6 +39771,12 @@ pub struct PaReportcube {
     pub updated:NaiveDateTime,
     /// not nullable 
     pub updatedby:f64,
+    /// has one
+    pub c_calendar:Option<CCalendar>,
+    /// has many
+    pub fact_acct_summary:Option<Vec<FactAcctSummary>>,
+    /// has many
+    pub pa_report:Option<Vec<PaReport>>,
 }
 
 #[derive(Debug)]
@@ -35312,6 +39796,7 @@ pub struct PaReportline {
     /// not nullable 
     pub createdby:f64,
     pub description:Option<String>,
+    pub fixedpercentage:Option<f64>,
     pub gl_budget_id:Option<f64>,
     /// defaults to: 'Y'::bpchar
     /// not nullable 
@@ -35330,10 +39815,14 @@ pub struct PaReportline {
     pub oper_2_id:Option<f64>,
     /// not nullable 
     pub pa_reportlineset_id:f64,
+    pub paamounttype:Option<String>,
+    pub paperiodtype:Option<String>,
     pub parent_id:Option<f64>,
     pub postingtype:Option<String>,
+    pub reportlinestyle:Option<String>,
     /// not nullable 
     pub seqno:f64,
+    pub tablevel:Option<f64>,
     /// defaults to: now()
     /// not nullable 
     pub updated:NaiveDateTime,
@@ -35489,6 +39978,8 @@ pub struct PaReportsource {
     pub c_salesregion:Option<CSalesregion>,
     /// has one
     pub c_activity:Option<CActivity>,
+    /// has one
+    pub ad_orgtrx:Option<AdOrg>,
     /// has many
     pub i_reportline:Option<Vec<IReportline>>,
 }
@@ -35621,10 +40112,10 @@ pub struct PaSlaMeasure {
 }
 
 #[derive(Debug)]
-pub struct Person {
+pub struct PpCalendar {
     /// primary
     /// not nullable 
-    pub person_id:f64,
+    pub pp_calendar_id:f64,
     /// not nullable 
     pub ad_client_id:f64,
     /// not nullable 
@@ -35635,25 +40126,21 @@ pub struct Person {
     pub createdby:f64,
     /// defaults to: NULL::character varying
     pub description:Option<String>,
-    /// defaults to: NULL::character varying
-    pub firstname:Option<String>,
-    /// defaults to: NULL::character varying
-    pub help:Option<String>,
     /// defaults to: 'Y'::bpchar
     /// not nullable 
     pub isactive:String,
-    /// defaults to: NULL::character varying
-    pub lastname:Option<String>,
-    /// defaults to: NULL::character varying
-    pub middlename:Option<String>,
     /// not nullable 
     pub name:String,
     /// not nullable 
     pub updated:NaiveDateTime,
     /// not nullable 
     pub updatedby:f64,
-    /// not nullable 
-    pub value:String,
+    /// has many
+    pub m_forecast:Option<Vec<MForecast>>,
+    /// has many
+    pub pp_forecastrun:Option<Vec<PpForecastrun>>,
+    /// has many
+    pub pp_perioddefinition:Option<Vec<PpPerioddefinition>>,
 }
 
 #[derive(Debug)]
@@ -35705,7 +40192,7 @@ pub struct PpCostCollector {
     pub m_warehouse_id:f64,
     /// not nullable 
     pub movementdate:NaiveDateTime,
-    /// defaults to: (0)::numeric
+    /// defaults to: 0
     /// not nullable 
     pub movementqty:f64,
     /// not nullable 
@@ -35717,15 +40204,16 @@ pub struct PpCostCollector {
     pub pp_order_workflow_id:Option<f64>,
     /// not nullable 
     pub processed:String,
+    pub processedon:Option<f64>,
     pub processing:Option<String>,
-    /// defaults to: (0)::numeric
+    /// defaults to: 0
     pub qtyreject:Option<f64>,
     pub reversal_id:Option<f64>,
     /// not nullable 
     pub s_resource_id:f64,
-    /// defaults to: (0)::numeric
+    /// defaults to: 0
     pub scrappedqty:Option<f64>,
-    /// defaults to: (0)::numeric
+    /// defaults to: 0
     pub setuptimereal:Option<f64>,
     /// not nullable 
     pub updated:NaiveDateTime,
@@ -35752,6 +40240,10 @@ pub struct PpCostCollector {
     /// has one
     pub c_uom:Option<CUom>,
     /// has one
+    pub m_attributesetinstance:Option<MAttributesetinstance>,
+    /// has one
+    pub m_locator:Option<MLocator>,
+    /// has one
     pub m_warehouse:Option<MWarehouse>,
     /// has one
     pub pp_order_bomline:Option<PpOrderBomline>,
@@ -35770,7 +40262,13 @@ pub struct PpCostCollector {
     /// has one, self referential
     pub reversal:Option<Box<PpCostCollector>>,
     /// has many
+    pub c_orderline:Option<Vec<COrderline>>,
+    /// has many
     pub hr_movement:Option<Vec<HrMovement>>,
+    /// has many
+    pub m_costdetail:Option<Vec<MCostdetail>>,
+    /// has many
+    pub m_transaction:Option<Vec<MTransaction>>,
     /// has many
     pub pp_cost_collector:Option<Vec<PpCostCollector>>,
     /// has many
@@ -35803,7 +40301,383 @@ pub struct PpCostCollectorma {
     /// not nullable 
     pub updatedby:f64,
     /// has one
+    pub m_attributesetinstance:Option<MAttributesetinstance>,
+    /// has one
     pub pp_cost_collector:Option<PpCostCollector>,
+}
+
+#[derive(Debug)]
+pub struct PpForecastdefinition {
+    /// primary
+    /// not nullable 
+    pub pp_forecastdefinition_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    /// defaults to: NULL::character varying
+    pub description:Option<String>,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// not nullable 
+    pub name:String,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// has many
+    pub pp_forecastdefinitionline:Option<Vec<PpForecastdefinitionline>>,
+    /// has many
+    pub pp_forecastrun:Option<Vec<PpForecastrun>>,
+}
+
+#[derive(Debug)]
+pub struct PpForecastdefinitionline {
+    /// primary
+    /// not nullable 
+    pub pp_forecastdefinitionline_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// defaults to: NULL::numeric
+    pub c_bp_group_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub c_bpartner_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub c_campaign_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub c_salesregion_id:Option<f64>,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    pub factoralpha:Option<f64>,
+    pub factorbeta:Option<f64>,
+    pub factorgamma:Option<f64>,
+    pub factormultiplier:Option<f64>,
+    pub factorscale:Option<f64>,
+    pub factoruser:Option<f64>,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// defaults to: NULL::numeric
+    pub m_product_category_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub m_product_class_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub m_product_classification_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub m_product_group_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub m_product_id:Option<f64>,
+    /// not nullable 
+    pub name:String,
+    /// not nullable 
+    pub pp_forecastdefinition_id:f64,
+    /// defaults to: NULL::numeric
+    pub seqno:Option<f64>,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// has one
+    pub pp_forecastdefinition:Option<PpForecastdefinition>,
+    /// has one
+    pub m_product:Option<MProduct>,
+    /// has one
+    pub m_product_category:Option<MProductCategory>,
+    /// has one
+    pub m_product_classification:Option<MProductClassification>,
+    /// has one
+    pub m_product_class:Option<MProductClass>,
+    /// has one
+    pub m_product_group:Option<MProductGroup>,
+    /// has one
+    pub c_bpartner:Option<CBpartner>,
+    /// has one
+    pub c_campaign:Option<CCampaign>,
+    /// has one
+    pub c_salesregion:Option<CSalesregion>,
+    /// has one
+    pub c_bp_group:Option<CBpGroup>,
+    /// has many
+    pub pp_forecastrunmaster:Option<Vec<PpForecastrunmaster>>,
+}
+
+#[derive(Debug)]
+pub struct PpForecastrule {
+    /// primary
+    /// not nullable 
+    pub pp_forecastrule_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// defaults to: NULL::numeric
+    pub ad_rule_id:Option<f64>,
+    /// defaults to: NULL::character varying
+    pub calculationclass:Option<String>,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    /// defaults to: NULL::character varying
+    pub description:Option<String>,
+    /// defaults to: NULL::character varying
+    pub help:Option<String>,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// not nullable 
+    pub name:String,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// has one
+    pub ad_rule:Option<AdRule>,
+    /// has many
+    pub pp_forecastrun:Option<Vec<PpForecastrun>>,
+}
+
+#[derive(Debug)]
+pub struct PpForecastrun {
+    /// primary
+    /// not nullable 
+    pub pp_forecastrun_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    /// not nullable 
+    pub description:String,
+    /// not nullable 
+    pub documentno:String,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// defaults to: NULL::numeric
+    pub m_warehouse_id:Option<f64>,
+    /// not nullable 
+    pub m_warehousesource_id:f64,
+    /// defaults to: NULL::numeric
+    pub periodhistory:Option<f64>,
+    /// not nullable 
+    pub pp_calendar_id:f64,
+    /// not nullable 
+    pub pp_forecastdefinition_id:f64,
+    /// not nullable 
+    pub pp_forecastrule_id:f64,
+    /// not nullable 
+    pub pp_perioddefinition_id:f64,
+    /// defaults to: NULL::bpchar
+    pub processed:Option<String>,
+    /// defaults to: NULL::bpchar
+    pub processing:Option<String>,
+    /// not nullable 
+    pub ref_definitionperiod_id:f64,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// has one
+    pub pp_forecastdefinition:Option<PpForecastdefinition>,
+    /// has one
+    pub pp_perioddefinition:Option<PpPerioddefinition>,
+    /// has one
+    pub pp_calendar:Option<PpCalendar>,
+    /// has one
+    pub ref_definitionperiod:Option<PpPerioddefinition>,
+    /// has one
+    pub m_warehouse:Option<MWarehouse>,
+    /// has one
+    pub m_warehousesource:Option<MWarehouse>,
+    /// has one
+    pub pp_forecastrule:Option<PpForecastrule>,
+    /// has many
+    pub pp_forecastrundetail:Option<Vec<PpForecastrundetail>>,
+    /// has many
+    pub pp_forecastrunline:Option<Vec<PpForecastrunline>>,
+    /// has many
+    pub pp_forecastrunmaster:Option<Vec<PpForecastrunmaster>>,
+    /// has many
+    pub pp_forecastrunresult:Option<Vec<PpForecastrunresult>>,
+}
+
+#[derive(Debug)]
+pub struct PpForecastrundetail {
+    /// primary
+    /// not nullable 
+    pub pp_forecastrundetail_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// defaults to: NULL::numeric
+    pub periodno:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub pp_forecastrun_id:Option<f64>,
+    /// not nullable 
+    pub pp_forecastrunmaster_id:f64,
+    /// not nullable 
+    pub pp_period_id:f64,
+    pub qtycalculated:Option<f64>,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// has one
+    pub pp_period:Option<PpPeriod>,
+    /// has one
+    pub pp_forecastrun:Option<PpForecastrun>,
+    /// has one
+    pub pp_forecastrunmaster:Option<PpForecastrunmaster>,
+    /// has many
+    pub pp_forecastrunline:Option<Vec<PpForecastrunline>>,
+}
+
+#[derive(Debug)]
+pub struct PpForecastrunline {
+    /// primary
+    /// not nullable 
+    pub pp_forecastrunline_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// not nullable 
+    pub c_saleshistory_id:f64,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// defaults to: NULL::numeric
+    pub pp_forecastrun_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub pp_forecastrundetail_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub pp_period_id:Option<f64>,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// has one
+    pub c_saleshistory:Option<CSaleshistory>,
+    /// has one
+    pub pp_period:Option<PpPeriod>,
+    /// has one
+    pub pp_forecastrundetail:Option<PpForecastrundetail>,
+    /// has one
+    pub pp_forecastrun:Option<PpForecastrun>,
+}
+
+#[derive(Debug)]
+pub struct PpForecastrunmaster {
+    /// primary
+    /// not nullable 
+    pub pp_forecastrunmaster_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    pub factoralpha:Option<f64>,
+    pub factorbeta:Option<f64>,
+    pub factorgamma:Option<f64>,
+    pub factormultiplier:Option<f64>,
+    pub factorscale:Option<f64>,
+    pub factoruser:Option<f64>,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// defaults to: NULL::numeric
+    pub m_product_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub m_warehouse_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub pp_forecastdefinitionline_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub pp_forecastrun_id:Option<f64>,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// has one
+    pub pp_forecastrun:Option<PpForecastrun>,
+    /// has one
+    pub m_product:Option<MProduct>,
+    /// has one
+    pub m_warehouse:Option<MWarehouse>,
+    /// has one
+    pub pp_forecastdefinitionline:Option<PpForecastdefinitionline>,
+    /// has many
+    pub pp_forecastrundetail:Option<Vec<PpForecastrundetail>>,
+    /// has many
+    pub pp_forecastrunresult:Option<Vec<PpForecastrunresult>>,
+}
+
+#[derive(Debug)]
+pub struct PpForecastrunresult {
+    /// primary
+    /// not nullable 
+    pub pp_forecastrunresult_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    /// defaults to: NULL::character varying
+    pub description:Option<String>,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// defaults to: NULL::numeric
+    pub periodno:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub pp_forecastrun_id:Option<f64>,
+    /// not nullable 
+    pub pp_forecastrunmaster_id:f64,
+    /// defaults to: NULL::numeric
+    pub pp_period_id:Option<f64>,
+    pub qtyabnormal:Option<f64>,
+    pub qtycalculated:Option<f64>,
+    pub qtyplan:Option<f64>,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// has one
+    pub pp_period:Option<PpPeriod>,
+    /// has one
+    pub pp_forecastrun:Option<PpForecastrun>,
+    /// has one
+    pub pp_forecastrunmaster:Option<PpForecastrunmaster>,
 }
 
 #[derive(Debug)]
@@ -35818,6 +40692,12 @@ pub struct PpMrp {
     pub c_bpartner_id:Option<f64>,
     pub c_order_id:Option<f64>,
     pub c_orderline_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub c_project_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub c_projectphase_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub c_projecttask_id:Option<f64>,
     /// not nullable 
     pub created:NaiveDateTime,
     /// not nullable 
@@ -35891,6 +40771,45 @@ pub struct PpMrp {
     pub dd_order:Option<DdOrder>,
     /// has one
     pub dd_orderline:Option<DdOrderline>,
+    /// has one
+    pub c_project:Option<CProject>,
+    /// has one
+    pub c_projectphase:Option<CProjectphase>,
+    /// has one
+    pub c_projecttask:Option<CProjecttask>,
+    /// has many
+    pub pp_mrp_detail:Option<Vec<PpMrpDetail>>,
+}
+
+#[derive(Debug)]
+pub struct PpMrpDetail {
+    /// primary
+    /// not nullable 
+    pub pp_mrp_detail_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// defaults to: NULL::numeric
+    pub mrp_demand_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub mrp_supply_id:Option<f64>,
+    pub qty:Option<f64>,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// has one
+    pub mrp_supply:Option<PpMrp>,
+    /// has one
+    pub mrp_demand:Option<PpMrp>,
 }
 
 #[derive(Debug)]
@@ -35905,17 +40824,21 @@ pub struct PpOrder {
     pub ad_orgtrx_id:Option<f64>,
     /// not nullable 
     pub ad_workflow_id:f64,
-    /// defaults to: (0)::numeric
+    /// defaults to: 0
     pub assay:Option<f64>,
     pub c_activity_id:Option<f64>,
     pub c_campaign_id:Option<f64>,
-    /// defaults to: (0)::numeric
+    /// defaults to: 0
     pub c_doctype_id:Option<f64>,
-    /// defaults to: (0)::numeric
+    /// defaults to: 0
     /// not nullable 
     pub c_doctypetarget_id:f64,
     pub c_orderline_id:Option<f64>,
     pub c_project_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub c_projectphase_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub c_projecttask_id:Option<f64>,
     /// not nullable 
     pub c_uom_id:f64,
     pub copyfrom:Option<String>,
@@ -35978,24 +40901,25 @@ pub struct PpOrder {
     /// defaults to: 'N'::bpchar
     /// not nullable 
     pub processed:String,
+    pub processedon:Option<f64>,
     pub processing:Option<String>,
-    /// defaults to: (0)::numeric
+    /// defaults to: 0
     pub qtybatchs:Option<f64>,
-    /// defaults to: (0)::numeric
+    /// defaults to: 0
     pub qtybatchsize:Option<f64>,
-    /// defaults to: (0)::numeric
+    /// defaults to: 0
     /// not nullable 
     pub qtydelivered:f64,
-    /// defaults to: (1)::numeric
+    /// defaults to: 1
     pub qtyentered:Option<f64>,
-    /// defaults to: (1)::numeric
+    /// defaults to: 1
     /// not nullable 
     pub qtyordered:f64,
-    /// defaults to: (0)::numeric
+    /// defaults to: 0
     /// not nullable 
     pub qtyreject:f64,
     pub qtyreserved:Option<f64>,
-    /// defaults to: (0)::numeric
+    /// defaults to: 0
     /// not nullable 
     pub qtyscrap:f64,
     /// not nullable 
@@ -36009,7 +40933,7 @@ pub struct PpOrder {
     pub updatedby:f64,
     pub user1_id:Option<f64>,
     pub user2_id:Option<f64>,
-    /// defaults to: (100)::numeric
+    /// defaults to: 100
     /// not nullable 
     pub yield_:f64,
     /// has one
@@ -36033,6 +40957,8 @@ pub struct PpOrder {
     /// has one
     pub c_uom:Option<CUom>,
     /// has one
+    pub m_attributesetinstance:Option<MAttributesetinstance>,
+    /// has one
     pub pp_product_bom:Option<PpProductBom>,
     /// has one
     pub planner:Option<AdUser>,
@@ -36044,6 +40970,10 @@ pub struct PpOrder {
     pub ad_orgtrx:Option<AdOrg>,
     /// has one
     pub ad_workflow:Option<AdWorkflow>,
+    /// has one
+    pub c_projectphase:Option<CProjectphase>,
+    /// has one
+    pub c_projecttask:Option<CProjecttask>,
     /// has many
     pub pp_cost_collector:Option<Vec<PpCostCollector>>,
     /// has many
@@ -36111,11 +41041,15 @@ pub struct PpOrderBom {
     /// has one
     pub c_uom:Option<CUom>,
     /// has one
+    pub m_attributesetinstance:Option<MAttributesetinstance>,
+    /// has one
     pub m_changenotice:Option<MChangenotice>,
     /// has one
     pub m_product:Option<MProduct>,
     /// has one
     pub pp_order:Option<PpOrder>,
+    /// has many
+    pub pp_order_bom_trl:Option<Vec<PpOrderBomTrl>>,
     /// has many
     pub pp_order_bomline:Option<Vec<PpOrderBomline>>,
 }
@@ -36137,9 +41071,7 @@ pub struct PpOrderBomTrl {
     pub created:NaiveDateTime,
     /// not nullable 
     pub createdby:f64,
-    /// defaults to: NULL::character varying
     pub description:Option<String>,
-    /// defaults to: NULL::character varying
     pub help:Option<String>,
     /// defaults to: 'Y'::bpchar
     /// not nullable 
@@ -36153,6 +41085,10 @@ pub struct PpOrderBomTrl {
     pub updated:NaiveDateTime,
     /// not nullable 
     pub updatedby:f64,
+    /// has one
+    pub ad_language:Option<AdLanguage>,
+    /// has one
+    pub pp_order_bom:Option<PpOrderBom>,
 }
 
 #[derive(Debug)]
@@ -36171,6 +41107,8 @@ pub struct PpOrderBomline {
     pub c_uom_id:f64,
     /// defaults to: 'CO'::bpchar
     pub componenttype:Option<String>,
+    /// defaults to: 0
+    pub costallocationperc:Option<f64>,
     /// not nullable 
     pub created:NaiveDateTime,
     /// not nullable 
@@ -36206,14 +41144,13 @@ pub struct PpOrderBomline {
     pub qtybom:f64,
     /// not nullable 
     pub qtydelivered:f64,
-    /// defaults to: (1)::numeric
     pub qtyentered:Option<f64>,
     /// not nullable 
     pub qtypost:f64,
     /// not nullable 
     pub qtyreject:f64,
     /// not nullable 
-    pub qtyrequiered:f64,
+    pub qtyrequired:f64,
     /// not nullable 
     pub qtyreserved:f64,
     /// not nullable 
@@ -36231,7 +41168,11 @@ pub struct PpOrderBomline {
     /// has one
     pub c_uom:Option<CUom>,
     /// has one
+    pub m_attributesetinstance:Option<MAttributesetinstance>,
+    /// has one
     pub m_changenotice:Option<MChangenotice>,
+    /// has one
+    pub m_locator:Option<MLocator>,
     /// has one
     pub m_warehouse:Option<MWarehouse>,
     /// has one
@@ -36244,6 +41185,8 @@ pub struct PpOrderBomline {
     pub pp_cost_collector:Option<Vec<PpCostCollector>>,
     /// has many
     pub pp_mrp:Option<Vec<PpMrp>>,
+    /// has many
+    pub pp_order_bomline_trl:Option<Vec<PpOrderBomlineTrl>>,
 }
 
 #[derive(Debug)]
@@ -36263,9 +41206,7 @@ pub struct PpOrderBomlineTrl {
     pub created:NaiveDateTime,
     /// not nullable 
     pub createdby:f64,
-    /// defaults to: NULL::character varying
     pub description:Option<String>,
-    /// defaults to: NULL::character varying
     pub help:Option<String>,
     /// defaults to: 'Y'::bpchar
     /// not nullable 
@@ -36277,6 +41218,10 @@ pub struct PpOrderBomlineTrl {
     pub updated:NaiveDateTime,
     /// not nullable 
     pub updatedby:f64,
+    /// has one
+    pub ad_language:Option<AdLanguage>,
+    /// has one
+    pub pp_order_bomline:Option<PpOrderBomline>,
 }
 
 #[derive(Debug)]
@@ -36322,6 +41267,8 @@ pub struct PpOrderCost {
     pub ad_workflow:Option<AdWorkflow>,
     /// has one
     pub c_acctschema:Option<CAcctschema>,
+    /// has one
+    pub m_attributesetinstance:Option<MAttributesetinstance>,
     /// has one
     pub m_costelement:Option<MCostelement>,
     /// has one
@@ -36372,10 +41319,10 @@ pub struct PpOrderNode {
     pub description:Option<String>,
     pub docaction:Option<String>,
     pub docstatus:Option<String>,
-    /// defaults to: (0)::numeric
+    /// defaults to: 0
     pub duration:Option<f64>,
     pub durationreal:Option<f64>,
-    pub durationrequiered:Option<f64>,
+    pub durationrequired:Option<f64>,
     /// defaults to: 'U'::character varying
     /// not nullable 
     pub entitytype:String,
@@ -36404,13 +41351,13 @@ pub struct PpOrderNode {
     pub priority:f64,
     pub qtydelivered:Option<f64>,
     pub qtyreject:Option<f64>,
-    pub qtyrequiered:Option<f64>,
+    pub qtyrequired:Option<f64>,
     pub qtyscrap:Option<f64>,
     pub queuingtime:Option<f64>,
     pub s_resource_id:Option<f64>,
     pub setuptime:Option<f64>,
     pub setuptimereal:Option<f64>,
-    pub setuptimerequiered:Option<f64>,
+    pub setuptimerequired:Option<f64>,
     /// defaults to: 'X'::bpchar
     /// not nullable 
     pub splitelement:String,
@@ -36432,7 +41379,7 @@ pub struct PpOrderNode {
     pub workingtime:f64,
     /// not nullable 
     pub xposition:f64,
-    /// defaults to: (100)::numeric
+    /// defaults to: 100
     pub yield_:Option<f64>,
     /// not nullable 
     pub yposition:f64,
@@ -36474,6 +41421,8 @@ pub struct PpOrderNode {
     pub pp_order_node_asset:Option<Vec<PpOrderNodeAsset>>,
     /// has many
     pub pp_order_node_product:Option<Vec<PpOrderNodeProduct>>,
+    /// has many
+    pub pp_order_node_trl:Option<Vec<PpOrderNodeTrl>>,
     /// has many
     pub pp_order_nodenext:Option<Vec<PpOrderNodenext>>,
     /// has many
@@ -36575,9 +41524,7 @@ pub struct PpOrderNodeTrl {
     pub created:NaiveDateTime,
     /// not nullable 
     pub createdby:f64,
-    /// defaults to: NULL::character varying
     pub description:Option<String>,
-    /// defaults to: NULL::character varying
     pub help:Option<String>,
     /// defaults to: 'Y'::bpchar
     /// not nullable 
@@ -36591,6 +41538,10 @@ pub struct PpOrderNodeTrl {
     pub updated:NaiveDateTime,
     /// not nullable 
     pub updatedby:f64,
+    /// has one
+    pub ad_language:Option<AdLanguage>,
+    /// has one
+    pub pp_order_node:Option<PpOrderNode>,
 }
 
 #[derive(Debug)]
@@ -36619,7 +41570,7 @@ pub struct PpOrderNodenext {
     pub pp_order_next_id:Option<f64>,
     /// not nullable 
     pub pp_order_node_id:f64,
-    /// defaults to: (10)::numeric
+    /// defaults to: 10
     /// not nullable 
     pub seqno:f64,
     pub transitioncode:Option<String>,
@@ -36666,7 +41617,7 @@ pub struct PpOrderWorkflow {
     pub createdby:f64,
     pub description:Option<String>,
     pub documentno:Option<String>,
-    /// defaults to: (0)::numeric
+    /// defaults to: 0
     /// not nullable 
     pub duration:f64,
     /// defaults to: 'h'::bpchar
@@ -36694,7 +41645,7 @@ pub struct PpOrderWorkflow {
     /// defaults to: 'U'::bpchar
     /// not nullable 
     pub publishstatus:String,
-    /// defaults to: (1)::numeric
+    /// defaults to: 1
     pub qtybatchsize:Option<f64>,
     pub queuingtime:Option<f64>,
     pub s_resource_id:Option<f64>,
@@ -36715,7 +41666,7 @@ pub struct PpOrderWorkflow {
     /// defaults to: 'M'::bpchar
     pub workflowtype:Option<String>,
     pub workingtime:Option<f64>,
-    /// defaults to: (100)::numeric
+    /// defaults to: 100
     pub yield_:Option<f64>,
     /// has one
     pub ad_table:Option<AdTable>,
@@ -36743,6 +41694,8 @@ pub struct PpOrderWorkflow {
     pub pp_order_node_asset:Option<Vec<PpOrderNodeAsset>>,
     /// has many
     pub pp_order_node_product:Option<Vec<PpOrderNodeProduct>>,
+    /// has many
+    pub pp_order_workflow_trl:Option<Vec<PpOrderWorkflowTrl>>,
 }
 
 #[derive(Debug)]
@@ -36762,9 +41715,7 @@ pub struct PpOrderWorkflowTrl {
     pub created:NaiveDateTime,
     /// not nullable 
     pub createdby:f64,
-    /// defaults to: NULL::character varying
     pub description:Option<String>,
-    /// defaults to: NULL::character varying
     pub help:Option<String>,
     /// defaults to: 'Y'::bpchar
     /// not nullable 
@@ -36778,6 +41729,90 @@ pub struct PpOrderWorkflowTrl {
     pub updated:NaiveDateTime,
     /// not nullable 
     pub updatedby:f64,
+    /// has one
+    pub ad_language:Option<AdLanguage>,
+    /// has one
+    pub pp_order_workflow:Option<PpOrderWorkflow>,
+}
+
+#[derive(Debug)]
+pub struct PpPeriod {
+    /// primary
+    /// not nullable 
+    pub pp_period_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    pub enddate:Option<NaiveDateTime>,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// defaults to: NULL::character varying
+    pub name:Option<String>,
+    /// defaults to: NULL::numeric
+    pub periodno:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub pp_perioddefinition_id:Option<f64>,
+    pub startdate:Option<NaiveDateTime>,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// has one
+    pub pp_perioddefinition:Option<PpPerioddefinition>,
+    /// has many
+    pub m_forecastline:Option<Vec<MForecastline>>,
+    /// has many
+    pub pp_forecastrundetail:Option<Vec<PpForecastrundetail>>,
+    /// has many
+    pub pp_forecastrunline:Option<Vec<PpForecastrunline>>,
+    /// has many
+    pub pp_forecastrunresult:Option<Vec<PpForecastrunresult>>,
+}
+
+#[derive(Debug)]
+pub struct PpPerioddefinition {
+    /// primary
+    /// not nullable 
+    pub pp_perioddefinition_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// defaults to: NULL::character varying
+    pub calendaryear:Option<String>,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    /// defaults to: NULL::character varying
+    pub description:Option<String>,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// not nullable 
+    pub name:String,
+    /// defaults to: NULL::numeric
+    pub pp_calendar_id:Option<f64>,
+    /// defaults to: NULL::bpchar
+    pub processing:Option<String>,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// has one
+    pub pp_calendar:Option<PpCalendar>,
+    /// has many
+    pub m_forecast:Option<Vec<MForecast>>,
+    /// has many
+    pub pp_forecastrun:Option<Vec<PpForecastrun>>,
+    /// has many
+    pub pp_period:Option<Vec<PpPeriod>>,
 }
 
 #[derive(Debug)]
@@ -36826,11 +41861,23 @@ pub struct PpProductBom {
     /// has one
     pub m_product:Option<MProduct>,
     /// has one
+    pub m_attributesetinstance:Option<MAttributesetinstance>,
+    /// has one
     pub c_uom:Option<CUom>,
+    /// has many
+    pub i_product_bom:Option<Vec<IProductBom>>,
+    /// has many
+    pub i_productplanning:Option<Vec<IProductplanning>>,
+    /// has many
+    pub m_changerequest:Option<Vec<MChangerequest>>,
     /// has many
     pub pp_order:Option<Vec<PpOrder>>,
     /// has many
+    pub pp_product_bom_trl:Option<Vec<PpProductBomTrl>>,
+    /// has many
     pub pp_product_bomline:Option<Vec<PpProductBomline>>,
+    /// has many
+    pub pp_product_planning:Option<Vec<PpProductPlanning>>,
     /// has many
     pub qm_specification:Option<Vec<QmSpecification>>,
     /// has many
@@ -36854,9 +41901,7 @@ pub struct PpProductBomTrl {
     pub created:NaiveDateTime,
     /// not nullable 
     pub createdby:f64,
-    /// defaults to: NULL::character varying
     pub description:Option<String>,
-    /// defaults to: NULL::character varying
     pub help:Option<String>,
     /// defaults to: 'Y'::bpchar
     /// not nullable 
@@ -36870,6 +41915,10 @@ pub struct PpProductBomTrl {
     pub updated:NaiveDateTime,
     /// not nullable 
     pub updatedby:f64,
+    /// has one
+    pub ad_language:Option<AdLanguage>,
+    /// has one
+    pub pp_product_bom:Option<PpProductBom>,
 }
 
 #[derive(Debug)]
@@ -36886,6 +41935,8 @@ pub struct PpProductBomline {
     pub c_uom_id:Option<f64>,
     /// defaults to: 'CO'::bpchar
     pub componenttype:Option<String>,
+    /// defaults to: 0
+    pub costallocationperc:Option<f64>,
     /// not nullable 
     pub created:NaiveDateTime,
     /// not nullable 
@@ -36924,11 +41975,17 @@ pub struct PpProductBomline {
     /// has one
     pub c_uom:Option<CUom>,
     /// has one
+    pub m_attributesetinstance:Option<MAttributesetinstance>,
+    /// has one
     pub m_changenotice:Option<MChangenotice>,
     /// has one
     pub m_product:Option<MProduct>,
     /// has one
     pub pp_product_bom:Option<PpProductBom>,
+    /// has many
+    pub i_product_bom:Option<Vec<IProductBom>>,
+    /// has many
+    pub pp_product_bomline_trl:Option<Vec<PpProductBomlineTrl>>,
 }
 
 #[derive(Debug)]
@@ -36948,9 +42005,7 @@ pub struct PpProductBomlineTrl {
     pub created:NaiveDateTime,
     /// not nullable 
     pub createdby:f64,
-    /// defaults to: NULL::character varying
     pub description:Option<String>,
-    /// defaults to: NULL::character varying
     pub help:Option<String>,
     /// defaults to: 'Y'::bpchar
     /// not nullable 
@@ -36962,6 +42017,10 @@ pub struct PpProductBomlineTrl {
     pub updated:NaiveDateTime,
     /// not nullable 
     pub updatedby:f64,
+    /// has one
+    pub ad_language:Option<AdLanguage>,
+    /// has one
+    pub pp_product_bomline:Option<PpProductBomline>,
 }
 
 #[derive(Debug)]
@@ -36969,11 +42028,20 @@ pub struct PpProductPlanning {
     /// primary
     /// not nullable 
     pub pp_product_planning_id:f64,
+    /// unique
     /// not nullable 
     pub ad_client_id:f64,
-    /// defaults to: (0)::numeric
+    /// unique
+    /// defaults to: 0
     /// not nullable 
     pub ad_org_id:f64,
+    /// unique
+    /// not nullable 
+    pub m_product_id:f64,
+    /// unique
+    pub m_warehouse_id:Option<f64>,
+    /// unique
+    pub s_resource_id:Option<f64>,
     pub ad_workflow_id:Option<f64>,
     /// not nullable 
     pub created:NaiveDateTime,
@@ -36983,6 +42051,7 @@ pub struct PpProductPlanning {
     pub deliverytime_promised:Option<f64>,
     /// not nullable 
     pub isactive:String,
+    /// defaults to: 'Y'::bpchar
     /// not nullable 
     pub iscreateplan:String,
     /// defaults to: 'Y'::bpchar
@@ -36996,10 +42065,6 @@ pub struct PpProductPlanning {
     pub isrequireddrp:String,
     /// not nullable 
     pub isrequiredmrp:String,
-    /// not nullable 
-    pub m_product_id:f64,
-    /// defaults to: (0)::numeric
-    pub m_warehouse_id:Option<f64>,
     pub order_max:Option<f64>,
     pub order_min:Option<f64>,
     pub order_pack:Option<f64>,
@@ -37008,20 +42073,32 @@ pub struct PpProductPlanning {
     pub order_qty:Option<f64>,
     pub planner_id:Option<f64>,
     pub pp_product_bom_id:Option<f64>,
-    /// defaults to: (0)::numeric
-    pub s_resource_id:Option<f64>,
     pub safetystock:Option<f64>,
     pub timefence:Option<f64>,
-    pub transferttime:Option<f64>,
+    pub transfertime:Option<f64>,
     /// not nullable 
     pub updated:NaiveDateTime,
     /// not nullable 
     pub updatedby:f64,
     pub workingtime:Option<f64>,
-    /// defaults to: (100)::numeric
+    /// defaults to: 100
     pub yield_:Option<f64>,
     /// has one
+    pub ad_workflow:Option<AdWorkflow>,
+    /// has one
     pub m_product:Option<MProduct>,
+    /// has one
+    pub m_warehouse:Option<MWarehouse>,
+    /// has one
+    pub pp_product_bom:Option<PpProductBom>,
+    /// has one
+    pub planner:Option<AdUser>,
+    /// has one
+    pub s_resource:Option<SResource>,
+    /// has one
+    pub dd_networkdistribution:Option<DdNetworkdistribution>,
+    /// has many
+    pub i_productplanning:Option<Vec<IProductplanning>>,
 }
 
 #[derive(Debug)]
@@ -37247,12 +42324,16 @@ pub struct RCategoryupdates {
 
 #[derive(Debug)]
 pub struct RContactinterest {
+    /// primary
+    /// not nullable 
+    pub ad_user_id:f64,
+    /// primary
+    /// not nullable 
+    pub r_interestarea_id:f64,
     /// not nullable 
     pub ad_client_id:f64,
     /// not nullable 
     pub ad_org_id:f64,
-    /// not nullable 
-    pub ad_user_id:f64,
     /// defaults to: now()
     /// not nullable 
     pub created:NaiveDateTime,
@@ -37262,8 +42343,6 @@ pub struct RContactinterest {
     /// not nullable 
     pub isactive:String,
     pub optoutdate:Option<NaiveDateTime>,
-    /// not nullable 
-    pub r_interestarea_id:f64,
     pub subscribedate:Option<NaiveDateTime>,
     /// defaults to: now()
     /// not nullable 
@@ -37685,6 +42764,8 @@ pub struct RMailtext {
     pub ad_usermail:Option<Vec<AdUsermail>>,
     /// has many
     pub ad_wf_node:Option<Vec<AdWfNode>>,
+    /// has many
+    pub i_workflow:Option<Vec<IWorkflow>>,
     /// has many
     pub m_product:Option<Vec<MProduct>>,
     /// has many
@@ -38484,36 +43565,6 @@ pub struct RStatuscategory {
 }
 
 #[derive(Debug)]
-pub struct Relationship {
-    /// primary
-    /// not nullable 
-    pub relationship_id:f64,
-    /// not nullable 
-    pub ad_client_id:f64,
-    /// not nullable 
-    pub ad_org_id:f64,
-    /// not nullable 
-    pub created:NaiveDateTime,
-    /// not nullable 
-    pub createdby:f64,
-    /// defaults to: NULL::character varying
-    pub description:Option<String>,
-    /// defaults to: NULL::character varying
-    pub help:Option<String>,
-    /// defaults to: 'Y'::bpchar
-    /// not nullable 
-    pub isactive:String,
-    /// not nullable 
-    pub name:String,
-    /// not nullable 
-    pub updated:NaiveDateTime,
-    /// not nullable 
-    pub updatedby:f64,
-    /// not nullable 
-    pub value:String,
-}
-
-#[derive(Debug)]
 pub struct SExpensetype {
     /// primary
     /// not nullable 
@@ -38591,10 +43642,10 @@ pub struct SResource {
     pub manufacturingresourcetype:Option<String>,
     /// not nullable 
     pub name:String,
-    /// defaults to: (100)::numeric
+    /// defaults to: 100
     /// not nullable 
     pub percentutilization:f64,
-    /// defaults to: (0)::numeric
+    /// defaults to: 0
     pub planninghorizon:Option<f64>,
     pub queuingtime:Option<f64>,
     /// not nullable 
@@ -38618,6 +43669,10 @@ pub struct SResource {
     /// has many
     pub ad_workflow:Option<Vec<AdWorkflow>>,
     /// has many
+    pub i_productplanning:Option<Vec<IProductplanning>>,
+    /// has many
+    pub i_workflow:Option<Vec<IWorkflow>>,
+    /// has many
     pub m_product:Option<Vec<MProduct>>,
     /// has many
     pub pp_cost_collector:Option<Vec<PpCostCollector>>,
@@ -38629,6 +43684,8 @@ pub struct SResource {
     pub pp_order_node:Option<Vec<PpOrderNode>>,
     /// has many
     pub pp_order_workflow:Option<Vec<PpOrderWorkflow>>,
+    /// has many
+    pub pp_product_planning:Option<Vec<PpProductPlanning>>,
     /// has many
     pub s_resourceassignment:Option<Vec<SResourceassignment>>,
     /// has many
@@ -39060,8 +44117,16 @@ pub struct TAging {
     /// not nullable 
     pub ad_pinstance_id:f64,
     /// primary
+    /// defaults to: NULL::numeric
+    /// not nullable 
+    pub c_bankaccount_id:f64,
+    /// primary
     /// not nullable 
     pub c_bpartner_id:f64,
+    /// primary
+    /// defaults to: (0)::numeric
+    /// not nullable 
+    pub c_cashflow_id:f64,
     /// primary
     /// not nullable 
     pub c_currency_id:f64,
@@ -39071,6 +44136,10 @@ pub struct TAging {
     /// primary
     /// not nullable 
     pub c_invoicepayschedule_id:f64,
+    /// primary
+    /// defaults to: (0)::numeric
+    /// not nullable 
+    pub c_order_id:f64,
     /// not nullable 
     pub ad_client_id:f64,
     /// not nullable 
@@ -39199,6 +44268,51 @@ pub struct TAlterColumn {
 }
 
 #[derive(Debug)]
+pub struct TBomIndented {
+    /// primary
+    /// not nullable 
+    pub t_bom_indented_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// defaults to: NULL::numeric
+    pub ad_pinstance_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub c_acctschema_id:Option<f64>,
+    pub cost:Option<f64>,
+    pub costfuture:Option<f64>,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    pub currentcostprice:Option<f64>,
+    pub currentcostpricell:Option<f64>,
+    pub futurecostprice:Option<f64>,
+    pub futurecostpricell:Option<f64>,
+    /// defaults to: NULL::bpchar
+    pub isactive:Option<String>,
+    /// defaults to: NULL::numeric
+    pub levelno:Option<f64>,
+    /// defaults to: NULL::character varying
+    pub levels:Option<String>,
+    /// defaults to: NULL::numeric
+    pub m_costelement_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub m_product_id:Option<f64>,
+    pub qty:Option<f64>,
+    pub qtybom:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub sel_product_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub seqno:Option<f64>,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+}
+
+#[derive(Debug)]
 pub struct TBomline {
     /// primary
     /// not nullable 
@@ -39210,7 +44324,6 @@ pub struct TBomline {
     pub ad_pinstance_id:Option<f64>,
     pub c_acctschema_id:Option<f64>,
     pub cost:Option<String>,
-    /// defaults to: NULL::bpchar
     pub costingmethod:Option<String>,
     pub coststandard:Option<f64>,
     /// not nullable 
@@ -39219,25 +44332,131 @@ pub struct TBomline {
     pub createdby:f64,
     pub currentcostprice:Option<f64>,
     pub currentcostpricell:Option<f64>,
+    pub datetrx:Option<NaiveDateTime>,
     pub futurecostprice:Option<f64>,
     pub futurecostpricell:Option<f64>,
     /// defaults to: 'N'::bpchar
     pub implosion:Option<String>,
     pub isactive:Option<String>,
-    /// defaults to: NULL::bpchar
     pub iscostfrozen:Option<String>,
     pub levelno:Option<f64>,
     pub levels:Option<String>,
     pub m_costelement_id:Option<f64>,
-    /// defaults to: NULL::numeric
     pub m_costtype_id:Option<f64>,
     pub m_product_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub m_warehouse_id:Option<f64>,
     pub pp_product_bom_id:Option<f64>,
     pub pp_product_bomline_id:Option<f64>,
     pub qtybom:Option<f64>,
+    pub qtyrequired:Option<f64>,
     /// not nullable 
     pub sel_product_id:f64,
     pub seqno:Option<f64>,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+}
+
+#[derive(Debug)]
+pub struct TCombinedaging {
+    /// primary
+    /// not nullable 
+    pub ad_pinstance_id:f64,
+    /// primary
+    /// not nullable 
+    pub c_bpartner_id:f64,
+    /// primary
+    /// not nullable 
+    pub c_currency_id:f64,
+    /// primary
+    /// defaults to: 0
+    /// not nullable 
+    pub c_invoice_id:f64,
+    /// primary
+    /// defaults to: 0
+    /// not nullable 
+    pub c_invoicepayschedule_id:f64,
+    /// primary
+    /// defaults to: NULL::numeric
+    /// not nullable 
+    pub c_payment_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// defaults to: NULL::numeric
+    pub c_activity_id:Option<f64>,
+    /// not nullable 
+    pub c_bp_group_id:f64,
+    /// defaults to: NULL::numeric
+    pub c_campaign_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub c_project_id:Option<f64>,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    /// defaults to: NULL::numeric
+    pub daysdue:Option<f64>,
+    /// not nullable 
+    pub due0:f64,
+    /// not nullable 
+    pub due0_30:f64,
+    /// not nullable 
+    pub due0_7:f64,
+    /// not nullable 
+    pub due1_7:f64,
+    /// not nullable 
+    pub due31_60:f64,
+    /// not nullable 
+    pub due31_plus:f64,
+    /// not nullable 
+    pub due61_90:f64,
+    /// not nullable 
+    pub due61_plus:f64,
+    /// not nullable 
+    pub due8_30:f64,
+    /// not nullable 
+    pub due91_plus:f64,
+    /// not nullable 
+    pub dueamt:f64,
+    /// not nullable 
+    pub duedate:NaiveDateTime,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// defaults to: NULL::bpchar
+    pub isincludepayments:Option<String>,
+    /// not nullable 
+    pub issotrx:String,
+    /// not nullable 
+    pub listsources:String,
+    /// not nullable 
+    pub openamt:f64,
+    /// not nullable 
+    pub pastdue1_30:f64,
+    /// not nullable 
+    pub pastdue1_7:f64,
+    /// not nullable 
+    pub pastdue31_60:f64,
+    /// not nullable 
+    pub pastdue31_plus:f64,
+    /// not nullable 
+    pub pastdue61_90:f64,
+    /// not nullable 
+    pub pastdue61_plus:f64,
+    /// not nullable 
+    pub pastdue8_30:f64,
+    /// not nullable 
+    pub pastdue91_plus:f64,
+    /// not nullable 
+    pub pastdueamt:f64,
+    /// not nullable 
+    pub statementdate:NaiveDateTime,
+    /// not nullable 
+    pub trxamt:f64,
     /// not nullable 
     pub updated:NaiveDateTime,
     /// not nullable 
@@ -39315,6 +44534,13 @@ pub struct TInventoryvalue {
     pub m_attributesetinstance_id:f64,
     /// primary
     /// not nullable 
+    pub m_costelement_id:f64,
+    /// primary
+    /// defaults to: NULL::numeric
+    /// not nullable 
+    pub m_costtype_id:f64,
+    /// primary
+    /// not nullable 
     pub m_product_id:f64,
     /// primary
     /// not nullable 
@@ -39322,17 +44548,26 @@ pub struct TInventoryvalue {
     pub ad_client_id:Option<f64>,
     pub ad_org_id:Option<f64>,
     pub c_currency_id:Option<f64>,
+    /// defaults to: NULL::character varying
+    pub classification:Option<String>,
     /// defaults to: 0
     pub cost:Option<f64>,
     /// defaults to: 0
     pub costamt:Option<f64>,
+    pub costamtll:Option<f64>,
     /// defaults to: 0
     pub coststandard:Option<f64>,
     /// defaults to: 0
     pub coststandardamt:Option<f64>,
+    pub cumulatedamt:Option<f64>,
     pub datevalue:Option<NaiveDateTime>,
-    pub m_costelement_id:Option<f64>,
+    /// defaults to: NULL::character varying
+    pub group1:Option<String>,
+    /// defaults to: NULL::character varying
+    pub group2:Option<String>,
     pub m_pricelist_version_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub m_product_category_id:Option<f64>,
     /// defaults to: 0
     pub pricelimit:Option<f64>,
     /// defaults to: 0
@@ -39465,6 +44700,30 @@ pub struct TMrpCrp {
 }
 
 #[derive(Debug)]
+pub struct TReconciliation {
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// defaults to: NULL::numeric
+    pub ad_org_id:Option<f64>,
+    /// not nullable 
+    pub ad_pinstance_id:f64,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    /// not nullable 
+    pub fact_acct_id:f64,
+    /// not nullable 
+    pub isactive:String,
+    /// defaults to: NULL::character varying
+    pub matchcode:Option<String>,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+}
+
+#[derive(Debug)]
 pub struct TReplenish {
     /// primary
     /// not nullable 
@@ -39538,6 +44797,8 @@ pub struct TReport {
     /// primary
     /// not nullable 
     pub record_id:f64,
+    pub accounttype:Option<String>,
+    pub ax_case:Option<String>,
     pub col_0:Option<f64>,
     pub col_1:Option<f64>,
     pub col_10:Option<f64>,
@@ -39560,10 +44821,13 @@ pub struct TReport {
     pub col_8:Option<f64>,
     pub col_9:Option<f64>,
     pub description:Option<String>,
+    pub fixedpercentage:Option<f64>,
     /// defaults to: 0
     pub levelno:Option<f64>,
     pub name:Option<String>,
+    pub reportlinestyle:Option<String>,
     pub seqno:Option<f64>,
+    pub tablevel:Option<f64>,
     /// has one
     pub ad_pinstance:Option<AdPinstance>,
     /// has one
@@ -39617,6 +44881,23 @@ pub struct TSelection2 {
     /// primary
     /// not nullable 
     pub t_selection_id:f64,
+}
+
+#[derive(Debug)]
+pub struct TSelectionBrowse {
+    /// primary
+    /// not nullable 
+    pub ad_pinstance_id:f64,
+    /// primary
+    /// not nullable 
+    pub columnname:String,
+    /// primary
+    /// not nullable 
+    pub t_selection_id:f64,
+    pub info:Option<String>,
+    pub value_date:Option<NaiveDateTime>,
+    pub value_number:Option<f64>,
+    pub value_string:Option<String>,
 }
 
 #[derive(Debug)]
@@ -39824,72 +45105,6 @@ pub struct Test {
 }
 
 #[derive(Debug)]
-pub struct Text {
-    /// primary
-    /// not nullable 
-    pub text_id:f64,
-    /// not nullable 
-    pub ad_client_id:f64,
-    /// not nullable 
-    pub ad_org_id:f64,
-    /// not nullable 
-    pub created:NaiveDateTime,
-    /// not nullable 
-    pub createdby:f64,
-    /// defaults to: NULL::numeric
-    pub datatype_id:Option<f64>,
-    /// defaults to: NULL::character varying
-    pub description:Option<String>,
-    /// defaults to: NULL::character varying
-    pub help:Option<String>,
-    /// defaults to: 'Y'::bpchar
-    /// not nullable 
-    pub isactive:String,
-    pub length:Option<f64>,
-    /// not nullable 
-    pub name:String,
-    /// not nullable 
-    pub updated:NaiveDateTime,
-    /// not nullable 
-    pub updatedby:f64,
-    /// not nullable 
-    pub value:String,
-}
-
-#[derive(Debug)]
-pub struct Timestamp {
-    /// primary
-    /// not nullable 
-    pub date_id:f64,
-    /// not nullable 
-    pub ad_client_id:f64,
-    /// not nullable 
-    pub ad_org_id:f64,
-    /// not nullable 
-    pub created:NaiveDateTime,
-    /// not nullable 
-    pub createdby:f64,
-    /// defaults to: NULL::numeric
-    pub datatype_id:Option<f64>,
-    /// defaults to: NULL::character varying
-    pub description:Option<String>,
-    /// defaults to: NULL::character varying
-    pub help:Option<String>,
-    /// defaults to: 'Y'::bpchar
-    /// not nullable 
-    pub isactive:String,
-    pub length:Option<f64>,
-    /// not nullable 
-    pub name:String,
-    /// not nullable 
-    pub updated:NaiveDateTime,
-    /// not nullable 
-    pub updatedby:f64,
-    /// not nullable 
-    pub value:String,
-}
-
-#[derive(Debug)]
 pub struct UBlacklistcheque {
     /// primary
     /// not nullable 
@@ -39922,13 +45137,8 @@ pub struct UPosterminal {
     /// primary
     /// not nullable 
     pub u_posterminal_id:f64,
-    /// unique
-    /// defaults to: NULL::numeric
     /// not nullable 
     pub ad_client_id:f64,
-    /// unique
-    pub value:Option<String>,
-    /// defaults to: NULL::numeric
     /// not nullable 
     pub ad_org_id:f64,
     /// defaults to: 'N'::bpchar
@@ -39973,6 +45183,37 @@ pub struct UPosterminal {
     /// not nullable 
     pub updated:NaiveDateTime,
     pub updatedby:Option<f64>,
+    pub value:Option<String>,
+    /// has one
+    pub card_bankaccount:Option<CBankaccount>,
+    /// has one
+    pub cardtransferbankaccount:Option<CBankaccount>,
+    /// has one
+    pub cardtransfercashbook:Option<CCashbook>,
+    /// has one
+    pub cashtransferbankaccount:Option<CBankaccount>,
+    /// has one
+    pub cashtransfercashbook:Option<CCashbook>,
+    /// has one
+    pub c_cashbook:Option<CCashbook>,
+    /// has one
+    pub c_cashbpartner:Option<CBpartner>,
+    /// has one
+    pub check_bankaccount:Option<CBankaccount>,
+    /// has one
+    pub checktransferbankaccount:Option<CBankaccount>,
+    /// has one
+    pub checktransfercashbook:Option<CCashbook>,
+    /// has one
+    pub c_templatebpartner:Option<CBpartner>,
+    /// has one
+    pub m_warehouse:Option<MWarehouse>,
+    /// has one
+    pub po_pricelist:Option<MPricelist>,
+    /// has one
+    pub salesrep:Option<AdUser>,
+    /// has one
+    pub so_pricelist:Option<MPricelist>,
 }
 
 #[derive(Debug)]
@@ -39990,7 +45231,7 @@ pub struct URolemenu {
     /// not nullable 
     pub created:NaiveDateTime,
     /// not nullable 
-    pub createdby:i32,
+    pub createdby:f64,
     /// defaults to: 'Y'::bpchar
     /// not nullable 
     pub isactive:String,
@@ -40000,7 +45241,7 @@ pub struct URolemenu {
     /// not nullable 
     pub updated:NaiveDateTime,
     /// not nullable 
-    pub updatedby:i32,
+    pub updatedby:f64,
     /// has one
     pub ad_role:Option<AdRole>,
     /// has one
@@ -40020,7 +45261,7 @@ pub struct UWebProperties {
     /// not nullable 
     pub created:NaiveDateTime,
     /// not nullable 
-    pub createdby:i32,
+    pub createdby:f64,
     /// defaults to: 'Y'::bpchar
     /// not nullable 
     pub isactive:String,
@@ -40032,7 +45273,7 @@ pub struct UWebProperties {
     /// not nullable 
     pub updated:NaiveDateTime,
     /// not nullable 
-    pub updatedby:i32,
+    pub updatedby:f64,
 }
 
 #[derive(Debug)]
@@ -40079,113 +45320,6 @@ pub struct UWebmenu {
     pub u_rolemenu:Option<Vec<URolemenu>>,
     /// has many
     pub u_webmenu:Option<Vec<UWebmenu>>,
-}
-
-#[derive(Debug)]
-pub struct Users {
-    /// primary
-    /// defaults to: (0)::numeric
-    /// not nullable 
-    pub users_id:f64,
-    /// not nullable 
-    pub ad_client_id:f64,
-    /// not nullable 
-    pub ad_org_id:f64,
-    /// not nullable 
-    pub created:NaiveDateTime,
-    /// not nullable 
-    pub createdby:f64,
-    /// defaults to: NULL::character varying
-    pub description:Option<String>,
-    /// defaults to: NULL::character varying
-    pub email:Option<String>,
-    /// defaults to: NULL::character varying
-    pub firstname:Option<String>,
-    /// defaults to: NULL::character varying
-    pub help:Option<String>,
-    /// defaults to: 'Y'::bpchar
-    /// not nullable 
-    pub isactive:String,
-    /// defaults to: NULL::character varying
-    pub lastname:Option<String>,
-    /// defaults to: NULL::character varying
-    pub middlename:Option<String>,
-    /// not nullable 
-    pub name:String,
-    /// defaults to: NULL::character varying
-    pub password:Option<String>,
-    /// not nullable 
-    pub updated:NaiveDateTime,
-    /// not nullable 
-    pub updatedby:f64,
-    /// not nullable 
-    pub value:String,
-}
-
-#[derive(Debug)]
-pub struct View {
-    /// primary
-    /// not nullable 
-    pub view_id:f64,
-    /// defaults to: NULL::numeric
-    pub ad_class_id:Option<f64>,
-    /// not nullable 
-    pub ad_client_id:f64,
-    /// not nullable 
-    pub ad_org_id:f64,
-    /// not nullable 
-    pub created:NaiveDateTime,
-    /// not nullable 
-    pub createdby:f64,
-    /// defaults to: NULL::character varying
-    pub description:Option<String>,
-    /// defaults to: NULL::character varying
-    pub help:Option<String>,
-    /// defaults to: 'Y'::bpchar
-    /// not nullable 
-    pub isactive:String,
-    /// not nullable 
-    pub name:String,
-    /// not nullable 
-    pub updated:NaiveDateTime,
-    /// not nullable 
-    pub updatedby:f64,
-    /// not nullable 
-    pub value:String,
-}
-
-#[derive(Debug)]
-pub struct ViewAdClass {
-    /// primary
-    /// not nullable 
-    pub view_ad_class_id:f64,
-    /// defaults to: NULL::numeric
-    pub ad_class_id:Option<f64>,
-    /// not nullable 
-    pub ad_client_id:f64,
-    /// not nullable 
-    pub ad_org_id:f64,
-    /// not nullable 
-    pub created:NaiveDateTime,
-    /// not nullable 
-    pub createdby:f64,
-    /// defaults to: NULL::character varying
-    pub description:Option<String>,
-    /// defaults to: NULL::character varying
-    pub help:Option<String>,
-    /// defaults to: 'Y'::bpchar
-    /// not nullable 
-    pub isactive:String,
-    /// not nullable 
-    pub name:String,
-    /// not nullable 
-    pub updated:NaiveDateTime,
-    /// not nullable 
-    pub updatedby:f64,
-    /// not nullable 
-    pub value:String,
-    /// defaults to: NULL::numeric
-    pub view_id:Option<f64>,
 }
 
 #[derive(Debug)]
@@ -40707,10 +45841,10 @@ pub struct WStoreTrl {
 }
 
 #[derive(Debug)]
-pub struct Yesno {
+pub struct WmArea {
     /// primary
     /// not nullable 
-    pub yesno_id:f64,
+    pub wm_area_id:f64,
     /// not nullable 
     pub ad_client_id:f64,
     /// not nullable 
@@ -40719,16 +45853,13 @@ pub struct Yesno {
     pub created:NaiveDateTime,
     /// not nullable 
     pub createdby:f64,
-    /// defaults to: NULL::numeric
-    pub datatype_id:Option<f64>,
     /// defaults to: NULL::character varying
     pub description:Option<String>,
-    /// defaults to: NULL::character varying
-    pub help:Option<String>,
     /// defaults to: 'Y'::bpchar
     /// not nullable 
     pub isactive:String,
-    pub length:Option<f64>,
+    /// not nullable 
+    pub m_warehouse_id:f64,
     /// not nullable 
     pub name:String,
     /// not nullable 
@@ -40736,5 +45867,522 @@ pub struct Yesno {
     /// not nullable 
     pub updatedby:f64,
     /// not nullable 
-    pub value:String,
+    pub wm_area_type_id:f64,
+    /// has one
+    pub m_warehouse:Option<MWarehouse>,
+    /// has one
+    pub wm_area_type:Option<WmAreaType>,
+    /// has many
+    pub wm_section:Option<Vec<WmSection>>,
+}
+
+#[derive(Debug)]
+pub struct WmAreaType {
+    /// primary
+    /// not nullable 
+    pub wm_area_type_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    /// defaults to: NULL::character varying
+    pub description:Option<String>,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// not nullable 
+    pub name:String,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// has many
+    pub wm_area:Option<Vec<WmArea>>,
+    /// has many
+    pub wm_definition:Option<Vec<WmDefinition>>,
+}
+
+#[derive(Debug)]
+pub struct WmDefinition {
+    /// primary
+    /// not nullable 
+    pub wm_definition_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// defaults to: NULL::numeric
+    pub c_bp_group_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub c_bpartner_id:Option<f64>,
+    /// defaults to: NULL::character varying
+    pub classification:Option<String>,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    /// defaults to: NULL::character varying
+    pub description:Option<String>,
+    /// defaults to: NULL::character varying
+    pub group1:Option<String>,
+    /// defaults to: NULL::character varying
+    pub group2:Option<String>,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// defaults to: NULL::numeric
+    pub m_locator_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub m_product_category_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub m_product_id:Option<f64>,
+    /// not nullable 
+    pub name:String,
+    /// defaults to: NULL::bpchar
+    pub priorityrule:Option<String>,
+    /// not nullable 
+    pub seqno:f64,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// defaults to: NULL::numeric
+    pub wm_area_type_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub wm_section_type_id:Option<f64>,
+    /// not nullable 
+    pub wm_strategy_id:f64,
+    /// has one
+    pub m_product:Option<MProduct>,
+    /// has one
+    pub m_product_category:Option<MProductCategory>,
+    /// has one
+    pub c_bpartner:Option<CBpartner>,
+    /// has one
+    pub c_bp_group:Option<CBpGroup>,
+    /// has one
+    pub wm_strategy:Option<WmStrategy>,
+    /// has one
+    pub wm_area_type:Option<WmAreaType>,
+    /// has one
+    pub wm_section_type:Option<WmSectionType>,
+}
+
+#[derive(Debug)]
+pub struct WmInoutbound {
+    /// primary
+    /// not nullable 
+    pub wm_inoutbound_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// defaults to: NULL::numeric
+    pub ad_orgtrx_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub c_activity_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub c_campaign_id:Option<f64>,
+    /// not nullable 
+    pub c_doctype_id:f64,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    pub dateprinted:Option<NaiveDateTime>,
+    /// defaults to: 'A'::bpchar
+    /// not nullable 
+    pub deliveryrule:String,
+    /// defaults to: 'P'::bpchar
+    /// not nullable 
+    pub deliveryviarule:String,
+    /// defaults to: NULL::character varying
+    pub description:Option<String>,
+    /// defaults to: 'CO'::bpchar
+    /// not nullable 
+    pub docaction:String,
+    /// defaults to: 'DR'::character varying
+    /// not nullable 
+    pub docstatus:String,
+    /// not nullable 
+    pub documentno:String,
+    /// defaults to: NULL::numeric
+    pub dropship_bpartner_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub dropship_location_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub dropship_user_id:Option<f64>,
+    pub freightamt:Option<f64>,
+    /// defaults to: 'I'::bpchar
+    /// not nullable 
+    pub freightcostrule:String,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// not nullable 
+    pub isapproved:String,
+    /// defaults to: 'N'::bpchar
+    pub isdropship:Option<String>,
+    /// not nullable 
+    pub isintransit:String,
+    /// not nullable 
+    pub isprinted:String,
+    /// not nullable 
+    pub issotrx:String,
+    /// defaults to: NULL::numeric
+    pub m_shipper_id:Option<f64>,
+    /// not nullable 
+    pub m_warehouse_id:f64,
+    pub pickdate:Option<NaiveDateTime>,
+    /// defaults to: NULL::character varying
+    pub poreference:Option<String>,
+    /// defaults to: '5'::bpchar
+    /// not nullable 
+    pub priorityrule:String,
+    /// not nullable 
+    pub processed:String,
+    /// defaults to: NULL::bpchar
+    pub processing:Option<String>,
+    /// defaults to: NULL::numeric
+    pub salesrep_id:Option<f64>,
+    /// not nullable 
+    pub sendemail:String,
+    pub shipdate:Option<NaiveDateTime>,
+    /// defaults to: NULL::character varying
+    pub trackingno:Option<String>,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// defaults to: NULL::numeric
+    pub user1_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub user2_id:Option<f64>,
+    pub volume:Option<f64>,
+    pub weight:Option<f64>,
+    /// has one
+    pub ad_orgtrx:Option<AdOrg>,
+    /// has one
+    pub c_activity:Option<CActivity>,
+    /// has one
+    pub c_campaign:Option<CCampaign>,
+    /// has one
+    pub c_doctype:Option<CDoctype>,
+    /// has one
+    pub dropship_bpartner:Option<CBpartner>,
+    /// has one
+    pub dropship_location:Option<CBpartnerLocation>,
+    /// has one
+    pub dropship_user:Option<AdUser>,
+    /// has one
+    pub m_shipper:Option<MShipper>,
+    /// has one
+    pub m_warehouse:Option<MWarehouse>,
+    /// has one
+    pub salesrep:Option<AdUser>,
+    /// has one
+    pub user1:Option<CElementvalue>,
+    /// has one
+    pub user2:Option<CElementvalue>,
+    /// has many
+    pub wm_inoutboundline:Option<Vec<WmInoutboundline>>,
+}
+
+#[derive(Debug)]
+pub struct WmInoutboundline {
+    /// primary
+    /// not nullable 
+    pub wm_inoutboundline_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// defaults to: NULL::numeric
+    pub ad_orgtrx_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub c_activity_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub c_campaign_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub c_charge_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub c_orderline_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub c_project_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub c_projectphase_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub c_projecttask_id:Option<f64>,
+    /// not nullable 
+    pub c_uom_id:f64,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    /// defaults to: NULL::character varying
+    pub description:Option<String>,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// defaults to: 'N'::bpchar
+    /// not nullable 
+    pub isdescription:String,
+    /// not nullable 
+    pub line:f64,
+    /// defaults to: NULL::numeric
+    pub m_attributesetinstance_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub m_product_id:Option<f64>,
+    /// defaults to: (1)::numeric
+    /// not nullable 
+    pub movementqty:f64,
+    pub pickdate:Option<NaiveDateTime>,
+    pub pickedqty:Option<f64>,
+    /// not nullable 
+    pub processed:String,
+    pub shipdate:Option<NaiveDateTime>,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// defaults to: NULL::numeric
+    pub user1_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub user2_id:Option<f64>,
+    /// not nullable 
+    pub wm_inoutbound_id:f64,
+    /// has one
+    pub ad_orgtrx:Option<AdOrg>,
+    /// has one
+    pub c_activity:Option<CActivity>,
+    /// has one
+    pub c_campaign:Option<CCampaign>,
+    /// has one
+    pub c_charge:Option<CCharge>,
+    /// has one
+    pub c_orderline:Option<COrderline>,
+    /// has one
+    pub c_projectphase:Option<CProjectphase>,
+    /// has one
+    pub c_projecttask:Option<CProjecttask>,
+    /// has one
+    pub c_project:Option<CProject>,
+    /// has one
+    pub c_uom:Option<CUom>,
+    /// has one
+    pub wm_inoutbound:Option<WmInoutbound>,
+    /// has one
+    pub m_product:Option<MProduct>,
+    /// has one
+    pub user1:Option<CElementvalue>,
+    /// has one
+    pub user2:Option<CElementvalue>,
+    /// has many
+    pub dd_orderline:Option<Vec<DdOrderline>>,
+}
+
+#[derive(Debug)]
+pub struct WmRule {
+    /// primary
+    /// not nullable 
+    pub wm_rule_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// defaults to: NULL::numeric
+    pub ad_rule_id:Option<f64>,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    /// defaults to: NULL::character varying
+    pub description:Option<String>,
+    /// defaults to: NULL::character varying
+    pub inoutboundclass:Option<String>,
+    /// not nullable 
+    pub inoutboundrule:String,
+    /// not nullable 
+    pub inoutboundtype:String,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// not nullable 
+    pub name:String,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// has one
+    pub ad_rule:Option<AdRule>,
+    /// has many
+    pub wm_strategy_detail:Option<Vec<WmStrategyDetail>>,
+}
+
+#[derive(Debug)]
+pub struct WmSection {
+    /// primary
+    /// not nullable 
+    pub wm_section_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    /// defaults to: NULL::character varying
+    pub description:Option<String>,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// not nullable 
+    pub name:String,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// not nullable 
+    pub wm_area_id:f64,
+    /// not nullable 
+    pub wm_section_type_id:f64,
+    /// has one
+    pub wm_area:Option<WmArea>,
+    /// has one
+    pub wm_section_type:Option<WmSectionType>,
+    /// has many
+    pub wm_section_detail:Option<Vec<WmSectionDetail>>,
+}
+
+#[derive(Debug)]
+pub struct WmSectionDetail {
+    /// primary
+    /// not nullable 
+    pub wm_section_detail_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// not nullable 
+    pub m_locator_id:f64,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// not nullable 
+    pub wm_section_id:f64,
+    /// has one
+    pub wm_section:Option<WmSection>,
+}
+
+#[derive(Debug)]
+pub struct WmSectionType {
+    /// primary
+    /// not nullable 
+    pub wm_section_type_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    /// defaults to: NULL::character varying
+    pub description:Option<String>,
+    /// not nullable 
+    pub inoutboundtype:String,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// not nullable 
+    pub name:String,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// has many
+    pub wm_definition:Option<Vec<WmDefinition>>,
+    /// has many
+    pub wm_section:Option<Vec<WmSection>>,
+}
+
+#[derive(Debug)]
+pub struct WmStrategy {
+    /// primary
+    /// not nullable 
+    pub wm_strategy_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    /// defaults to: NULL::character varying
+    pub description:Option<String>,
+    /// not nullable 
+    pub inoutboundtype:String,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// not nullable 
+    pub m_warehouse_id:f64,
+    /// not nullable 
+    pub name:String,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// has one
+    pub m_warehouse:Option<MWarehouse>,
+    /// has many
+    pub wm_definition:Option<Vec<WmDefinition>>,
+    /// has many
+    pub wm_strategy_detail:Option<Vec<WmStrategyDetail>>,
+}
+
+#[derive(Debug)]
+pub struct WmStrategyDetail {
+    /// primary
+    /// not nullable 
+    pub wm_strategy_detail_id:f64,
+    /// not nullable 
+    pub ad_client_id:f64,
+    /// not nullable 
+    pub ad_org_id:f64,
+    /// not nullable 
+    pub created:NaiveDateTime,
+    /// not nullable 
+    pub createdby:f64,
+    /// defaults to: 'Y'::bpchar
+    /// not nullable 
+    pub isactive:String,
+    /// defaults to: NULL::numeric
+    pub seqno:Option<f64>,
+    /// not nullable 
+    pub updated:NaiveDateTime,
+    /// not nullable 
+    pub updatedby:f64,
+    /// defaults to: NULL::numeric
+    pub wm_rule_id:Option<f64>,
+    /// defaults to: NULL::numeric
+    pub wm_strategy_id:Option<f64>,
+    /// has one
+    pub wm_rule:Option<WmRule>,
+    /// has one
+    pub wm_strategy:Option<WmStrategy>,
 }

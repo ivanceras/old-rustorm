@@ -1,13 +1,13 @@
 pub enum JoinType{
-        CROSS,
-        INNER,
-        OUTER,
+    CROSS,
+    INNER,
+    OUTER,
 }
 
 pub enum Modifier{
-        LEFT,
-        RIGHT,
-        FULL,
+    LEFT,
+    RIGHT,
+    FULL,
 }
 
 

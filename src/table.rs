@@ -1,4 +1,5 @@
 use std::fmt;
+use writer::Writer;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct Foreign{
@@ -7,10 +8,37 @@ pub struct Foreign{
     pub column:String,
 }
 
+impl Foreign{
+    pub fn to_source_code(&self)->String{
+        let mut w = Writer::new();
+        w.tabs(5);
+        w.append("Foreign{");
+        w.ln();
+        w.tabs(6);
+        w.append("schema:");
+        w.append(&format!("\"{}\".to_string(),",self.schema));
+        w.ln();
+        w.tabs(6);
+        w.append("table:");
+        w.append(&format!("\"{}\".to_string(),",self.table));
+        w.ln();
+        w.tabs(6);
+        w.append("column:");
+        w.append(&format!("\"{}\".to_string(),",self.column));
+        w.ln();
+        w.tabs(5);
+        w.append("}");
+        w.src
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct Column{
     pub name:String,
+    /// the generic data type, ie: u32, f64, string
     pub data_type:String,
+    /// the database data type of this column, ie: int, numeric, character varying
+    pub db_data_type:String,
     pub is_primary:bool,
     pub is_unique:bool,
     pub default:Option<String>,
@@ -61,6 +89,62 @@ impl Column{
         }
         displayname
     }
+    
+    pub fn to_source_code(&self)->String{
+        let mut w = Writer::new();
+        w.tabs(4);
+        w.append("Column{");
+        w.ln();
+        w.tabs(5);
+        w.append("name:");
+        w.append(&format!("\"{}\".to_string(),",self.name));
+        w.ln();
+        w.tabs(5);
+        w.append("data_type:");
+        w.append(&format!("\"{}\".to_string(),",self.data_type));
+        w.ln();
+        w.tabs(5);
+        w.append("db_data_type:");
+        w.append(&format!("\"{}\".to_string(),",self.db_data_type));
+        w.ln();
+        w.tabs(5);
+        w.append("is_primary:");
+        w.append(&format!("{}, ",self.is_primary));
+        w.append("is_unique:");
+        w.append(&format!("{}, ",self.is_unique));
+        w.append("not_null:");
+        w.append(&format!("{}, ",self.not_null));
+        w.append("is_inherited:");
+        w.append(&format!("{}, ",self.is_inherited));
+        w.ln();
+        w.tabs(5);
+        w.append("default:");
+        if self.default.is_some(){
+            w.append(&format!("Some(\"{}\".to_string()),", &self.default.clone().unwrap()));
+        }else{
+            w.append("None,");
+        }
+        w.ln();
+        w.tabs(5);
+        w.append("comment:");
+        if self.comment.is_some(){
+            w.append(&format!("Some(\"{}\".to_string()),", &self.comment.clone().unwrap().replace("\"","\\\"")));
+        }else{
+            w.append("None,");
+        }
+        w.ln();
+        w.tabs(5);
+        w.append("foreign:");
+        if self.foreign.is_some(){
+            w.append(&format!("Some({}),", &self.foreign.clone().unwrap().to_source_code()));
+        }else{
+            w.append("None,");
+        }
+        w.ln();
+        w.tabs(4);
+        w.append("}");
+        w.src
+    }
 
 
 }
@@ -81,6 +165,13 @@ impl PartialEq for Column{
         self.name != other.name
     }
 }
+
+
+pub trait IsTable{
+    fn table()->Table;
+}
+
+
 
 #[derive(Debug)]
 pub struct Table{
@@ -198,7 +289,9 @@ impl Table{
         columns
     }
 
+    /// return the first match of table name regardless of which schema it belongs to.
     /// get the table definition using the table name from an array of table object
+    /// [FIXME] Needs to have a more elegant solution by using HashMap
     pub fn get_table<'a>(table_name:&str, tables: &'a Vec<Table>)->Option<&'a Table>{
         for t in tables{
             if t.name == table_name{
@@ -257,8 +350,11 @@ impl Table{
     /// say order_line is owned by orders
     /// which doesn't make sense to be a stand alone window on its own
     /// characteristic: if it has only 1 has_one which is its owning parent table
-    pub fn is_owned(){
-        
+    /// and no other direct or indirect referring table
+    pub fn is_owned(&self, tables: &Vec<Table>)->bool{
+        let has_one = self.referred_tables(tables);
+        let has_many = self.referring_tables(tables);
+        has_one.len() == 1 && has_many.len() == 0
     }
     
     /// when there is a linker table, bypass the 1:1 relation to the linker table
@@ -283,7 +379,8 @@ impl Table{
                 let (_, t0) = ref_tables[0];
                 let (_, t1) = ref_tables[1];
                 let mut other_table;
-                if self.name == t0.name && self.schema == t0.schema{
+                //if self.name == t0.name && self.schema == t0.schema{
+                if self == t0 {
                     other_table = t1;
                 }
                 else{
@@ -307,18 +404,7 @@ impl Table{
         indirect_referring_tables
     }
     
-    fn is_foreign_column_refer_to_primary_of_this_table(&self, fk:&Column)->bool{
-        if fk.foreign.is_some(){
-            let foreign = fk.foreign.clone().unwrap();
-            let table = foreign.table;
-            let schema = foreign.schema;
-            let column = foreign.column;
-            if self.name == table && self.schema == schema && self.is_primary(&column){
-                return true;
-            }
-        }
-        false
-    }
+
     
     /// get referring tables, and check if primary columns of these referring table
     /// is the same set of the primary columns of this table
@@ -330,7 +416,6 @@ impl Table{
             //if the referring tables's foreign columns are also its primary columns
             //that refer to the primary columns of this table
             //then that table is just an extension table of this table
-            //if rt_pk == rt_fk {
             if pkfk.len() > 0 {
                 //if all fk refer to the primary of this table
                 if self.are_these_foreign_column_refer_to_primary_of_this_table(&pkfk){
@@ -356,19 +441,19 @@ impl Table{
         both
     }
     
-    ///if all the primary columns are also foreign column 
-    fn are_all_primary_also_foreign_keys(&self)->bool{
-        let pk = self.primary_columns();
-        let fk = self.foreign_columns();
-        let mut cnt = 0;
-        for p in &pk{
-            if fk.contains(p){
-                cnt +=1
+    fn is_foreign_column_refer_to_primary_of_this_table(&self, fk:&Column)->bool{
+        if fk.foreign.is_some(){
+            let foreign = fk.foreign.clone().unwrap();
+            let table = foreign.table;
+            let schema = foreign.schema;
+            let column = foreign.column;
+            if self.name == table && self.schema == schema && self.is_primary(&column){
+                return true;
             }
         }
-        cnt == pk.len()
+        false
     }
-    
+        
     fn are_these_foreign_column_refer_to_primary_of_this_table(&self, rt_fk:&Vec<&Column>)->bool{
         let mut cnt = 0;
         for fk in rt_fk{
@@ -380,7 +465,6 @@ impl Table{
     }
 
 
-    
 
     /// capitalize the first later, if there is underscore remove it then capitalize the next letter
     pub fn struct_name(&self)->String{
@@ -390,7 +474,69 @@ impl Table{
         }
         struct_name
     }
-
+    
+    pub fn to_source_code(&self)->String{
+        let mut w = Writer::new();
+        w.ln();
+        w.tabs(2);
+        w.append("Table{");
+        w.ln();
+        w.tabs(3);
+        w.append("schema:");
+        w.append(&format!("\"{}\".to_string(),", self.schema));
+        w.ln();
+        w.tabs(3);
+        w.append("name:");
+        w.append(&format!("\"{}\".to_string(),", self.name));
+        w.ln();
+        w.tabs(3);
+        w.append("parent_table:");
+        if self.parent_table.is_some(){
+            w.append(&format!("Some(\"{}\".to_string()),", &self.parent_table.clone().unwrap()));
+        }else{
+            w.append("None,");
+        }
+        w.ln();
+        w.tabs(3);
+        w.append("sub_table:");
+        if self.sub_table.is_some(){
+            let sub_table = self.sub_table.clone().unwrap();
+            w.append("Some(");
+            w.append("vec![");
+            for s in sub_table{
+                w.append(&format!("\"{}\".to_string(),",s));
+            }
+            w.append("]),");
+        }else{
+            w.append("None,");
+        }
+        w.ln();
+        w.tabs(3);
+        w.append("comment:");
+        if self.comment.is_some(){
+            w.append(&format!("Some(\"{}\".to_string()),", &self.comment.clone().unwrap().replace("\"","\\\"")));
+        }else{
+            w.append("None,");
+        }
+        w.ln();
+        w.tabs(3);
+        w.append("columns:");
+        w.ln();
+        w.tabs(3);
+        w.append("vec![");
+        for c in &self.columns{
+            w.ln();
+            w.append(&c.to_source_code());
+            w.append(",");
+        }
+        w.ln();
+        w.tabs(3);
+        w.append("],");
+        w.ln();
+        w.tabs(2);
+        w.append("}");
+        w.src
+    }
 
 
 }

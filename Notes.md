@@ -3,6 +3,8 @@ How to properly construct builder pattern in rust
 https://aturon.github.io/ownership/builders.html
 
 
+
+
 ##Postgres specific foreign key
 *This is needed because information_schema is a lot slower
 

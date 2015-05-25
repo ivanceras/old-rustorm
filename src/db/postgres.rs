@@ -99,8 +99,8 @@ impl Postgres{
     ///
     /// convert rust data type names to database data type names
     /// will be used in generating SQL for table creation
-    ///
-    fn rust_type_to_dbtype(rust_type: &str)->String{
+    /// FIXME, need to restore the exact data type as before
+    fn rust_type_to_dbtype(rust_type: &str, db_data_type:&str)->String{
         
         let rust_type = match rust_type{
             "bool" => {
@@ -222,20 +222,20 @@ impl Postgres{
         for row in stmt.query(&[&schema, &table]).unwrap() {
             let name:String = row.get("name");
             let not_null:bool = row.get("notnull");
-            let data_type:String = row.get("data_type");
+            let db_data_type:String = row.get("data_type");
             //TODO: temporarily regex the data type to extract the size as well
             let re = match Regex::new("(.+)\\((.+)\\)") {
                  Ok(re) => re,
                  Err(err) => panic!("{}", err),
             };
             
-            let data_type = if re.is_match(&data_type){
-                let cap = re.captures(&data_type).unwrap();
+            let db_data_type = if re.is_match(&db_data_type){
+                let cap = re.captures(&db_data_type).unwrap();
                 let data_type = cap.at(1).unwrap().to_string();
                 let size = cap.at(2).unwrap().to_string();//TODO::can be use in the later future
                 data_type
             }else{
-                data_type
+                db_data_type
             };
             
             let is_primary:bool = row.get("is_primary");
@@ -277,10 +277,11 @@ impl Postgres{
                             }else{
                                 None
                             };
-            
+            let (_, data_type) = Self::dbtype_to_rust_type(&db_data_type);
             let column = Column{
                     name:name,
                     data_type:data_type,
+                    db_data_type:db_data_type,
                     comment:comment,
                     is_primary:is_primary,
                     is_unique:is_unique,

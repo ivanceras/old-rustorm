@@ -144,7 +144,7 @@ pub trait DatabaseDev{
         //imports
         let mut imports:Vec<String> = Vec::new();
         for c in &table.columns{
-            let (package, _) = self.get_rust_data_type(&c.data_type);
+            let (package, _) = self.get_rust_data_type(&c.db_data_type);
             if package.is_some(){
                 for i in package.unwrap(){
                     imports.push(i);
@@ -177,7 +177,7 @@ pub trait DatabaseDev{
                 w.tab();
                 w.append("/// primary");
                 w.ln();
-                self.write_column(&mut w, p);
+                Self::write_column(&mut w, p);
                 included_columns.push(&p.name);
             }
         }
@@ -187,7 +187,7 @@ pub trait DatabaseDev{
                 w.tab();
                 w.append("/// unique");
                 w.ln();
-                self.write_column(&mut w, u);
+                Self::write_column(&mut w, u);
                 included_columns.push(&u.name);
             }
         }
@@ -195,7 +195,7 @@ pub trait DatabaseDev{
         // uninherited columns
         for uc in &table.uninherited_columns(){
             if !included_columns.contains(&&uc.name){
-                self.write_column(&mut w, uc);
+                Self::write_column(&mut w, uc);
                 included_columns.push(&uc.name);
             }
         }
@@ -203,7 +203,7 @@ pub trait DatabaseDev{
         // inherited columns
         for ic in &table.inherited_columns(){
             if !included_columns.contains(&&ic.name){
-                self.write_column(&mut w, ic);
+                Self::write_column(&mut w, ic);
                 included_columns.push(&ic.name);
             }
         }
@@ -321,7 +321,7 @@ pub trait DatabaseDev{
         (imports, w.src)
     }
     
-    fn write_column(&self, w:&mut Writer, c:&Column){
+    fn write_column(w:&mut Writer, c:&Column){
         if c.comment.is_some(){
             let comment = &c.comment.clone().unwrap();
             for split in comment.split("\n"){
@@ -335,7 +335,7 @@ pub trait DatabaseDev{
             let default = &c.default.clone().unwrap();
             for split in default.split("\n"){
                 w.tab();
-                w.append("/// defaults to: ");
+                w.append("/// default: ");
                 w.append(split);
                 w.ln();
             }
@@ -350,20 +350,26 @@ pub trait DatabaseDev{
             w.append("/// --inherited-- ");
             w.ln();
         }
+        //let (_, data_type) = self.get_rust_data_type(&c.db_data_type);
+        w.tab();
+        w.append("/// db data type: ");
+        w.append(&c.db_data_type);
+        w.ln();
+
         w.tab();
         w.append("pub ");
         w.append(&c.corrected_name());
         w.append(":");
-        let (_, data_type) = self.get_rust_data_type(&c.data_type);
         if c.not_null{
-            w.append(&data_type);
+            w.append(&c.data_type);
         }else{
             w.append("Option<");
-            w.append(&data_type);
+            w.append(&c.data_type);
             w.append(">");
         }
         w.comma();
         w.ln();
     }
+    
     
 }

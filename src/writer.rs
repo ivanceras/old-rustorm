@@ -5,26 +5,39 @@ pub struct Writer{
 
 impl Writer{
     
+    #[inline]
     pub fn new()->Self{
         Writer{src:String::new()}
     }
     
+    #[inline]
     pub fn append(&mut self, str:&str)->&mut Self{
         self.src.push_str(str);
         self
     }
     
+    #[inline]
     pub fn appendln(&mut self, str:&str)->&mut Self{
         self.append(str);
         self.ln()
     }
     
+    #[inline]
     pub fn tab(&mut self)->&mut Self{
-        self.append("\t")
+        self.append("    ")
     }
+    #[inline]
+    pub fn tabs(&mut self, n:u32)->&mut Self{
+        for i in 0..n{
+            self.tab();
+        }
+        self
+    }
+    #[inline]
     pub fn ln(&mut self)->&mut Self{
         self.append("\n")
     }
+    #[inline]
     pub fn comma(&mut self)->&mut Self{
         self.append(",")
     }
