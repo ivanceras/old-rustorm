@@ -41,4 +41,10 @@ impl Writer{
     pub fn comma(&mut self)->&mut Self{
         self.append(",")
     }
+    
+    #[inline]
+    pub fn comment(&mut self, comment: &str)->&mut Self{
+        self.append("//");
+        self.append(comment)
+    }
 }

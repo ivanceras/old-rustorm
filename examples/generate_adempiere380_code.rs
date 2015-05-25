@@ -13,7 +13,7 @@ fn main(){
     let pg = Postgres::new("postgres://postgres:p0stgr3s@localhost/adempiere380");
     match pg{
         Ok(pg) => {
-            codegen::generate_all_tables(pg,"./examples/adempiere.rs");
+             codegen::generate_all(&pg,"./examples/adempiere.rs", "./examples/adempiere_is_table.rs");
         },
         Err(err) => {
             println!("{}",err);

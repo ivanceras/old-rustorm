@@ -19,6 +19,6 @@ fn main(){
 
 
 pub fn derive_all_windows<T:DatabaseDev>(db_dev:&T){
-   let all_tables = codegen::get_all_tables(db_dev);
-   window::extract_windows(&all_tables);
+    let all_tables = rustorm::gen::is_table::get_all_tables();
+    window::extract_windows(&all_tables);
 }
