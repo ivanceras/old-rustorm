@@ -1,4 +1,7 @@
 # rustorm
+
+[![Latest Version](https://img.shields.io/crates/v/rustorm.svg)](https://crates.io/crates/rustorm)
+
 A Work in Progress ORM for postgresql
 
 A fork of my previous, very simple [ORM](http://github.com/ivanceras/orm) for java
