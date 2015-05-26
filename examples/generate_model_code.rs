@@ -7,7 +7,7 @@ fn main(){
     let pg:Result<Postgres,&str> = Postgres::new("postgres://postgres:p0stgr3s@localhost/bazaar_v5");
     match pg{
         Ok(pg) => {
-            codegen::generate_all(&pg,"./examples/gen.rs", "./examples/is_table.rs");
+            codegen::generate_all(&pg,"./gen/structs.rs", "./gen/is_table.rs");
         }
         Err(error) =>{
             println!("{}",error);

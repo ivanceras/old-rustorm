@@ -166,6 +166,8 @@ pub trait DatabaseDev{
             w.append("///");
             w.ln();
         }
+        w.append("#[derive(RustcDecodable, RustcEncodable)]");
+        w.ln();
         w.append("#[derive(Debug)]");
         w.ln();
         w.append("pub struct ").append(&struct_name).appendln(" {");

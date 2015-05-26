@@ -11,11 +11,15 @@ documentation = "http://ivanceras.github.io/rustorm/rustorm/"
 [lib]
 name = "rustorm"
 
+
+[dependencies.chrono]
+version = "*"
+features = ["rustc-serialize"]
+
 [dependencies]
 rustc-serialize = "*"
 postgres = "*"
 uuid = "*"
 log = "*"
 env_logger = "*"
-chrono = "*"
 regex = "*"

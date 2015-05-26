@@ -7,6 +7,7 @@ pub fn main(){
     println!("testing here..");
     let c1 = Column{name:"product_id".to_string(),
             data_type:"Uuid".to_string(),
+            db_data_type:"uuid".to_string(),
             is_primary:true,
             is_unique:false,
             default:None,
@@ -17,6 +18,7 @@ pub fn main(){
         };
     let c2 = Column{name:"description".to_string(),
             data_type:"String".to_string(),
+            db_data_type:"uuid".to_string(),
             is_primary:true,
             is_unique:false,
             default:None,
@@ -28,6 +30,7 @@ pub fn main(){
     
         let c3 = Column{name:"description".to_string(),
             data_type:"String33".to_string(),
+            db_data_type:"uuid".to_string(),
             is_primary:true,
             is_unique:false,
             default:None,

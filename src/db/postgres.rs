@@ -62,8 +62,11 @@ impl Postgres{
             "bytea" =>{ 
                 ( None, "Vec<u8>".to_string() )
             },
-            "json" | "jsonb" => {
-                ((Some(vec!["rustc_serialize::json::Json".to_string()]), "Json".to_string()))
+            //"json" | "jsonb" => {
+            //    ((Some(vec!["rustc_serialize::json::Json".to_string()]), "Json".to_string()))
+           // },
+            "json" | "jsonb" => {//FIXME :String for now, since Json itself is not encodable
+                ((None, "String".to_string()))
             },
             "uuid" => {
                 (Some(vec!["uuid::Uuid".to_string()]), "Uuid".to_string() )

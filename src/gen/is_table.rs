@@ -2650,7 +2650,7 @@ can also be express with @Length(1-100)".to_string()),
                 },
                 Column{
                     name:"tags".to_string(),
-                    data_type:"Json".to_string(),
+                    data_type:"String".to_string(),
                     db_data_type:"json".to_string(),
                     is_primary:false, is_unique:false, not_null:false, is_inherited:false, 
                     default:None,
@@ -2659,7 +2659,7 @@ can also be express with @Length(1-100)".to_string()),
                 },
                 Column{
                     name:"info".to_string(),
-                    data_type:"Json".to_string(),
+                    data_type:"String".to_string(),
                     db_data_type:"json".to_string(),
                     is_primary:false, is_unique:false, not_null:false, is_inherited:false, 
                     default:None,
@@ -2867,7 +2867,7 @@ impl IsTable for ProductAvailability{
                 },
                 Column{
                     name:"available_day".to_string(),
-                    data_type:"Json".to_string(),
+                    data_type:"String".to_string(),
                     db_data_type:"json".to_string(),
                     is_primary:false, is_unique:false, not_null:false, is_inherited:false, 
                     default:None,
@@ -3229,7 +3229,7 @@ impl IsTable for Record{
             schema:"system".to_string(),
             name:"record".to_string(),
             parent_table:Some("base".to_string()),
-            sub_table:Some(vec!["address".to_string(),"api_key".to_string(),"cart".to_string(),"cart_line".to_string(),"category".to_string(),"client".to_string(),"invoice".to_string(),"order_line".to_string(),"orders".to_string(),"organization".to_string(),"photo".to_string(),"photo_sizes".to_string(),"product".to_string(),"review".to_string(),"settings".to_string(),"user_info".to_string(),"user_location".to_string(),"users".to_string(),"wishlist".to_string(),"wishlist_line".to_string(),"country".to_string(),"currency".to_string(),"exchange_rate".to_string(),"user_review".to_string(),]),
+            sub_table:Some(vec!["address".to_string(),"api_key".to_string(),"cart".to_string(),"cart_line".to_string(),"category".to_string(),"client".to_string(),"invoice".to_string(),"order_line".to_string(),"orders".to_string(),"organization".to_string(),"photo".to_string(),"photo_sizes".to_string(),"product".to_string(),"review".to_string(),"settings".to_string(),"user_info".to_string(),"user_location".to_string(),"user_review".to_string(),"users".to_string(),"wishlist".to_string(),"wishlist_line".to_string(),"country".to_string(),"currency".to_string(),"exchange_rate".to_string(),]),
             comment:Some("All User table should inherit from this one".to_string()),
             columns:
             vec![
@@ -3634,7 +3634,7 @@ impl IsTable for Settings{
                 },
                 Column{
                     name:"value".to_string(),
-                    data_type:"Json".to_string(),
+                    data_type:"String".to_string(),
                     db_data_type:"json".to_string(),
                     is_primary:false, is_unique:false, not_null:false, is_inherited:false, 
                     default:None,
