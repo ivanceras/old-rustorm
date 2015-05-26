@@ -411,14 +411,17 @@ impl Table{
     /// get referring tables, and check if primary columns of these referring table
     /// is the same set of the primary columns of this table
     /// it is just an extension table
+    /// [FIXED]~~FIXME:~~ 2 primary 1 foreign should not be included as extension table
+    /// case for photo_sizes
     pub fn extension_tables<'a>(&self, tables: &'a Vec<Table>)->Vec<&'a Table>{
         let mut extension_tables = Vec::new();
         for (rt, _) in self.referring_tables(tables){
             let pkfk = rt.primary_and_foreign_columns();
+            let rt_pk = rt.primary_columns();
             //if the referring tables's foreign columns are also its primary columns
             //that refer to the primary columns of this table
             //then that table is just an extension table of this table
-            if pkfk.len() > 0 {
+            if rt_pk == pkfk && pkfk.len() > 0 {
                 //if all fk refer to the primary of this table
                 if self.are_these_foreign_column_refer_to_primary_of_this_table(&pkfk){
                     extension_tables.push(rt);
@@ -477,6 +480,35 @@ impl Table{
         struct_name
     }
     
+    /// get the display name of this table
+    /// product_availability -> Product Availability
+    pub fn displayname(&self)->String{
+        let mut display_name = String::new();
+        for i in self.name.split('_'){
+            display_name.push_str(&capitalize(i));
+            display_name.push_str(" ");
+        }
+        display_name.trim().to_string()
+    }
+    
+    /// get a shorter display name of a certain table
+    /// when being refered to this table
+    /// example product.product_availability -> Availability
+    /// user.user_info -> Info
+    pub fn concise_name(&self, table:&Table)->String{
+        if self.name.len() > table.name.len(){
+            let mut concise_name = String::new();
+            for i in self.name.split('_'){
+                if table.name != i{
+                    concise_name.push_str(&capitalize(i));
+                    concise_name.push_str(" ");
+                }
+            }
+            return concise_name.trim().to_string()    
+        }else{
+            return self.displayname();
+        }
+    }
     /// build a source code which express it self as a table object
     /// which is a meta definition of the struct itself
     pub fn to_source_code(&self)->String{

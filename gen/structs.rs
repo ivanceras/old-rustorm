@@ -869,10 +869,10 @@ pub struct Photo {
     /// --inherited-- 
     /// db data type: uuid
     pub updatedby:Option<Uuid>,
-    /// has one, extension table
-    pub photo_sizes:Option<Box<PhotoSizes>>,
     /// has many, indirect referring table, derived from linker table: product_photo
     pub product:Option<Vec<Product>>,
+    /// has many
+    pub photo_sizes:Option<Vec<PhotoSizes>>,
     /// has many
     pub user_info:Option<Vec<UserInfo>>,
 }
