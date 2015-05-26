@@ -477,6 +477,8 @@ impl Table{
         struct_name
     }
     
+    /// build a source code which express it self as a table object
+    /// which is a meta definition of the struct itself
     pub fn to_source_code(&self)->String{
         let mut w = Writer::new();
         w.ln();

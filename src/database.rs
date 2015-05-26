@@ -138,6 +138,7 @@ pub trait DatabaseDev{
     fn get_rust_data_type(&self, db_type:&str)->(Option<Vec<String>>, String);
 
 
+    /// build a source code for the struct defined by this table
     ///(imports, source code)
     fn to_source_code(&self, table:&Table, all_tables:&Vec<Table>)->(Vec<String>, String){
         let mut w = Writer::new();
