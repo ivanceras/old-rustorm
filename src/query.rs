@@ -171,21 +171,21 @@ impl Query{
     
     /// join a table on this query
     ///
-    /// # Examples
-    ///
-    /// ```
-    /// let q: Query::new();
-    /// let join = Join{
-    ///        modifier:Some(Modifier::LEFT),
-     ///        join_type:Type::OUTER,
-     ///        table:table,
-    ///        column1:vec![column1],
-     ///        column2:vec![column2]
-     ///    }
-    ///
-    /// q.join(join);
-    ///
-    /// ```
+    // # Examples
+    //
+    // ```
+    // let mut q = Query::new();
+    // let join = Join{
+    //        modifier:Some(Modifier::LEFT),
+    //        join_type:Type::OUTER,
+    //        table:table,
+    //        column1:vec![column1],
+    //        column2:vec![column2]
+    //    };
+    //
+    // q.join(join);
+    //
+    // ```
     pub fn join(&mut self, join:Join){
         self.involved_tables.push(join.table.clone());
         self.joins.push(join);
@@ -194,14 +194,14 @@ impl Query{
     
     /// join a table on this query
     ///
-    /// # Examples
-    ///
-    /// ```
-    /// let q: Query::new();
-    /// q.select_from_table("users");
-    /// q.left_join("roles", "role_id", "role_id");
-    ///
-    /// ```
+    // # Examples
+    //
+    // ```
+    // let mut q = Query::new();
+    // q.select_from_table("users");
+    // q.left_join("roles", "role_id", "role_id");
+    //
+    // ```
     
     pub fn left_join(&mut self, table:String, column1:String, column2:String){
         let join = Join{
