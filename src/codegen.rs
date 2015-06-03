@@ -4,6 +4,9 @@ use database::DatabaseDev;
 use std::fs::File;
 use std::io::Write;
 
+/// [TODO]: support compartmentalizing tables via schema
+/// schema themselves becomes module that holds these tables
+///
 pub fn get_all_tables<T:DatabaseDev>(db_dev:&T)->Vec<Table>{
     let all_tables_names = db_dev.get_all_tables();
     let mut all_table_def:Vec<Table> = Vec::new();
@@ -47,7 +50,7 @@ pub fn generate_all_structs<T:DatabaseDev>(db_dev:&T, all_table_def:&Vec<Table>)
     for table in all_table_def{
         let meta = db_dev.get_table_metadata(&table.schema, &table.name);
         println!("Generating for {}.{}", meta.schema,meta.name);
-        let (imports, src) = db_dev.to_source_code(&meta, &all_table_def);
+        let (imports, src) = db_dev.to_struct_source_code(&meta, &all_table_def);
         for i in imports{
             if !struct_imports.contains(&i){
                 struct_imports.push(i);
@@ -132,7 +135,7 @@ fn generate_is_table_impl(table: &Table)->(Vec<String>, String){
     w.append("fn table()->Table{");
     w.ln();
     w.tab();
-    w.append(&table.to_source_code());
+    w.append(&table.to_tabledef_source_code());
     w.ln();
     w.tab();
     w.append("}");

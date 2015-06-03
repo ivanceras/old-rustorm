@@ -76,7 +76,11 @@ pub trait Database{
     /// Actually converting the from whatever JDBC converts the object to the correct type that we intend to be using
     fn correct_data_types(&self, dao_list:Vec<Dao>, model:&Table);
 
-    fn execute(&self, query:Query)->usize;
+    /// execute a plain sql string
+    fn execute_sql(&self, sql:&String, param:&Vec<String>)->usize;
+    
+    /// execute a query object
+    fn execute_query(&self, query:Query)->usize;
 
 }
 
@@ -140,7 +144,7 @@ pub trait DatabaseDev{
 
     /// build a source code for the struct defined by this table
     ///(imports, source code)
-    fn to_source_code(&self, table:&Table, all_tables:&Vec<Table>)->(Vec<String>, String){
+    fn to_struct_source_code(&self, table:&Table, all_tables:&Vec<Table>)->(Vec<String>, String){
         let mut w = Writer::new();
         //imports
         let mut imports:Vec<String> = Vec::new();

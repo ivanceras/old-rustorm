@@ -9,6 +9,7 @@ pub struct Foreign{
 }
 
 impl Foreign{
+    /// get the definition express in string code
     pub fn to_source_code(&self)->String{
         let mut w = Writer::new();
         w.ln();
@@ -91,7 +92,8 @@ impl Column{
         displayname
     }
     
-    pub fn to_source_code(&self)->String{
+    /// get the column definition of the code
+    pub fn to_column_def_source_code(&self)->String{
         let mut w = Writer::new();
         w.ln();
         w.tabs(4);
@@ -185,9 +187,13 @@ pub struct Table{
     pub name:String,
 
     ///the parent table of this table when inheriting (>= postgresql 9.3)
+    /// [FIXME] need to tell which schema this parent table belongs
+    /// there might be same table in different schemas
     pub parent_table:Option<String>,
 
     ///what are the other table that inherits this
+    /// [FIXME] need to tell which schema this parent table belongs
+    /// there might be same table in different schemas
     pub sub_table:Option<Vec<String>>,
 
     ///comment of this table
@@ -319,6 +325,7 @@ impl Table{
         referred_tables
     }
 
+    /// has_many_direct
     /// get all other tables that is refering to this table
     /// when any column of a table refers to this table
     /// get_has_many
@@ -359,6 +366,7 @@ impl Table{
         has_one.len() == 1 && has_many.len() == 0
     }
     
+    /// has many indirect
     /// when there is a linker table, bypass the 1:1 relation to the linker table
     /// then create a 1:M relation to the other linked table
     /// Algorithmn: determine whether a table is a linker then get the other linked table
@@ -511,7 +519,7 @@ impl Table{
     }
     /// build a source code which express it self as a table object
     /// which is a meta definition of the struct itself
-    pub fn to_source_code(&self)->String{
+    pub fn to_tabledef_source_code(&self)->String{
         let mut w = Writer::new();
         w.ln();
         w.tabs(2);
@@ -561,7 +569,7 @@ impl Table{
         w.tabs(3);
         w.append("vec![");
         for c in &self.columns{
-            w.append(&c.to_source_code());
+            w.append(&c.to_column_def_source_code());
             w.append(",");
         }
         w.ln();
@@ -584,3 +592,7 @@ fn capitalize(str:&str)->String{
         .collect()
 }
 
+#[test]
+fn test_capitalize(){
+    assert_eq!(capitalize("hello"), "Hello".to_string());
+}

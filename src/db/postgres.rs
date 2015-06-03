@@ -11,7 +11,7 @@ use regex::Regex;
 
 
 pub struct Postgres {
-    conn:Connection,
+    pub conn:Connection,
 }
 
 
@@ -82,8 +82,8 @@ impl Postgres{
                            "chrono::offset::utc::UTC".to_string()]), "DateTime<UTC>".to_string() )
             },
             "time with time zone" => {
-                (Some(vec!["chrono::datetime::DateTime".to_string(), 
-                           "chrono::offset::utc::UTC".to_string()]), "DateTime<UTC>".to_string() )
+                (Some(vec!["chrono::naive::time::NaiveTime".to_string(), 
+                           "chrono::offset::utc::UTC".to_string()]), "NaiveTime".to_string() )
             },
             "date" => {
                 (Some(vec!["chrono::naive::date::NaiveDate".to_string()]), "NaiveDate".to_string() )
@@ -354,7 +354,8 @@ impl Database for Postgres{
     fn insert(&self, dao:&Dao, meta:&ModelMetaData, model:&Table, query:&Query)->Dao{panic!("not yet")}
     fn search(&self, query:&Query, keyword:String){}
     fn correct_data_types(&self, dao_list:Vec<Dao>, model:&Table){}
-    fn execute(&self, query:Query)->usize{0}
+    fn execute_sql(&self, sql:&String, param:&Vec<String>)->usize{0}
+    fn execute_query(&self, query:Query)->usize{0}
 }
 
 impl DatabaseDDL for Postgres{

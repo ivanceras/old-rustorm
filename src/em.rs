@@ -46,6 +46,7 @@ pub trait EntityManager{
     fn get_all_distinct(&self, table:String)->Vec<Dao>;
 
     /// get all the records on this table which passed thru the filters
+    /// any query that specified more than the parameters should use the query api
     fn get_all_with_filter(&self, table:String, filters:Vec<Filter>)->Vec<Dao>;
 
     /// get the first records of this table that passed thru the filters

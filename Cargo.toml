@@ -16,9 +16,12 @@ name = "rustorm"
 version = "*"
 features = ["rustc-serialize"]
 
+[dependencies.postgres]
+version = "*"
+features = ["time", "uuid", "chrono"]
+
 [dependencies]
 rustc-serialize = "*"
-postgres = "*"
 uuid = "*"
 log = "*"
 env_logger = "*"

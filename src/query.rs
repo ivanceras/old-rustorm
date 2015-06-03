@@ -10,7 +10,7 @@ pub enum Direction{
 
 pub enum SqlType{
     //DML
-    Select, 
+    Select,
     Insert,
     Update,
     Delete,
@@ -22,56 +22,72 @@ pub enum SqlType{
     Alter,
 }
 
+pub struct ColumnName{
+    column:String,
+    table:String,
+    ////optional schema, if ever there are same tables resideing in  different schema/namespace
+    schema:Option<String>,
+    rename:Option<String>
+}
+
+impl ColumnName{
+    
+    fn rename(&self)->String{
+        return format!("{}_{}", self.table, self.column)
+    }
+}
+
 pub struct Query{
     
-    //sql type determine which type of query to form, some fields are not applicable to other types of query
+    ///sql type determine which type of query to form, some fields are not applicable to other types of query
     pub sql_type:SqlType,
     
-    //whether to use *
+    ///whether to use *
     pub select_all:bool,
     
-    //whether to select the records distinct
+    /// whether to select the records distinct
     pub distinct:bool,
 
-    //enumerate all the columns of the involved models
+    /// enumerate all the columns of the table involved in the query 
     pub enumerate_columns:bool,
     
-    //or whether to select columns
-    pub select_columns:Vec<String>,
+    ///or whether to select columns
+    pub enumerated_columns:Vec<ColumnName>,
     
-    //list of renamed columns whenever there is a conflict
-    // Vec(table, column, new_column_name)
+    /// list of renamed columns whenever there is a conflict
+    /// Vec(table, column, new_column_name)
     pub renamed_columns:Vec<(String, String, String)>,
     
-    // to use distinct ON 
+    /// specify to use distinct ON set of columns 
     pub distinct_on_columns:Vec<String>,
     
-    //filter records
+    /// filter records, ~ where statement of the query
     pub filters:Vec<Filter>,
     
-    //joining multiple tables
+    /// joining multiple tables
     pub joins:Vec<Join>,
     
-    //order the result
+    /// ordering of the records via the columns specified
     pub order_by:Vec<(String, Direction)>,
     
-    //list of involved tables
+    /// list of involved tables
     pub involved_tables:Vec<String>,
     
-    //grouping columns to create an aggregate
+    /// grouping columns to create an aggregate
     pub grouped_columns: Vec<String>,
     
-    //exclude the mention of the columns in the SQL query, useful when ignoring changes in update/insert records
-    pub excluded_columns:Vec<String>,
+    /// exclude the mention of the columns in the SQL query, useful when ignoring changes in update/insert records
+    pub excluded_columns:Vec<ColumnName>,
     
-    //paging of records
+    /// paging of records
     pub page:Option<usize>,
     
-    //size of a page
+    /// size of a page
     pub items_per_page:Option<usize>,
     
-    //where the focus of values of column selection
-    //this is the table to insert to, update to delete, create, drop
+    /// where the focus of values of column selection
+    /// this is the table to insert to, update to delete, create, drop
+    /// whe used in select, this is the 
     pub from_table:Option<String>,
     
 }
@@ -86,7 +102,7 @@ impl Query{
             select_all:false,
             distinct:false,
             enumerate_columns:true,
-            select_columns:Vec::new(),
+            enumerated_columns:Vec::new(),
             renamed_columns:Vec::new(),
             distinct_on_columns:Vec::new(),
             filters:Vec::new(),
@@ -140,12 +156,34 @@ impl Query{
         self.enumerate_columns = true;
     }
     
-    //exclude columns when inserting/updating data
-    pub fn exclude_columns(&mut self, columns:&Vec<String>){
-        let columns = columns.clone();
-        for c in columns{
-            self.excluded_columns.push(c);
-        }
+    /// all enumerated columns shall be called from this
+    /// any conflict of columns from some other table will be automatically renamed
+    /// columns that are not conflicts from some other table,
+    /// but is the other conflicting column is not explicityly enumerated will not be renamed
+    /// 
+    fn enumerate_column(&mut self, table:&String, column:&String){
+        let c = ColumnName{
+            column:column.clone(), 
+            table:table.clone(), 
+            schema:None,
+            rename:None
+        };
+        self.enumerated_columns.push(c);
+    }
+    
+    /// exclude columns when inserting/updating data
+    /// [FIXME] ?? remove from the enumerated_columns
+    /// can this be called before the mentioned of the enumerated column?
+    /// else these needs to be stored and have a final list of columns
+    /// that is mentioned in the query
+    pub fn exclude_column(&mut self, table:&String, column:&String){
+        let c = ColumnName{
+                column:column.clone(),
+                table:table.clone(),
+                schema:None,
+                rename:None,
+            };
+        self.excluded_columns.push(c);
     }
     
     pub fn distinct_on_columns(&mut self, columns:&Vec<String>){
