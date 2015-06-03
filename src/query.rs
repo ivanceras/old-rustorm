@@ -161,7 +161,7 @@ impl Query{
     /// columns that are not conflicts from some other table,
     /// but is the other conflicting column is not explicityly enumerated will not be renamed
     /// 
-    fn enumerate_column(&mut self, table:&String, column:&String){
+    pub fn enumerate_column(&mut self, table:&String, column:&String){
         let c = ColumnName{
             column:column.clone(), 
             table:table.clone(), 

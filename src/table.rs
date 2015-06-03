@@ -178,6 +178,7 @@ pub trait IsTable{
 
 
 #[derive(Debug)]
+#[derive(Clone)]
 pub struct Table{
 
     ///which schema this belongs
