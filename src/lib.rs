@@ -5,10 +5,6 @@ extern crate chrono;
 extern crate regex;
 
 
-
-use table::Table;
-use table::Column;
-
 pub mod em;
 pub mod filter;
 pub mod query;
@@ -19,5 +15,4 @@ pub mod join;
 pub mod db;
 pub mod table;
 pub mod writer;
-pub mod gen;
 pub mod codegen;

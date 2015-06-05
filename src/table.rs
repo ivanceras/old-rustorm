@@ -216,12 +216,27 @@ impl PartialEq for Table{
      }
 
     fn ne(&self, other: &Self) -> bool {
-        self.name != other.name && self.schema != other.schema
+        self.name != other.name || self.schema != other.schema
     }
 }
 
 
 impl Table{
+    
+    /// return the long name of the table using schema.table_name
+    pub fn long_name(&self)->String{
+        format!("{}.{}", self.schema, self.name)
+    }
+    
+    /// determine if this table has a colum named
+    pub fn has_column_name(&self, column:&String)->bool{
+        for c in &self.columns{
+            if c.name == column.clone(){
+                return true;
+            }
+        }
+        false
+    }
 
     /// return all the primary columns of this table
     pub fn primary_columns(&self)->Vec<&Column>{
