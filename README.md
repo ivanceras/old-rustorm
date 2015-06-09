@@ -24,10 +24,10 @@ Put the sample database in your local postgresql installation
 psql -U postgres -h localhost -W -d <bazaar_v6> -f ./scripts/bazaar_v6_all.sql
 
 ```
-### Alternatively, you cam
+### Alternatively, you can
 
 ```bash
-sh setup.sh
+sh ./scripts/setup.sh
 
 ```
 Look at the code `./examples/generate_model_code.rs`
