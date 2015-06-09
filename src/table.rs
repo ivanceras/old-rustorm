@@ -68,8 +68,13 @@ impl Column{
         self.name.to_string()
     }
     
+     pub fn displayname(&self)->String{
+         let clean_name = self.clean_name();
+         clean_name.replace("_", " ")
+    }
+    
     /// presentable display names, such as removing the ids if it ends with one
-    pub fn displayname(&self)->String{
+    fn clean_name(&self)->String{
         if self.name.ends_with("_id"){
             return self.name.trim_right_matches("_id").to_string();
         }
@@ -79,17 +84,17 @@ impl Column{
     /// shorten, compress the name based on the table it points to
     /// parent_organization_id becomes parent
     pub fn condense_name(&self)->String{
-        let displayname = self.displayname();
+        let clean_name = self.clean_name();
         if self.foreign.is_some(){
             let foreign = &self.foreign.clone().unwrap();
-            if displayname.len() > foreign.table.len(){
-                return displayname
+            if clean_name.len() > foreign.table.len(){
+                return clean_name
                         .trim_right_matches(&foreign.table)
                         .trim_right_matches("_")
                         .to_string();
             }
         }
-        displayname
+        clean_name
     }
     
     /// get the column definition of the code

@@ -85,9 +85,9 @@ CREATE TABLE base (
     organization_id uuid,
     client_id uuid,
     created timestamp with time zone DEFAULT now() NOT NULL,
-    createdby uuid,
+    created_by uuid,
     updated timestamp with time zone DEFAULT now() NOT NULL,
-    updatedby uuid,
+    updated_by uuid,
     priority numeric
 );
 
@@ -439,17 +439,17 @@ COMMENT ON COLUMN product.client_id IS '@Value(users.client_id) The client_id of
 
 
 --
--- Name: COLUMN product.createdby; Type: COMMENT; Schema: bazaar; Owner: bazaar
+-- Name: COLUMN product.created_by; Type: COMMENT; Schema: bazaar; Owner: bazaar
 --
 
-COMMENT ON COLUMN product.createdby IS '@Value(users.user_id)';
+COMMENT ON COLUMN product.created_by IS '@Value(users.user_id)';
 
 
 --
--- Name: COLUMN product.updatedby; Type: COMMENT; Schema: bazaar; Owner: bazaar
+-- Name: COLUMN product.updated_by; Type: COMMENT; Schema: bazaar; Owner: bazaar
 --
 
-COMMENT ON COLUMN product.updatedby IS '@Value(users.user_id)';
+COMMENT ON COLUMN product.updated_by IS '@Value(users.user_id)';
 
 
 --
@@ -512,7 +512,7 @@ COMMENT ON COLUMN product.barcode IS 'barcode if scanning the product, conflict 
 -- Name: COLUMN product.owner_id; Type: COMMENT; Schema: bazaar; Owner: bazaar
 --
 
-COMMENT ON COLUMN product.owner_id IS 'Whom this product belongs, since createdby can be someone else create the product list in behalf of the owner of the product';
+COMMENT ON COLUMN product.owner_id IS 'Whom this product belongs, since created_by can be someone else create the product list in behalf of the owner of the product';
 
 
 --
@@ -1437,6 +1437,304 @@ ALTER TABLE ONLY record ALTER COLUMN created SET DEFAULT now();
 --
 
 ALTER TABLE ONLY record ALTER COLUMN updated SET DEFAULT now();
+
+
+SET search_path = bazaar, pg_catalog;
+
+--
+-- Data for Name: address; Type: TABLE DATA; Schema: bazaar; Owner: bazaar
+--
+
+COPY address (organization_id, client_id, created, created_by, updated, updated_by, priority, name, description, help, active, address_id, latitude, longitude, distance) FROM stdin;
+\N	\N	2015-06-09 10:30:08.927052+00	\N	2015-06-09 10:30:08.927052+00	\N	\N	Ayala, Cebu	\N	\N	t	582170de-8cc5-409a-b5dd-495500106880	10.3173549	123.9062096	\N
+\N	\N	2015-06-09 10:30:08.938811+00	\N	2015-06-09 10:30:08.938811+00	\N	\N	Marco Polo, Cebu	\N	\N	t	53af91ed-d32f-4778-ba5d-97ff4c408002	10.3419532	123.8965644	\N
+\N	\N	2015-06-09 10:30:08.947244+00	\N	2015-06-09 10:30:08.947244+00	\N	\N	Liloan, Cebu	\N	\N	t	6ae43356-aadc-4fec-b351-8beeeffd6145	10.4017745	123.9985668	\N
+\N	\N	2015-06-09 10:30:08.955609+00	\N	2015-06-09 10:30:08.955609+00	\N	\N	Alona Beach, Panglao	\N	\N	t	c8b6cec4-f113-4a4d-ad5e-593f56962b4f	9.5488016	123.7746247	\N
+\.
+
+
+--
+-- Data for Name: api_key; Type: TABLE DATA; Schema: bazaar; Owner: bazaar
+--
+
+COPY api_key (organization_id, client_id, created, created_by, updated, updated_by, priority, name, description, help, active, api_key_id, api_key, user_id, valid_starting, valid_until) FROM stdin;
+\.
+
+
+--
+-- Data for Name: cart; Type: TABLE DATA; Schema: bazaar; Owner: bazaar
+--
+
+COPY cart (organization_id, client_id, created, created_by, updated, updated_by, priority, name, description, help, active, cart_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: cart_line; Type: TABLE DATA; Schema: bazaar; Owner: bazaar
+--
+
+COPY cart_line (organization_id, client_id, created, created_by, updated, updated_by, priority, name, description, help, active, cart_id, cart_line_id, product_id, qty) FROM stdin;
+\.
+
+
+--
+-- Data for Name: category; Type: TABLE DATA; Schema: bazaar; Owner: bazaar
+--
+
+COPY category (organization_id, client_id, created, created_by, updated, updated_by, priority, name, description, help, active, category_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: client; Type: TABLE DATA; Schema: bazaar; Owner: bazaar
+--
+
+COPY client (organization_id, client_id, created, created_by, updated, updated_by, priority, name, description, help, active) FROM stdin;
+\.
+
+
+--
+-- Data for Name: invoice; Type: TABLE DATA; Schema: bazaar; Owner: bazaar
+--
+
+COPY invoice (organization_id, client_id, created, created_by, updated, updated_by, priority, name, description, help, active, invoice_id, order_id, is_paid) FROM stdin;
+\.
+
+
+--
+-- Data for Name: order_line; Type: TABLE DATA; Schema: bazaar; Owner: bazaar
+--
+
+COPY order_line (organization_id, client_id, created, created_by, updated, updated_by, priority, name, description, help, active, order_id, product_id, price_momentary, freight_amt, discount, order_line_id, qty_ordered) FROM stdin;
+\.
+
+
+--
+-- Data for Name: orders; Type: TABLE DATA; Schema: bazaar; Owner: bazaar
+--
+
+COPY orders (organization_id, client_id, created, created_by, updated, updated_by, priority, name, description, help, active, order_id, customer_name, total_items, grand_total_amount, charges_amount, processing, processed, is_confirmed, is_tax_included, date_ordered, is_invoiced, date_invoiced, is_approved, date_approved, amount_tendered, amount_refunded, cart_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: organization; Type: TABLE DATA; Schema: bazaar; Owner: bazaar
+--
+
+COPY organization (organization_id, client_id, created, created_by, updated, updated_by, priority, name, description, help, active, parent_organization_id, address_id, landmark) FROM stdin;
+\.
+
+
+--
+-- Data for Name: photo; Type: TABLE DATA; Schema: bazaar; Owner: bazaar
+--
+
+COPY photo (organization_id, client_id, created, created_by, updated, updated_by, priority, name, description, help, active, photo_id, url, data, seq_no) FROM stdin;
+\N	\N	2015-06-09 10:30:09.050346+00	\N	2015-06-09 10:30:09.050346+00	\N	\N	\N	\N	\N	t	0d41dbd7-433f-4fb9-ae82-725bbaf9dc46	/uploads/iphone4s-sm.jpg	\N	\N
+\N	\N	2015-06-09 10:30:09.055514+00	\N	2015-06-09 10:30:09.055514+00	\N	\N	\N	\N	\N	t	ea71c576-37ec-4080-8bf7-f137954762ba	/uploads/iphone3gs-sm.jpg	\N	\N
+\N	\N	2015-06-09 10:30:09.063792+00	\N	2015-06-09 10:30:09.063792+00	\N	\N	\N	\N	\N	t	d0d34ef1-3765-4319-a362-34ce30f1afb5	/uploads/ps2-sm.jpg	\N	\N
+\N	\N	2015-06-09 10:30:09.0721+00	\N	2015-06-09 10:30:09.0721+00	\N	\N	\N	\N	\N	t	ba418ec0-e1db-4086-8ecb-b7742e4c8ecf	/uploads/xbox360-sm.jpg	\N	\N
+\N	\N	2015-06-09 10:30:09.080427+00	\N	2015-06-09 10:30:09.080427+00	\N	\N	\N	\N	\N	t	7c406001-411f-4275-9535-0b24fedaefdc	/uploads/gopro-hero3+-sm.jpg	\N	\N
+\N	\N	2015-06-09 10:30:09.088808+00	\N	2015-06-09 10:30:09.088808+00	\N	\N	\N	\N	\N	t	0a8c0f84-83a8-4aac-bcdc-0a7d041d20d8	/uploads/electric-guitar-sm.jpg	\N	\N
+\N	\N	2015-06-09 10:30:09.097085+00	\N	2015-06-09 10:30:09.097085+00	\N	\N	\N	\N	\N	t	7b4d992c-09fb-42cb-9e60-c9d96902c15f	/uploads/gtx660ti-sm.jpg	\N	\N
+\N	\N	2015-06-09 10:30:09.105355+00	\N	2015-06-09 10:30:09.105355+00	\N	\N	\N	\N	\N	t	0722e497-b820-4e13-a11a-410cd6182c6e	/uploads/stationary-bike-sm.jpg	\N	\N
+\N	\N	2015-06-09 10:30:09.113796+00	\N	2015-06-09 10:30:09.113796+00	\N	\N	\N	\N	\N	t	af21d63c-a9b5-457f-8a93-4644048d349d	/uploads/hp-printer-sm.jpg	\N	\N
+\N	\N	2015-06-09 10:30:09.122096+00	\N	2015-06-09 10:30:09.122096+00	\N	\N	\N	\N	\N	t	2d37b60e-6423-4c20-aaa2-c87de46d4613	/uploads/skyworth-tv-sm.jpg	\N	\N
+\.
+
+
+--
+-- Data for Name: photo_sizes; Type: TABLE DATA; Schema: bazaar; Owner: bazaar
+--
+
+COPY photo_sizes (organization_id, client_id, created, created_by, updated, updated_by, priority, name, description, help, active, width, height, data, url, photo_id, photo_size_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: product; Type: TABLE DATA; Schema: bazaar; Owner: bazaar
+--
+
+COPY product (organization_id, client_id, created, created_by, updated, updated_by, priority, name, description, help, active, product_id, parent_product_id, is_service, price, use_parent_price, unit, tags, info, seq_no, upfront_fee, barcode, owner_id, currency_id) FROM stdin;
+\N	\N	2015-06-09 10:30:08.7056+00	\N	2015-06-09 10:30:08.7056+00	\N	\N	iphone4s	Second hand Iphone4s	\N	t	f7521093-734d-488a-9f60-fc9f11f7e750	\N	f	7000.00	f	\N	\N	\N	\N	0.00	\N	3e51d5f9-5bff-4664-9946-47bf37973636	\N
+\N	\N	2015-06-09 10:30:08.713998+00	\N	2015-06-09 10:30:08.713998+00	\N	\N	iphone3GSs	Old Iphone3GS	\N	t	85ea7227-e31e-41af-955e-0513177ddb9a	\N	f	3500.00	f	\N	\N	\N	\N	0.00	\N	3e51d5f9-5bff-4664-9946-47bf37973636	\N
+\N	\N	2015-06-09 10:30:08.722251+00	\N	2015-06-09 10:30:08.722251+00	\N	\N	ps2	Second hand Sony Playstation Box	\N	t	3ece9e03-5f56-4114-8887-d6c730da8181	\N	f	5000.00	f	\N	\N	\N	\N	0.00	\N	3e51d5f9-5bff-4664-9946-47bf37973636	\N
+\N	\N	2015-06-09 10:30:08.730635+00	\N	2015-06-09 10:30:08.730635+00	\N	\N	xbox360	Second hand Xbob360	\N	t	c2fe5870-ea34-4c6f-90ae-aa771facbf2f	\N	f	10000.00	f	\N	\N	\N	\N	0.00	\N	3e51d5f9-5bff-4664-9946-47bf37973636	\N
+\N	\N	2015-06-09 10:30:08.738955+00	\N	2015-06-09 10:30:08.738955+00	\N	\N	GoPro Hero 3+	Slightly used GoPro Hero 3+	\N	t	3c03c6f0-7d91-4570-a882-0ef44c427b90	\N	f	7000.00	f	\N	\N	\N	\N	0.00	\N	3e51d5f9-5bff-4664-9946-47bf37973636	\N
+\N	\N	2015-06-09 10:30:08.747229+00	\N	2015-06-09 10:30:08.747229+00	\N	\N	Electric Guitar	Generic Electric Guitar	\N	t	ee18e260-c4eb-47fd-86ad-9117f6d8ed06	\N	f	8000.00	f	\N	\N	\N	\N	0.00	\N	3e51d5f9-5bff-4664-9946-47bf37973636	\N
+\N	\N	2015-06-09 10:30:08.755591+00	\N	2015-06-09 10:30:08.755591+00	\N	\N	GTX660 Ti videocard	2nd Nvidia Video card	\N	t	6db712e6-cc50-4c3a-8269-451c98ace5ad	\N	f	11000.00	f	\N	\N	\N	\N	0.00	\N	3e51d5f9-5bff-4664-9946-47bf37973636	\N
+\N	\N	2015-06-09 10:30:08.763847+00	\N	2015-06-09 10:30:08.763847+00	\N	\N	Stationary Bike	Time Sports Stationary Bike	\N	t	528c9e1e-5809-48f9-8718-9434fc73786b	\N	f	3000.00	f	\N	\N	\N	\N	0.00	\N	3e51d5f9-5bff-4664-9946-47bf37973636	\N
+\N	\N	2015-06-09 10:30:08.772233+00	\N	2015-06-09 10:30:08.772233+00	\N	\N	HP printer	Second HP printer	\N	t	5d171d4d-9b09-423c-80b4-94b2d852797d	\N	f	1000.00	f	\N	\N	\N	\N	0.00	\N	3e51d5f9-5bff-4664-9946-47bf37973636	\N
+\N	\N	2015-06-09 10:30:08.780607+00	\N	2015-06-09 10:30:08.780607+00	\N	\N	Skyworth 42" LCD TV - This has never been used, The quick brown fox jumps over the lazy dog!	# Specs:\n* Wide **screen** TV\n* 1920x1080\n\t* width  : 1920\n\t* height : 1080\n* 1080p	\N	t	7ec0545d-e40d-4bb0-8dc9-fa71d5118a54	\N	f	10000.00	f	\N	\N	\N	\N	0.00	\N	3e51d5f9-5bff-4664-9946-47bf37973636	\N
+\.
+
+
+--
+-- Data for Name: product_availability; Type: TABLE DATA; Schema: bazaar; Owner: bazaar
+--
+
+COPY product_availability (organization_id, client_id, created, created_by, updated, updated_by, priority, product_id, available, always_available, stocks, available_from, available_until, available_day, open_time, close_time) FROM stdin;
+\N	\N	2015-06-09 10:30:08.788905+00	\N	2015-06-09 10:30:08.788905+00	\N	\N	f7521093-734d-488a-9f60-fc9f11f7e750	t	\N	1	\N	\N	\N	\N	\N
+\N	\N	2015-06-09 10:30:08.797162+00	\N	2015-06-09 10:30:08.797162+00	\N	\N	85ea7227-e31e-41af-955e-0513177ddb9a	t	\N	3	\N	\N	\N	\N	\N
+\N	\N	2015-06-09 10:30:08.805454+00	\N	2015-06-09 10:30:08.805454+00	\N	\N	3ece9e03-5f56-4114-8887-d6c730da8181	t	\N	1	\N	\N	\N	\N	\N
+\N	\N	2015-06-09 10:30:08.81391+00	\N	2015-06-09 10:30:08.81391+00	\N	\N	c2fe5870-ea34-4c6f-90ae-aa771facbf2f	t	\N	1	\N	\N	\N	\N	\N
+\N	\N	2015-06-09 10:30:08.822224+00	\N	2015-06-09 10:30:08.822224+00	\N	\N	3c03c6f0-7d91-4570-a882-0ef44c427b90	t	\N	1	\N	\N	\N	\N	\N
+\N	\N	2015-06-09 10:30:08.830524+00	\N	2015-06-09 10:30:08.830524+00	\N	\N	ee18e260-c4eb-47fd-86ad-9117f6d8ed06	t	\N	1	\N	\N	\N	\N	\N
+\N	\N	2015-06-09 10:30:08.838825+00	\N	2015-06-09 10:30:08.838825+00	\N	\N	6db712e6-cc50-4c3a-8269-451c98ace5ad	t	\N	4	\N	\N	\N	\N	\N
+\N	\N	2015-06-09 10:30:08.847124+00	\N	2015-06-09 10:30:08.847124+00	\N	\N	528c9e1e-5809-48f9-8718-9434fc73786b	t	\N	1	\N	\N	\N	\N	\N
+\N	\N	2015-06-09 10:30:08.855585+00	\N	2015-06-09 10:30:08.855585+00	\N	\N	5d171d4d-9b09-423c-80b4-94b2d852797d	t	\N	1	\N	\N	\N	\N	\N
+\N	\N	2015-06-09 10:30:08.863967+00	\N	2015-06-09 10:30:08.863967+00	\N	\N	7ec0545d-e40d-4bb0-8dc9-fa71d5118a54	t	\N	1	\N	\N	\N	\N	\N
+\.
+
+
+--
+-- Data for Name: product_category; Type: TABLE DATA; Schema: bazaar; Owner: bazaar
+--
+
+COPY product_category (organization_id, client_id, created, created_by, updated, updated_by, priority, product_id, category_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: product_photo; Type: TABLE DATA; Schema: bazaar; Owner: bazaar
+--
+
+COPY product_photo (organization_id, client_id, created, created_by, updated, updated_by, priority, product_id, photo_id) FROM stdin;
+\N	\N	2015-06-09 10:30:09.130405+00	\N	2015-06-09 10:30:09.130405+00	\N	\N	f7521093-734d-488a-9f60-fc9f11f7e750	0d41dbd7-433f-4fb9-ae82-725bbaf9dc46
+\N	\N	2015-06-09 10:30:09.138765+00	\N	2015-06-09 10:30:09.138765+00	\N	\N	85ea7227-e31e-41af-955e-0513177ddb9a	ea71c576-37ec-4080-8bf7-f137954762ba
+\N	\N	2015-06-09 10:30:09.147087+00	\N	2015-06-09 10:30:09.147087+00	\N	\N	3ece9e03-5f56-4114-8887-d6c730da8181	d0d34ef1-3765-4319-a362-34ce30f1afb5
+\N	\N	2015-06-09 10:30:09.155437+00	\N	2015-06-09 10:30:09.155437+00	\N	\N	c2fe5870-ea34-4c6f-90ae-aa771facbf2f	ba418ec0-e1db-4086-8ecb-b7742e4c8ecf
+\N	\N	2015-06-09 10:30:09.163747+00	\N	2015-06-09 10:30:09.163747+00	\N	\N	3c03c6f0-7d91-4570-a882-0ef44c427b90	7c406001-411f-4275-9535-0b24fedaefdc
+\N	\N	2015-06-09 10:30:09.172103+00	\N	2015-06-09 10:30:09.172103+00	\N	\N	ee18e260-c4eb-47fd-86ad-9117f6d8ed06	0a8c0f84-83a8-4aac-bcdc-0a7d041d20d8
+\N	\N	2015-06-09 10:30:09.180504+00	\N	2015-06-09 10:30:09.180504+00	\N	\N	6db712e6-cc50-4c3a-8269-451c98ace5ad	7b4d992c-09fb-42cb-9e60-c9d96902c15f
+\N	\N	2015-06-09 10:30:09.188741+00	\N	2015-06-09 10:30:09.188741+00	\N	\N	528c9e1e-5809-48f9-8718-9434fc73786b	0722e497-b820-4e13-a11a-410cd6182c6e
+\N	\N	2015-06-09 10:30:09.197151+00	\N	2015-06-09 10:30:09.197151+00	\N	\N	5d171d4d-9b09-423c-80b4-94b2d852797d	af21d63c-a9b5-457f-8a93-4644048d349d
+\N	\N	2015-06-09 10:30:09.205475+00	\N	2015-06-09 10:30:09.205475+00	\N	\N	7ec0545d-e40d-4bb0-8dc9-fa71d5118a54	2d37b60e-6423-4c20-aaa2-c87de46d4613
+\.
+
+
+--
+-- Data for Name: product_review; Type: TABLE DATA; Schema: bazaar; Owner: bazaar
+--
+
+COPY product_review (organization_id, client_id, created, created_by, updated, updated_by, priority, product_id, review_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: review; Type: TABLE DATA; Schema: bazaar; Owner: bazaar
+--
+
+COPY review (organization_id, client_id, created, created_by, updated, updated_by, priority, name, description, help, active, rating, comment, review_id, user_id, approved, approvedby) FROM stdin;
+\.
+
+
+--
+-- Data for Name: settings; Type: TABLE DATA; Schema: bazaar; Owner: bazaar
+--
+
+COPY settings (organization_id, client_id, created, created_by, updated, updated_by, priority, name, description, help, active, user_id, value, settings_id, use_metric) FROM stdin;
+\.
+
+
+--
+-- Data for Name: user_info; Type: TABLE DATA; Schema: bazaar; Owner: bazaar
+--
+
+COPY user_info (organization_id, client_id, created, created_by, updated, updated_by, priority, name, description, help, active, user_id, address_id, current_location, displayname, photo_id) FROM stdin;
+\N	\N	2015-06-09 10:30:08.963933+00	\N	2015-06-09 10:30:08.963933+00	\N	\N	\N	\N	\N	t	3e51d5f9-5bff-4664-9946-47bf37973636	582170de-8cc5-409a-b5dd-495500106880	\N	\N	\N
+\N	\N	2015-06-09 10:30:08.972265+00	\N	2015-06-09 10:30:08.972265+00	\N	\N	\N	\N	\N	t	bcc26fdf-3ef2-4798-81ce-b59331695878	53af91ed-d32f-4778-ba5d-97ff4c408002	\N	\N	\N
+\N	\N	2015-06-09 10:30:08.980586+00	\N	2015-06-09 10:30:08.980586+00	\N	\N	\N	\N	\N	t	e1ca0125-c627-4a30-b797-ae411c99336c	c8b6cec4-f113-4a4d-ad5e-593f56962b4f	\N	\N	\N
+\.
+
+
+--
+-- Data for Name: user_location; Type: TABLE DATA; Schema: bazaar; Owner: bazaar
+--
+
+COPY user_location (organization_id, client_id, created, created_by, updated, updated_by, priority, name, description, help, active, true_latitude, true_longitude, set_latitude, set_longitude, accuracy, set_accuracy, user_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: user_review; Type: TABLE DATA; Schema: bazaar; Owner: bazaar
+--
+
+COPY user_review (organization_id, client_id, created, created_by, updated, updated_by, priority, name, description, help, active, user_id, review_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: users; Type: TABLE DATA; Schema: bazaar; Owner: bazaar
+--
+
+COPY users (organization_id, client_id, created, created_by, updated, updated_by, priority, name, description, help, active, user_id, username, password, email) FROM stdin;
+\N	\N	2015-06-09 10:30:08.648956+00	\N	2015-06-09 10:30:08.648956+00	\N	\N	\N	\N	\N	t	4166b813-e335-406f-bb42-5a83425eb581	SuperUser	\N	bazaar@ivanceras.com
+\N	\N	2015-06-09 10:30:08.670393+00	\N	2015-06-09 10:30:08.670393+00	\N	\N	Alice Smith	\N	\N	t	3e51d5f9-5bff-4664-9946-47bf37973636	alice	\N	alice@acme.com
+\N	\N	2015-06-09 10:30:08.688976+00	\N	2015-06-09 10:30:08.688976+00	\N	\N	Bob Pearson	\N	\N	t	bcc26fdf-3ef2-4798-81ce-b59331695878	bob	\N	bob@acme.com
+\N	\N	2015-06-09 10:30:08.69734+00	\N	2015-06-09 10:30:08.69734+00	\N	\N	Mary Winsteaud	\N	\N	t	e1ca0125-c627-4a30-b797-ae411c99336c	mary	\N	mary@gmail.com
+\.
+
+
+--
+-- Data for Name: wishlist; Type: TABLE DATA; Schema: bazaar; Owner: bazaar
+--
+
+COPY wishlist (organization_id, client_id, created, created_by, updated, updated_by, priority, name, description, help, active, wishlist_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: wishlist_line; Type: TABLE DATA; Schema: bazaar; Owner: bazaar
+--
+
+COPY wishlist_line (organization_id, client_id, created, created_by, updated, updated_by, priority, name, description, help, active, wishlist_id, price_momentary, product_id, added_to_cart, wishlist_line_id) FROM stdin;
+\.
+
+
+SET search_path = payment, pg_catalog;
+
+--
+-- Data for Name: country; Type: TABLE DATA; Schema: payment; Owner: bazaar
+--
+
+COPY country (organization_id, client_id, created, created_by, updated, updated_by, priority, name, description, help, active, country_id, code) FROM stdin;
+\.
+
+
+--
+-- Data for Name: currency; Type: TABLE DATA; Schema: payment; Owner: bazaar
+--
+
+COPY currency (organization_id, client_id, created, created_by, updated, updated_by, priority, name, description, help, active, currency_id, country_id, symbol, unicode) FROM stdin;
+\N	\N	2015-06-09 10:30:09.265088+00	\N	2015-06-09 10:30:09.265088+00	\N	\N	Philippine peso	\N	\N	t	574c324d-2d92-4000-87e0-52c17653fb90	\N	PHP	8369
+\.
+
+
+--
+-- Data for Name: exchange_rate; Type: TABLE DATA; Schema: payment; Owner: bazaar
+--
+
+COPY exchange_rate (organization_id, client_id, created, created_by, updated, updated_by, priority, name, description, help, active, exchange_rate_id, from_currency, exchange_rate, to_currency) FROM stdin;
+\.
+
+
+SET search_path = system, pg_catalog;
+
+--
+-- Data for Name: base; Type: TABLE DATA; Schema: system; Owner: bazaar
+--
+
+COPY base (organization_id, client_id, created, created_by, updated, updated_by, priority) FROM stdin;
+\.
+
+
+--
+-- Data for Name: record; Type: TABLE DATA; Schema: system; Owner: bazaar
+--
+
+COPY record (organization_id, client_id, created, created_by, updated, updated_by, priority, name, description, help, active) FROM stdin;
+\.
 
 
 SET search_path = bazaar, pg_catalog;

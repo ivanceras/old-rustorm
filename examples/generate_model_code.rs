@@ -13,7 +13,6 @@ fn main(){
                     include_table_references:true,
                     use_condensed_name:true,
                     generate_table_meta:true,
-                    meta_file:Some("meta".to_string()),
                     base_dir:"./examples".to_string(),
                 };
             codegen::generate_all(&pg, &config);

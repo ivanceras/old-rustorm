@@ -19,7 +19,6 @@ pub struct Config{
     
     ///generate the is table definition for each table
     pub generate_table_meta:bool,
-    pub meta_file:Option<String>,
 
     /// base directory for the generated content
     pub base_dir: String,
@@ -33,7 +32,6 @@ impl Config{
             include_table_references:true,
             use_condensed_name:true,
             generate_table_meta:true,
-            meta_file:Some("meta".to_string()),
             base_dir:"./src".to_string(),
         }
     }
@@ -184,7 +182,7 @@ fn generate_mod_rs(config:&Config, all_tables:&Vec<Table>){
     let mut mod_src = Writer::new();
     let schemas = get_schemas(&all_tables);
     for schema in &schemas{
-        mod_src.append("mod ");
+        mod_src.append("pub mod ");
         mod_src.append(schema);
         mod_src.append(";");
         mod_src.ln();
