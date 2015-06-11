@@ -30,69 +30,69 @@ impl Postgres{
     
     /// get the rust data type names from database data type names
     /// will be used in source code generation
-    fn dbtype_to_rust_type(db_type: &str)->(Option<Vec<String>>, String){
+    fn dbtype_to_rust_type(db_type: &str)->(Vec<String>, String){
         let db_type = match db_type{
             "boolean" => {
-                (None, "bool".to_string() )
+                (vec![], "bool".to_string() )
             },
             "char" => {
-                (None, "i8".to_string() )
+                (vec![], "i8".to_string() )
             },
             "smallint" | "smallserial" => {
-                (None, "i16".to_string() )
+                (vec![], "i16".to_string() )
             },
             "integer" | "int" | "serial"  => {
-                (None, "i32".to_string() )
+                (vec![], "i32".to_string() )
             },
             "oid"  => {
-                (None, "u32".to_string() )
+                (vec![], "u32".to_string() )
             },
             "bigint" | "bigserial"  => {
-                (None, "i64".to_string() )
+                (vec![], "i64".to_string() )
             },
             "real" => {
-                (None, "f32".to_string() )
+                (vec![], "f32".to_string() )
             },
             "double precision" | "numeric" => {
-                (None, "f64".to_string() )
+                (vec![], "f64".to_string() )
             },
             "name" | "character" | "character varying" | "text" | "citext" =>{ 
-                ( None, "String".to_string() )
+                ( vec![], "String".to_string() )
             },
             "bytea" =>{ 
-                ( None, "Vec<u8>".to_string() )
+                ( vec![], "Vec<u8>".to_string() )
             },
             //"json" | "jsonb" => {
             //    ((Some(vec!["rustc_serialize::json::Json".to_string()]), "Json".to_string()))
            // },
             "json" | "jsonb" => {//FIXME :String for now, since Json itself is not encodable
-                ((None, "String".to_string()))
+                ((vec![], "String".to_string()))
             },
             "uuid" => {
-                (Some(vec!["uuid::Uuid".to_string()]), "Uuid".to_string() )
+                (vec!["uuid::Uuid".to_string()], "Uuid".to_string() )
             },
             "timestamp" => {
-                (Some(vec!["chrono::naive::datetime::NaiveDateTime".to_string()]), "NaiveDateTime".to_string() )
+                (vec!["chrono::naive::datetime::NaiveDateTime".to_string()], "NaiveDateTime".to_string() )
             },
             "timestamp without time zone" => {
-                (Some(vec!["chrono::naive::datetime::NaiveDateTime".to_string()]), "NaiveDateTime".to_string() )
+                (vec!["chrono::naive::datetime::NaiveDateTime".to_string()], "NaiveDateTime".to_string() )
             },
             "timestamp with time zone" => {
-                (Some(vec!["chrono::datetime::DateTime".to_string(), 
-                           "chrono::offset::utc::UTC".to_string()]), "DateTime<UTC>".to_string() )
+                (vec!["chrono::datetime::DateTime".to_string(), 
+                           "chrono::offset::utc::UTC".to_string()], "DateTime<UTC>".to_string() )
             },
             "time with time zone" => {
-                (Some(vec!["chrono::naive::time::NaiveTime".to_string(), 
-                           "chrono::offset::utc::UTC".to_string()]), "NaiveTime".to_string() )
+                (vec!["chrono::naive::time::NaiveTime".to_string(), 
+                           "chrono::offset::utc::UTC".to_string()], "NaiveTime".to_string() )
             },
             "date" => {
-                (Some(vec!["chrono::naive::date::NaiveDate".to_string()]), "NaiveDate".to_string() )
+                (vec!["chrono::naive::date::NaiveDate".to_string()], "NaiveDate".to_string() )
             },
             "time" => {
-                (Some(vec!["chrono::naive::time::NaiveTime".to_string()]), "NaiveTime".to_string() )
+                (vec!["chrono::naive::time::NaiveTime".to_string()], "NaiveTime".to_string() )
             },
             "hstore" => {
-                ((Some(vec!["std::collections::HashMap".to_string()]), "HashMap<String, Option<String>>".to_string()))
+                (vec!["std::collections::HashMap".to_string()], "HashMap<String, Option<String>>".to_string())
             },
             _ => panic!("Unable to get the equivalent data type for {}", db_type),
         };
@@ -399,7 +399,7 @@ impl DatabaseDev for Postgres{
         None
     }
     
-    fn get_table_sub_class(&self, schema:&str, table:&str)->Option<Vec<String>>{
+    fn get_table_sub_class(&self, schema:&str, table:&str)->Vec<String>{
         let sql ="
             SELECT 
                 relname AS base_table, 
@@ -415,17 +415,14 @@ impl DatabaseDev for Postgres{
             ";
                 
         let stmt = self.conn.prepare(&sql).unwrap();
-        let mut sub_classes:Vec<String> = Vec::new();
+        let mut sub_classes:Vec<String> = vec![];
         for row in stmt.query(&[&schema, &table]).unwrap() {    
             match row.get_opt("sub_class"){
                     Ok(x) => sub_classes.push(x),
                     Err(_) => (),
                 };
         }
-        if sub_classes.len() > 0 {
-            return Some(sub_classes)
-        }
-        None
+        sub_classes
     }
     
 
@@ -544,7 +541,7 @@ impl DatabaseDev for Postgres{
     }
     
     
-    fn get_rust_data_type(&self, db_type:&str)->(Option<Vec<String>>, String){
+    fn get_rust_data_type(&self, db_type:&str)->(Vec<String>, String){
         Postgres::dbtype_to_rust_type(db_type)
     }
     

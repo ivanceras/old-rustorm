@@ -118,7 +118,7 @@ pub trait DatabaseDev{
 ////////////////////////////////////////////
     
     /// applicable to later version of postgresql where there is inheritance
-    fn get_table_sub_class(&self, schema:&str, table:&str)->Option<Vec<String>>;
+    fn get_table_sub_class(&self, schema:&str, table:&str)->Vec<String>;
     
     fn get_parent_table(&self, schema:&str, table:&str)->Option<String>;
     
@@ -139,7 +139,7 @@ pub trait DatabaseDev{
     
     ///get the equivalent postgresql database data type to rust data type
     /// returns (module, type)
-    fn get_rust_data_type(&self, db_type:&str)->(Option<Vec<String>>, String);
+    fn get_rust_data_type(&self, db_type:&str)->(Vec<String>, String);
 
 
     /// build a source code for the struct defined by this table
@@ -152,8 +152,8 @@ pub trait DatabaseDev{
         let mut imports:Vec<String> = Vec::new();
         for c in &table.columns{
             let (package, _) = self.get_rust_data_type(&c.db_data_type);
-            if package.is_some(){
-                for i in package.unwrap(){
+            if !package.is_empty(){
+                for i in package{
                     imports.push(i);
                 }
             }
@@ -307,11 +307,9 @@ pub trait DatabaseDev{
                 };
                 w.append(&member_name);
                 w.append(":");
-                w.append("Option<");
                 w.append("Vec<");//put it inside the box to get rid of illegal recursive struct
                 w.append(&indirect.struct_name());
                 imported_tables.push(indirect);
-                w.append(">");
                 w.append(">");
                 w.comma();
                 w.ln();
@@ -338,10 +336,10 @@ pub trait DatabaseDev{
                 w.append(&member_name);
                 included_columns.push(member_name.clone());
                 w.append(":");
-                w.append("Option<Vec<");
+                w.append("Vec<");
                 w.append(&ref_table.struct_name());
                 imported_tables.push(ref_table);
-                w.append(">>");
+                w.append(">");
                 w.comma();
                 w.ln();
                 included_has_many.push(&ref_table.name);

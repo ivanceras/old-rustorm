@@ -137,7 +137,7 @@ impl Column{
         w.tabs(5);
         w.append("comment:");
         if self.comment.is_some(){
-            w.append(&format!("Some(\"{}\".to_string()),", &self.comment.clone().unwrap().replace("\"","\\\"")));
+            w.append(&format!("Some(\"{}\".to_string()),", &self.comment.clone().unwrap().replace("\"","\\\"").replace("\n", "\\n")));
         }else{
             w.append("None,");
         }
@@ -200,7 +200,7 @@ pub struct Table{
     ///what are the other table that inherits this
     /// [FIXME] need to tell which schema this parent table belongs
     /// there might be same table in different schemas
-    pub sub_table:Option<Vec<String>>,
+    pub sub_table:Vec<String>,
 
     ///comment of this table
     pub comment:Option<String>,
@@ -564,22 +564,21 @@ impl Table{
         w.ln();
         w.tabs(3);
         w.append("sub_table:");
-        if self.sub_table.is_some(){
-            let sub_table = self.sub_table.clone().unwrap();
-            w.append("Some(");
+        if !self.sub_table.is_empty(){
+            let sub_table = self.sub_table.clone();
             w.append("vec![");
             for s in sub_table{
                 w.append(&format!("\"{}\".to_string(),",s));
             }
-            w.append("]),");
+            w.append("],");
         }else{
-            w.append("None,");
+            w.append("vec![],");
         }
         w.ln();
         w.tabs(3);
         w.append("comment:");
         if self.comment.is_some(){
-            w.append(&format!("Some(\"{}\".to_string()),", &self.comment.clone().unwrap().replace("\"","\\\"")));
+            w.append(&format!("Some(\"{}\".to_string()),", &self.comment.clone().unwrap().replace("\"","\\\"").replace("\n", "\\n")));
         }else{
             w.append("None,");
         }

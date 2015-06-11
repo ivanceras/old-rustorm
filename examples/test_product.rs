@@ -53,9 +53,9 @@ fn main(){
                     owner:None,
                     currency:None,
                     product_availability:None,
-                    category:None,
-                    photo:None,
-                    review:None
+                    category:vec![],
+                    photo:vec![],
+                    review:vec![]
                 };
                 println!("product:{}({})", product.name.as_ref().unwrap(), product.product_id);
                 println!("{},", json::as_pretty_json(&product));
