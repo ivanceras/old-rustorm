@@ -1,39 +1,83 @@
 use filter::Filter;
-use join::Join;
-use join::Modifier;
-use join::JoinType;
+use dao::Dao;
+use table::{Table, Column};
+
+
+pub enum JoinType{
+    CROSS,
+    INNER,
+    OUTER,
+}
+
+pub enum Modifier{
+    LEFT,
+    RIGHT,
+    FULL,
+}
+
+
+pub struct Join{
+    pub modifier:Option<Modifier>,
+    pub join_type:JoinType,
+    pub table_name:TableName,
+    pub column1:Vec<String>,
+    pub column2:Vec<String>
+}
 
 pub enum Direction{
     ASC,
     DESC,
 }
 
+/// Could have been SqlAction
 pub enum SqlType{
     //DML
-    Select,
-    Insert,
-    Update,
-    Delete,
-    Truncate,
-    
-    //DDL
-    Create,
-    Drop,
-    Alter,
+    SELECT,
+    INSERT,
+    UPDATE,
+    DELETE,
 }
 
 pub struct ColumnName{
-    column:String,
-    table:String,
+    pub column:String,
+    pub table:String,
     ////optional schema, if ever there are same tables resideing in  different schema/namespace
-    schema:Option<String>,
-    rename:Option<String>
+    pub schema:Option<String>,
+    /// as rename
+    pub rename:Option<String>
 }
 
 impl ColumnName{
+
+    fn from_column(column:&Column, table:&Table)->Self{
+        ColumnName{
+            column: column.name.to_string(),
+            table: table.name.to_string(),
+            schema: Some(table.schema.to_string()),
+            rename: None,
+        }
+    }
     
     fn rename(&self)->String{
         return format!("{}_{}", self.table, self.column)
+    }
+    
+}
+
+pub struct TableName{
+    pub schema: String,
+    pub name: String,
+    pub column_names: Vec<ColumnName>,
+}
+
+impl TableName{
+    
+    fn from_table(table:&Table)->Self{
+        TableName{
+            schema:table.schema.to_string(),
+            name: table.name.to_string(),
+            column_names:vec![],
+        }
     }
 }
 
@@ -70,9 +114,6 @@ pub struct Query{
     /// ordering of the records via the columns specified
     pub order_by:Vec<(String, Direction)>,
     
-    /// list of involved tables
-    pub involved_tables:Vec<String>,
-    
     /// grouping columns to create an aggregate
     pub grouped_columns: Vec<String>,
     
@@ -90,6 +131,9 @@ pub struct Query{
     /// whe used in select, this is the 
     pub from_table:Option<String>,
     
+    /// The data values, used in bulk inserting, updating,
+    pub dao:Vec<Dao>,
+    
 }
 
 impl Query{
@@ -98,7 +142,7 @@ impl Query{
     //the default query is select
     pub fn new()->Self{
         Query{
-            sql_type:SqlType::Select,
+            sql_type:SqlType::SELECT,
             select_all:false,
             distinct:false,
             enumerate_columns:true,
@@ -108,40 +152,34 @@ impl Query{
             filters:Vec::new(),
             joins:Vec::new(),
             order_by:Vec::new(),
-            involved_tables:Vec::new(),
             grouped_columns:Vec::new(),
             excluded_columns:Vec::new(),
             page:None,
             items_per_page:None,
             from_table:None,
+            dao:vec![],
         }
     }
     
     pub fn select()->Self{
         let mut q = Query::new();
-        q.sql_type = SqlType::Select;
+        q.sql_type = SqlType::SELECT;
         q
     }
     
     pub fn insert()->Self{
         let mut q = Query::new();
-        q.sql_type = SqlType::Insert;
+        q.sql_type = SqlType::INSERT;
         q
     }
     pub fn update()->Self{
         let mut q = Query::new();
-        q.sql_type = SqlType::Update;
+        q.sql_type = SqlType::UPDATE;
         q
     }
     pub fn delete()->Self{
         let mut q = Query::new();
-        q.sql_type = SqlType::Delete;
-        q
-    }
-    
-    pub fn create()->Self{
-        let mut q = Query::new();
-        q.sql_type = SqlType::Create;
+        q.sql_type = SqlType::DELETE;
         q
     }
     
@@ -176,11 +214,11 @@ impl Query{
     /// can this be called before the mentioned of the enumerated column?
     /// else these needs to be stored and have a final list of columns
     /// that is mentioned in the query
-    pub fn exclude_column(&mut self, table:&String, column:&String){
+    pub fn exclude_column(&mut self, table:&Table, column:&String){
         let c = ColumnName{
                 column:column.clone(),
-                table:table.clone(),
-                schema:None,
+                table: table.name.to_string(),
+                schema: Some(table.schema.to_string()),
                 rename:None,
             };
         self.excluded_columns.push(c);
@@ -201,10 +239,9 @@ impl Query{
     pub fn set_items_per_page(&mut self, items:usize){
         self.items_per_page = Some(items);
     }
-    
-    pub fn from_table(&mut self, table:&String){
-        self.from_table = Some(table.clone());
-        self.involved_tables.push(table.clone());
+
+    pub fn from_table(&mut self, table:&Table){
+        self.from_table = Some(table.complete_name());
     }
     
     /// join a table on this query
@@ -225,7 +262,6 @@ impl Query{
     //
     // ```
     pub fn join(&mut self, join:Join){
-        self.involved_tables.push(join.table.clone());
         self.joins.push(join);
     }
     
@@ -241,43 +277,43 @@ impl Query{
     //
     // ```
     
-    pub fn left_join(&mut self, table:String, column1:String, column2:String){
+    pub fn left_join(&mut self, table:&Table, column1:String, column2:String){
         let join = Join{
             modifier:Some(Modifier::LEFT),
             join_type:JoinType::OUTER,
-            table:table,
+            table_name: TableName::from_table(table),
             column1:vec![column1],
             column2:vec![column2]
         };
         self.join(join);
     }
-    pub fn right_join(&mut self, table:String, column1:String, column2:String){
+    pub fn right_join(&mut self, table:&Table, column1:String, column2:String){
         let join = Join{
             modifier:Some(Modifier::RIGHT),
             join_type:JoinType::OUTER,
-            table:table,
+            table_name: TableName::from_table(table),
             column1:vec![column1],
             column2:vec![column2]
         };
         self.join(join);
     }
     
-    pub fn full_join(&mut self, table:String, column1:String, column2:String){
+    pub fn full_join(&mut self, table:&Table, column1:String, column2:String){
         let join = Join{
             modifier:Some(Modifier::FULL),
             join_type:JoinType::OUTER,
-            table:table,
+            table_name: TableName::from_table(table),
             column1:vec![column1],
             column2:vec![column2]
         };
         self.join(join);
     }
     
-    pub fn inner_join(&mut self, table:String, column1:String, column2:String){
+    pub fn inner_join(&mut self, table:&Table, column1:String, column2:String){
         let join  = Join{
             modifier:None,
             join_type:JoinType::INNER,
-            table:table,
+            table_name: TableName::from_table(table),
             column1:vec![column1],
             column2:vec![column2]
         };
@@ -296,5 +332,14 @@ impl Query{
     
     pub fn rename(&mut self, table:String, column:String, new_column_name:String){
         self.renamed_columns.push((table, column, new_column_name));
+    }
+    
+    pub fn get_involved_tables(&self){
+        
+    }
+    
+    /// preprocess the missing fields of the query,
+    /// such as mentioning the columns of the from_table
+    pub fn finalize(){
     }
 }

@@ -175,11 +175,75 @@ impl PartialEq for Column{
     }
 }
 
-
+/// trait for table definition
 pub trait IsTable{
     fn table()->Table;
 }
 
+/// all referenced table used in context
+pub struct RefTable<'a>{
+    /// the table being referred
+    pub table: &'a Table,
+    /// the referring column, applicable to direct has_one
+    column: Option<&'a Column>,
+    linker_table: Option<&'a Table>,
+    pub is_ext: bool,
+    pub is_has_one: bool,
+    pub is_has_many: bool,
+    pub is_direct: bool,
+}
+
+/// FIXME need more terse and ergonomic handling of conflicting member names
+impl <'a>RefTable<'a>{
+    
+    /// return the appropriate member name of this reference
+    /// when used with the table in context
+    /// will have to use another name if the comed up name
+    /// already in the column names
+    /// 1. the concise name of the referred/referrring table
+    /// 2. the name of the referred/referring table
+    /// 3. the appended column_name and the table name
+    /// 4. the table_name appended with HasMany, or HasOne
+    /// 1:1, 1:M, M:M
+    /// 11, 1m mm
+    pub fn member_name(&self, used_in_table:&Table)->String{
+        let has_conflict = false;
+        if self.is_has_one{
+            if has_conflict{
+                let suffix = "_1";
+                return format!("{}{}",self.column.unwrap().name, suffix);
+            }else{
+                return self.column.unwrap().condense_name();
+            }
+        }
+        if self.is_ext{
+            if has_conflict{
+                let suffix = "_1";
+                return format!("{}{}",self.table.name, suffix);
+            }else{
+                return self.table.condensed_member_name(used_in_table);
+            }
+        }
+        if self.is_has_many && self.is_direct{
+            if has_conflict{
+                let suffix = "_1m";
+                return format!("{}{}",self.table.name, suffix);
+            }else{
+                return self.table.name.to_string();
+            }
+            
+        }
+         if self.is_has_many && !self.is_direct{
+             if has_conflict{
+                let suffix = "_mm";
+                return format!("{}{}",self.table.name, suffix);
+            }else{
+                return self.table.name.to_string();
+            }
+        }
+        unreachable!();
+    }
+}
 
 
 #[derive(Debug)]
@@ -229,8 +293,75 @@ impl PartialEq for Table{
 impl Table{
     
     /// return the long name of the table using schema.table_name
-    pub fn long_name(&self)->String{
+    pub fn complete_name(&self)->String{
         format!("{}.{}", self.schema, self.name)
+    }
+    
+    /// capitalize the first later, if there is underscore remove it then capitalize the next letter
+    pub fn struct_name(&self)->String{
+        let mut struct_name = String::new();
+        for i in self.name.split('_'){
+                struct_name.push_str(&capitalize(i));
+        }
+        struct_name
+    }
+    
+    /// get the display name of this table
+    /// product_availability -> Product Availability
+    pub fn displayname(&self)->String{
+        let mut display_name = String::new();
+        for i in self.name.split('_'){
+            display_name.push_str(&capitalize(i));
+            display_name.push_str(" ");
+        }
+        display_name.trim().to_string()
+    }
+    
+    /// get a shorter display name of a certain table
+    /// when being refered to this table
+    /// example product.product_availability -> Availability
+    /// user.user_info -> Info
+    pub fn condensed_displayname(&self, table:&Table)->String{
+        if self.name.len() > table.name.len(){
+            let mut concise_name = String::new();
+            for i in self.name.split('_'){
+                if table.name != i{
+                    concise_name.push_str(&capitalize(i));
+                    concise_name.push_str(" ");
+                }
+            }
+            return concise_name.trim().to_string()    
+        }else{
+            return self.displayname();
+        }
+    }
+    
+   /// remove plural names such as users to user
+   fn clean_name(&self)->String{
+        if self.name.ends_with("s"){
+            return self.name.trim_right_matches("s").to_string();
+        }
+        if self.name.ends_with("ies"){
+            return self.name.trim_right_matches("y").to_string();
+        }
+        self.name.to_string()
+    }
+    
+    /// get a condensed name of this table when used in contex with another table
+    pub fn condensed_member_name(&self, used_in_table:&Table)->String{
+        if self.name.len() > used_in_table.name.len(){
+            let mut concise_name = String::new();
+            let used_in_tablename = used_in_table.clean_name();
+            for i in self.name.split('_'){
+                if used_in_tablename != i{
+                    concise_name.push_str(i);
+                    concise_name.push_str("_");
+                }
+            }
+            return concise_name.trim_right_matches("_").to_string()    
+        }else{
+            return self.name.to_string();
+        }
     }
     
     /// determine if this table has a colum named
@@ -321,25 +452,25 @@ impl Table{
     /// return the first match of table name regardless of which schema it belongs to.
     /// get the table definition using the table name from an array of table object
     /// [FIXME] Needs to have a more elegant solution by using HashMap
-    pub fn get_table<'a>(table_name:&str, tables: &'a Vec<Table>)->Option<&'a Table>{
+    pub fn get_table<'a>(schema: &str, table_name:&str, tables: &'a Vec<Table>)->&'a Table{
         for t in tables{
-            if t.name == table_name{
-                return Some(t);
+            if t.schema == schema && t.name == table_name{
+                return t;
             }
         }
-        None
+        panic!("Table {} is not on the list can not be found", table_name);
     }
 
 
 
     /// get all the tables that is referred by this table
     /// get has_one
-    pub fn referred_tables<'a>(&'a self, tables:&'a Vec<Table>)->Vec<(&'a Column, &'a Table)>{
+    fn referred_tables<'a>(&'a self, tables:&'a Vec<Table>)->Vec<(&'a Column, &'a Table)>{
         let mut referred_tables = Vec::new();
         for c in &self.columns{
             if c.foreign.is_some(){
-                let ftable_name = &c.foreign.clone().unwrap().table;
-                let ftable = Self::get_table(ftable_name, tables).unwrap();
+                let ft = &c.foreign.clone().unwrap();
+                let ftable = Self::get_table(&ft.schema, &ft.table, tables);
                 referred_tables.push((c, ftable));
             }
         }
@@ -350,7 +481,7 @@ impl Table{
     /// get all other tables that is refering to this table
     /// when any column of a table refers to this table
     /// get_has_many
-    pub fn referring_tables<'a>(&self, tables: &'a Vec<Table>)->Vec<(&'a Table, &'a Column)>{
+    fn referring_tables<'a>(&self, tables: &'a Vec<Table>)->Vec<(&'a Table, &'a Column)>{
         let mut referring = Vec::new();
         for t in tables{
             for c in &t.columns{
@@ -364,9 +495,83 @@ impl Table{
         referring
     }
     
+    pub fn get_all_referenced_table<'a>(&'a self, all_tables:&'a Vec<Table>)->Vec<RefTable>{
+        let mut referenced_tables = vec![];
+        
+        let has_one = self.referred_tables(all_tables);
+        for (column, table) in has_one{
+            let ref_table = RefTable{
+                                table: table,
+                                column: Some(column),
+                                linker_table: None,
+                                is_has_one: true,
+                                is_ext: false,
+                                is_has_many: false,
+                                is_direct: true,
+                            };
+            referenced_tables.push(ref_table);
+        }
+        
+        
+        let extension_tables = self.extension_tables(all_tables);
+        for ext in &extension_tables{
+             let ref_table = RefTable{
+                                table: ext,
+                                column: None,
+                                linker_table: None,
+                                is_has_one: false,
+                                is_ext: true,
+                                is_has_many: false,
+                                is_direct: true,
+                            };
+            referenced_tables.push(ref_table);
+        }
+        
+        let has_many_direct = self.referring_tables(all_tables);
+        let mut included_has_many = vec![];
+        for (hd,column) in has_many_direct{
+            if !hd.is_linker_table() &&
+                !extension_tables.contains(&hd) &&
+                !included_has_many.contains(&hd){
+                let ref_table = RefTable{
+                            table: hd,
+                            column: Some(column),
+                            linker_table: None,
+                            is_has_one: false,
+                            is_ext: false,
+                            is_has_many: true,
+                            is_direct: true,
+                        };
+                referenced_tables.push(ref_table);
+                included_has_many.push(hd);
+            }
+        }
+        let has_many_indirect = self.indirect_referring_tables(all_tables);
+        
+        for (hi, linker) in has_many_indirect {
+            if !hi.is_linker_table() && 
+            !extension_tables.contains(&hi) &&
+            !included_has_many.contains(&hi){
+             let ref_table = RefTable{
+                            table: hi,
+                            column: None,
+                            linker_table:Some(linker),
+                            is_has_one: false,
+                            is_ext: false,
+                            is_has_many: true,
+                            is_direct: false,
+                        };
+                    
+                referenced_tables.push(ref_table);
+                included_has_many.push(hi);
+            }
+        }
+        referenced_tables
+    }
+    
     ///determine if this table is a linker table
     /// FIXME: make sure that there are 2 different tables referred to it
-    pub fn is_linker_table(&self)->bool{
+    fn is_linker_table(&self)->bool{
         let pk = self.primary_columns();
         let fk = self.foreign_columns();
         let uc = self.uninherited_columns();
@@ -381,7 +586,7 @@ impl Table{
     /// which doesn't make sense to be a stand alone window on its own
     /// characteristic: if it has only 1 has_one which is its owning parent table
     /// and no other direct or indirect referring table
-    pub fn is_owned(&self, tables: &Vec<Table>)->bool{
+    fn is_owned(&self, tables: &Vec<Table>)->bool{
         let has_one = self.referred_tables(tables);
         let has_many = self.referring_tables(tables);
         has_one.len() == 1 && has_many.len() == 0
@@ -398,7 +603,7 @@ impl Table{
     ///         and 1 of which refer to the primary column of this table
     ///     * then the other table that is refered is the indirect referring table
     /// returns the table that is indirectly referring to this table and its linker table
-    pub fn indirect_referring_tables<'a>(&self, tables: &'a Vec<Table>)->Vec<(&'a Table, &'a Table)>{
+    fn indirect_referring_tables<'a>(&self, tables: &'a Vec<Table>)->Vec<(&'a Table, &'a Table)>{
         let mut indirect_referring_tables = Vec::new();
         for (rt, column) in self.referring_tables(tables){
             let rt_pk = rt.primary_columns();
@@ -442,7 +647,7 @@ impl Table{
     /// it is just an extension table
     /// [FIXED]~~FIXME:~~ 2 primary 1 foreign should not be included as extension table
     /// case for photo_sizes
-    pub fn extension_tables<'a>(&self, tables: &'a Vec<Table>)->Vec<&'a Table>{
+    fn extension_tables<'a>(&self, tables: &'a Vec<Table>)->Vec<&'a Table>{
         let mut extension_tables = Vec::new();
         for (rt, _) in self.referring_tables(tables){
             let pkfk = rt.primary_and_foreign_columns();
@@ -500,44 +705,7 @@ impl Table{
 
 
 
-    /// capitalize the first later, if there is underscore remove it then capitalize the next letter
-    pub fn struct_name(&self)->String{
-        let mut struct_name = String::new();
-        for i in self.name.split('_'){
-                struct_name.push_str(&capitalize(i));
-        }
-        struct_name
-    }
-    
-    /// get the display name of this table
-    /// product_availability -> Product Availability
-    pub fn displayname(&self)->String{
-        let mut display_name = String::new();
-        for i in self.name.split('_'){
-            display_name.push_str(&capitalize(i));
-            display_name.push_str(" ");
-        }
-        display_name.trim().to_string()
-    }
-    
-    /// get a shorter display name of a certain table
-    /// when being refered to this table
-    /// example product.product_availability -> Availability
-    /// user.user_info -> Info
-    pub fn concise_name(&self, table:&Table)->String{
-        if self.name.len() > table.name.len(){
-            let mut concise_name = String::new();
-            for i in self.name.split('_'){
-                if table.name != i{
-                    concise_name.push_str(&capitalize(i));
-                    concise_name.push_str(" ");
-                }
-            }
-            return concise_name.trim().to_string()    
-        }else{
-            return self.displayname();
-        }
-    }
+ 
     /// build a source code which express it self as a table object
     /// which is a meta definition of the struct itself
     pub fn to_tabledef_source_code(&self)->String{

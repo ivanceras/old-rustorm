@@ -1,10 +1,11 @@
-use filter::Filter;
 use query::Query;
 use table::{Table, Column};
-use meta::ModelMetaData;
-use types::Dao;
+use dao::Dao;
+use dao::IsDao;
 use writer::Writer;
+use dao::Type;
 
+/// A lower level API for manipulating objects in the database
 pub trait Database{
 
 /// Generic Database interface
@@ -13,101 +14,117 @@ pub trait Database{
 
     /// begin database transaction
     fn begin(&self);
-    
+
     /// commit database transaction
     fn commit(&self);
-    
-    /// rollback data changes executed prior to calling the begin method    
+
+    /// rollback data changes executed prior to calling the begin method
     fn rollback(&self);
-    
+
     /// determine if this transaction has been committed or rolledback
     fn is_transacted(&self)->bool;
-    
+
     /// determine if the database connection closed
-    fn is_closed(&self)->bool; 
-    
+    fn is_closed(&self)->bool;
+
     /// check if the database is still connected
     fn is_connected(&self)->bool;
-    
+
     /// close the database connection
     fn close(&self);
-    
+
     /// determine if the database connection is still valid
     fn is_valid(&self)->bool;
 
     /// reset the database connection
     fn reset(&self);
-    
 
-    /// execute a select statement defined by the query object
-    fn retrieve(&self, query:&Query)->Vec<Dao>;
-    
-    /// update a certain Dao object with the model definition and filter
-    fn update(&self, dao:Dao, model:&Table, filters:&Vec<Filter>)->Dao;
+    /// select
+    /// returns an array to the qualified records
+    fn select(&self, query:&Query)->Vec<Dao>;
+
+    /// insert
+    /// insert an object, returns the inserted Dao value
+    /// including the value generated via the defaults
+    fn insert(&self, query:&Query)->Dao;
+
+    /// update
+    /// returns the updated Dao
+    fn update(&self,query:&Query)->Dao;
 
     /// delete records
-    fn delete(&self, model:&Table, filters:&Vec<Filter>)->usize;
-    
-    /// empty the table
-    fn empty(&self, model:&Table, forced:bool)->usize;
+    /// returns the number of deleted records
+    fn delete(&self, query:&Query)->Result<u64, &str>;
 
-    /// write a binary large object to the database
-    fn write_to_blob(&self, buffer:Vec<u8>)->usize;
-    
-    /// write the blob to a file
-    fn write_to_file(&self, filename:&String);
-    
-    /// get the blob from the database
-    fn get_blob(&self, oid:u64)->Vec<u8>;
+    /// DDL executions
+    /// simple sql string with no parameters and no return
+    /// create, alter, drop, truncate, rename, constraint
+    /// returns error if error occurs
+    fn execute_ddl(&self, sql:&String)->Result<(), &str>;
 
-
-    ///
-    /// Insert a Dao object with the definition defined in the model argument
-    /// Query when inserting a data that is coming from a Query
-    /// meta is a lookup for the query building to be used
-    
-    fn insert(&self, dao:&Dao, meta:&ModelMetaData, model:&Table, query:&Query)->Dao;
-    
-     ///
-     /// Search a set of record from the base Query that would have been returned by the base query
-     ///
-    fn search(&self, query:&Query, keyword:String);
+    /// everything else
+    fn execute_sql(&self, sql:&String, param:&Vec<String>)->Result<u64, &str>;
 
     /// Actually converting the from whatever JDBC converts the object to the correct type that we intend to be using
     fn correct_data_types(&self, dao_list:Vec<Dao>, model:&Table);
 
-    /// execute a plain sql string
-    fn execute_sql(&self, sql:&String, param:&Vec<String>)->usize;
+
+    /// build a query, return the sql string and the parameters.
+    fn build_query(&self, query:&Query)->(String, Vec<Type>);
+
+    fn build_select(&self, query: &Query)->(String, Vec<Type>){
+        println!("building select query");
+        let mut w = Writer::new();
+        w.append("SELECT ");
+        let mut do_comma = false;
+        let mut cnt = 0;
+        for ec in &query.enumerated_columns{
+            if do_comma{w.comma();}else{do_comma=true;}
+            cnt += 1;
+            if cnt % 5 == 0{//break at every 5 columns to encourage sql tuning/revising
+                w.ln_tab();
+            }
+            w.append(" ");
+            w.append(&ec.column);
+        }
+        w.ln();
+        w.append(" FROM ");
+        assert!(query.from_table.is_some());
+        w.append(query.from_table.as_ref().unwrap());
+        (w.src, vec![])
+    }
+
+    #[test]
+    fn test_build_select(){
     
-    /// execute a query object
-    fn execute_query(&self, query:Query)->usize;
+    }
 
 }
 
 pub trait DatabaseDDL{
     //////////////////////////////////////////
     /// The following methods involves DDL(Data definition language) operation
-    ////////////////////////////////////////    
+    ////////////////////////////////////////
 
     /// create a database schema
     fn create_schema(&self, schema:&String);
-    
+
     /// drop the database schema
     fn drop_schema(&self, schema:&String, forced:bool);
-    
+
     /// create a database table based on the Model Definition
     fn create_table(&self, model:&Table);
-    
-    /// rename table
-    fn rename_table(&self, schema:String, table:String, new_tablename:String);
-    
+
+    /// rename table, in the same schema
+    fn rename_table(&self, table:&Table, new_tablename:String);
+
     /// drop table
-    fn drop_table(&self, schema:String, table:String, forced:bool);
-    
+    fn drop_table(&self, table:&Table, forced:bool);
+
     /// set the foreign key constraint of a table
     fn set_foreign_constraint(&self, model:&Table);
 
-    /// set the primary key constraint of a table    
+    /// set the primary key constraint of a table
     fn set_primary_constraint(&self, model:&Table);
 }
 
@@ -116,27 +133,27 @@ pub trait DatabaseDev{
 ////////////////////////////////////////
 /// Database interface use for the development process
 ////////////////////////////////////////////
-    
+
     /// applicable to later version of postgresql where there is inheritance
     fn get_table_sub_class(&self, schema:&str, table:&str)->Vec<String>;
-    
+
     fn get_parent_table(&self, schema:&str, table:&str)->Option<String>;
-    
+
     ////
     /// Build the Table object based on the extracted meta data info from database
     /// This is queries directly from the database, so this will be costly. Only used this on initialization processes
     ///
     fn get_table_metadata(&self, schema:&str, table:&str)->Table;
-    
+
     /// get all the tables in this database
     fn get_all_tables(&self)->Vec<(String, String)>;
-    
+
     /// get the comment of this table
     fn get_table_comment(&self, schema:&str, table:&str)->Option<String>;
-    
+
     /// get the inherited columns of this table
     fn get_inherited_columns(&self, schema:&str, table:&str)->Vec<String>;
-    
+
     ///get the equivalent postgresql database data type to rust data type
     /// returns (module, type)
     fn get_rust_data_type(&self, db_type:&str)->(Vec<String>, String);
@@ -160,7 +177,7 @@ pub trait DatabaseDev{
         }
         imports.sort_by(|a, b| a.cmp(b));
         imports.dedup();
-        
+
         //struct
         let struct_name = table.struct_name();
         w.ln();
@@ -178,7 +195,7 @@ pub trait DatabaseDev{
         w.append("#[derive(Debug)]");
         w.ln();
         w.append("pub struct ").append(&struct_name).appendln(" {");
-        
+
         let mut included_columns = Vec::new();
         //primary columns
         for p in table.primary_columns(){
@@ -200,7 +217,7 @@ pub trait DatabaseDev{
                 included_columns.push(u.name.clone());
             }
         }
-        
+
         // uninherited columns
         for uc in &table.uninherited_columns(){
             if !included_columns.contains(&uc.name){
@@ -208,7 +225,7 @@ pub trait DatabaseDev{
                 included_columns.push(uc.name.clone());
             }
         }
-        
+
         // inherited columns
         for ic in &table.inherited_columns(){
             if !included_columns.contains(&ic.name){
@@ -217,143 +234,70 @@ pub trait DatabaseDev{
             }
         }
         
-        // foreign columns, has_one
-        let foreign_tables = table.referred_tables(all_tables);
-        for (column, ft) in foreign_tables{
-            let condense_name = column.condense_name();
-            let member_name = if included_columns.contains(&condense_name){
-                format!("{}_HasOne",column.name)
+        let referenced_table = table.get_all_referenced_table(all_tables);
+        for ref_table in referenced_table{
+            w.ln_tab();
+            w.append("/// ");
+            let comment = if ref_table.is_has_one{
+                if ref_table.table != table{
+                    "has one"
+                }
+                else{
+                    "has one, self referential"
+                }
+            }else if ref_table.is_ext{
+                "has one, extension table"
+            }
+            else if ref_table.is_has_many{
+                if ref_table.is_direct{
+                    "has many"
+                }else{
+                    "has mny, indirect"
+                }
             }
             else{
-                condense_name
+                "unreachable!"
             };
-            
-            if ft.name != table.name { //do not include self referencial table
-                w.tab();
-                w.append("/// has one");
-                w.ln();
-                w.tab();
-                w.append("pub ");
-                w.append(&member_name);
-                included_columns.push(member_name.clone());
-                w.append(":");
-                w.append("Option<");
-                w.append(&ft.struct_name());
-                imported_tables.push(ft);
-                w.append(">");
-                w.comma();
-                w.ln();
-            }else{
-                w.tab();
-                w.append("/// has one, self referential");
-                w.ln();
-                w.tab();
-                w.append("pub ");
-                w.append(&member_name);
-                included_columns.push(member_name.clone());
-                w.append(":");
-                w.append("Option<");
-                w.append("Box<");
-                w.append(&ft.struct_name());
-                w.append(">");
-                w.append(">");
-                w.comma();
-                w.ln();
-            }
-        }
-        
-        //extension tables
-        let extension_tables = table.extension_tables(all_tables);
-        let mut included_ext = Vec::new();
-        for ext in &extension_tables{
-            if !included_ext.contains(&&ext.name){
-                w.tab();
-                w.append("/// has one, extension table");
-                w.ln();
-                w.tab();
-                w.append("pub ");
-                let member_name = if included_columns.contains(&ext.name){
-                    format!("{}_Ext",&ext.name)
+            w.append(comment);
+            w.ln_tab();
+            let member_name = ref_table.member_name(table);
+            w.append("pub ");
+            w.append(&member_name);
+            w.append(": ");
+            if ref_table.is_has_one {
+                if ref_table.table != table{
+                    w.append("Option<");
+                    w.append(&ref_table.table.struct_name());
+                    w.append(">");
                 }else{
-                    ext.name.to_string()
-                };
-                w.append(&member_name);
-                w.append(":");
-                w.append("Option<");
-                w.append("Box<");//put it inside the box to get rid of illegal recursive struct
-                w.append(&ext.struct_name());
-                imported_tables.push(ext);
-                w.append(">");
-                w.append(">");
-                w.comma();
-                w.ln();
-                included_ext.push(&ext.name);//put to included in hasMany to prevent it from putting it there
+                    w.append("Option<Box<");
+                    w.append(&ref_table.table.struct_name());
+                    w.append(">>");
+                }
             }
-        }
-        //indirect referring table
-        let mut linker_tables = Vec::new();
-        for (indirect, linker_table) in table.indirect_referring_tables(all_tables){
-                linker_tables.push(linker_table);
-                w.tab();
-                w.append("/// has many, indirect referring table, derived from linker table: ");
-                w.append(&linker_table.name);
-                w.ln();
-                w.tab();
-                w.append("pub ");
-                 let member_name = if included_columns.contains(&indirect.name){
-                    format!("{}_Indirect",&indirect.name)
-                }else{
-                    indirect.name.to_string()
-                };
-                w.append(&member_name);
-                w.append(":");
+            if ref_table.is_ext{
+                w.append("Option<Box<");
+                w.append(&ref_table.table.struct_name());
+                w.append(">>");
+            }
+            if ref_table.is_has_many{
                 w.append("Vec<");//put it inside the box to get rid of illegal recursive struct
-                w.append(&indirect.struct_name());
-                imported_tables.push(indirect);
+                w.append(&ref_table.table.struct_name());
                 w.append(">");
-                w.comma();
-                w.ln();
-                //included_has_many.push(&indirect.name);//put to included in hasMany to prevent it from putting it there
-        }
-        
-        // referring table, has_many
-        let mut included_has_many = Vec::new();
-        for (ref_table, _) in table.referring_tables(all_tables){
-            if !linker_tables.contains(&ref_table) &&
-               !extension_tables.contains(&ref_table) &&
-               !included_has_many.contains(&&ref_table.name){
-                w.tab();
-                w.append("/// has many");
-                w.ln();
-                w.tab();
-                w.append("pub ");
-                //just appending has_many when there is a column name with that table already
-                let member_name = if included_columns.contains(&ref_table.name){
-                    format!("{}_HasMany",&ref_table.name)
-                }else{
-                    ref_table.name.to_string()
-                };
-                w.append(&member_name);
-                included_columns.push(member_name.clone());
-                w.append(":");
-                w.append("Vec<");
-                w.append(&ref_table.struct_name());
-                imported_tables.push(ref_table);
-                w.append(">");
-                w.comma();
-                w.ln();
-                included_has_many.push(&ref_table.name);
             }
+            w.comma();
+            imported_tables.push(ref_table.table);
+            
         }
-        
+        w.ln();
         w.append("}");
         w.ln();
-        imported_tables.sort_by(|a, b| (a.long_name().cmp(&b.long_name())));
+        imported_tables.sort_by(|a, b| (a.complete_name().cmp(&b.complete_name())));
         imported_tables.dedup();
-        
+
         (imports, imported_tables, w.src)
     }
-    
+
     fn write_column(w:&mut Writer, c:&Column){
         if c.comment.is_some(){
             let comment = &c.comment.clone().unwrap();
@@ -403,6 +347,6 @@ pub trait DatabaseDev{
         w.comma();
         w.ln();
     }
-    
-    
+
+
 }

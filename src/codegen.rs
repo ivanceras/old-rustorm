@@ -124,6 +124,7 @@ pub fn generate_all<T:DatabaseDev>(db_dev:&T, config:&Config){
 fn generate_table<T:DatabaseDev>(db_dev:&T, config:&Config, table:&Table, all_tables:&Vec<Table>){
     let mut w = Writer::new();
     let (struct_imports, imported_tables, struct_src) = db_dev.to_struct_source_code(&table, all_tables);
+    let (dao_imports, dao_src) = generate_dao_conversion_code(table, all_tables);
     let (meta_imports, meta_src) = generate_meta_code(table);
     
     for i in struct_imports{
@@ -137,7 +138,10 @@ fn generate_table<T:DatabaseDev>(db_dev:&T, config:&Config, table:&Table, all_ta
             w.ln();
         }
     }
-    
+    for i in dao_imports{
+        w.append(&format!("use {};",i));
+        w.ln();
+    }
     for i in meta_imports{
         w.append(&format!("use {};",i));
         w.ln();
@@ -147,8 +151,10 @@ fn generate_table<T:DatabaseDev>(db_dev:&T, config:&Config, table:&Table, all_ta
     w.append(&struct_src);
     w.ln();
     w.ln();
+    w.append(&dao_src);
+    w.ln();
+    w.ln();
     w.append(&meta_src);
-    
     
     let module_dir = config.module_dir(&table.schema);
     fs::create_dir_all(&module_dir);
@@ -232,6 +238,59 @@ fn generate_meta_code(table: &Table)->(Vec<String>, String){
     (imports, w.src)
 }
 
+fn generate_dao_conversion_code(table: &Table, all_tables:&Vec<Table>)->(Vec<String>, String){
+    let mut w = Writer::new();
+    let mut imports = Vec::new();
+    imports.push("rustorm::dao::Dao".to_string());
+    imports.push("rustorm::dao::IsDao".to_string());
+    w.ln();
+    w.append("impl IsDao for ");
+    w.append(&table.struct_name());
+    w.append("{");
+    w.ln_tab();
+    w.append("fn from_dao(dao:&Dao)->Self{");
+    w.ln_tabs(2);
+    w.append(&table.struct_name());
+    w.append("{");
+    for c in &table.columns{
+        w.ln_tabs(3);
+        w.append(&c.name);
+        w.append(": ");
+        if c.not_null{
+            w.append("dao.get");
+        }else{
+            w.append("dao.get_opt");
+        }
+        w.append("(\"");
+        w.append(&c.name);
+        w.append("\")");
+        w.comma();
+    }
+    let referenced_tables = table.get_all_referenced_table(all_tables);
+    for ref_table in referenced_tables{
+        let member_name = ref_table.member_name(table);
+        w.ln_tabs(3);
+        w.append(&member_name);
+        w.append(": ");
+        if ref_table.is_has_one{
+            w.append("None");
+        }
+        if ref_table.is_ext{
+            w.append("None");
+        }
+        if ref_table.is_has_many{
+            w.append("vec![]");
+        }
+        w.comma();
+    }
+    w.ln_tabs(2);
+    w.append("}");
+    w.ln_tab();
+    w.append("}");
+    w.ln();
+    w.append("}");
+    (imports, w.src)
+}
 
 fn generate_fn_get_all_tables(tables:&Vec<Table>)->String{
     let mut w = Writer::new();
@@ -258,11 +317,11 @@ fn generate_fn_get_all_tables(tables:&Vec<Table>)->String{
 
 
 fn save_to_file(filename: &str, content:&String){
-    let mut file = match File::create(filename){
-        Err(why) => panic!("couldn't create file {}", filename),
+   match File::create(filename){
+        Err(_) => panic!("couldn't create file {}", filename),
         Ok(mut file) => {
             match file.write_all(content.as_bytes()){
-                Ok(x) => {println!("Saved to {}",filename);},
+                Ok(_) => {println!("Saved to {}",filename);},
                 Err(_) => {println!("There was error saving to file: {}",filename)}
             };
         },

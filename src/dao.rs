@@ -30,6 +30,7 @@ pub enum Type{
     NaiveDate(NaiveDate),
     NaiveTime(NaiveTime),
     NaiveDateTime(NaiveDateTime),
+    Null,
 }
 
 pub trait ToType{
@@ -137,8 +138,17 @@ impl ToType for NaiveDateTime{
 ///
 ///
 ///
-pub trait FromType: Sized{
+pub trait FromType{
     fn from_type(ty:Type)->Self;
+}
+
+impl FromType for bool{
+    fn from_type(ty:Type)->Self{
+        match ty{
+            Type::Bool(x) => x,
+            _ => panic!("error!"),
+        }
+    }
 }
 
 impl FromType for i8{
@@ -227,6 +237,15 @@ impl FromType for String{
     fn from_type(ty:Type)->Self{
         match ty{
             Type::String(x) => x,
+            _ => panic!("error! {:?}", ty),
+        }
+    }
+}
+
+impl FromType for Uuid{
+    fn from_type(ty:Type)->Self{
+        match ty{
+            Type::Uuid(x) => x,
             _ => panic!("error!"),
         }
     }
@@ -268,19 +287,31 @@ impl FromType for NaiveDateTime{
     }
 }
 
+/// trait for converting dao to model
+pub trait IsDao:Sized{
+    fn from_dao(dao: &Dao)->Self;
+}
+
 #[derive(RustcDecodable, RustcEncodable)]
+#[derive(Debug, Clone)]
 pub struct Dao{
+    /// an optional table where this Dao values was derived from
+    pub from_table:Option<String>,
     pub values:HashMap<String, Type>
 }
 
 impl Dao{
 
     pub fn new()->Self{
-        Dao{values:HashMap::new()}
+        Dao{from_table:None, values:HashMap::new()}
     }
     
-    pub fn set_value(&mut self, column: &str, value:&ToType){
+    pub fn set(&mut self, column: &str, value:&ToType){
         self.values.insert(column.to_string(), value.to_db_type());
+    }
+    
+    pub fn set_value(&mut self, column: &str, value:Type){
+        self.values.insert(column.to_string(), value);
     }
     /// take the value and remove the content 
     pub fn remove<T>(&mut self, column: &str) -> T where T: FromType{
@@ -289,15 +320,19 @@ impl Dao{
     }
 
     /// take the value but not removing the content
-    pub fn get<T>(&mut self, column: &str) -> T where T: FromType{
+    pub fn get<T>(&self, column: &str) -> T where T: FromType{
         let value = self.values.get(column).unwrap();
         FromType::from_type(value.clone())
     }
     /// get optional value
-    pub fn get_opt<T>(&mut self, column: &str) -> Option<T> where T: FromType{
+    pub fn get_opt<T>(&self, column: &str) -> Option<T> where T: FromType{
         let value = self.values.get(column);
         if value.is_some(){
-            Some(FromType::from_type(value.unwrap().clone()))
+            let v = value.as_ref().unwrap().clone();
+            match v{
+                &Type::Null => None,
+                _ => Some(FromType::from_type(v.clone()))
+            }
         }else{
             None
         }
@@ -308,6 +343,13 @@ impl Dao{
         self.values.get(column).unwrap()
     }
 
+}
+
+
+impl IsDao for Dao{
+    fn from_dao(dao: &Dao)->Self{
+        dao.clone()
+    }
 }
 
 #[test]

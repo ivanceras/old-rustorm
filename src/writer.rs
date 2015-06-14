@@ -38,6 +38,16 @@ impl Writer{
         self.append("\n")
     }
     #[inline]
+    pub fn ln_tab(&mut self)->&mut Self{
+        self.ln();
+        self.tab()
+    }
+    #[inline]
+    pub fn ln_tabs(&mut self, n:u32)->&mut Self{
+        self.ln();
+        self.tabs(n)
+    }
+    #[inline]
     pub fn comma(&mut self)->&mut Self{
         self.append(",")
     }
