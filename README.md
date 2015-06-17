@@ -341,3 +341,6 @@ product:iphone4s(f7521093734d488a9f60fc9f11f7e750)
 
 # For Updates
 Follow me on twitter: [@ivanceras](https://twitter.com/ivanceras)
+
+# Support this project at bountysource
+[bountysource](https://www.bountysource.com/teams/rustorm)
