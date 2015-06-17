@@ -358,9 +358,9 @@ fn test_dao(){
     let n = 20i8;
     let date = UTC::now();
     let mut d = Dao::new();
-    d.set_value("name", &s);
-    d.set_value("age", &n);
-    d.set_value("created", &date);
+    d.set("name", &s);
+    d.set("age", &n);
+    d.set("created", &date);
     let name:String = d.get("name");
     let age:i8 = d.get("age");
     let created:DateTime<UTC> = d.get("created");

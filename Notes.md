@@ -64,7 +64,7 @@ select relname,
 ```
 
 
-##Useful projects:
+## Useful projects:
 
 ### text editor
 https://github.com/gchp/iota
@@ -85,20 +85,20 @@ https://github.com/gchp/rustbox
 *If nullable make the field Optional
 
 
-##Check to see if extension are already installed in the database
+## Check to see if extension are already installed in the database
 select * from pg_extension
 
 You may need to create the schema before installing the extensions
 
 
-##releasing:
+## releasing:
 ```
 cargo publish
 ```
 
 Make sure license, github code, documentation is properly linked in the Cargo.toml file
 
-##Publishing the documents
+## Publishing the documents
 
 ```
 cargo clean
@@ -114,5 +114,99 @@ git push --force origin gh-pages
 
 ```
 
+## Using vim coding rust
+* Install pathogen
 
+```sh
+
+mkdir -p ~/.vim/autoload ~/.vim/bundle && curl -LSso ~/.vim/autoload/pathogen.vim https://tpo.pe/pathogen.vim
+
+```
+* Add this to ~/.vimrc
+
+```sh
+execute pathogen#infect()
+syntax on
+filetype plugin indent on
+
+```
+
+
+* Install syntax highlighting in rust
+
+```sh
+
+cd ~/.vim/bundle
+git clone https://github.com/rust-lang/rust.vim.git
+
+``` 
+
+* Install vim racer plugin
+
+```sh
+cd .vim/bundle/
+git clone https://github.com/ebfe/vim-racer
+
+```
+
+* Add this to ~/.vimrc
+```
+set hidden
+let g:racer_cmd = "/home/lee/Developer/racer/target/release/racer"
+let $RUST_SRC_PATH="/home/lee/Developer/rust-1.0.0/src"
+
+```
+
+* Vim number toggle
+
+```sh
+
+cd ~/.vim/bundle
+git clone git://github.com/jeffkreeftmeijer/vim-numbertoggle.git
+
+```
+* Install nerdtree for displaying files in a tabs
+
+```sh
+cd ~/.vim/bundle
+git clone https://github.com/scrooloose/nerdtree.git
+
+```
+* Add this to ~/.vimrc
+```sh
+autocmd VimEnter * NERDTree
+autocmd BufEnter * NERDTreeMirror
+
+"CTRL-N to toggle tree view with CTRL-N
+nmap <silent> <c-n> :NERDTreeToggle<CR>		
+"Set F2 to put the cursor to the nerdtree
+nmap <silent> <F2> :NERDTreeFind<CR>
+
+```
+
+You can use <CTRL-W><CTRL-W> to switch in between windows
+
+vim cheatsheet at http://vim.rtorr.com/
+
+
+## Screen capturing the desktop
+
+```sh
+sudo apt-get install byzanz
+```
+
+Install ScreenRuler/Kruler as well
+
+Record using
+```sh
+byzanz-record --duration=30 --x=2 --y=50 --width=1095 --height=595 out.gif
+byzanz-record --duration=15 --x=2 --y=50 --width=1095 --height=595 out.gif
+```
+
+put the window to the top of the OS toolbar, this is 50px including the window of the terminal
+put a margin of around 2px from the side 
+
+## git compare file changes
+git config diff.tool vimdiff
+git difftool
 

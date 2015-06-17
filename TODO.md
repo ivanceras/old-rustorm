@@ -23,3 +23,6 @@ impl RefTable{
         //checks to see if conflicts to other has_ones, has_many, ext
     }
 }
+
+## June 16, 2015
+* Make the query api with filter work

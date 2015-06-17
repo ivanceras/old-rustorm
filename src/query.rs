@@ -334,12 +334,18 @@ impl Query{
         self.renamed_columns.push((table, column, new_column_name));
     }
     
+    /// TODO: return the table used in from_table, joins
     pub fn get_involved_tables(&self){
         
     }
     
     /// preprocess the missing fields of the query,
     /// such as mentioning the columns of the from_table
-    pub fn finalize(){
+    /// enumerate the columns of the involved tables
+    /// skippint those which are explicitly ignored
+    /// the query will then be built and ready to be executed
+    pub fn finalize(&self){
+        let involved_tables = self.get_involved_tables();
+        // enumerate columns;
     }
 }

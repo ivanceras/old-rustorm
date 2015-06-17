@@ -1,6 +1,7 @@
 # rustorm
 
 [![Latest Version](https://img.shields.io/crates/v/rustorm.svg)](https://crates.io/crates/rustorm)
+[![Build Status](https://api.travis-ci.org/ivanceras/rustorm.svg)](https://travis-ci.org/ivanceras/rustorm)
 
 A Work in Progress rust ORM library for Postgresql
 

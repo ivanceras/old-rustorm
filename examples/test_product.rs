@@ -52,7 +52,7 @@ fn main(){
                     updated_by: row.get_opt("updated_by").ok(),
                     owner:None,
                     currency:None,
-                    product_availability:None,
+                    availability:None,
                     category:vec![],
                     photo:vec![],
                     review:vec![]
