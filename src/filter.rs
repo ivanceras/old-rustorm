@@ -1,4 +1,5 @@
 use query::Query;
+use dao::Type;
 
 pub enum Connector{
     And,
@@ -22,9 +23,10 @@ pub enum Equality{
 
 pub enum Operand{
     Query(Query),
-    Value(String),
+    Value(Type),
 }
 
+/// TODO: support for functions on columns
 pub struct Filter{
     pub connector:Connector,
     pub column:String,
@@ -35,24 +37,24 @@ pub struct Filter{
 
 impl Filter{
 
-    pub fn new(column:String, equality:Equality, operand:Operand)->Self{
+    pub fn new(column:&str, equality:Equality, operand:Operand)->Self{
         Filter{
             connector:Connector::And,
-            column:column,
+            column:column.to_string(),
             equality:equality,
             operand:operand,
             subfilters:Vec::new(),
         }
     }
     
-    pub fn and(mut self, column:String, equality:Equality, operand:Operand)->Self{
+    pub fn and(mut self, column:&str, equality:Equality, operand:Operand)->Self{
         let mut filter = Filter::new(column, equality, operand);
         filter.connector = Connector::And;
         self.subfilters.push(filter);
         self
     }
     
-    pub fn or(mut self, column:String, equality:Equality, operand:Operand)->Self{
+    pub fn or(mut self, column:&str, equality:Equality, operand:Operand)->Self{
         let mut filter = Filter::new(column, equality, operand);
         filter.connector = Connector::Or;
         self.subfilters.push(filter);

@@ -1,9 +1,9 @@
 use query::Query;
 use table::{Table, Column};
 use dao::Dao;
-use dao::IsDao;
 use writer::Writer;
 use dao::Type;
+use filter::{Connector, Equality, Operand};
 
 /// A lower level API for manipulating objects in the database
 pub trait Database{
@@ -71,9 +71,59 @@ pub trait Database{
 
     /// build a query, return the sql string and the parameters.
     fn build_query(&self, query:&Query)->(String, Vec<Type>);
+    
+    /// build the filter clause or the where clause of the query
+    fn build_filters(&self, query: &Query)->(String, Vec<Type>){
+        let mut params = vec![];
+        let mut w = Writer::new();
+        let mut do_connector = false;
+        for filter in &query.filters{
+            if do_connector{
+                match filter.connector{
+                    Connector::And => w.append("AND "),
+                    Connector::Or => w.append("OR "),
+                };
+            }else{
+                do_connector = true;
+            }
+            w.append(&filter.column);
+            w.append(" ");
+            match filter.equality{
+                Equality::EQ => w.append("= "),
+                Equality::NE => w.append("!= "),
+                Equality::LT => w.append("< "),
+                Equality::LTE => w.append("<= "),
+                Equality::GT => w.append("> "),
+                Equality::GTE => w.append(">= "),
+                Equality::IN => w.append("IN "),
+                Equality::NOTIN => w.append("NOT IN "),
+                Equality::LIKE => w.append("LIKE "),
+                Equality::NULL => w.append("IS NULL "),
+                Equality::NOTNULL => w.append("IS NOT NULL "),
+                Equality::ISNULL => w.append("IS NULL "),
+            };
+            
+            match filter.operand{
+                Operand::Query(ref q) => {
+                    let (sql, param) = self.build_query(q);
+                    for p in param{//TODO: change to params.append(param) in next releases of rust
+                        params.push(p);
+                    }
+                    w.append(&sql);
+                },
+                Operand::Value(ref t) => {
+                    w.append("$1"); //TODO: fix numbered parameters according to the order of param
+                    params.push(t.clone());
+                },
+            };
+        }
+        (w.src, params)
+    }
 
+    /// TODO include filters, joins, groups, paging
     fn build_select(&self, query: &Query)->(String, Vec<Type>){
         println!("building select query");
+        let mut params = vec![];
         let mut w = Writer::new();
         w.append("SELECT ");
         let mut do_comma = false;
@@ -90,7 +140,76 @@ pub trait Database{
         w.ln();
         w.append(" FROM ");
         assert!(query.from_table.is_some());
-        w.append(query.from_table.as_ref().unwrap());
+        let table_name = query.from_table.clone().unwrap().complete_name();
+        w.append(&table_name);
+        if query.filters.len() > 0 {
+            w.append(" WHERE ");
+            let (fsql, fparam) = self.build_filters(query);
+            w.append(&fsql);
+            for fp in fparam{
+                params.push(fp);
+            }
+        }
+        (w.src, params)
+    }
+    
+    /// TODO complete this
+    fn build_insert(&self, query: &Query)->(String, Vec<Type>){
+        println!("building select query");
+        let mut w = Writer::new();
+        w.append("INSERT INTO");
+        let mut do_comma = false;
+        let mut cnt = 0;
+        for ec in &query.enumerated_columns{
+            if do_comma{w.comma();}else{do_comma=true;}
+            cnt += 1;
+            if cnt % 5 == 0{//break at every 5 columns to encourage sql tuning/revising
+                w.ln_tab();
+            }
+            w.append(" ");
+            w.append(&ec.column);
+        }
+        w.ln();
+        w.append(" FROM ");
+        assert!(query.from_table.is_some());
+        let table_name = query.from_table.clone().unwrap().complete_name();
+        w.append(&table_name);
+        (w.src, vec![])
+    }
+
+    ///TODO :complete this
+    fn build_update(&self, query: &Query)->(String, Vec<Type>){
+        println!("building select query");
+        let mut w = Writer::new();
+        w.append("UPDATE ");
+        let mut do_comma = false;
+        let mut cnt = 0;
+        for ec in &query.enumerated_columns{
+            if do_comma{w.comma();}else{do_comma=true;}
+            cnt += 1;
+            if cnt % 5 == 0{//break at every 5 columns to encourage sql tuning/revising
+                w.ln_tab();
+            }
+            w.append(" ");
+            w.append(&ec.column);
+        }
+        w.ln();
+        w.append(" FROM ");
+        assert!(query.from_table.is_some());
+        let table_name = query.from_table.clone().unwrap().complete_name();
+        w.append(&table_name);
+        (w.src, vec![])
+    }
+
+    fn build_delete(&self, query: &Query)->(String, Vec<Type>){
+        println!("building select query");
+        let mut w = Writer::new();
+        w.append("DELETE ");
+        w.append(" FROM ");
+        assert!(query.from_table.is_some());
+        w.append("WHERE");
+        let table_name = query.from_table.clone().unwrap().complete_name();
+        w.append(&table_name);
         (w.src, vec![])
     }
 
@@ -107,10 +226,10 @@ pub trait DatabaseDDL{
     ////////////////////////////////////////
 
     /// create a database schema
-    fn create_schema(&self, schema:&String);
+    fn create_schema(&self, schema:&str);
 
     /// drop the database schema
-    fn drop_schema(&self, schema:&String, forced:bool);
+    fn drop_schema(&self, schema:&str, forced:bool);
 
     /// create a database table based on the Model Definition
     fn create_table(&self, model:&Table);

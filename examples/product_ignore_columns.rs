@@ -15,7 +15,6 @@ use gen::bazaar::Product;
 use rustorm::em::EntityManager;
 use rustorm::table::IsTable;
 use rustorm::dao::IsDao;
-use rustorm::query::Query;
 
 mod gen;
 
@@ -25,15 +24,11 @@ fn main(){
        match pg{
         Ok(pg) => {
             let em = EntityManager::new(&pg);
-            let mut query = Query::new();
-            query.from_table(&Product::table());
-            let daos = em.retrieve(&mut query);
+            let daos = em.get_all_ignore_columns(&Product::table(), vec!["description", "info", "organization_id", "client_id"]);
             for d in daos{
-                let prod = Product::from_dao(&d);
                 let pid:Uuid = d.get("product_id");
                 let name:String = d.get("name");
                 println!("\n{} {}", pid, name);
-                println!("{}-{}", prod.product_id, prod.name.unwrap());
             }
         }
         Err(error) =>{

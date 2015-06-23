@@ -35,7 +35,7 @@ impl <'a>EntityManager<'a>{
         panic!("not yet")
     }
     /// create a schema or namespace in the database
-    pub fn create_schema(&self, schema: &String){
+    pub fn create_schema(&self, schema: &str){
         panic!("not yet")
     }
 
@@ -50,7 +50,7 @@ impl <'a>EntityManager<'a>{
     }
 
     /// drop the database schema
-    pub fn drop_schema(&self, schema:String, forced:bool){
+    pub fn drop_schema(&self, schema:&str, forced:bool){
         panic!("not yet")
     }
 
@@ -65,7 +65,7 @@ impl <'a>EntityManager<'a>{
     }
 
     /// determine if the schema exist
-    pub fn exist_schema(&self, schema: String)->bool{
+    pub fn exist_schema(&self, schema: &str)->bool{
         panic!("not yet")
     }
 
@@ -73,12 +73,34 @@ impl <'a>EntityManager<'a>{
     pub fn get_all(&self, table:&Table)->Vec<Dao>{
         println!("Getting all values from table: {}",table.name);
         let mut q = Query::select();
-        q.from_table(&table);
-        for c in &table.columns{
-            q.enumerate_column(&table.name, &c.name);
-        }
-        self.db.select(&q)
+        q.from_table(table);
+        q.enumerate_columns(table);
+        self.retrieve(&mut q)
     }
+
+    /// get all the records of this table, but return only the columns mentioned
+    pub fn get_all_only_columns(&self, table:&Table, columns:Vec<&str>)->Vec<Dao>{
+        println!("Getting all values from table: {}",table.name);
+        let mut q = Query::select();
+        q.from_table(&table);
+        for c in &columns{
+            q.enumerate_column(&table.name, &c.to_string());
+        }
+        self.retrieve(&mut q)
+    }
+    
+    /// get all the records of this table, ignoring the columns listed, mentioned the other else
+    pub fn get_all_ignore_columns(&self, table:&Table, ignore_columns:Vec<&str>)->Vec<Dao>{
+        println!("Getting all values from table: {}",table.name);
+        let mut q = Query::select();
+        q.from_table(&table);
+        q.enumerate_columns(&table);
+        for c in &ignore_columns{
+            q.exclude_column(table, &c.to_string());
+        }
+        self.retrieve(&mut q)
+    }
+
 
     /// get all the distinct records of this table
     pub fn get_all_distinct(&self, table:&Table)->Vec<Dao>{
@@ -88,7 +110,12 @@ impl <'a>EntityManager<'a>{
     /// get all the records on this table which passed thru the filters
     /// any query that specified more than the parameters should use the query api
     pub fn get_all_with_filter(&self, table:&Table, filters:Vec<Filter>)->Vec<Dao>{
-        panic!("not yet")
+         println!("Getting all values from table: {}",table.name);
+        let mut q = Query::select();
+        q.from_table(table);
+        q.enumerate_columns(table);
+        // TODO filter here
+        self.retrieve(&mut q)
     }
 
     /// get the first records of this table that passed thru the filters
@@ -105,14 +132,14 @@ impl <'a>EntityManager<'a>{
     /// insert this record on the database, ignoring some columns
     /// which are set by the database default
     /// columns that are ignored are set by the database automatically
-    pub fn insert_with_ignore_columns(&self, dao:Dao, ignore_columns:Vec<String>)->Dao{
+    pub fn insert_with_ignore_columns(&self, dao:Dao, ignore_columns:Vec<&str>)->Dao{
         panic!("not yet")
     }
 
     /// insert this record on the database, explicitly setting the defaults of the columns
     /// it may produce the same result with insert_with_ignore_columns
     /// the query is different since it may mentions `created` now(),
-    pub fn insert_set_default_columns(&self, dao:Dao, default_columns:Vec<String>)->Dao{
+    pub fn insert_set_default_columns(&self, dao:Dao, default_columns:Vec<&str>)->Dao{
         panic!("not yet")
     }
 
@@ -122,8 +149,9 @@ impl <'a>EntityManager<'a>{
     }
 
     /// retrieve records from query object
-    pub fn retrieve(&self, query:&Query)->Vec<Dao>{
-        panic!("not yet")
+    pub fn retrieve(&self, query:&mut Query)->Vec<Dao>{
+        query.finalize();
+        self.db.select(query)
     }
 
     /// when there is a problem with the transaction process, this can be called
@@ -138,14 +166,20 @@ impl <'a>EntityManager<'a>{
 
     /// update the Dao, return the updated Dao
     /// ignored columns will remain unchanged
-    pub fn update_with_ignore_columns(&self, dao:&Dao, ignore_columns:Vec<String>)->Dao{
+    pub fn update_with_ignore_columns(&self, dao:&Dao, ignore_columns:Vec<&str>)->Dao{
+        panic!("not yet")
+    }
+
+    /// update the Dao, return the updated Dao
+    /// only the columns specified, the rest is unchanged
+    pub fn update_with_only_columns(&self, dao:&Dao, columns:Vec<&str>)->Dao{
         panic!("not yet")
     }
 
     /// update the Dao, return the updated Dao
     /// the default columns will be reset to whatever the db's default function will come up.
     /// ie. updated column will be defaulted everytime a record is updated.
-    pub fn update_set_default_columns(&self, dao:&Dao, set_default_columns:Vec<String>)->Dao{
+    pub fn update_set_default_columns(&self, dao:&Dao, set_default_columns:Vec<&str>)->Dao{
         panic!("not yet")
     }
 
@@ -157,7 +191,7 @@ impl <'a>EntityManager<'a>{
      ///
      /// Search a set of record from the base Query that would have been returned by the base query
      ///
-    fn search(&self, query:&Query, keyword:String)->Vec<Dao>{
+    fn search(&self, query:&Query, keyword:&str)->Vec<Dao>{
         panic!("not yet");
     }
 

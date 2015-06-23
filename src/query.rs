@@ -38,6 +38,7 @@ pub enum SqlType{
     DELETE,
 }
 
+#[derive(Clone)]
 pub struct ColumnName{
     pub column:String,
     pub table:String,
@@ -64,6 +65,23 @@ impl ColumnName{
     
 }
 
+impl PartialEq for ColumnName{
+    fn eq(&self, other: &Self) -> bool{
+        self.column == other.column
+     }
+
+    fn ne(&self, other: &Self) -> bool {
+        self.column != other.column
+    }
+}
+
+/*
+impl PartialOrd for ColumnName{
+    
+}
+*/
+
+#[derive(Clone)]
 pub struct TableName{
     pub schema: String,
     pub name: String,
@@ -78,6 +96,20 @@ impl TableName{
             name: table.name.to_string(),
             column_names:vec![],
         }
+    }
+
+    pub fn complete_name(&self)->String{
+        format!("{}.{}",self.schema, self.name)
+    }
+}
+
+impl PartialEq for TableName{
+    fn eq(&self, other: &Self) -> bool{
+        self.name == other.name && self.schema == other.schema
+     }
+
+    fn ne(&self, other: &Self) -> bool {
+        self.name != other.name || self.schema != other.schema
     }
 }
 
@@ -129,7 +161,7 @@ pub struct Query{
     /// where the focus of values of column selection
     /// this is the table to insert to, update to delete, create, drop
     /// whe used in select, this is the 
-    pub from_table:Option<String>,
+    pub from_table:Option<TableName>,
     
     /// The data values, used in bulk inserting, updating,
     pub dao:Vec<Dao>,
@@ -241,7 +273,14 @@ impl Query{
     }
 
     pub fn from_table(&mut self, table:&Table){
-        self.from_table = Some(table.complete_name());
+        self.from_table = Some(TableName::from_table(table));
+    }
+    
+    /// list down the columns of this table then add it to the enumerated list of columns
+    pub fn enumerate_columns(&mut self, table: &Table){
+        for c in &table.columns{
+            self.enumerated_columns.push(ColumnName::from_column(c, table));
+        }
     }
     
     /// join a table on this query
@@ -334,18 +373,53 @@ impl Query{
         self.renamed_columns.push((table, column, new_column_name));
     }
     
-    /// TODO: return the table used in from_table, joins
-    pub fn get_involved_tables(&self){
-        
+    pub fn get_involved_tables(&self)->Vec<TableName>{
+        let mut tables = vec![];
+        if self.from_table.is_some(){
+            let from_table = self.from_table.clone().unwrap();
+            tables.push(from_table);
+        }
+        for j in &self.joins{
+            let join_table = j.table_name.clone();
+            if !tables.contains(&join_table){
+                tables.push(join_table);
+            }
+        }
+        tables
     }
     
     /// preprocess the missing fields of the query,
     /// such as mentioning the columns of the from_table
     /// enumerate the columns of the involved tables
-    /// skippint those which are explicitly ignored
+    /// skipping those which are explicitly ignored
     /// the query will then be built and ready to be executed
-    pub fn finalize(&self){
-        let involved_tables = self.get_involved_tables();
-        // enumerate columns;
+    /// TODO: renamed conflicting enumerated columns
+    pub fn finalize(&mut self){
+        
+        /// function inside function
+        fn index_of(enumerated_column:&Vec<ColumnName>, column:&ColumnName)->Option<usize>{
+            let mut cnt = 0;
+            for c in enumerated_column{
+                if c == column{
+                    return Some(cnt);
+                }
+                cnt += 1;
+            }
+            None
+        }
+        
+        for i in &self.excluded_columns{
+            if self.enumerated_columns.contains(i){
+                println!("removing {}", i.column);
+                let index = index_of(&self.enumerated_columns, i);
+                self.enumerated_columns.remove(index.unwrap());
+            }
+        }
+    }
+    
+    
+    
+    pub fn filter(&mut self, filter:Filter){
+        self.filters.push(filter);
     }
 }

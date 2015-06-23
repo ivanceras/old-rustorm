@@ -1,7 +1,6 @@
 use query::Query;
 use table::{Table, Column, Foreign};
 use dao::Dao;
-use dao::IsDao;
 
 use postgres::Connection;
 use postgres::SslMode;
@@ -10,6 +9,7 @@ use dao::Type;
 use query::SqlType;
 use database::{Database, DatabaseDev, DatabaseDDL};
 use postgres::types::Type as PgType;
+use postgres::types::ToSql;
 
 
 pub struct Postgres {
@@ -348,10 +348,28 @@ impl Database for Postgres{
     fn reset(&self){}
     
     fn select(&self, query:&Query)->Vec<Dao>{
-        let (sql, param) = self.build_query(query);
+        let (sql, types) = self.build_query(query);
+        println!("SQL: {}", sql);
+        println!("param: {:?}", types);
         let stmt = self.conn.prepare(&sql).unwrap();
         let mut daos = vec![];
-        for row in stmt.query(&[]).unwrap() {
+        
+        
+        /// TODO: put this somewhere organized
+        fn from_type<'a>(types: &'a Vec<Type>)->Vec<&'a ToSql>{
+            let mut params = vec![];
+            for t in types{
+                let tosql:&ToSql = match t {
+                    &Type::String(ref x) => x,
+                    _ => panic!("not yet here"),
+                };
+                params.push(tosql);
+            }
+            params
+        }
+        
+        let param = from_type(&types);
+        for row in stmt.query(&param).unwrap() {
             let columns = row.columns();
             let mut index = 0;
             let mut dao = Dao::new();
@@ -414,7 +432,7 @@ impl Database for Postgres{
                 dao.set_value(column_name, rtype);
                 index += 1;
             }
-            daos.push(IsDao::from_dao(&dao));
+            daos.push(dao);
         }
         daos
     }
@@ -431,17 +449,17 @@ impl Database for Postgres{
         println!("building the query here");
         match query.sql_type{
             SqlType::SELECT => self.build_select(query),
-            SqlType::INSERT => self.build_select(query),
-            SqlType::UPDATE => self.build_select(query),
-            SqlType::DELETE => self.build_select(query),
+            SqlType::INSERT => self.build_insert(query),
+            SqlType::UPDATE => self.build_update(query),
+            SqlType::DELETE => self.build_delete(query),
         }
     }
 }
 
 impl DatabaseDDL for Postgres{
 
-    fn create_schema(&self, schema:&String){}
-    fn drop_schema(&self, schema:&String, forced:bool){}
+    fn create_schema(&self, schema:&str){}
+    fn drop_schema(&self, schema:&str, forced:bool){}
     fn create_table(&self, model:&Table){}
     fn rename_table(&self, table:&Table, new_tablename:String){}
     fn drop_table(&self, table:&Table, forced:bool){}
