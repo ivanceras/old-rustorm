@@ -238,17 +238,30 @@ fn generate_meta_code(table: &Table)->(Vec<String>, String){
     (imports, w.src)
 }
 
+/// TODO: if column names begins with the tablename_, then put this value to the column name hash map
+/// example: product_name, value will be copied to name
+/// test if product_name is not a column, split with `_`, then check if first splinter is the tablename, then the check if the 2nd splinter if 
+/// a column of this table, then set that column with the value of the original name 
 fn generate_dao_conversion_code(table: &Table, all_tables:&Vec<Table>)->(Vec<String>, String){
     let mut w = Writer::new();
     let mut imports = Vec::new();
     imports.push("rustorm::dao::Dao".to_string());
     imports.push("rustorm::dao::IsDao".to_string());
+    imports.push("rustorm::dao::DaoResult".to_string());
+    imports.push("std::collections::BTreeMap".to_string());
+    
     w.ln();
     w.append("impl IsDao for ");
     w.append(&table.struct_name());
     w.append("{");
     w.ln_tab();
-    w.append("fn from_dao(dao:&Dao)->Self{");
+    w.append("fn from_dao(dao:&Dao, renamed_columns:&BTreeMap<String, Vec<(String, String)>>)->Self{");
+    w.ln_tabs(2);
+    w.append("let mut dao = dao.clone();");
+    w.ln_tabs(2);
+    w.append("dao.resolve_renamed_columns(\"");
+    w.append(&table.name);
+    w.append("\", renamed_columns);");
     w.ln_tabs(2);
     w.append(&table.struct_name());
     w.append("{");

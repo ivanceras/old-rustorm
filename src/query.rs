@@ -1,6 +1,7 @@
 use filter::Filter;
 use dao::Dao;
 use table::{Table, Column};
+use std::collections::BTreeMap;
 
 
 pub enum JoinType{
@@ -132,7 +133,7 @@ pub struct Query{
     
     /// list of renamed columns whenever there is a conflict
     /// Vec(table, column, new_column_name)
-    pub renamed_columns:Vec<(String, String, String)>,
+    pub renamed_columns:BTreeMap<String, Vec<(String, String)>>,
     
     /// specify to use distinct ON set of columns 
     pub distinct_on_columns:Vec<String>,
@@ -179,7 +180,7 @@ impl Query{
             distinct:false,
             enumerate_columns:true,
             enumerated_columns:Vec::new(),
-            renamed_columns:Vec::new(),
+            renamed_columns:BTreeMap::new(),
             distinct_on_columns:Vec::new(),
             filters:Vec::new(),
             joins:Vec::new(),
@@ -276,6 +277,13 @@ impl Query{
         self.from_table = Some(TableName::from_table(table));
     }
     
+    /// a query to query from
+    /// use WITH (query) t1 SELECT from t1 declaration in postgresql, sqlite
+    /// use SELECT FROM (query) in oracle, mysql, others 
+    pub fn from_query(&mut self, query:&Query){
+        
+    }
+    
     /// list down the columns of this table then add it to the enumerated list of columns
     pub fn enumerate_columns(&mut self, table: &Table){
         for c in &table.columns{
@@ -369,8 +377,19 @@ impl Query{
     }
     
     
-    pub fn rename(&mut self, table:String, column:String, new_column_name:String){
-        self.renamed_columns.push((table, column, new_column_name));
+    pub fn rename(&mut self, table:&str, column:&str, new_column_name:&str){
+        if self.renamed_columns.get(table).is_some(){
+            let mut list:&mut Vec<(String, String)> = self.renamed_columns.get_mut(table).unwrap();
+            if list.contains(&(column.to_string(), new_column_name.to_string())){
+                println!("This is already renamed");
+            }else{
+                println!("renamed {} to {}", column, new_column_name);
+                list.push((column.to_string(), new_column_name.to_string()));
+            }
+        }
+        else{
+            self.renamed_columns.insert(table.to_string(), vec![(column.to_string(), new_column_name.to_string())]);
+        }
     }
     
     pub fn get_involved_tables(&self)->Vec<TableName>{

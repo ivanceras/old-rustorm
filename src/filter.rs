@@ -29,8 +29,10 @@ pub enum Operand{
 /// TODO: support for functions on columns
 pub struct Filter{
     pub connector:Connector,
+    /// TODO: maybe renamed to LHS, supports functions and SQL
     pub column:String,
     pub equality:Equality,
+    /// TODO: RHS, supports functions and SQL
     pub operand:Operand,
     pub subfilters:Vec<Filter>
 }

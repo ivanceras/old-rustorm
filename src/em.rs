@@ -1,7 +1,7 @@
 use filter::Filter;
 use query::Query;
 use table::Table;
-use dao::Dao;
+use dao::{Dao, DaoResult};
 use database::Database;
 
 /// A higher level API for manipulating objects in the database
@@ -70,7 +70,7 @@ impl <'a>EntityManager<'a>{
     }
 
     /// get all the records of this table
-    pub fn get_all(&self, table:&Table)->Vec<Dao>{
+    pub fn get_all(&self, table:&Table)->DaoResult{
         println!("Getting all values from table: {}",table.name);
         let mut q = Query::select();
         q.from_table(table);
@@ -79,7 +79,7 @@ impl <'a>EntityManager<'a>{
     }
 
     /// get all the records of this table, but return only the columns mentioned
-    pub fn get_all_only_columns(&self, table:&Table, columns:Vec<&str>)->Vec<Dao>{
+    pub fn get_all_only_columns(&self, table:&Table, columns:Vec<&str>)->DaoResult{
         println!("Getting all values from table: {}",table.name);
         let mut q = Query::select();
         q.from_table(&table);
@@ -90,7 +90,7 @@ impl <'a>EntityManager<'a>{
     }
     
     /// get all the records of this table, ignoring the columns listed, mentioned the other else
-    pub fn get_all_ignore_columns(&self, table:&Table, ignore_columns:Vec<&str>)->Vec<Dao>{
+    pub fn get_all_ignore_columns(&self, table:&Table, ignore_columns:Vec<&str>)->DaoResult{
         println!("Getting all values from table: {}",table.name);
         let mut q = Query::select();
         q.from_table(&table);
@@ -109,12 +109,14 @@ impl <'a>EntityManager<'a>{
 
     /// get all the records on this table which passed thru the filters
     /// any query that specified more than the parameters should use the query api
-    pub fn get_all_with_filter(&self, table:&Table, filters:Vec<Filter>)->Vec<Dao>{
+    pub fn get_all_with_filter(&self, table:&Table, filters:Vec<Filter>)->DaoResult{
          println!("Getting all values from table: {}",table.name);
         let mut q = Query::select();
         q.from_table(table);
         q.enumerate_columns(table);
-        // TODO filter here
+        for f in filters{
+            q.filter(f);
+        }
         self.retrieve(&mut q)
     }
 
@@ -149,7 +151,7 @@ impl <'a>EntityManager<'a>{
     }
 
     /// retrieve records from query object
-    pub fn retrieve(&self, query:&mut Query)->Vec<Dao>{
+    pub fn retrieve(&self, query:&mut Query)->DaoResult{
         query.finalize();
         self.db.select(query)
     }

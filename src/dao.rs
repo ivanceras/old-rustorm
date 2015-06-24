@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::collections::BTreeMap;
 use uuid::Uuid;
 use chrono::datetime::DateTime;
 use chrono::naive::date::NaiveDate;
@@ -289,21 +290,46 @@ impl FromType for NaiveDateTime{
 
 /// trait for converting dao to model
 pub trait IsDao:Sized{
-    fn from_dao(dao: &Dao)->Self;
+    
+    /// converts a vector of dao to an object
+    fn from_dao_result(dao_result:&DaoResult)->Vec<Self>{
+        let mut obj = vec![];
+        for d in &dao_result.dao{
+            let p = Self::from_dao(d, &dao_result.renamed_columns);
+            obj.push(p);
+        }
+        obj
+    }
+    fn from_dao(dao: &Dao, renamed_columns:&BTreeMap<String, Vec<(String, String)>>)->Self;
+}
+
+/// meta result of a query useful when doing complex query, and also with paging
+pub struct DaoResult{
+    /// an optional table where this Dao values was derived from
+    pub from_table:Option<String>,
+    pub dao: Vec<Dao>,
+    ///renamed columns for each table
+    /// ie. product => [(name, product_name),..];
+    pub renamed_columns: BTreeMap<String, Vec<(String, String)>>, 
+    
+    /// the total number of records
+    pub total:Option<usize>,
+    /// page of the query
+    pub page: Option<usize>,
+    /// page size
+    pub page_size: Option<usize>,
 }
 
 #[derive(RustcDecodable, RustcEncodable)]
 #[derive(Debug, Clone)]
 pub struct Dao{
-    /// an optional table where this Dao values was derived from
-    pub from_table:Option<String>,
-    pub values:HashMap<String, Type>
+    pub values:HashMap<String, Type>,
 }
 
 impl Dao{
 
     pub fn new()->Self{
-        Dao{from_table:None, values:HashMap::new()}
+        Dao{values:HashMap::new()}
     }
     
     pub fn set(&mut self, column: &str, value:&ToType){
@@ -342,14 +368,26 @@ impl Dao{
     pub fn get_ref(&self, column: &str)->&Type{
         self.values.get(column).unwrap()
     }
-
-}
-
-
-impl IsDao for Dao{
-    fn from_dao(dao: &Dao)->Self{
-        dao.clone()
+    
+    /// set the short column names using the renamed columns from the table specified
+    /// will be used when casting a generic dao to multiple dao values, 
+    /// ie. useful when querying 1 time using 1:1 joins
+    /// TODO: deal with the optional columns
+    pub fn resolve_renamed_columns(&mut self, in_table:&str, renamed_columns:&BTreeMap<String, Vec<(String, String)>>){
+        let renamed_columns = renamed_columns.get(in_table);
+        match renamed_columns{
+            Some(renamed_columns)=>{
+                for c in renamed_columns{
+                    let &(ref column, ref renamed) = c;
+                    println!("setting: {} to value: {}", renamed, column);
+                    let orig = self.values.get(renamed).unwrap().clone();
+                    self.values.insert(column.to_string(), orig);
+                }
+             },
+            None => println!("No renamed columns for table {} on this query", in_table),
+        };
     }
+
 }
 
 #[test]

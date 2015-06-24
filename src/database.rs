@@ -2,7 +2,7 @@ use query::Query;
 use table::{Table, Column};
 use dao::Dao;
 use writer::Writer;
-use dao::Type;
+use dao::{Type, DaoResult};
 use filter::{Connector, Equality, Operand};
 
 /// A lower level API for manipulating objects in the database
@@ -41,7 +41,7 @@ pub trait Database{
 
     /// select
     /// returns an array to the qualified records
-    fn select(&self, query:&Query)->Vec<Dao>;
+    fn select(&self, query:&Query)->DaoResult;
 
     /// insert
     /// insert an object, returns the inserted Dao value
@@ -73,7 +73,8 @@ pub trait Database{
     fn build_query(&self, query:&Query)->(String, Vec<Type>);
     
     /// build the filter clause or the where clause of the query
-    fn build_filters(&self, query: &Query)->(String, Vec<Type>){
+    fn build_filters(&self, query: &Query, param_cont: usize)->(String, Vec<Type>){
+        let mut param_cont = param_cont;
         let mut params = vec![];
         let mut w = Writer::new();
         let mut do_connector = false;
@@ -112,7 +113,9 @@ pub trait Database{
                     w.append(&sql);
                 },
                 Operand::Value(ref t) => {
-                    w.append("$1"); //TODO: fix numbered parameters according to the order of param
+                    param_cont += 1;
+                    let numbered_param = format!("${} ",param_cont);
+                    w.append(&numbered_param); //TODO: fix numbered parameters according to the order of param
                     params.push(t.clone());
                 },
             };
@@ -144,7 +147,7 @@ pub trait Database{
         w.append(&table_name);
         if query.filters.len() > 0 {
             w.append(" WHERE ");
-            let (fsql, fparam) = self.build_filters(query);
+            let (fsql, fparam) = self.build_filters(query, 0);
             w.append(&fsql);
             for fp in fparam{
                 params.push(fp);

@@ -10,6 +10,7 @@ use query::SqlType;
 use database::{Database, DatabaseDev, DatabaseDDL};
 use postgres::types::Type as PgType;
 use postgres::types::ToSql;
+use dao::DaoResult;
 
 
 pub struct Postgres {
@@ -347,7 +348,7 @@ impl Database for Postgres{
     fn is_valid(&self)->bool{false}
     fn reset(&self){}
     
-    fn select(&self, query:&Query)->Vec<Dao>{
+    fn select(&self, query:&Query)->DaoResult{
         let (sql, types) = self.build_query(query);
         println!("SQL: {}", sql);
         println!("param: {:?}", types);
@@ -355,20 +356,22 @@ impl Database for Postgres{
         let mut daos = vec![];
         
         
+        /// convert Type to ToSql (postgresql native types)
         /// TODO: put this somewhere organized
-        fn from_type<'a>(types: &'a Vec<Type>)->Vec<&'a ToSql>{
+        /// TODO: match all the other filter types
+        fn from_type_tosql<'a>(types: &'a Vec<Type>)->Vec<&'a ToSql>{
             let mut params = vec![];
             for t in types{
                 let tosql:&ToSql = match t {
                     &Type::String(ref x) => x,
-                    _ => panic!("not yet here"),
+                    _ => panic!("not yet here {:?}", t),
                 };
                 params.push(tosql);
             }
             params
         }
         
-        let param = from_type(&types);
+        let param = from_type_tosql(&types);
         for row in stmt.query(&param).unwrap() {
             let columns = row.columns();
             let mut index = 0;
@@ -434,7 +437,15 @@ impl Database for Postgres{
             }
             daos.push(dao);
         }
-        daos
+        DaoResult{
+            from_table:Some(query.from_table.clone().unwrap().complete_name()),
+            dao:daos,
+            renamed_columns:query.renamed_columns.clone(),
+            total:None,
+            page:None,
+            page_size:None,
+        }
+        
     }
     fn insert(&self, query:&Query)->Dao{panic!("not yet")}
     fn update(&self, query:&Query)->Dao{panic!("not yet")}
@@ -445,6 +456,9 @@ impl Database for Postgres{
     fn correct_data_types(&self, dao_list:Vec<Dao>, model:&Table){}
     fn execute_sql(&self, sql:&String, param:&Vec<String>)->Result<u64, &str>{panic!("not yet")}
 
+    /// use by select to build the select query
+    /// build all types of query
+    /// TODO: need to supply the number of parameters where to start the numbering of the number parameters
     fn build_query(&self, query:&Query)->(String, Vec<Type>){
         println!("building the query here");
         match query.sql_type{
