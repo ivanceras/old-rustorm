@@ -350,7 +350,7 @@ impl Database for Postgres{
     
     fn select(&self, query:&Query)->DaoResult{
         let (sql, types) = self.build_query(query);
-        println!("SQL: {}", sql);
+        println!("SQL: \n{}", sql);
         println!("param: {:?}", types);
         let stmt = self.conn.prepare(&sql).unwrap();
         let mut daos = vec![];
@@ -426,6 +426,13 @@ impl Database for Postgres{
                         let value = row.get_opt(index);
                          match value{
                             Ok(value) => Type::I32(value),
+                            Err(_) => Type::Null,
+                        }
+                    },
+                    &PgType::Timetz => {
+                        let value = row.get_opt(index);
+                         match value{
+                            Ok(value) => Type::DateTime(value),
                             Err(_) => Type::Null,
                         }
                     },

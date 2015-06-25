@@ -3,7 +3,9 @@ use table::{Table, Column};
 use dao::Dao;
 use writer::Writer;
 use dao::{Type, DaoResult};
-use filter::{Connector, Equality, Operand};
+use query::{Connector, Equality, Operand};
+use query::{Direction, Modifier, JoinType};
+use query::Filter;
 
 /// A lower level API for manipulating objects in the database
 pub trait Database{
@@ -72,14 +74,89 @@ pub trait Database{
     /// build a query, return the sql string and the parameters.
     fn build_query(&self, query:&Query)->(String, Vec<Type>);
     
-    /// build the filter clause or the where clause of the query
-    fn build_filters(&self, query: &Query, param_cont: usize)->(String, Vec<Type>){
+    /// build operand, i.e: columns, query, function, values
+    fn build_operand(&self, operand:&Operand, param_cont:usize)->(String, Vec<Type>){
+        let mut w = Writer::new();
+        let mut params = vec![];
         let mut param_cont = param_cont;
+        match operand{
+                &Operand::Column(ref column) => {
+                    w.append(&column.column); //TODO: needs to do complete/super complete name when there is possible conflict of column names
+                }, 
+                &Operand::Function(ref function)=>{
+                        w.append("(");
+                        let mut do_comma = false;
+                        for param in &function.params{
+                            if do_comma{ w.commasp(); }else{ do_comma = true;}
+                            let (operand_sql, operand_params) = self.build_operand(param, param_cont);
+                            w.append(&operand_sql);
+                            param_cont += operand_params.len();
+                            for op in operand_params{
+                                params.push(op);
+                            }
+                        }
+                        w.append(")");
+                    },
+                &Operand::Query(ref q) => {
+                    let (sql, param) = self.build_query(q);
+                    for p in param{//TODO: change to params.append(param) in next releases of rust
+                        params.push(p);
+                    }
+                    w.append(&sql);
+                },
+                &Operand::Value(ref value) => {
+                    param_cont += 1;
+                    let numbered_param = format!("${} ",param_cont);
+                    w.append(&numbered_param); //TODO: fix numbered parameters according to the order of param
+                    params.push(value.clone());
+                },
+            };
+        (w.src, params)
+    }
+    
+    
+    fn build_filter(&self, filter:&Filter, param_cont:usize)->(String, Vec<Type>){
+        let mut params = vec![];
+        let mut w = Writer::new();
+        let (left_sql, left_params) = self.build_operand(&filter.left_operand, param_cont);
+        w.append(&left_sql);
+        for lp in left_params{
+            params.push(lp);
+        }
+        
+        w.append(" ");
+        match filter.equality{
+            Equality::EQ => w.append("= "),
+            Equality::NE => w.append("!= "),
+            Equality::LT => w.append("< "),
+            Equality::LTE => w.append("<= "),
+            Equality::GT => w.append("> "),
+            Equality::GTE => w.append(">= "),
+            Equality::IN => w.append("IN "),
+            Equality::NOTIN => w.append("NOT IN "),
+            Equality::LIKE => w.append("LIKE "),
+            Equality::NULL => w.append("IS NULL "),
+            Equality::NOTNULL => w.append("IS NOT NULL "),
+            Equality::ISNULL => w.append("IS NULL "),
+        };
+        
+        let (right_sql, right_params) = self.build_operand(&filter.right_operand, param_cont);
+        w.append(&right_sql);
+        for lp in right_params{
+            params.push(lp);
+        }
+        (w.src, params)
+    }
+    
+    /// build the filter clause or the where clause of the query
+    /// TODO: add the sub filters
+    fn build_filters(&self, filters: &Vec<Filter>, param_cont: usize)->(String, Vec<Type>){
         let mut params = vec![];
         let mut w = Writer::new();
         let mut do_connector = false;
-        for filter in &query.filters{
+        for filter in filters{
             if do_connector{
+                w.ln_tabs(2);
                 match filter.connector{
                     Connector::And => w.append("AND "),
                     Connector::Or => w.append("OR "),
@@ -87,48 +164,18 @@ pub trait Database{
             }else{
                 do_connector = true;
             }
-            w.append(&filter.column);
-            w.append(" ");
-            match filter.equality{
-                Equality::EQ => w.append("= "),
-                Equality::NE => w.append("!= "),
-                Equality::LT => w.append("< "),
-                Equality::LTE => w.append("<= "),
-                Equality::GT => w.append("> "),
-                Equality::GTE => w.append(">= "),
-                Equality::IN => w.append("IN "),
-                Equality::NOTIN => w.append("NOT IN "),
-                Equality::LIKE => w.append("LIKE "),
-                Equality::NULL => w.append("IS NULL "),
-                Equality::NOTNULL => w.append("IS NOT NULL "),
-                Equality::ISNULL => w.append("IS NULL "),
-            };
-            
-            match filter.operand{
-                Operand::Query(ref q) => {
-                    let (sql, param) = self.build_query(q);
-                    for p in param{//TODO: change to params.append(param) in next releases of rust
-                        params.push(p);
-                    }
-                    w.append(&sql);
-                },
-                Operand::Value(ref t) => {
-                    param_cont += 1;
-                    let numbered_param = format!("${} ",param_cont);
-                    w.append(&numbered_param); //TODO: fix numbered parameters according to the order of param
-                    params.push(t.clone());
-                },
-            };
+            let (filter_sql, filter_params) = self.build_filter(filter, param_cont);
+            w.append(&filter_sql);
+            for fp in filter_params{
+                params.push(fp);
+            }
         }
         (w.src, params)
     }
 
-    /// TODO include filters, joins, groups, paging
-    fn build_select(&self, query: &Query)->(String, Vec<Type>){
-        println!("building select query");
-        let mut params = vec![];
+    /// build the enumerated, distinct, *, columns
+    fn build_columns(&self, query: &Query)->(String, Vec<Type>){
         let mut w = Writer::new();
-        w.append("SELECT ");
         let mut do_comma = false;
         let mut cnt = 0;
         for ec in &query.enumerated_columns{
@@ -140,19 +187,121 @@ pub trait Database{
             w.append(" ");
             w.append(&ec.column);
         }
+        (w.src, vec![])
+    }
+
+    /// TODO include filters, joins, groups, paging
+    fn build_select(&self, query: &Query)->(String, Vec<Type>){
+        println!("building select query");
+        let mut params = vec![];
+        let mut w = Writer::new();
+        w.append("SELECT ");
+        let (column_sql, _) = self.build_columns(query); //TODO: add support for column_sql, fields, functions
+        w.append(&column_sql);
         w.ln();
         w.append(" FROM ");
         assert!(query.from_table.is_some());
         let table_name = query.from_table.clone().unwrap().complete_name();
         w.append(&table_name);
-        if query.filters.len() > 0 {
-            w.append(" WHERE ");
-            let (fsql, fparam) = self.build_filters(query, 0);
+        w.append(" ");
+        if !query.joins.is_empty(){
+            w.ln_tab();
+            for join in &query.joins{
+                match join.modifier{
+                    Some(ref modifier) => {
+                            match modifier{
+                                &Modifier::LEFT => w.append("LEFT "),
+                                &Modifier::RIGHT => w.append("RIGHT "),
+                                &Modifier::FULL => w.append("FULL "),
+                            };
+                        },
+                    None => ()
+                };
+                
+                match join.join_type{
+                    JoinType::CROSS => w.append("CROSS "),
+                    JoinType::INNER => w.append("INNER "),
+                    JoinType::OUTER => w.append("OUTER "),
+                };
+                w.append("JOIN ");
+                w.append(&join.table_name.complete_name());
+                w.append(" ");
+                assert!(join.column1.len() == join.column2.len(), "There should be equal number of corresponding columns to join");
+                let mut cnt = 0;
+                let mut do_and = false;
+                for jc in &join.column1{
+                    w.ln_tabs(2);
+                    if do_and {
+                        w.append("AND ");
+                    }else{
+                        w.append("ON ");
+                        do_and = true;
+                    }
+                    w.append(jc);
+                    w.append(" = ");
+                    w.append(&join.column2[cnt]);
+                    w.append(" ");
+                    cnt += 1;
+                }
+            }
+        }
+        
+        if !query.filters.is_empty() {
+            w.ln_tab();
+            w.append("WHERE ");
+            let (fsql, fparam) = self.build_filters(&query.filters, 0);
             w.append(&fsql);
             for fp in fparam{
                 params.push(fp);
             }
         }
+        
+        if !query.grouped_columns.is_empty() {
+            w.ln_tab();
+            w.append("GROUP BY ");
+            let mut do_comma = false;
+            for column in &query.grouped_columns{
+                if do_comma{ w.comma(); }else{ do_comma = true;}
+                w.append(column);
+                w.append(" ");
+            }
+        };
+        
+        if !query.order_by.is_empty(){
+            w.ln_tab();
+            w.append("ORDER BY ");
+            let mut do_comma = false;
+            for &(ref column, ref direction) in &query.order_by{
+                if do_comma { w.commasp();} else { do_comma = true;}
+                w.append(&column);
+                match direction{
+                    &Direction::ASC => w.append(" ASC"),
+                    &Direction::DESC => w.append(" DESC")
+                };
+            }
+        };
+        
+        match query.page_size{
+            Some(page_size) => {
+                w.ln_tab();
+                w.append("LIMIT ");
+                w.append(&format!("{}",page_size));
+            },
+            None => (),
+        };
+        
+        match query.page{
+            Some(page) =>{
+                w.ln_tab();
+                w.append("OFFSET ");
+                assert!(query.page_size.is_some(), "Page size should be specified when paging");
+                let page_size = query.page_size.unwrap();
+                let offset = page * page_size;
+                w.append(&format!("{}",offset));
+            },
+            None => (),
+        };
+        
         (w.src, params)
     }
     
@@ -206,20 +355,22 @@ pub trait Database{
 
     fn build_delete(&self, query: &Query)->(String, Vec<Type>){
         println!("building select query");
+        let mut params = vec![];
         let mut w = Writer::new();
-        w.append("DELETE ");
-        w.append(" FROM ");
+        w.append("DELETE FROM");
         assert!(query.from_table.is_some());
-        w.append("WHERE");
-        let table_name = query.from_table.clone().unwrap().complete_name();
-        w.append(&table_name);
-        (w.src, vec![])
+        if !query.filters.is_empty() {
+            w.ln_tab();
+            w.append("WHERE ");
+            let (fsql, fparam) = self.build_filters(&query.filters, 0);
+            w.append(&fsql);
+            for fp in fparam{
+                params.push(fp);
+            }
+        }
+        (w.src, params)
     }
 
-    #[test]
-    fn test_build_select(){
-    
-    }
 
 }
 
@@ -374,7 +525,7 @@ pub trait DatabaseDev{
                 if ref_table.is_direct{
                     "has many"
                 }else{
-                    "has mny, indirect"
+                    "has many, indirect"
                 }
             }
             else{

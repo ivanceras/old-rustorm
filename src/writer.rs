@@ -28,7 +28,7 @@ impl Writer{
     }
     #[inline]
     pub fn tabs(&mut self, n:u32)->&mut Self{
-        for i in 0..n{
+        for _ in 0..n{
             self.tab();
         }
         self
@@ -50,6 +50,10 @@ impl Writer{
     #[inline]
     pub fn comma(&mut self)->&mut Self{
         self.append(",")
+    }
+        #[inline]
+    pub fn commasp(&mut self)->&mut Self{
+        self.append(", ")
     }
     
     #[inline]

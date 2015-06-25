@@ -1,5 +1,6 @@
 use query::Query;
 use dao::Type;
+use query::ColumnName;
 
 pub enum Connector{
     And,
@@ -21,7 +22,16 @@ pub enum Equality{
     ISNULL,//IS_NULL,
 }
 
+/// function in a sql statement
+pub struct Function{
+    pub function:String,
+    pub params:Vec<Operand>,
+}
+
+/// operand on the filter of a sql statement
 pub enum Operand{
+    Column(ColumnName),
+    Function(Function),
     Query(Query),
     Value(Type),
 }
@@ -30,10 +40,10 @@ pub enum Operand{
 pub struct Filter{
     pub connector:Connector,
     /// TODO: maybe renamed to LHS, supports functions and SQL
-    pub column:String,
+    pub left_operand:Operand,
     pub equality:Equality,
     /// TODO: RHS, supports functions and SQL
-    pub operand:Operand,
+    pub right_operand:Operand,
     pub subfilters:Vec<Filter>
 }
 
@@ -42,9 +52,9 @@ impl Filter{
     pub fn new(column:&str, equality:Equality, operand:Operand)->Self{
         Filter{
             connector:Connector::And,
-            column:column.to_string(),
+            left_operand:Operand::Column(ColumnName::from_str(column)),
             equality:equality,
-            operand:operand,
+            right_operand:operand,
             subfilters:Vec::new(),
         }
     }

@@ -1,4 +1,4 @@
-use filter::Filter;
+use query::Filter;
 use query::Query;
 use table::Table;
 use dao::{Dao, DaoResult};
@@ -74,7 +74,7 @@ impl <'a>EntityManager<'a>{
         println!("Getting all values from table: {}",table.name);
         let mut q = Query::select();
         q.from_table(table);
-        q.enumerate_columns(table);
+        q.enumerate_table_all_columns(table);
         self.retrieve(&mut q)
     }
 
@@ -84,7 +84,7 @@ impl <'a>EntityManager<'a>{
         let mut q = Query::select();
         q.from_table(&table);
         for c in &columns{
-            q.enumerate_column(&table.name, &c.to_string());
+            q.enumerate_table_column(&table.name, &c.to_string());
         }
         self.retrieve(&mut q)
     }
@@ -94,7 +94,7 @@ impl <'a>EntityManager<'a>{
         println!("Getting all values from table: {}",table.name);
         let mut q = Query::select();
         q.from_table(&table);
-        q.enumerate_columns(&table);
+        q.enumerate_table_all_columns(&table);
         for c in &ignore_columns{
             q.exclude_column(table, &c.to_string());
         }
@@ -113,9 +113,9 @@ impl <'a>EntityManager<'a>{
          println!("Getting all values from table: {}",table.name);
         let mut q = Query::select();
         q.from_table(table);
-        q.enumerate_columns(table);
+        q.enumerate_table_all_columns(table);
         for f in filters{
-            q.filter(f);
+            q.add_filter(f);
         }
         self.retrieve(&mut q)
     }

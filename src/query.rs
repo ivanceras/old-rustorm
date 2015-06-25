@@ -1,5 +1,4 @@
-use filter::Filter;
-use dao::Dao;
+use dao::{Type, ToType, Dao};
 use table::{Table, Column};
 use std::collections::BTreeMap;
 
@@ -30,6 +29,83 @@ pub enum Direction{
     DESC,
 }
 
+
+////
+/// Filter struct merged to query
+/// 
+pub enum Connector{
+    And,
+    Or
+}
+
+pub enum Equality{
+    EQ, //EQUAL,
+    NE, //NOT_EQUAL,
+    LT, //LESS_THAN,
+    LTE, //LESS_THAN_OR_EQUAL,
+    GT, //GREATER_THAN,
+    GTE, //GREATER_THAN_OR_EQUAL,
+    IN,
+    NOTIN,//NOT_IN,
+    LIKE,
+    NULL,
+    NOTNULL,//NOT_NULL,
+    ISNULL,//IS_NULL,
+}
+
+/// function in a sql statement
+pub struct Function{
+    pub function:String,
+    pub params:Vec<Operand>,
+}
+
+/// operand on the filter of a sql statement
+pub enum Operand{
+    Column(ColumnName),
+    Function(Function),
+    Query(Query),
+    Value(Type),
+}
+
+/// TODO: support for functions on columns
+pub struct Filter{
+    pub connector:Connector,
+    /// TODO: maybe renamed to LHS, supports functions and SQL
+    pub left_operand:Operand,
+    pub equality:Equality,
+    /// TODO: RHS, supports functions and SQL
+    pub right_operand:Operand,
+    pub subfilters:Vec<Filter>
+}
+
+impl Filter{
+
+    pub fn new(column:&str, equality:Equality, operand:Operand)->Self{
+        Filter{
+            connector:Connector::And,
+            left_operand:Operand::Column(ColumnName::from_str(column)),
+            equality:equality,
+            right_operand:operand,
+            subfilters:Vec::new(),
+        }
+    }
+    
+    pub fn and(mut self, column:&str, equality:Equality, operand:Operand)->Self{
+        let mut filter = Filter::new(column, equality, operand);
+        filter.connector = Connector::And;
+        self.subfilters.push(filter);
+        self
+    }
+    
+    pub fn or(mut self, column:&str, equality:Equality, operand:Operand)->Self{
+        let mut filter = Filter::new(column, equality, operand);
+        filter.connector = Connector::Or;
+        self.subfilters.push(filter);
+        self
+    }
+    
+}
+
 /// Could have been SqlAction
 pub enum SqlType{
     //DML
@@ -42,11 +118,18 @@ pub enum SqlType{
 #[derive(Clone)]
 pub struct ColumnName{
     pub column:String,
-    pub table:String,
+    pub table:Option<String>,
     ////optional schema, if ever there are same tables resideing in  different schema/namespace
     pub schema:Option<String>,
     /// as rename
     pub rename:Option<String>
+}
+
+pub struct Field{
+    /// the field
+    Operand:Operand,
+    /// when renamed as field
+    name:Option<String>,
 }
 
 impl ColumnName{
@@ -54,14 +137,39 @@ impl ColumnName{
     fn from_column(column:&Column, table:&Table)->Self{
         ColumnName{
             column: column.name.to_string(),
-            table: table.name.to_string(),
+            table: Some(table.name.to_string()),
             schema: Some(table.schema.to_string()),
             rename: None,
         }
     }
     
+    fn from_str(column:&str)->Self{
+        ColumnName{
+            column: column.to_string(),
+            table: None,
+            schema: None,
+            rename: None,
+        }
+    }
+    
     fn rename(&self)->String{
-        return format!("{}_{}", self.table, self.column)
+        return format!("{}_{}", self.table.as_ref().unwrap(), self.column)
+    }
+    /// table name and column name
+    pub fn complete_name(&self)->String{
+        if self.table.is_some(){
+            return format!("{}_{}", self.table.as_ref().unwrap(), self.column);
+        }else{
+            return self.column.to_string();
+        }
+    }
+    /// includes the schema, table name and column name
+    pub fn super_complete_name(&self)->String{
+        if self.schema.is_some(){
+            return format!("{}_{}", self.schema.as_ref().unwrap(), self.complete_name());
+        }else{
+            return self.complete_name();
+        }
     }
     
 }
@@ -157,7 +265,7 @@ pub struct Query{
     pub page:Option<usize>,
     
     /// size of a page
-    pub items_per_page:Option<usize>,
+    pub page_size:Option<usize>,
     
     /// where the focus of values of column selection
     /// this is the table to insert to, update to delete, create, drop
@@ -188,7 +296,7 @@ impl Query{
             grouped_columns:Vec::new(),
             excluded_columns:Vec::new(),
             page:None,
-            items_per_page:None,
+            page_size:None,
             from_table:None,
             dao:vec![],
         }
@@ -232,16 +340,25 @@ impl Query{
     /// columns that are not conflicts from some other table,
     /// but is the other conflicting column is not explicityly enumerated will not be renamed
     /// 
-    pub fn enumerate_column(&mut self, table:&String, column:&String){
+    pub fn enumerate_column(&mut self, column:&str){
         let c = ColumnName{
-            column:column.clone(), 
-            table:table.clone(), 
+            column:column.to_string(), 
+            table:None, 
             schema:None,
             rename:None
         };
         self.enumerated_columns.push(c);
     }
     
+    pub fn enumerate_table_column(&mut self, table:&str, column:&str){
+        let c = ColumnName{
+            column:column.to_string(), 
+            table:Some(table.to_string()), 
+            schema:None,
+            rename:None
+        };
+        self.enumerated_columns.push(c);
+    }
     /// exclude columns when inserting/updating data
     /// [FIXME] ?? remove from the enumerated_columns
     /// can this be called before the mentioned of the enumerated column?
@@ -250,7 +367,7 @@ impl Query{
     pub fn exclude_column(&mut self, table:&Table, column:&String){
         let c = ColumnName{
                 column:column.clone(),
-                table: table.name.to_string(),
+                table: Some(table.name.to_string()),
                 schema: Some(table.schema.to_string()),
                 rename:None,
             };
@@ -269,23 +386,38 @@ impl Query{
         self.page = Some(page);
     }
     
-    pub fn set_items_per_page(&mut self, items:usize){
-        self.items_per_page = Some(items);
+    pub fn set_page_size(&mut self, items:usize){
+        self.page_size = Some(items);
     }
 
+    /// The base table where the resulting records will be retrieved from
     pub fn from_table(&mut self, table:&Table){
         self.from_table = Some(TableName::from_table(table));
+    }
+    
+    /// just an alias for from_table to make it terse for Insert queries
+    pub fn into_table(&mut self, table:&Table){
+        self.from_table(table);
+    }
+    
+    /// if the database support CTE declareted query i.e WITH, 
+    /// then this query will be declared
+    /// if database doesn't support WITH queries, then this query will be 
+    /// wrapped in the from_query
+    pub fn declare_query(&mut self, query:&Query, alias:&str){
+    
     }
     
     /// a query to query from
     /// use WITH (query) t1 SELECT from t1 declaration in postgresql, sqlite
     /// use SELECT FROM (query) in oracle, mysql, others 
-    pub fn from_query(&mut self, query:&Query){
+    /// alias of the table
+    pub fn from_query(&mut self, query:&Query, alias:&str){
         
     }
     
     /// list down the columns of this table then add it to the enumerated list of columns
-    pub fn enumerate_columns(&mut self, table: &Table){
+    pub fn enumerate_table_all_columns(&mut self, table: &Table){
         for c in &table.columns{
             self.enumerated_columns.push(ColumnName::from_column(c, table));
         }
@@ -324,56 +456,56 @@ impl Query{
     //
     // ```
     
-    pub fn left_join(&mut self, table:&Table, column1:String, column2:String){
+    pub fn left_join(&mut self, table:&Table, column1:&str, column2:&str){
         let join = Join{
             modifier:Some(Modifier::LEFT),
             join_type:JoinType::OUTER,
             table_name: TableName::from_table(table),
-            column1:vec![column1],
-            column2:vec![column2]
+            column1:vec![column1.to_string()],
+            column2:vec![column2.to_string()]
         };
         self.join(join);
     }
-    pub fn right_join(&mut self, table:&Table, column1:String, column2:String){
+    pub fn right_join(&mut self, table:&Table, column1:&str, column2:&str){
         let join = Join{
             modifier:Some(Modifier::RIGHT),
             join_type:JoinType::OUTER,
             table_name: TableName::from_table(table),
-            column1:vec![column1],
-            column2:vec![column2]
+            column1:vec![column1.to_string()],
+            column2:vec![column2.to_string()]
         };
         self.join(join);
     }
     
-    pub fn full_join(&mut self, table:&Table, column1:String, column2:String){
+    pub fn full_join(&mut self, table:&Table, column1:&str, column2:&str){
         let join = Join{
             modifier:Some(Modifier::FULL),
             join_type:JoinType::OUTER,
             table_name: TableName::from_table(table),
-            column1:vec![column1],
-            column2:vec![column2]
+            column1:vec![column1.to_string()],
+            column2:vec![column2.to_string()]
         };
         self.join(join);
     }
     
-    pub fn inner_join(&mut self, table:&Table, column1:String, column2:String){
+    pub fn inner_join(&mut self, table:&Table, column1:&str, column2:&str){
         let join  = Join{
             modifier:None,
             join_type:JoinType::INNER,
             table_name: TableName::from_table(table),
-            column1:vec![column1],
-            column2:vec![column2]
+            column1:vec![column1.to_string()],
+            column2:vec![column2.to_string()]
         };
         self.join(join);
     }
     
     ///ascending orderby of this column
-    pub fn asc(&mut self, column:String){
-        self.order_by.push((column, Direction::ASC));
+    pub fn asc(&mut self, column:&str){
+        self.order_by.push((column.to_string(), Direction::ASC));
     }
         ///ascending orderby of this column
-    pub fn desc(&mut self, column:String){
-        self.order_by.push((column, Direction::DESC));
+    pub fn desc(&mut self, column:&str){
+        self.order_by.push((column.to_string(), Direction::DESC));
     }
     
     
@@ -438,7 +570,11 @@ impl Query{
     
     
     
-    pub fn filter(&mut self, filter:Filter){
+    pub fn add_filter(&mut self, filter:Filter){
         self.filters.push(filter);
+    }
+    
+    pub fn filter(&mut self, column:&str, equality:Equality, value:&ToType){
+        self.add_filter(Filter::new(column, equality, Operand::Value(value.to_db_type())));
     }
 }

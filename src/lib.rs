@@ -6,7 +6,6 @@ extern crate regex;
 
 
 pub mod em;
-pub mod filter;
 pub mod query;
 pub mod dao;
 pub mod database;
