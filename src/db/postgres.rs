@@ -11,6 +11,7 @@ use database::{Database, DatabaseDev, DatabaseDDL};
 use postgres::types::Type as PgType;
 use postgres::types::ToSql;
 use dao::DaoResult;
+use writer::SqlFrag;
 
 
 pub struct Postgres {
@@ -349,10 +350,10 @@ impl Database for Postgres{
     fn reset(&self){}
     
     fn select(&self, query:&Query)->DaoResult{
-        let (sql, types) = self.build_query(query);
-        println!("SQL: \n{}", sql);
-        println!("param: {:?}", types);
-        let stmt = self.conn.prepare(&sql).unwrap();
+        let sql_frag = self.build_query(query);
+        println!("SQL: \n{}", sql_frag.sql);
+        println!("param: {:?}", sql_frag.params);
+        let stmt = self.conn.prepare(&sql_frag.sql).unwrap();
         let mut daos = vec![];
         
         
@@ -371,7 +372,7 @@ impl Database for Postgres{
             params
         }
         
-        let param = from_type_tosql(&types);
+        let param = from_type_tosql(&sql_frag.params);
         for row in stmt.query(&param).unwrap() {
             let columns = row.columns();
             let mut index = 0;
@@ -466,7 +467,7 @@ impl Database for Postgres{
     /// use by select to build the select query
     /// build all types of query
     /// TODO: need to supply the number of parameters where to start the numbering of the number parameters
-    fn build_query(&self, query:&Query)->(String, Vec<Type>){
+    fn build_query(&self, query:&Query)->SqlFrag{
         println!("building the query here");
         match query.sql_type{
             SqlType::SELECT => self.build_select(query),

@@ -1,4 +1,4 @@
-use query::Filter;
+use query::{Filter,Operand};
 use query::Query;
 use table::Table;
 use dao::{Dao, DaoResult};
@@ -127,8 +127,15 @@ impl <'a>EntityManager<'a>{
 
     /// insert this records to the database, return the inserted dao with
     /// values from default columns included
-    pub fn insert(&self, dao:Dao)->Dao{
-        panic!("not yet")
+    pub fn insert(&self, table:&Table, dao:Dao)->Dao{
+        let mut q = Query::insert();
+        q.into_table(table);
+        q.enumerate_table_all_columns(table);
+        for c in &table.columns{
+            let value = dao.get_value(&c.name);
+            q.add_value(Operand::Value(value));
+        }
+        self.db.insert(&q)
     }
 
     /// insert this record on the database, ignoring some columns

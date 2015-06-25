@@ -346,6 +346,13 @@ impl Dao{
     pub fn set_value(&mut self, column: &str, value:Type){
         self.values.insert(column.to_string(), value);
     }
+    pub fn get_value(&self, column: &str)->Type{
+        let value = self.values.get(column);
+        match value{
+            Some(value) => value.clone(),
+            None => panic!("No such value for {}", column),
+        }
+    }
     /// take the value and remove the content 
     pub fn remove<T>(&mut self, column: &str) -> T where T: FromType{
         let value = self.values.remove(column).unwrap();

@@ -59,7 +59,7 @@ pub struct Function{
     pub params:Vec<Operand>,
 }
 
-/// operand on the filter of a sql statement
+/// Operands can be columns, functions, query or value types
 pub enum Operand{
     Column(ColumnName),
     Function(Function),
@@ -273,7 +273,7 @@ pub struct Query{
     pub from_table:Option<TableName>,
     
     /// The data values, used in bulk inserting, updating,
-    pub dao:Vec<Dao>,
+    pub values:Vec<Operand>,
     
 }
 
@@ -298,7 +298,7 @@ impl Query{
             page:None,
             page_size:None,
             from_table:None,
-            dao:vec![],
+            values:vec![],
         }
     }
     
@@ -397,6 +397,7 @@ impl Query{
     
     /// just an alias for from_table to make it terse for Insert queries
     pub fn into_table(&mut self, table:&Table){
+        self.sql_type = SqlType::INSERT;
         self.from_table(table);
     }
     
@@ -576,5 +577,9 @@ impl Query{
     
     pub fn filter(&mut self, column:&str, equality:Equality, value:&ToType){
         self.add_filter(Filter::new(column, equality, Operand::Value(value.to_db_type())));
+    }
+    
+    pub fn add_value(&mut self, value:Operand){
+        self.values.push(value);
     }
 }

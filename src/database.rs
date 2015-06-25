@@ -1,7 +1,7 @@
 use query::Query;
 use table::{Table, Column};
 use dao::Dao;
-use writer::Writer;
+use writer::SqlFrag;
 use dao::{Type, DaoResult};
 use query::{Connector, Equality, Operand};
 use query::{Direction, Modifier, JoinType};
@@ -72,60 +72,36 @@ pub trait Database{
 
 
     /// build a query, return the sql string and the parameters.
-    fn build_query(&self, query:&Query)->(String, Vec<Type>);
+    fn build_query(&self, query:&Query)->SqlFrag;
     
     /// build operand, i.e: columns, query, function, values
-    fn build_operand(&self, operand:&Operand, param_count:usize)->(String, Vec<Type>){
-        let mut w = Writer::new();
-        let mut params = vec![];
-        let mut param_count = param_count;
+    fn build_operand(&self, w: &mut SqlFrag, operand:&Operand){
         match operand{
-                &Operand::Column(ref column) => {
-                    w.append(&column.column); //TODO: needs to do complete/super complete name when there is possible conflict of column names
-                }, 
-                &Operand::Function(ref function)=>{
-                        w.append("(");
-                        let mut do_comma = false;
-                        for param in &function.params{
-                            if do_comma{ w.commasp(); }else{ do_comma = true;}
-                            let (operand_sql, operand_params) = self.build_operand(param, param_count);
-                            w.append(&operand_sql);
-                            param_count += operand_params.len();
-                            for op in operand_params{
-                                params.push(op);
-                            }
-                        }
-                        w.append(")");
-                    },
-                &Operand::Query(ref q) => {
-                    let (sql, param) = self.build_query(q);
-                    for p in param{//TODO: change to params.append(param) in next releases of rust
-                        params.push(p);
+            &Operand::Column(ref column) => {
+                w.append(&column.column); //TODO: needs to do complete/super complete name when there is possible conflict of column names
+            }, 
+            &Operand::Function(ref function)=>{
+                    w.append("(");
+                    let mut do_comma = false;
+                    for param in &function.params{
+                        if do_comma{ w.commasp(); }else{ do_comma = true;}
+                        self.build_operand(w, param);
                     }
-                    w.append(&sql);
+                    w.append(")");
                 },
-                &Operand::Value(ref value) => {
-                    param_count += 1;
-                    let numbered_param = format!("${} ",param_count);
-                    w.append(&numbered_param); //TODO: fix numbered parameters according to the order of param
-                    params.push(value.clone());
-                },
-            };
-        (w.src, params)
+            &Operand::Query(ref q) => {
+                let sql_frag = self.build_query(q);
+                w.append(&sql_frag.sql);
+            },
+            &Operand::Value(ref value) => {
+                w.parameter(value.clone());
+            },
+        };
     }
     
     
-    fn build_filter(&self, filter:&Filter, param_count:usize)->(String, Vec<Type>){
-        let mut param_count = param_count;
-        let mut params = vec![];
-        let mut w = Writer::new();
-        let (left_sql, left_params) = self.build_operand(&filter.left_operand, param_count);
-        param_count += left_params.len();
-        w.append(&left_sql);
-        for lp in left_params{
-            params.push(lp);
-        }
-        
+    fn build_filter(&self, w: &mut SqlFrag, filter:&Filter){
+        self.build_operand(w, &filter.left_operand);
         w.append(" ");
         match filter.equality{
             Equality::EQ => w.append("= "),
@@ -141,22 +117,12 @@ pub trait Database{
             Equality::NOTNULL => w.append("IS NOT NULL "),
             Equality::ISNULL => w.append("IS NULL "),
         };
-        
-        let (right_sql, right_params) = self.build_operand(&filter.right_operand, param_count);
-        param_count += right_params.len();
-        w.append(&right_sql);
-        for lp in right_params{
-            params.push(lp);
-        }
-        (w.src, params)
+        self.build_operand(w, &filter.right_operand);
     }
     
     /// build the filter clause or the where clause of the query
     /// TODO: add the sub filters
-    fn build_filters(&self, filters: &Vec<Filter>, param_count: usize)->(String, Vec<Type>){
-        let mut param_count = param_count;
-        let mut params = vec![];
-        let mut w = Writer::new();
+    fn build_filters(&self, w: &mut SqlFrag, filters: &Vec<Filter>){
         let mut do_connector = false;
         for filter in filters{
             if do_connector{
@@ -168,19 +134,12 @@ pub trait Database{
             }else{
                 do_connector = true;
             }
-            let (filter_sql, filter_params) = self.build_filter(filter, param_count);
-            param_count += filter_params.len();
-            w.append(&filter_sql);
-            for fp in filter_params{
-                params.push(fp);
-            }
+            self.build_filter(w, filter);
         }
-        (w.src, params)
     }
 
     /// build the enumerated, distinct, *, columns
-    fn build_columns(&self, query: &Query)->(String, Vec<Type>){
-        let mut w = Writer::new();
+    fn build_columns(&self, w: &mut SqlFrag, query: &Query){
         let mut do_comma = false;
         let mut cnt = 0;
         for ec in &query.enumerated_columns{
@@ -192,23 +151,26 @@ pub trait Database{
             w.append(" ");
             w.append(&ec.column);
         }
-        (w.src, vec![])
     }
 
     /// TODO include filters, joins, groups, paging
-    fn build_select(&self, query: &Query)->(String, Vec<Type>){
+    fn build_select(&self, query: &Query)->SqlFrag{
         println!("building select query");
-        let mut params = vec![];
-        let mut w = Writer::new();
+        let mut w = SqlFrag::new();
         w.append("SELECT ");
-        let (column_sql, _) = self.build_columns(query); //TODO: add support for column_sql, fields, functions
-        w.append(&column_sql);
+        self.build_columns(&mut w, query); //TODO: add support for column_sql, fields, functions
         w.ln();
         w.append(" FROM ");
+        
         assert!(query.from_table.is_some());
-        let table_name = query.from_table.clone().unwrap().complete_name();
-        w.append(&table_name);
-        w.append(" ");
+        
+        match query.from_table{
+            Some(ref table) => {
+                w.append(&table.complete_name());
+                w.append(" ");
+            }
+            None => panic!("No from_table in this query"),
+        };
         if !query.joins.is_empty(){
             w.ln_tab();
             for join in &query.joins{
@@ -254,11 +216,7 @@ pub trait Database{
         if !query.filters.is_empty() {
             w.ln_tab();
             w.append("WHERE ");
-            let (fsql, fparam) = self.build_filters(&query.filters, 0);
-            w.append(&fsql);
-            for fp in fparam{
-                params.push(fp);
-            }
+            let sql_frag = self.build_filters(&mut w, &query.filters);
         }
         
         if !query.grouped_columns.is_empty() {
@@ -306,62 +264,63 @@ pub trait Database{
             },
             None => (),
         };
-        
-        (w.src, params)
+        w
     }
     
     /// TODO complete this
-    fn build_insert(&self, query: &Query)->(String, Vec<Type>){
-        println!("building select query");
-        let mut w = Writer::new();
+    fn build_insert(&self, query: &Query)->SqlFrag{
+        println!("building insert query");
+        let mut w = SqlFrag::new();
         w.append("INSERT INTO");
-        let (column_sql, _) = self.build_columns(query); //TODO: add support for column_sql, fields, functions
-        w.append(&column_sql);
-        w.ln();
-        w.append(" FROM ");
         assert!(query.from_table.is_some());
-        let table_name = query.from_table.clone().unwrap().complete_name();
-        w.append(&table_name);
-        (w.src, vec![])
+        match query.from_table{
+            Some(ref table) => {
+                w.append(&table.complete_name());
+                w.append(" ");
+            }
+            None => panic!("No from_table in this query"),
+        };
+        w.append("(");
+        self.build_columns(&mut w, query); //TODO: add support for column_sql, fields, functions
+        w.append(")");
+        assert!(!query.values.is_empty(), "values should not be empty, when inserting records");
+        if !query.values.is_empty(){
+            w.append("VALUES(");
+            for vo in &query.values{
+                self.build_operand(&mut w, vo);
+            }
+            w.append(")");
+        }
+        w.ln();
+        w
     }
 
     ///TODO :complete this
-    fn build_update(&self, query: &Query)->(String, Vec<Type>){
+    fn build_update(&self, query: &Query)->SqlFrag{
         println!("building update query");
-        let mut params = vec![];
-        let mut w = Writer::new();
+        let mut w = SqlFrag::new();
         w.append("UPDATE ");
-        let (column_sql, _) = self.build_columns(query); //TODO: add support for column_sql, fields, functions
-        w.append(&column_sql);
+        self.build_columns(&mut w, query); //TODO: add support for column_sql, fields, functions
         w.ln();
-       if !query.filters.is_empty() {
+        if !query.filters.is_empty() {
             w.ln_tab();
             w.append("WHERE ");
-            let (fsql, fparam) = self.build_filters(&query.filters, 0);
-            w.append(&fsql);
-            for fp in fparam{
-                params.push(fp);
-            }
+            self.build_filters(&mut w, &query.filters);
         }
-        (w.src, params)
+        w
     }
 
-    fn build_delete(&self, query: &Query)->(String, Vec<Type>){
+    fn build_delete(&self, query: &Query)->SqlFrag{
         println!("building delete query");
-        let mut params = vec![];
-        let mut w = Writer::new();
+        let mut w = SqlFrag::new();
         w.append("DELETE FROM");
         assert!(query.from_table.is_some());
         if !query.filters.is_empty() {
             w.ln_tab();
             w.append("WHERE ");
-            let (fsql, fparam) = self.build_filters(&query.filters, 0);
-            w.append(&fsql);
-            for fp in fparam{
-                params.push(fp);
-            }
+            self.build_filters(&mut w, &query.filters);
         }
-        (w.src, params)
+        w
     }
 
 
@@ -428,7 +387,7 @@ pub trait DatabaseDev{
     /// build a source code for the struct defined by this table
     ///(imports, imported_tables, source code)
     fn to_struct_source_code<'a>(&self, table:&'a Table, all_tables:&'a Vec<Table>)->(Vec<String>, Vec<&'a Table>, String){
-        let mut w = Writer::new();
+        let mut w = SqlFrag::new();
         //imported tables needed since we are partitioning the tables in schemas
         let mut imported_tables = Vec::new();
         //imports
@@ -561,10 +520,10 @@ pub trait DatabaseDev{
         imported_tables.sort_by(|a, b| (a.complete_name().cmp(&b.complete_name())));
         imported_tables.dedup();
 
-        (imports, imported_tables, w.src)
+        (imports, imported_tables, w.sql)
     }
 
-    fn write_column(w:&mut Writer, c:&Column){
+    fn write_column(w:&mut SqlFrag, c:&Column){
         if c.comment.is_some(){
             let comment = &c.comment.clone().unwrap();
             for split in comment.split("\n"){
