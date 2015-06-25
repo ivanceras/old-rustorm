@@ -75,10 +75,10 @@ pub trait Database{
     fn build_query(&self, query:&Query)->(String, Vec<Type>);
     
     /// build operand, i.e: columns, query, function, values
-    fn build_operand(&self, operand:&Operand, param_cont:usize)->(String, Vec<Type>){
+    fn build_operand(&self, operand:&Operand, param_count:usize)->(String, Vec<Type>){
         let mut w = Writer::new();
         let mut params = vec![];
-        let mut param_cont = param_cont;
+        let mut param_count = param_count;
         match operand{
                 &Operand::Column(ref column) => {
                     w.append(&column.column); //TODO: needs to do complete/super complete name when there is possible conflict of column names
@@ -88,9 +88,9 @@ pub trait Database{
                         let mut do_comma = false;
                         for param in &function.params{
                             if do_comma{ w.commasp(); }else{ do_comma = true;}
-                            let (operand_sql, operand_params) = self.build_operand(param, param_cont);
+                            let (operand_sql, operand_params) = self.build_operand(param, param_count);
                             w.append(&operand_sql);
-                            param_cont += operand_params.len();
+                            param_count += operand_params.len();
                             for op in operand_params{
                                 params.push(op);
                             }
@@ -105,8 +105,8 @@ pub trait Database{
                     w.append(&sql);
                 },
                 &Operand::Value(ref value) => {
-                    param_cont += 1;
-                    let numbered_param = format!("${} ",param_cont);
+                    param_count += 1;
+                    let numbered_param = format!("${} ",param_count);
                     w.append(&numbered_param); //TODO: fix numbered parameters according to the order of param
                     params.push(value.clone());
                 },
@@ -115,10 +115,12 @@ pub trait Database{
     }
     
     
-    fn build_filter(&self, filter:&Filter, param_cont:usize)->(String, Vec<Type>){
+    fn build_filter(&self, filter:&Filter, param_count:usize)->(String, Vec<Type>){
+        let mut param_count = param_count;
         let mut params = vec![];
         let mut w = Writer::new();
-        let (left_sql, left_params) = self.build_operand(&filter.left_operand, param_cont);
+        let (left_sql, left_params) = self.build_operand(&filter.left_operand, param_count);
+        param_count += left_params.len();
         w.append(&left_sql);
         for lp in left_params{
             params.push(lp);
@@ -140,7 +142,8 @@ pub trait Database{
             Equality::ISNULL => w.append("IS NULL "),
         };
         
-        let (right_sql, right_params) = self.build_operand(&filter.right_operand, param_cont);
+        let (right_sql, right_params) = self.build_operand(&filter.right_operand, param_count);
+        param_count += right_params.len();
         w.append(&right_sql);
         for lp in right_params{
             params.push(lp);
@@ -150,7 +153,8 @@ pub trait Database{
     
     /// build the filter clause or the where clause of the query
     /// TODO: add the sub filters
-    fn build_filters(&self, filters: &Vec<Filter>, param_cont: usize)->(String, Vec<Type>){
+    fn build_filters(&self, filters: &Vec<Filter>, param_count: usize)->(String, Vec<Type>){
+        let mut param_count = param_count;
         let mut params = vec![];
         let mut w = Writer::new();
         let mut do_connector = false;
@@ -164,7 +168,8 @@ pub trait Database{
             }else{
                 do_connector = true;
             }
-            let (filter_sql, filter_params) = self.build_filter(filter, param_cont);
+            let (filter_sql, filter_params) = self.build_filter(filter, param_count);
+            param_count += filter_params.len();
             w.append(&filter_sql);
             for fp in filter_params{
                 params.push(fp);
@@ -310,17 +315,8 @@ pub trait Database{
         println!("building select query");
         let mut w = Writer::new();
         w.append("INSERT INTO");
-        let mut do_comma = false;
-        let mut cnt = 0;
-        for ec in &query.enumerated_columns{
-            if do_comma{w.comma();}else{do_comma=true;}
-            cnt += 1;
-            if cnt % 5 == 0{//break at every 5 columns to encourage sql tuning/revising
-                w.ln_tab();
-            }
-            w.append(" ");
-            w.append(&ec.column);
-        }
+        let (column_sql, _) = self.build_columns(query); //TODO: add support for column_sql, fields, functions
+        w.append(&column_sql);
         w.ln();
         w.append(" FROM ");
         assert!(query.from_table.is_some());
@@ -331,30 +327,27 @@ pub trait Database{
 
     ///TODO :complete this
     fn build_update(&self, query: &Query)->(String, Vec<Type>){
-        println!("building select query");
+        println!("building update query");
+        let mut params = vec![];
         let mut w = Writer::new();
         w.append("UPDATE ");
-        let mut do_comma = false;
-        let mut cnt = 0;
-        for ec in &query.enumerated_columns{
-            if do_comma{w.comma();}else{do_comma=true;}
-            cnt += 1;
-            if cnt % 5 == 0{//break at every 5 columns to encourage sql tuning/revising
-                w.ln_tab();
-            }
-            w.append(" ");
-            w.append(&ec.column);
-        }
+        let (column_sql, _) = self.build_columns(query); //TODO: add support for column_sql, fields, functions
+        w.append(&column_sql);
         w.ln();
-        w.append(" FROM ");
-        assert!(query.from_table.is_some());
-        let table_name = query.from_table.clone().unwrap().complete_name();
-        w.append(&table_name);
-        (w.src, vec![])
+       if !query.filters.is_empty() {
+            w.ln_tab();
+            w.append("WHERE ");
+            let (fsql, fparam) = self.build_filters(&query.filters, 0);
+            w.append(&fsql);
+            for fp in fparam{
+                params.push(fp);
+            }
+        }
+        (w.src, params)
     }
 
     fn build_delete(&self, query: &Query)->(String, Vec<Type>){
-        println!("building select query");
+        println!("building delete query");
         let mut params = vec![];
         let mut w = Writer::new();
         w.append("DELETE FROM");

@@ -255,13 +255,7 @@ fn generate_dao_conversion_code(table: &Table, all_tables:&Vec<Table>)->(Vec<Str
     w.append(&table.struct_name());
     w.append("{");
     w.ln_tab();
-    w.append("fn from_dao(dao:&Dao, renamed_columns:&BTreeMap<String, Vec<(String, String)>>)->Self{");
-    w.ln_tabs(2);
-    w.append("let mut dao = dao.clone();");
-    w.ln_tabs(2);
-    w.append("dao.resolve_renamed_columns(\"");
-    w.append(&table.name);
-    w.append("\", renamed_columns);");
+    w.append("fn from_dao(dao:&Dao)->Self{");
     w.ln_tabs(2);
     w.append(&table.struct_name());
     w.append("{");

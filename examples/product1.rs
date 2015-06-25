@@ -129,10 +129,8 @@ pub struct Product {
 
 impl IsDao for Product{
 
-    
-    fn from_dao(dao:&Dao, renamed_columns:&BTreeMap<String, Vec<(String, String)>>)->Self{
-        let mut dao = dao.clone();
-        dao.resolve_renamed_columns("product", renamed_columns);
+
+    fn from_dao(dao:&Dao)->Self{
         Product{
             organization_id: dao.get_opt("organization_id"),
             client_id: dao.get_opt("client_id"),

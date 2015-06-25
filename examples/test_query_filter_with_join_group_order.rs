@@ -16,7 +16,7 @@ use rustorm::table::IsTable;
 use rustorm::dao::IsDao;
 use rustorm::query::Query;
 use rustorm::dao::Type;
-use rustorm::filter::{Filter,Equality,Operand};
+use rustorm::query::{Filter,Equality,Operand};
 use gen::bazaar::Product;
 use gen::bazaar::ProductAvailability;
 
@@ -34,8 +34,8 @@ fn main(){
             
             query.left_join(&ProductAvailability::table(), 
                 "product.product_id", "product_availability.product_id");
-            
-            query.add_filter(Filter::new("product.name", Equality::LIKE, Operand::Value(Type::String("iphone%".to_string()))));
+            let iphone = "iphone%";
+            query.filter("product.name", Equality::LIKE, &iphone);
             query.add_filter(Filter::new("product.description", Equality::LIKE, Operand::Value(Type::String("%Iphone%".to_string()))));
             query.desc("product.created");
             query.asc("product.product_id");

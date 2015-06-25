@@ -1,3 +1,4 @@
+/// source code writer, sql writer
 #[derive(Debug)]
 pub struct Writer{
     pub src:String,
@@ -51,7 +52,7 @@ impl Writer{
     pub fn comma(&mut self)->&mut Self{
         self.append(",")
     }
-        #[inline]
+    #[inline]
     pub fn commasp(&mut self)->&mut Self{
         self.append(", ")
     }
