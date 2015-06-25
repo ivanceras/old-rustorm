@@ -1,8 +1,7 @@
 use query::Query;
 use table::{Table, Column};
-use dao::Dao;
+use dao::{Dao,DaoResult, Type};
 use writer::SqlFrag;
-use dao::{Type, DaoResult};
 use query::{Connector, Equality, Operand};
 use query::{Direction, Modifier, JoinType};
 use query::Filter;
@@ -65,7 +64,7 @@ pub trait Database{
     fn execute_ddl(&self, sql:&String)->Result<(), &str>;
 
     /// everything else
-    fn execute_sql(&self, sql:&String, param:&Vec<String>)->Result<u64, &str>;
+    fn execute_sql(&self, sql:&String, param:&Vec<Type>)->Result<u64, &str>;
 
     /// Actually converting the from whatever JDBC converts the object to the correct type that we intend to be using
     fn correct_data_types(&self, dao_list:Vec<Dao>, model:&Table);
@@ -216,7 +215,7 @@ pub trait Database{
         if !query.filters.is_empty() {
             w.ln_tab();
             w.append("WHERE ");
-            let sql_frag = self.build_filters(&mut w, &query.filters);
+            self.build_filters(&mut w, &query.filters);
         }
         
         if !query.grouped_columns.is_empty() {
@@ -271,7 +270,7 @@ pub trait Database{
     fn build_insert(&self, query: &Query)->SqlFrag{
         println!("building insert query");
         let mut w = SqlFrag::new();
-        w.append("INSERT INTO");
+        w.append("INSERT INTO ");
         assert!(query.from_table.is_some());
         match query.from_table{
             Some(ref table) => {
@@ -282,14 +281,16 @@ pub trait Database{
         };
         w.append("(");
         self.build_columns(&mut w, query); //TODO: add support for column_sql, fields, functions
-        w.append(")");
+        w.append(") ");
         assert!(!query.values.is_empty(), "values should not be empty, when inserting records");
         if !query.values.is_empty(){
-            w.append("VALUES(");
+            w.append("VALUES( ");
+            let mut do_comma = false;
             for vo in &query.values{
+                if do_comma{ w.commasp(); } else{do_comma=true;}
                 self.build_operand(&mut w, vo);
             }
-            w.append(")");
+            w.append(") ");
         }
         w.ln();
         w
@@ -552,7 +553,6 @@ pub trait DatabaseDev{
             w.append("/// --inherited-- ");
             w.ln();
         }
-        //let (_, data_type) = self.get_rust_data_type(&c.db_data_type);
         w.tab();
         w.append("/// db data type: ");
         w.append(&c.db_data_type);

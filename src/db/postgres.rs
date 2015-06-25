@@ -32,6 +32,21 @@ impl Postgres{
     }
 
 
+    /// convert Type to ToSql (postgresql native types)
+    /// TODO: put this somewhere organized
+    /// TODO: match all the other filter types
+    fn from_type_tosql<'a>(types: &'a Vec<Type>)->Vec<&'a ToSql>{
+        let mut params = vec![];
+        for t in types{
+            let tosql:&ToSql = match t {
+                &Type::String(ref x) => x,
+                &Type::Uuid(ref x) => x,
+                _ => panic!("not yet here {:?}", t),
+            };
+            params.push(tosql);
+        }
+        params
+    }
     /// get the rust data type names from database data type names
     /// will be used in source code generation
     fn dbtype_to_rust_type(db_type: &str)->(Vec<String>, String){
@@ -355,32 +370,15 @@ impl Database for Postgres{
         println!("param: {:?}", sql_frag.params);
         let stmt = self.conn.prepare(&sql_frag.sql).unwrap();
         let mut daos = vec![];
-        
-        
-        /// convert Type to ToSql (postgresql native types)
-        /// TODO: put this somewhere organized
-        /// TODO: match all the other filter types
-        fn from_type_tosql<'a>(types: &'a Vec<Type>)->Vec<&'a ToSql>{
-            let mut params = vec![];
-            for t in types{
-                let tosql:&ToSql = match t {
-                    &Type::String(ref x) => x,
-                    _ => panic!("not yet here {:?}", t),
-                };
-                params.push(tosql);
-            }
-            params
-        }
-        
-        let param = from_type_tosql(&sql_frag.params);
+        let param = Self::from_type_tosql(&sql_frag.params);
         for row in stmt.query(&param).unwrap() {
             let columns = row.columns();
             let mut index = 0;
             let mut dao = Dao::new();
             for c in columns{
                 let column_name = c.name();
-                let type_ = c.type_();
-                let rtype = match type_{
+                let dtype = c.type_();
+                let rtype = match dtype{
                     &PgType::Uuid => {
                         let value = row.get_opt(index);
                         match value{
@@ -438,7 +436,7 @@ impl Database for Postgres{
                         }
                     },
                      
-                    _ => panic!("Type {:?} is not covered!", type_)
+                    _ => panic!("Type {:?} is not covered!", dtype)
                 };
                 dao.set_value(column_name, rtype);
                 index += 1;
@@ -455,14 +453,29 @@ impl Database for Postgres{
         }
         
     }
-    fn insert(&self, query:&Query)->Dao{panic!("not yet")}
+    fn insert(&self, query:&Query)->Dao{
+        let sql_frag = self.build_insert(query);
+        println!("SQL:\n {}",sql_frag.sql);
+        println!("params: {:?}", sql_frag.params);
+        self.execute_sql(&sql_frag.sql, &sql_frag.params);
+        panic!("Up to here only");
+    }
     fn update(&self, query:&Query)->Dao{panic!("not yet")}
     fn delete(&self, query:&Query)->Result<u64, &str>{panic!("not yet");}
 
     fn execute_ddl(&self, sql:&String)->Result<(), &str>{panic!("not yet");}
 
     fn correct_data_types(&self, dao_list:Vec<Dao>, model:&Table){}
-    fn execute_sql(&self, sql:&String, param:&Vec<String>)->Result<u64, &str>{panic!("not yet")}
+    
+    fn execute_sql(&self, sql:&String, param:&Vec<Type>)->Result<u64, &str>{
+        let to_sql_types = Self::from_type_tosql(param);
+        let result = self.conn.execute(sql, &to_sql_types);
+        match result{
+            Ok(x) => { println!("sucess! {}", x);},
+            Err(e) => { panic!("error occured: {}",e);}
+        }
+        Result::Ok(1)//TODO: do the actual result 
+    }
 
     /// use by select to build the select query
     /// build all types of query
