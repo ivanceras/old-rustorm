@@ -30,9 +30,11 @@ fn main(){
         Ok(pg) => {
             let em = EntityManager::new(&pg);
             let mut dao = Dao::new();
-            dao.set("name", &"test product");
-            dao.set("description", &"testing insert of em");
-            let result = em.insert(&Product::table(), dao);
+            dao.set("name", &"inserting 1 records");
+            dao.set("description", &"testing insert 1 record to product");
+            let dao = em.insert(&Product::table(), dao);
+            let prod = Product::from_dao(&dao);
+            println!("created: {}", prod.created);
         }
         Err(error) =>{
             println!("{}",error);

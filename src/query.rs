@@ -127,9 +127,9 @@ pub struct ColumnName{
 
 pub struct Field{
     /// the field
-    Operand:Operand,
+    pub operand:Operand,
     /// when renamed as field
-    name:Option<String>,
+    pub name:Option<String>,
 }
 
 impl ColumnName{
@@ -269,7 +269,7 @@ pub struct Query{
     pub values:Vec<Operand>,
     
     /// the returning clause of the query when supported,
-    pub enumerated_returns: Vec<Operand>,
+    pub enumerated_returns: Vec<Field>,
 }
 
 impl Query{
@@ -575,7 +575,9 @@ impl Query{
     pub fn enumerate_all_table_column_as_return(&mut self, table:&Table){
          for c in &table.columns{
             let column_name = ColumnName::from_column(c, table);
-            self.enumerated_returns.push(Operand::ColumnName(column_name));
+            let operand = Operand::ColumnName(column_name);
+            let field = Field{operand: operand, name:None};
+            self.enumerated_returns.push(field);
         }
     }
 }

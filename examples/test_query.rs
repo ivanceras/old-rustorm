@@ -11,7 +11,7 @@ use chrono::datetime::DateTime;
 use chrono::offset::utc::UTC;
 use rustc_serialize::json;
 
-use Product; 
+use gen::bazaar::Product; 
 use rustorm::em::EntityManager;
 use rustorm::table::IsTable;
 use rustorm::dao::IsDao;

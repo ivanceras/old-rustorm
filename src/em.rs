@@ -130,11 +130,10 @@ impl <'a>EntityManager<'a>{
     pub fn insert(&self, table:&Table, dao:Dao)->Dao{
         let mut q = Query::insert();
         q.into_table(table);
-        //q.enumerate_table_all_columns(table);
         for key in dao.values.keys(){
-            println!("key: {}", key);
             q.enumerate_column(key);
         }
+        q.enumerate_all_table_column_as_return(table);
         for c in &table.columns{
             let value = dao.values.get(&c.name);
             match value{

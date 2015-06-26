@@ -1,10 +1,22 @@
 use query::Query;
 use table::{Table, Column};
 use dao::{Dao,DaoResult, Type};
-use writer::SqlFrag;
-use query::{Connector, Equality, Operand};
+use writer::{SqlFrag, Writer};
+use query::{Connector, Equality, Operand, Field};
 use query::{Direction, Modifier, JoinType};
 use query::Filter;
+
+
+/// SqlOption, contains the info about the features and quirks of underlying database
+#[derive(PartialEq)]
+pub enum SqlOption{
+    /// use the numbered parameters, as the case with rust-postgres
+    UseNumberedParam,
+    /// sqlite, jdbc
+    UseQuestionMark,
+    /// postgresql supports returning clause on insert and update
+    SupportsReturningClause,
+}
 
 /// A lower level API for manipulating objects in the database
 pub trait Database{
@@ -62,7 +74,10 @@ pub trait Database{
     /// create, alter, drop, truncate, rename, constraint
     /// returns error if error occurs
     fn execute_ddl(&self, sql:&String)->Result<(), &str>;
-
+    
+    /// execute insert with returning clause, update with returning clause
+    fn execute_sql_with_return(&self, sql:&String, params:&Vec<Type>)->Vec<Dao>;
+    
     /// everything else
     fn execute_sql(&self, sql:&String, param:&Vec<Type>)->Result<u64, &str>;
 
@@ -76,7 +91,7 @@ pub trait Database{
     /// build operand, i.e: columns, query, function, values
     fn build_operand(&self, w: &mut SqlFrag, operand:&Operand){
         match operand{
-            &Operand::Column(ref column) => {
+            &Operand::ColumnName(ref column) => {
                 w.append(&column.column); //TODO: needs to do complete/super complete name when there is possible conflict of column names
             }, 
             &Operand::Function(ref function)=>{
@@ -95,6 +110,17 @@ pub trait Database{
             &Operand::Value(ref value) => {
                 w.parameter(value.clone());
             },
+        };
+    }
+    
+    fn build_field(&self, w: &mut SqlFrag, field:&Field){
+        self.build_operand(w, &field.operand);
+        match field.name{
+            Some(ref name) => {
+                w.append("AS ");
+                w.append(name);
+            }
+            None => (),
         };
     }
     
@@ -155,7 +181,7 @@ pub trait Database{
     /// TODO include filters, joins, groups, paging
     fn build_select(&self, query: &Query)->SqlFrag{
         println!("building select query");
-        let mut w = SqlFrag::new();
+        let mut w = SqlFrag::new(self.sql_options());
         w.append("SELECT ");
         self.build_columns(&mut w, query); //TODO: add support for column_sql, fields, functions
         w.ln();
@@ -269,7 +295,7 @@ pub trait Database{
     /// TODO complete this
     fn build_insert(&self, query: &Query)->SqlFrag{
         println!("building insert query");
-        let mut w = SqlFrag::new();
+        let mut w = SqlFrag::new(self.sql_options());
         w.append("INSERT INTO ");
         assert!(query.from_table.is_some());
         match query.from_table{
@@ -292,6 +318,16 @@ pub trait Database{
             }
             w.append(") ");
         }
+        if !query.enumerated_returns.is_empty() {
+            if self.sql_options().contains(&SqlOption::SupportsReturningClause) {
+                w.append("RETURNING ");
+                let mut do_comma = false;
+                for field in &query.enumerated_returns{
+                    if do_comma{ w.commasp(); }else {do_comma = true;}
+                    self.build_field(&mut w, field);
+                }
+            }
+        }
         w.ln();
         w
     }
@@ -299,7 +335,7 @@ pub trait Database{
     ///TODO :complete this
     fn build_update(&self, query: &Query)->SqlFrag{
         println!("building update query");
-        let mut w = SqlFrag::new();
+        let mut w = SqlFrag::new(self.sql_options());
         w.append("UPDATE ");
         self.build_columns(&mut w, query); //TODO: add support for column_sql, fields, functions
         w.ln();
@@ -313,7 +349,7 @@ pub trait Database{
 
     fn build_delete(&self, query: &Query)->SqlFrag{
         println!("building delete query");
-        let mut w = SqlFrag::new();
+        let mut w = SqlFrag::new(self.sql_options());
         w.append("DELETE FROM");
         assert!(query.from_table.is_some());
         if !query.filters.is_empty() {
@@ -324,6 +360,7 @@ pub trait Database{
         w
     }
 
+    fn sql_options(&self)->Vec<SqlOption>;
 
 }
 
@@ -388,7 +425,7 @@ pub trait DatabaseDev{
     /// build a source code for the struct defined by this table
     ///(imports, imported_tables, source code)
     fn to_struct_source_code<'a>(&self, table:&'a Table, all_tables:&'a Vec<Table>)->(Vec<String>, Vec<&'a Table>, String){
-        let mut w = SqlFrag::new();
+        let mut w = Writer::new();
         //imported tables needed since we are partitioning the tables in schemas
         let mut imported_tables = Vec::new();
         //imports
@@ -521,10 +558,10 @@ pub trait DatabaseDev{
         imported_tables.sort_by(|a, b| (a.complete_name().cmp(&b.complete_name())));
         imported_tables.dedup();
 
-        (imports, imported_tables, w.sql)
+        (imports, imported_tables, w.src)
     }
 
-    fn write_column(w:&mut SqlFrag, c:&Column){
+    fn write_column(w:&mut Writer, c:&Column){
         if c.comment.is_some(){
             let comment = &c.comment.clone().unwrap();
             for split in comment.split("\n"){

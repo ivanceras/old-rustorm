@@ -30,7 +30,7 @@ fn main(){
     let pg:Result<Postgres,&str> = Postgres::new("postgres://postgres:p0stgr3s@localhost/bazaar_v6");
        match pg{
         Ok(pg) => {
-            let sql = "INSERT INTO bazaar.product ( name, description ) VALUES( $1 , $2 ) RETURNING product_id";
+            let sql = "INSERT INTO bazaar.product ( name, description ) VALUES( $1 , $2 ) RETURNING *";//product_id, now(), created, updated";
             let pid = Uuid::new_v4();
             let name = "product 1234";
             let description = "more info of the test product";
@@ -40,8 +40,6 @@ fn main(){
                 let mut index = 0;
                 for column in row.columns(){
                     println!("{:?}", column);
-                    //let pid = row.get(index);
-                    //println!("{}", pid);
                     index += 1;
                 }
             }

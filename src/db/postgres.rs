@@ -12,6 +12,8 @@ use postgres::types::Type as PgType;
 use postgres::types::ToSql;
 use dao::DaoResult;
 use writer::SqlFrag;
+use postgres::rows::Row;
+use database::SqlOption;
 
 
 pub struct Postgres {
@@ -33,9 +35,10 @@ impl Postgres{
 
 
     /// convert Type to ToSql (postgresql native types)
+    /// This is used when inserting records to the database
     /// TODO: put this somewhere organized
     /// TODO: match all the other filter types
-    fn from_type_tosql<'a>(types: &'a Vec<Type>)->Vec<&'a ToSql>{
+    fn from_rust_type_tosql<'a>(types: &'a Vec<Type>)->Vec<&'a ToSql>{
         let mut params:Vec<&ToSql> = vec![];
         for t in types{
             match t {
@@ -50,6 +53,71 @@ impl Postgres{
         }
         params
     }
+    
+    /// convert a record of a row into rust type
+    fn from_sql_to_rust_type(dtype:&PgType, row: &Row, index:usize)->Type{
+        match dtype{
+            &PgType::Uuid => {
+                let value = row.get_opt(index);
+                match value{
+                    Ok(value) => Type::Uuid(value),
+                    Err(_) => Type::Null,
+                }
+            },
+            &PgType::Varchar | &PgType::Text => {
+                let value = row.get_opt(index);
+                 match value{
+                    Ok(value) => Type::String(value),
+                    Err(_) => Type::Null,
+                }
+            },
+             &PgType::TimestampTZ => {
+                let value = row.get_opt(index);
+                 match value{
+                    Ok(value) => Type::DateTime(value),
+                    Err(_) => Type::Null,
+                }
+            },
+             &PgType::Numeric => {
+                let value = row.get_opt(index);
+                 match value{
+                    Ok(value) => Type::F64(value),
+                    Err(_) => Type::Null,
+                }
+            },
+            &PgType::Bool => {
+                let value = row.get_opt(index);
+                 match value{
+                    Ok(value) => Type::Bool(value),
+                    Err(_) => Type::Null,
+                }
+            },
+            &PgType::Json => {
+                let value = row.get_opt(index);
+                 match value{
+                    Ok(value) => Type::String(value),
+                    Err(_) => Type::Null,
+                }
+            },
+            &PgType::Int4 => {
+                let value = row.get_opt(index);
+                 match value{
+                    Ok(value) => Type::I32(value),
+                    Err(_) => Type::Null,
+                }
+            },
+            &PgType::Timetz => {
+                let value = row.get_opt(index);
+                 match value{
+                    Ok(value) => Type::DateTime(value),
+                    Err(_) => Type::Null,
+                }
+            },
+             
+            _ => panic!("Type {:?} is not covered!", dtype)
+        }
+    }
+    
     /// get the rust data type names from database data type names
     /// will be used in source code generation
     fn dbtype_to_rust_type(db_type: &str)->(Vec<String>, String){
@@ -367,101 +435,30 @@ impl Database for Postgres{
     fn is_valid(&self)->bool{false}
     fn reset(&self){}
     
+    /// return this list of options, supported features in the database
+    fn sql_options(&self)->Vec<SqlOption>{
+        vec![
+            SqlOption::UseNumberedParam,  // uses numbered parameters
+            SqlOption::SupportsReturningClause // supports returning clause, feature
+        ]
+    }
+    
     fn select(&self, query:&Query)->DaoResult{
         let sql_frag = self.build_query(query);
-        println!("SQL: \n{}", sql_frag.sql);
-        println!("param: {:?}", sql_frag.params);
-        let stmt = self.conn.prepare(&sql_frag.sql).unwrap();
-        let mut daos = vec![];
-        let param = Self::from_type_tosql(&sql_frag.params);
-        for row in stmt.query(&param).unwrap() {
-            let columns = row.columns();
-            let mut index = 0;
-            let mut dao = Dao::new();
-            for c in columns{
-                let column_name = c.name();
-                let dtype = c.type_();
-                let rtype = match dtype{
-                    &PgType::Uuid => {
-                        let value = row.get_opt(index);
-                        match value{
-                            Ok(value) => Type::Uuid(value),
-                            Err(_) => Type::Null,
-                        }
-                    },
-                    &PgType::Varchar | &PgType::Text => {
-                        let value = row.get_opt(index);
-                         match value{
-                            Ok(value) => Type::String(value),
-                            Err(_) => Type::Null,
-                        }
-                    },
-                     &PgType::TimestampTZ => {
-                        let value = row.get_opt(index);
-                         match value{
-                            Ok(value) => Type::DateTime(value),
-                            Err(_) => Type::Null,
-                        }
-                    },
-                     &PgType::Numeric => {
-                        let value = row.get_opt(index);
-                         match value{
-                            Ok(value) => Type::F64(value),
-                            Err(_) => Type::Null,
-                        }
-                    },
-                    &PgType::Bool => {
-                        let value = row.get_opt(index);
-                         match value{
-                            Ok(value) => Type::Bool(value),
-                            Err(_) => Type::Null,
-                        }
-                    },
-                    &PgType::Json => {
-                        let value = row.get_opt(index);
-                         match value{
-                            Ok(value) => Type::String(value),
-                            Err(_) => Type::Null,
-                        }
-                    },
-                    &PgType::Int4 => {
-                        let value = row.get_opt(index);
-                         match value{
-                            Ok(value) => Type::I32(value),
-                            Err(_) => Type::Null,
-                        }
-                    },
-                    &PgType::Timetz => {
-                        let value = row.get_opt(index);
-                         match value{
-                            Ok(value) => Type::DateTime(value),
-                            Err(_) => Type::Null,
-                        }
-                    },
-                     
-                    _ => panic!("Type {:?} is not covered!", dtype)
-                };
-                dao.set_value(column_name, rtype);
-                index += 1;
-            }
-            daos.push(dao);
-        }
         DaoResult{
             from_table:Some(query.from_table.clone().unwrap().complete_name()),
-            dao:daos,
+            dao: self.execute_sql_with_return(&sql_frag.sql, &sql_frag.params),
             renamed_columns:query.renamed_columns.clone(),
             total:None,
             page:None,
             page_size:None,
         }
-        
     }
     fn insert(&self, query:&Query)->Dao{
         let sql_frag = self.build_insert(query);
-        println!("SQL:\n {}",sql_frag.sql);
-        println!("params: {:?}", sql_frag.params);
-        self.execute_sql(&sql_frag.sql, &sql_frag.params);
-        panic!("Up to here only");
+        let dao = self.execute_sql_with_return(&sql_frag.sql, &sql_frag.params);
+        assert!(dao.len() == 1, "There should be 1 and only 1 record return here");
+        dao[0].clone()
     }
     fn update(&self, query:&Query)->Dao{panic!("not yet")}
     fn delete(&self, query:&Query)->Result<u64, &str>{panic!("not yet");}
@@ -470,8 +467,33 @@ impl Database for Postgres{
 
     fn correct_data_types(&self, dao_list:Vec<Dao>, model:&Table){}
     
+    fn execute_sql_with_return(&self, sql:&String, params:&Vec<Type>)->Vec<Dao>{
+        println!("SQL: \n{}", sql);
+        println!("param: {:?}", params);
+        let stmt = self.conn.prepare(sql).unwrap();
+        let mut daos = vec![];
+        let param = Self::from_rust_type_tosql(params);
+        for row in stmt.query(&param).unwrap() {
+            let columns = row.columns();
+            let mut index = 0;
+            let mut dao = Dao::new();
+            for c in columns{
+                let column_name = c.name();
+                let dtype = c.type_();
+                let rtype = Self::from_sql_to_rust_type(&dtype, &row, index);
+                dao.set_value(column_name, rtype);
+                index += 1;
+            }
+            daos.push(dao);
+        }
+        daos
+    }
+    
+    /// generic execute sql which returns not much information,
+    /// returns only the number of affected records or errors
+    /// can be used with DDL operations (CREATE, DELETE, ALTER, DROP)
     fn execute_sql(&self, sql:&String, param:&Vec<Type>)->Result<u64, &str>{
-        let to_sql_types = Self::from_type_tosql(param);
+        let to_sql_types = Self::from_rust_type_tosql(param);
         let result = self.conn.execute(sql, &to_sql_types);
         match result{
             Ok(x) => { println!("sucess! {}", x);},

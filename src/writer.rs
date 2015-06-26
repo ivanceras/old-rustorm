@@ -1,6 +1,8 @@
 use dao::Type;
+use database::SqlOption;
 
 /// generic string writer
+/// use this for writing source code
 #[derive(Debug)]
 pub struct Writer{
     pub src:String,
@@ -70,27 +72,20 @@ impl Writer{
     }
 }
 
-/// SqlOption
-pub enum SqlOption{
-    /// use the numbered parameters, as the case with rust-postgres
-    UseNumberedParam,
-    /// sqlite, jdbc
-    UseQuestionMark,
-}
 
 /// sql fragment
-/// TODO; unify the functions with the generic string writer
+/// use this for writing SQL statements
 pub struct SqlFrag{
     pub sql:String,
     pub params:Vec<Type>,
-    pub sql_option:SqlOption,
+    pub sql_options: Vec<SqlOption>,
 }
 
 impl SqlFrag{
     
     #[inline]
-    pub fn new()->Self{
-        SqlFrag{sql:String::new(), params:vec![], sql_option:SqlOption::UseNumberedParam}
+    pub fn new(sql_options: Vec<SqlOption>)->Self{
+        SqlFrag{sql:String::new(), params:vec![], sql_options: sql_options}
     }
     
     #[inline]
@@ -151,14 +146,12 @@ impl SqlFrag{
     ///append parameter including the needed sql keywords
     pub fn parameter(&mut self, param:Type){
         self.params.push(param);
-        match self.sql_option{
-            SqlOption::UseNumberedParam => {
-                let numbered_param = format!("${} ", self.params.len());
-                self.append(&numbered_param);
-            },
-            SqlOption::UseQuestionMark => {
-                self.append("?");
-            }
+        if self.sql_options.contains(&SqlOption::UseNumberedParam){
+            let numbered_param = format!("${} ", self.params.len());
+            self.append(&numbered_param);
+        }
+        else if self.sql_options.contains(&SqlOption::UseQuestionMark){
+            self.append("?");
         }
     }
     
