@@ -27,8 +27,8 @@ fn main(){
             let em = EntityManager::new(&pg);
             let mut query = Query::new();
             query.from_table(&Product::table());
-            let daos = em.retrieve(&mut query);
-            for d in daos{
+            let result = em.retrieve(&mut query);
+            for d in result.dao{
                 let prod = Product::from_dao(&d);
                 let pid:Uuid = d.get("product_id");
                 let name:String = d.get("name");

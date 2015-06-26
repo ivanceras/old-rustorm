@@ -81,10 +81,6 @@ pub trait Database{
     /// everything else
     fn execute_sql(&self, sql:&String, param:&Vec<Type>)->Result<u64, &str>;
 
-    /// Actually converting the from whatever JDBC converts the object to the correct type that we intend to be using
-    fn correct_data_types(&self, dao_list:Vec<Dao>, model:&Table);
-
-
     /// build a query, return the sql string and the parameters.
     fn build_query(&self, query:&Query)->SqlFrag;
     
@@ -419,7 +415,9 @@ pub trait DatabaseDev{
 
     ///get the equivalent postgresql database data type to rust data type
     /// returns (module, type)
-    fn get_rust_data_type(&self, db_type:&str)->(Vec<String>, String);
+    fn dbtype_to_rust_type(&self, db_type: &str)->(Vec<String>, String);
+    
+    fn rust_type_to_dbtype(&self, rust_type: &str, db_data_type:&str)->String;
 
 
     /// build a source code for the struct defined by this table
@@ -431,7 +429,7 @@ pub trait DatabaseDev{
         //imports
         let mut imports:Vec<String> = Vec::new();
         for c in &table.columns{
-            let (package, _) = self.get_rust_data_type(&c.db_data_type);
+            let (package, _) = self.dbtype_to_rust_type(&c.db_data_type);
             if !package.is_empty(){
                 for i in package{
                     imports.push(i);

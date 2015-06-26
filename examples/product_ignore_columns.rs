@@ -24,8 +24,8 @@ fn main(){
        match pg{
         Ok(pg) => {
             let em = EntityManager::new(&pg);
-            let daos = em.get_all_ignore_columns(&Product::table(), vec!["description", "info", "organization_id", "client_id"]);
-            for d in daos{
+            let result = em.get_all_ignore_columns(&Product::table(), vec!["description", "info", "organization_id", "client_id"]);
+            for d in result.dao{
                 let pid:Uuid = d.get("product_id");
                 let name:String = d.get("name");
                 println!("\n{} {}", pid, name);

@@ -2,6 +2,7 @@ extern crate rustorm;
 extern crate uuid;
 extern crate chrono;
 extern crate rustc_serialize;
+extern crate postgres;
 
 
 
@@ -11,6 +12,7 @@ use uuid::Uuid;
 use chrono::datetime::DateTime;
 use chrono::offset::utc::UTC;
 use rustc_serialize::json;
+use postgres::types::ToSql;
 
 use gen::bazaar::Product; //check folder `./examples/gen/bazaar/product.rs`
 
@@ -26,7 +28,7 @@ fn main(){
             let stmt = pg.conn.prepare(&sql).unwrap();
             let name = "iphone%";
             let description = "%Iphone%";
-            let mut param = vec![&name];
+            let mut param:Vec<&ToSql> = vec![&name];
             param.push(&description);
             for row in stmt.query(&param).unwrap() {
                 let product = Product{

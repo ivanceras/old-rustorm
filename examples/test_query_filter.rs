@@ -16,7 +16,7 @@ use rustorm::table::IsTable;
 use rustorm::dao::IsDao;
 use rustorm::query::Query;
 use rustorm::dao::Type;
-use rustorm::filter::{Filter,Equality,Operand};
+use rustorm::query::{Filter,Equality,Operand};
 use gen::bazaar::Product;
 
 mod gen;
@@ -29,9 +29,9 @@ fn main(){
             let em = EntityManager::new(&pg);
             let mut query = Query::new();
             query.from_table(&Product::table());
-            query.enumerate_columns(&Product::table());
+            query.enumerate_table_all_columns(&Product::table());
             let val = Type::String("iphone%".to_string());
-            query.filter(Filter::new("name", Equality::LIKE, Operand::Value(val)));
+            query.add_filter(Filter::new("name", Equality::LIKE, Operand::Value(val)));
             let result = em.retrieve(&mut query);
             let products = Product::from_dao_result(&result);
             

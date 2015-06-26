@@ -118,140 +118,6 @@ impl Postgres{
         }
     }
     
-    /// get the rust data type names from database data type names
-    /// will be used in source code generation
-    fn dbtype_to_rust_type(db_type: &str)->(Vec<String>, String){
-        let db_type = match db_type{
-            "boolean" => {
-                (vec![], "bool".to_string() )
-            },
-            "char" => {
-                (vec![], "i8".to_string() )
-            },
-            "smallint" | "smallserial" => {
-                (vec![], "i16".to_string() )
-            },
-            "integer" | "int" | "serial"  => {
-                (vec![], "i32".to_string() )
-            },
-            "oid"  => {
-                (vec![], "u32".to_string() )
-            },
-            "bigint" | "bigserial"  => {
-                (vec![], "i64".to_string() )
-            },
-            "real" => {
-                (vec![], "f32".to_string() )
-            },
-            "double precision" | "numeric" => {
-                (vec![], "f64".to_string() )
-            },
-            "name" | "character" | "character varying" | "text" | "citext" =>{
-                ( vec![], "String".to_string() )
-            },
-            "bytea" =>{
-                ( vec![], "Vec<u8>".to_string() )
-            },
-            //"json" | "jsonb" => {
-            //    ((Some(vec!["rustc_serialize::json::Json".to_string()]), "Json".to_string()))
-           // },
-            "json" | "jsonb" => {//FIXME :String for now, since Json itself is not encodable
-                ((vec![], "String".to_string()))
-            },
-            "uuid" => {
-                (vec!["uuid::Uuid".to_string()], "Uuid".to_string() )
-            },
-            "timestamp" => {
-                (vec!["chrono::naive::datetime::NaiveDateTime".to_string()], "NaiveDateTime".to_string() )
-            },
-            "timestamp without time zone" => {
-                (vec!["chrono::naive::datetime::NaiveDateTime".to_string()], "NaiveDateTime".to_string() )
-            },
-            "timestamp with time zone" => {
-                (vec!["chrono::datetime::DateTime".to_string(),
-                           "chrono::offset::utc::UTC".to_string()], "DateTime<UTC>".to_string() )
-            },
-            "time with time zone" => {
-                (vec!["chrono::naive::time::NaiveTime".to_string(),
-                           "chrono::offset::utc::UTC".to_string()], "NaiveTime".to_string() )
-            },
-            "date" => {
-                (vec!["chrono::naive::date::NaiveDate".to_string()], "NaiveDate".to_string() )
-            },
-            "time" => {
-                (vec!["chrono::naive::time::NaiveTime".to_string()], "NaiveTime".to_string() )
-            },
-            "hstore" => {
-                (vec!["std::collections::HashMap".to_string()], "HashMap<String, Option<String>>".to_string())
-            },
-            _ => panic!("Unable to get the equivalent data type for {}", db_type),
-        };
-        db_type
-    }
-
-    ///
-    /// convert rust data type names to database data type names
-    /// will be used in generating SQL for table creation
-    /// FIXME, need to restore the exact data type as before
-    fn rust_type_to_dbtype(rust_type: &str, db_data_type:&str)->String{
-
-        let rust_type = match rust_type{
-            "bool" => {
-                "boolean".to_string()
-            },
-            "i8" => {
-                "char".to_string()
-            },
-            "i16" => {
-                "smallint".to_string()
-            },
-            "i32"  => {
-                "integer".to_string()
-            },
-            "u32"  => {
-                "oid".to_string()
-            },
-            "i64"  => {
-                "bigint".to_string()
-            },
-            "f32" => {
-                "real".to_string()
-            },
-            "f64" => {
-                "numeric".to_string()
-            },
-            "String" =>{
-                "character varying".to_string()
-            },
-            "Vec<u8>" =>{
-                "bytea".to_string()
-            },
-            "Json" => {
-                "json".to_string()
-            },
-            "Uuid" => {
-                "uuid".to_string()
-            },
-            "NaiveDateTime" => {
-                "timestamp".to_string()
-            },
-            "DateTime<UTC>" => {
-                "timestamp with time zone".to_string()
-            },
-            "NaiveDate" => {
-                "date".to_string()
-            },
-            "NaiveTime" => {
-                "time".to_string()
-            },
-            "HashMap<String, Option<String>>" => {
-                "hstore".to_string()
-            },
-            _ => panic!("Unable to get the equivalent database data type for {}", rust_type),
-        };
-        rust_type
-
-    }
 
     ///
     /// http://stackoverflow.com/questions/109325/postgresql-describe-table
@@ -370,7 +236,7 @@ impl Postgres{
                             }else{
                                 None
                             };
-            let (_, data_type) = Self::dbtype_to_rust_type(&db_data_type);
+            let (_, data_type) = self.dbtype_to_rust_type(&db_data_type);
             let column = Column{
                     name:name,
                     data_type:data_type,
@@ -465,8 +331,6 @@ impl Database for Postgres{
 
     fn execute_ddl(&self, sql:&String)->Result<(), &str>{panic!("not yet");}
 
-    fn correct_data_types(&self, dao_list:Vec<Dao>, model:&Table){}
-    
     fn execute_sql_with_return(&self, sql:&String, params:&Vec<Type>)->Vec<Dao>{
         println!("SQL: \n{}", sql);
         println!("param: {:?}", params);
@@ -699,9 +563,139 @@ impl DatabaseDev for Postgres{
     }
 
 
-    fn get_rust_data_type(&self, db_type:&str)->(Vec<String>, String){
-        Postgres::dbtype_to_rust_type(db_type)
+    /// get the rust data type names from database data type names
+    /// will be used in source code generation
+    fn dbtype_to_rust_type(&self, db_type: &str)->(Vec<String>, String){
+        let db_type = match db_type{
+            "boolean" => {
+                (vec![], "bool".to_string() )
+            },
+            "char" => {
+                (vec![], "i8".to_string() )
+            },
+            "smallint" | "smallserial" => {
+                (vec![], "i16".to_string() )
+            },
+            "integer" | "int" | "serial"  => {
+                (vec![], "i32".to_string() )
+            },
+            "oid"  => {
+                (vec![], "u32".to_string() )
+            },
+            "bigint" | "bigserial"  => {
+                (vec![], "i64".to_string() )
+            },
+            "real" => {
+                (vec![], "f32".to_string() )
+            },
+            "double precision" | "numeric" => {
+                (vec![], "f64".to_string() )
+            },
+            "name" | "character" | "character varying" | "text" | "citext" =>{
+                ( vec![], "String".to_string() )
+            },
+            "bytea" =>{
+                ( vec![], "Vec<u8>".to_string() )
+            },
+            //"json" | "jsonb" => {
+            //    ((Some(vec!["rustc_serialize::json::Json".to_string()]), "Json".to_string()))
+           // },
+            "json" | "jsonb" => {//FIXME :String for now, since Json itself is not encodable
+                ((vec![], "String".to_string()))
+            },
+            "uuid" => {
+                (vec!["uuid::Uuid".to_string()], "Uuid".to_string() )
+            },
+            "timestamp" => {
+                (vec!["chrono::naive::datetime::NaiveDateTime".to_string()], "NaiveDateTime".to_string() )
+            },
+            "timestamp without time zone" => {
+                (vec!["chrono::naive::datetime::NaiveDateTime".to_string()], "NaiveDateTime".to_string() )
+            },
+            "timestamp with time zone" => {
+                (vec!["chrono::datetime::DateTime".to_string(),
+                           "chrono::offset::utc::UTC".to_string()], "DateTime<UTC>".to_string() )
+            },
+            "time with time zone" => {
+                (vec!["chrono::naive::time::NaiveTime".to_string(),
+                           "chrono::offset::utc::UTC".to_string()], "NaiveTime".to_string() )
+            },
+            "date" => {
+                (vec!["chrono::naive::date::NaiveDate".to_string()], "NaiveDate".to_string() )
+            },
+            "time" => {
+                (vec!["chrono::naive::time::NaiveTime".to_string()], "NaiveTime".to_string() )
+            },
+            "hstore" => {
+                (vec!["std::collections::HashMap".to_string()], "HashMap<String, Option<String>>".to_string())
+            },
+            _ => panic!("Unable to get the equivalent data type for {}", db_type),
+        };
+        db_type
     }
 
+    ///
+    /// convert rust data type names to database data type names
+    /// will be used in generating SQL for table creation
+    /// FIXME, need to restore the exact data type as before
+    fn rust_type_to_dbtype(&self, rust_type: &str, db_data_type:&str)->String{
+
+        let rust_type = match rust_type{
+            "bool" => {
+                "boolean".to_string()
+            },
+            "i8" => {
+                "char".to_string()
+            },
+            "i16" => {
+                "smallint".to_string()
+            },
+            "i32"  => {
+                "integer".to_string()
+            },
+            "u32"  => {
+                "oid".to_string()
+            },
+            "i64"  => {
+                "bigint".to_string()
+            },
+            "f32" => {
+                "real".to_string()
+            },
+            "f64" => {
+                "numeric".to_string()
+            },
+            "String" =>{
+                "character varying".to_string()
+            },
+            "Vec<u8>" =>{
+                "bytea".to_string()
+            },
+            "Json" => {
+                "json".to_string()
+            },
+            "Uuid" => {
+                "uuid".to_string()
+            },
+            "NaiveDateTime" => {
+                "timestamp".to_string()
+            },
+            "DateTime<UTC>" => {
+                "timestamp with time zone".to_string()
+            },
+            "NaiveDate" => {
+                "date".to_string()
+            },
+            "NaiveTime" => {
+                "time".to_string()
+            },
+            "HashMap<String, Option<String>>" => {
+                "hstore".to_string()
+            },
+            _ => panic!("Unable to get the equivalent database data type for {}", rust_type),
+        };
+        rust_type
+
+    }
 
 }
