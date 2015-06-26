@@ -2,6 +2,7 @@ extern crate rustorm;
 extern crate uuid;
 extern crate chrono;
 extern crate rustc_serialize;
+extern crate postgres;
 
 
 use rustorm::db::postgres::Postgres;
@@ -20,6 +21,7 @@ use rustorm::dao::Type;
 use rustorm::query::{Filter,Equality,Operand};
 use gen::bazaar::Product;
 use gen::bazaar::ProductAvailability;
+use postgres::types::ToSql;
 
 mod gen;
  
@@ -28,11 +30,21 @@ fn main(){
     let pg:Result<Postgres,&str> = Postgres::new("postgres://postgres:p0stgr3s@localhost/bazaar_v6");
        match pg{
         Ok(pg) => {
-            let em = EntityManager::new(&pg);
-            let mut dao = Dao::new();
-            dao.set("product_id", &Uuid::new_v4());
-            dao.set("name", &"test product in dao");
-            let result = em.insert(&Product::table(), dao);
+            let sql = "INSERT INTO bazaar.product ( name, description ) VALUES( $1 , $2 ) RETURNING product_id";
+            let pid = Uuid::new_v4();
+            let name = "product 1234";
+            let description = "more info of the test product";
+            let params:Vec<&ToSql> = vec![&name, &description];
+            let stmt = pg.conn.prepare(&sql).unwrap();
+            for row in stmt.query(&params).unwrap() {
+                let mut index = 0;
+                for column in row.columns(){
+                    println!("{:?}", column);
+                    //let pid = row.get(index);
+                    //println!("{}", pid);
+                    index += 1;
+                }
+            }
         }
         Err(error) =>{
             println!("{}",error);

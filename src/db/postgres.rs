@@ -36,14 +36,17 @@ impl Postgres{
     /// TODO: put this somewhere organized
     /// TODO: match all the other filter types
     fn from_type_tosql<'a>(types: &'a Vec<Type>)->Vec<&'a ToSql>{
-        let mut params = vec![];
+        let mut params:Vec<&ToSql> = vec![];
         for t in types{
-            let tosql:&ToSql = match t {
-                &Type::String(ref x) => x,
-                &Type::Uuid(ref x) => x,
+            match t {
+                &Type::String(ref x) => {
+                    params.push(x);
+                },
+                &Type::Uuid(ref x) => {
+                    params.push(x);
+                },
                 _ => panic!("not yet here {:?}", t),
             };
-            params.push(tosql);
         }
         params
     }
