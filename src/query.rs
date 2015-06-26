@@ -61,7 +61,7 @@ pub struct Function{
 
 /// Operands can be columns, functions, query or value types
 pub enum Operand{
-    Column(ColumnName),
+    ColumnName(ColumnName),
     Function(Function),
     Query(Query),
     Value(Type),
@@ -83,10 +83,10 @@ impl Filter{
     pub fn new(column:&str, equality:Equality, operand:Operand)->Self{
         Filter{
             connector:Connector::And,
-            left_operand:Operand::Column(ColumnName::from_str(column)),
+            left_operand:Operand::ColumnName(ColumnName::from_str(column)),
             equality:equality,
             right_operand:operand,
-            subfilters:Vec::new(),
+            subfilters:vec![],
         }
     }
     
@@ -184,11 +184,6 @@ impl PartialEq for ColumnName{
     }
 }
 
-/*
-impl PartialOrd for ColumnName{
-    
-}
-*/
 
 #[derive(Clone)]
 pub struct TableName{
@@ -227,17 +222,15 @@ pub struct Query{
     ///sql type determine which type of query to form, some fields are not applicable to other types of query
     pub sql_type:SqlType,
     
-    ///whether to use *
-    pub select_all:bool,
-    
     /// whether to select the records distinct
     pub distinct:bool,
 
-    /// enumerate all the columns of the table involved in the query 
-    pub enumerate_columns:bool,
-    
     ///or whether to select columns
     pub enumerated_columns:Vec<ColumnName>,
+    
+        
+    ///fields can be functions, column sql query, and even columns
+    pub enumerated_fields:Vec<Field>,
     
     /// list of renamed columns whenever there is a conflict
     /// Vec(table, column, new_column_name)
@@ -275,6 +268,8 @@ pub struct Query{
     /// The data values, used in bulk inserting, updating,
     pub values:Vec<Operand>,
     
+    /// the returning clause of the query when supported,
+    pub enumerated_returns: Vec<Operand>,
 }
 
 impl Query{
@@ -284,21 +279,21 @@ impl Query{
     pub fn new()->Self{
         Query{
             sql_type:SqlType::SELECT,
-            select_all:false,
             distinct:false,
-            enumerate_columns:true,
-            enumerated_columns:Vec::new(),
+            enumerated_columns: vec![],
+            enumerated_fields: vec![],
             renamed_columns:BTreeMap::new(),
-            distinct_on_columns:Vec::new(),
-            filters:Vec::new(),
-            joins:Vec::new(),
-            order_by:Vec::new(),
-            grouped_columns:Vec::new(),
-            excluded_columns:Vec::new(),
+            distinct_on_columns: vec![],
+            filters: vec![],
+            joins: vec![],
+            order_by: vec![],
+            grouped_columns:vec![],
+            excluded_columns:vec![],
             page:None,
             page_size:None,
             from_table:None,
             values:vec![],
+            enumerated_returns: vec![],
         }
     }
     
@@ -327,12 +322,6 @@ impl Query{
     //add DISTINCT ie: SELECT DISTINCT
     pub fn set_distinct(&mut self){
         self.distinct = true;
-    }
-    
-    //enumerate all the columns involved in the query
-    pub fn enumerate(&mut self){
-        self.select_all = false;
-        self.enumerate_columns = true;
     }
     
     /// all enumerated columns shall be called from this
@@ -581,5 +570,12 @@ impl Query{
     
     pub fn add_value(&mut self, value:Operand){
         self.values.push(value);
+    }
+    
+    pub fn enumerate_all_table_column_as_return(&mut self, table:&Table){
+         for c in &table.columns{
+            let column_name = ColumnName::from_column(c, table);
+            self.enumerated_returns.push(Operand::ColumnName(column_name));
+        }
     }
 }
