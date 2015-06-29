@@ -1,3 +1,4 @@
+#[allow(unused_imports)]
 use chrono::datetime::DateTime;
 use chrono::offset::utc::UTC;
 use uuid::Uuid;
@@ -5,8 +6,6 @@ use gen::bazaar::Review;
 use gen::bazaar::Users;
 use rustorm::dao::Dao;
 use rustorm::dao::IsDao;
-use rustorm::dao::DaoResult;
-use std::collections::BTreeMap;
 use rustorm::table::IsTable;
 use rustorm::table::Column;
 use rustorm::table::Foreign;
@@ -77,18 +76,57 @@ pub struct UserReview {
 
 
 // Generated columns for easier development of dynamic queries without sacrificing wrong spelling of column names
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static organization_id: &'static str = "user_review.organization_id";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static client_id: &'static str = "user_review.client_id";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static created: &'static str = "user_review.created";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static created_by: &'static str = "user_review.created_by";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static updated: &'static str = "user_review.updated";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static updated_by: &'static str = "user_review.updated_by";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static priority: &'static str = "user_review.priority";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static name: &'static str = "user_review.name";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static description: &'static str = "user_review.description";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static help: &'static str = "user_review.help";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static active: &'static str = "user_review.active";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static user_id: &'static str = "user_review.user_id";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static review_id: &'static str = "user_review.review_id";
 
 

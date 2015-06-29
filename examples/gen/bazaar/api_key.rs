@@ -1,11 +1,10 @@
+#[allow(unused_imports)]
 use chrono::datetime::DateTime;
 use chrono::offset::utc::UTC;
 use uuid::Uuid;
 use gen::bazaar::Users;
 use rustorm::dao::Dao;
 use rustorm::dao::IsDao;
-use rustorm::dao::DaoResult;
-use std::collections::BTreeMap;
 use rustorm::table::IsTable;
 use rustorm::table::Column;
 use rustorm::table::Foreign;
@@ -77,21 +76,69 @@ pub struct ApiKey {
 
 
 // Generated columns for easier development of dynamic queries without sacrificing wrong spelling of column names
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static organization_id: &'static str = "api_key.organization_id";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static client_id: &'static str = "api_key.client_id";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static created: &'static str = "api_key.created";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static created_by: &'static str = "api_key.created_by";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static updated: &'static str = "api_key.updated";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static updated_by: &'static str = "api_key.updated_by";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static priority: &'static str = "api_key.priority";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static name: &'static str = "api_key.name";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static description: &'static str = "api_key.description";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static help: &'static str = "api_key.help";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static active: &'static str = "api_key.active";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static api_key_id: &'static str = "api_key.api_key_id";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static api_key: &'static str = "api_key.api_key";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static user_id: &'static str = "api_key.user_id";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static valid_starting: &'static str = "api_key.valid_starting";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static valid_until: &'static str = "api_key.valid_until";
 
 

@@ -1,3 +1,4 @@
+#[allow(unused_imports)]
 use chrono::datetime::DateTime;
 use chrono::offset::utc::UTC;
 use uuid::Uuid;
@@ -6,8 +7,6 @@ use gen::bazaar::Product;
 use gen::bazaar::UserInfo;
 use rustorm::dao::Dao;
 use rustorm::dao::IsDao;
-use rustorm::dao::DaoResult;
-use std::collections::BTreeMap;
 use rustorm::table::IsTable;
 use rustorm::table::Column;
 use rustorm::table::Foreign;
@@ -81,20 +80,65 @@ pub struct Photo {
 
 
 // Generated columns for easier development of dynamic queries without sacrificing wrong spelling of column names
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static organization_id: &'static str = "photo.organization_id";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static client_id: &'static str = "photo.client_id";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static created: &'static str = "photo.created";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static created_by: &'static str = "photo.created_by";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static updated: &'static str = "photo.updated";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static updated_by: &'static str = "photo.updated_by";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static priority: &'static str = "photo.priority";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static name: &'static str = "photo.name";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static description: &'static str = "photo.description";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static help: &'static str = "photo.help";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static active: &'static str = "photo.active";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static photo_id: &'static str = "photo.photo_id";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static url: &'static str = "photo.url";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static data: &'static str = "photo.data";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static seq_no: &'static str = "photo.seq_no";
 
 

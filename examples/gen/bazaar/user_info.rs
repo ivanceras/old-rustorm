@@ -1,3 +1,4 @@
+#[allow(unused_imports)]
 use chrono::datetime::DateTime;
 use chrono::offset::utc::UTC;
 use uuid::Uuid;
@@ -6,8 +7,6 @@ use gen::bazaar::Photo;
 use gen::bazaar::Users;
 use rustorm::dao::Dao;
 use rustorm::dao::IsDao;
-use rustorm::dao::DaoResult;
-use std::collections::BTreeMap;
 use rustorm::table::IsTable;
 use rustorm::table::Column;
 use rustorm::table::Foreign;
@@ -80,21 +79,69 @@ pub struct UserInfo {
 
 
 // Generated columns for easier development of dynamic queries without sacrificing wrong spelling of column names
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static organization_id: &'static str = "user_info.organization_id";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static client_id: &'static str = "user_info.client_id";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static created: &'static str = "user_info.created";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static created_by: &'static str = "user_info.created_by";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static updated: &'static str = "user_info.updated";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static updated_by: &'static str = "user_info.updated_by";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static priority: &'static str = "user_info.priority";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static name: &'static str = "user_info.name";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static description: &'static str = "user_info.description";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static help: &'static str = "user_info.help";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static active: &'static str = "user_info.active";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static user_id: &'static str = "user_info.user_id";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static address_id: &'static str = "user_info.address_id";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static current_location: &'static str = "user_info.current_location";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static displayname: &'static str = "user_info.displayname";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static photo_id: &'static str = "user_info.photo_id";
 
 

@@ -1,11 +1,10 @@
+#[allow(unused_imports)]
 use chrono::datetime::DateTime;
 use chrono::offset::utc::UTC;
 use uuid::Uuid;
 use gen::bazaar::Product;
 use rustorm::dao::Dao;
 use rustorm::dao::IsDao;
-use rustorm::dao::DaoResult;
-use std::collections::BTreeMap;
 use rustorm::table::IsTable;
 use rustorm::table::Column;
 use rustorm::table::Foreign;
@@ -68,17 +67,53 @@ pub struct Category {
 
 
 // Generated columns for easier development of dynamic queries without sacrificing wrong spelling of column names
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static organization_id: &'static str = "category.organization_id";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static client_id: &'static str = "category.client_id";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static created: &'static str = "category.created";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static created_by: &'static str = "category.created_by";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static updated: &'static str = "category.updated";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static updated_by: &'static str = "category.updated_by";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static priority: &'static str = "category.priority";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static name: &'static str = "category.name";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static description: &'static str = "category.description";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static help: &'static str = "category.help";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static active: &'static str = "category.active";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static category_id: &'static str = "category.category_id";
 
 

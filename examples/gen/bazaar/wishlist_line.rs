@@ -1,11 +1,10 @@
+#[allow(unused_imports)]
 use chrono::datetime::DateTime;
 use chrono::offset::utc::UTC;
 use uuid::Uuid;
 use gen::bazaar::Wishlist;
 use rustorm::dao::Dao;
 use rustorm::dao::IsDao;
-use rustorm::dao::DaoResult;
-use std::collections::BTreeMap;
 use rustorm::table::IsTable;
 use rustorm::table::Column;
 use rustorm::table::Foreign;
@@ -75,21 +74,69 @@ pub struct WishlistLine {
 
 
 // Generated columns for easier development of dynamic queries without sacrificing wrong spelling of column names
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static organization_id: &'static str = "wishlist_line.organization_id";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static client_id: &'static str = "wishlist_line.client_id";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static created: &'static str = "wishlist_line.created";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static created_by: &'static str = "wishlist_line.created_by";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static updated: &'static str = "wishlist_line.updated";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static updated_by: &'static str = "wishlist_line.updated_by";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static priority: &'static str = "wishlist_line.priority";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static name: &'static str = "wishlist_line.name";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static description: &'static str = "wishlist_line.description";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static help: &'static str = "wishlist_line.help";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static active: &'static str = "wishlist_line.active";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static wishlist_id: &'static str = "wishlist_line.wishlist_id";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static price_momentary: &'static str = "wishlist_line.price_momentary";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static product_id: &'static str = "wishlist_line.product_id";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static added_to_cart: &'static str = "wishlist_line.added_to_cart";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static wishlist_line_id: &'static str = "wishlist_line.wishlist_line_id";
 
 

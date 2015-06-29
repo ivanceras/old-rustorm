@@ -1,11 +1,10 @@
+#[allow(unused_imports)]
 use chrono::datetime::DateTime;
 use chrono::offset::utc::UTC;
 use uuid::Uuid;
 use gen::bazaar::Photo;
 use rustorm::dao::Dao;
 use rustorm::dao::IsDao;
-use rustorm::dao::DaoResult;
-use std::collections::BTreeMap;
 use rustorm::table::IsTable;
 use rustorm::table::Column;
 use rustorm::table::Foreign;
@@ -79,22 +78,73 @@ pub struct PhotoSizes {
 
 
 // Generated columns for easier development of dynamic queries without sacrificing wrong spelling of column names
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static organization_id: &'static str = "photo_sizes.organization_id";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static client_id: &'static str = "photo_sizes.client_id";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static created: &'static str = "photo_sizes.created";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static created_by: &'static str = "photo_sizes.created_by";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static updated: &'static str = "photo_sizes.updated";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static updated_by: &'static str = "photo_sizes.updated_by";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static priority: &'static str = "photo_sizes.priority";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static name: &'static str = "photo_sizes.name";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static description: &'static str = "photo_sizes.description";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static help: &'static str = "photo_sizes.help";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static active: &'static str = "photo_sizes.active";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static width: &'static str = "photo_sizes.width";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static height: &'static str = "photo_sizes.height";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static data: &'static str = "photo_sizes.data";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static url: &'static str = "photo_sizes.url";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static photo_id: &'static str = "photo_sizes.photo_id";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static photo_size_id: &'static str = "photo_sizes.photo_size_id";
 
 

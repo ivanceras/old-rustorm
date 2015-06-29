@@ -1,11 +1,10 @@
+#[allow(unused_imports)]
 use chrono::datetime::DateTime;
 use chrono::offset::utc::UTC;
 use uuid::Uuid;
 use gen::bazaar::Users;
 use rustorm::dao::Dao;
 use rustorm::dao::IsDao;
-use rustorm::dao::DaoResult;
-use std::collections::BTreeMap;
 use rustorm::table::IsTable;
 use rustorm::table::Column;
 use rustorm::table::Foreign;
@@ -79,23 +78,77 @@ pub struct UserLocation {
 
 
 // Generated columns for easier development of dynamic queries without sacrificing wrong spelling of column names
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static organization_id: &'static str = "user_location.organization_id";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static client_id: &'static str = "user_location.client_id";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static created: &'static str = "user_location.created";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static created_by: &'static str = "user_location.created_by";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static updated: &'static str = "user_location.updated";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static updated_by: &'static str = "user_location.updated_by";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static priority: &'static str = "user_location.priority";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static name: &'static str = "user_location.name";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static description: &'static str = "user_location.description";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static help: &'static str = "user_location.help";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static active: &'static str = "user_location.active";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static true_latitude: &'static str = "user_location.true_latitude";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static true_longitude: &'static str = "user_location.true_longitude";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static set_latitude: &'static str = "user_location.set_latitude";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static set_longitude: &'static str = "user_location.set_longitude";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static accuracy: &'static str = "user_location.accuracy";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static set_accuracy: &'static str = "user_location.set_accuracy";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static user_id: &'static str = "user_location.user_id";
 
 

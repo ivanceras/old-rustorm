@@ -1,11 +1,10 @@
+#[allow(unused_imports)]
 use chrono::datetime::DateTime;
 use chrono::offset::utc::UTC;
 use uuid::Uuid;
 use gen::bazaar::Orders;
 use rustorm::dao::Dao;
 use rustorm::dao::IsDao;
-use rustorm::dao::DaoResult;
-use std::collections::BTreeMap;
 use rustorm::table::IsTable;
 use rustorm::table::Column;
 use rustorm::table::Foreign;
@@ -79,23 +78,77 @@ pub struct OrderLine {
 
 
 // Generated columns for easier development of dynamic queries without sacrificing wrong spelling of column names
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static organization_id: &'static str = "order_line.organization_id";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static client_id: &'static str = "order_line.client_id";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static created: &'static str = "order_line.created";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static created_by: &'static str = "order_line.created_by";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static updated: &'static str = "order_line.updated";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static updated_by: &'static str = "order_line.updated_by";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static priority: &'static str = "order_line.priority";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static name: &'static str = "order_line.name";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static description: &'static str = "order_line.description";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static help: &'static str = "order_line.help";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static active: &'static str = "order_line.active";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static order_id: &'static str = "order_line.order_id";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static product_id: &'static str = "order_line.product_id";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static price_momentary: &'static str = "order_line.price_momentary";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static freight_amt: &'static str = "order_line.freight_amt";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static discount: &'static str = "order_line.discount";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static order_line_id: &'static str = "order_line.order_line_id";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static qty_ordered: &'static str = "order_line.qty_ordered";
 
 

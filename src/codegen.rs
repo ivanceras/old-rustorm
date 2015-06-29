@@ -127,36 +127,29 @@ fn generate_table<T:DatabaseDev>(db_dev:&T, config:&Config, table:&Table, all_ta
     let (dao_imports, dao_src) = generate_dao_conversion_code(table, all_tables);
     let (meta_imports, meta_src) = generate_meta_code(table);
     let static_columns = generate_static_column_names(table);
-    
+     w.appendln("#[allow(unused_imports)]");
     for i in struct_imports{
-        w.append(&format!("use {};",i));
-        w.ln();
+        w.appendln(&format!("use {};",i));
     }
     
     for it in imported_tables{
         if it != table{
-            w.append(&format!("use {};", config.table_module(it)));
-            w.ln();
+            w.appendln(&format!("use {};", config.table_module(it)));
         }
     }
     for i in dao_imports{
-        w.append(&format!("use {};",i));
-        w.ln();
+        w.appendln(&format!("use {};",i));
     }
     for i in meta_imports{
-        w.append(&format!("use {};",i));
-        w.ln();
+        w.appendln(&format!("use {};",i));
     }
     w.ln();
     w.ln();
-    w.append(&struct_src);
+    w.appendln(&struct_src);
     w.ln();
+    w.appendln(&static_columns);
     w.ln();
-    w.append(&static_columns);
-    w.ln();
-    w.ln();
-    w.append(&dao_src);
-    w.ln();
+    w.appendln(&dao_src);
     w.ln();
     w.append(&meta_src);
     
@@ -248,6 +241,9 @@ fn generate_static_column_names(table: &Table)->String{
     w.comment(" Generated columns for easier development of dynamic queries without sacrificing wrong spelling of column names");
     for column in &table.columns{
         w.ln();
+        w.ln();
+        w.appendln("#[allow(non_upper_case_globals)]");
+        w.appendln("#[allow(dead_code)]");
         w.append("pub static ");
         w.append(&column.name);
         w.append(": &'static str = ");
@@ -266,8 +262,8 @@ fn generate_dao_conversion_code(table: &Table, all_tables:&Vec<Table>)->(Vec<Str
     let mut imports = Vec::new();
     imports.push("rustorm::dao::Dao".to_string());
     imports.push("rustorm::dao::IsDao".to_string());
-    imports.push("rustorm::dao::DaoResult".to_string());
-    imports.push("std::collections::BTreeMap".to_string());
+    //imports.push("rustorm::dao::DaoResult".to_string());
+    //imports.push("std::collections::BTreeMap".to_string());
     
     w.ln();
     w.append("impl IsDao for ");

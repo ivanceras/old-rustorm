@@ -1,3 +1,4 @@
+#[allow(unused_imports)]
 use chrono::datetime::DateTime;
 use chrono::naive::time::NaiveTime;
 use chrono::offset::utc::UTC;
@@ -5,8 +6,6 @@ use uuid::Uuid;
 use gen::bazaar::Product;
 use rustorm::dao::Dao;
 use rustorm::dao::IsDao;
-use rustorm::dao::DaoResult;
-use std::collections::BTreeMap;
 use rustorm::table::IsTable;
 use rustorm::table::Column;
 use rustorm::table::Foreign;
@@ -71,21 +70,69 @@ pub struct ProductAvailability {
 
 
 // Generated columns for easier development of dynamic queries without sacrificing wrong spelling of column names
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static organization_id: &'static str = "product_availability.organization_id";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static client_id: &'static str = "product_availability.client_id";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static created: &'static str = "product_availability.created";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static created_by: &'static str = "product_availability.created_by";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static updated: &'static str = "product_availability.updated";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static updated_by: &'static str = "product_availability.updated_by";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static priority: &'static str = "product_availability.priority";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static product_id: &'static str = "product_availability.product_id";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static available: &'static str = "product_availability.available";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static always_available: &'static str = "product_availability.always_available";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static stocks: &'static str = "product_availability.stocks";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static available_from: &'static str = "product_availability.available_from";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static available_until: &'static str = "product_availability.available_until";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static available_day: &'static str = "product_availability.available_day";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static open_time: &'static str = "product_availability.open_time";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static close_time: &'static str = "product_availability.close_time";
 
 

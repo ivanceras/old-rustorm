@@ -5,7 +5,101 @@ use writer::{SqlFrag, Writer};
 use query::{Connector, Equality, Operand, Field};
 use query::{Direction, Modifier, JoinType};
 use query::Filter;
+use std::collections::BTreeMap;
 
+
+struct DbConfig{
+    /// postgres, sqlite, mysql
+    /// some fields are optional since sqlite is not applicable for those
+    platform: String,
+    user: Option<String>,
+    password: Option<String>,
+    /// localhost
+    host: Option<String>,
+    /// 5432
+    port: Option<u16>,
+    database: String,
+}
+
+impl DbConfig{
+    
+    pub fn get_url(&self)->String{
+        let mut url = String::new();
+        url.push_str(&self.platform);
+        url.push_str("://");
+        if self.user.is_some(){
+            url.push_str(self.user.as_ref().unwrap());
+        }
+        if self.password.is_some(){
+            url.push_str(":");
+            url.push_str(self.password.as_ref().unwrap());
+        }
+        
+        if self.host.is_some(){
+            url.push_str("@");
+            url.push_str(self.host.as_ref().unwrap());
+        }
+        if self.port.is_some(){
+            url.push_str(":");
+            url.push_str(&format!("{}", self.port.as_ref().unwrap()));
+        }
+        url.push_str("/");
+        url.push_str(&self.database);
+        url
+    }
+}
+
+
+#[test]
+fn test_config_url(){
+    let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v6";
+    let config = DbConfig{
+        platform: "postgres".to_string(),
+        user: Some("postgres".to_string()),
+        password: Some("p0stgr3s".to_string()), 
+        host: Some("localhost".to_string()),
+        port: None,
+        database: "bazaar_v6".to_string(),
+    };
+    
+    assert_eq!(config.get_url(), url.to_string());
+}
+
+#[test]
+fn test_config_url_with_port(){
+    let url = "postgres://postgres:p0stgr3s@localhost:5432/bazaar_v6";
+    let config = DbConfig{
+        platform: "postgres".to_string(),
+        user: Some("postgres".to_string()),
+        password: Some("p0stgr3s".to_string()), 
+        host: Some("localhost".to_string()),
+        port: Some(5432),
+        database: "bazaar_v6".to_string(),
+    };
+    
+    assert_eq!(config.get_url(), url.to_string());
+}
+
+/// database pools are stored using treemap, with the key is the url of the database
+struct Pool<'a>{
+    database_pool: BTreeMap<String, &'a Database>,
+}
+
+
+impl <'a>Pool<'a>{
+    
+    fn new()->Self{
+        panic!("not yet");
+    }
+    
+    fn get_db_from_url(url:&str)->&'a Database{
+        panic!("not yet");
+    }
+    
+    fn get_db_from_config(db_config:DbConfig)->&'a Database{
+        panic!("not yet");
+    }
+}
 
 /// SqlOption, contains the info about the features and quirks of underlying database
 #[derive(PartialEq)]

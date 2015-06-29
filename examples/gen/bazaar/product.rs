@@ -1,3 +1,4 @@
+#[allow(unused_imports)]
 use chrono::datetime::DateTime;
 use chrono::offset::utc::UTC;
 use uuid::Uuid;
@@ -9,8 +10,6 @@ use gen::bazaar::Users;
 use gen::payment::Currency;
 use rustorm::dao::Dao;
 use rustorm::dao::IsDao;
-use rustorm::dao::DaoResult;
-use std::collections::BTreeMap;
 use rustorm::table::IsTable;
 use rustorm::table::Column;
 use rustorm::table::Foreign;
@@ -133,29 +132,101 @@ pub struct Product {
 
 
 // Generated columns for easier development of dynamic queries without sacrificing wrong spelling of column names
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static organization_id: &'static str = "product.organization_id";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static client_id: &'static str = "product.client_id";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static created: &'static str = "product.created";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static created_by: &'static str = "product.created_by";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static updated: &'static str = "product.updated";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static updated_by: &'static str = "product.updated_by";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static priority: &'static str = "product.priority";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static name: &'static str = "product.name";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static description: &'static str = "product.description";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static help: &'static str = "product.help";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static active: &'static str = "product.active";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static product_id: &'static str = "product.product_id";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static parent_product_id: &'static str = "product.parent_product_id";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static is_service: &'static str = "product.is_service";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static price: &'static str = "product.price";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static use_parent_price: &'static str = "product.use_parent_price";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static unit: &'static str = "product.unit";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static tags: &'static str = "product.tags";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static info: &'static str = "product.info";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static seq_no: &'static str = "product.seq_no";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static upfront_fee: &'static str = "product.upfront_fee";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static barcode: &'static str = "product.barcode";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static owner_id: &'static str = "product.owner_id";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static currency_id: &'static str = "product.currency_id";
 
 

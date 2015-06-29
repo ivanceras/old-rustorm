@@ -1,11 +1,10 @@
+#[allow(unused_imports)]
 use chrono::datetime::DateTime;
 use chrono::offset::utc::UTC;
 use uuid::Uuid;
 use gen::payment::Currency;
 use rustorm::dao::Dao;
 use rustorm::dao::IsDao;
-use rustorm::dao::DaoResult;
-use std::collections::BTreeMap;
 use rustorm::table::IsTable;
 use rustorm::table::Column;
 use rustorm::table::Foreign;
@@ -76,20 +75,65 @@ pub struct ExchangeRate {
 
 
 // Generated columns for easier development of dynamic queries without sacrificing wrong spelling of column names
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static organization_id: &'static str = "exchange_rate.organization_id";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static client_id: &'static str = "exchange_rate.client_id";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static created: &'static str = "exchange_rate.created";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static created_by: &'static str = "exchange_rate.created_by";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static updated: &'static str = "exchange_rate.updated";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static updated_by: &'static str = "exchange_rate.updated_by";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static priority: &'static str = "exchange_rate.priority";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static name: &'static str = "exchange_rate.name";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static description: &'static str = "exchange_rate.description";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static help: &'static str = "exchange_rate.help";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static active: &'static str = "exchange_rate.active";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static exchange_rate_id: &'static str = "exchange_rate.exchange_rate_id";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static from_currency: &'static str = "exchange_rate.from_currency";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static exchange_rate: &'static str = "exchange_rate.exchange_rate";
+
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
 pub static to_currency: &'static str = "exchange_rate.to_currency";
 
 
