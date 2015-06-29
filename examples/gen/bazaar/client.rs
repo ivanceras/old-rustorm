@@ -10,7 +10,7 @@ use rustorm::table::Table;
 
 
 #[derive(RustcDecodable, RustcEncodable)]
-#[derive(Debug)]
+#[derive(Debug,Clone)]
 pub struct Client {
     /// primary
     /// default: uuid_generate_v4()

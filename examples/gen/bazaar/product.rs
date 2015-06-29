@@ -20,7 +20,7 @@ use rustorm::table::Foreign;
 /// This will be exposed as an @Api, including @Table(users, category, product_availability, photo)
 ///
 #[derive(RustcDecodable, RustcEncodable)]
-#[derive(Debug)]
+#[derive(Debug,Clone)]
 pub struct Product {
     /// primary
     /// default: uuid_generate_v4()

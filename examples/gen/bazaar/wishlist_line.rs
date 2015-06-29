@@ -12,7 +12,7 @@ use rustorm::table::Foreign;
 
 
 #[derive(RustcDecodable, RustcEncodable)]
-#[derive(Debug)]
+#[derive(Debug,Clone)]
 pub struct WishlistLine {
     /// primary
     /// not nullable 

@@ -13,7 +13,7 @@ use rustorm::table::Table;
 /// Base table contains the creation and modification status of a record
 ///
 #[derive(RustcDecodable, RustcEncodable)]
-#[derive(Debug)]
+#[derive(Debug,Clone)]
 pub struct Base {
     /// db data type: uuid
     pub client_id:Option<Uuid>,

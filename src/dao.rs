@@ -289,7 +289,8 @@ impl FromType for NaiveDateTime{
 }
 
 /// trait for converting dao to model
-pub trait IsDao:Sized{
+/// sized and clonable
+pub trait IsDao:Sized + Clone{
     
     /// converts a vector of dao to an object
     fn from_dao_result(dao_result:&DaoResult)->Vec<Self>{

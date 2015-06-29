@@ -3,6 +3,8 @@ use table::{Table, Column};
 use std::collections::BTreeMap;
 use database::Database;
 use dao::DaoResult;
+use dao::IsDao;
+use table::IsTable;
 
 #[derive(Debug)]
 pub enum JoinType{
@@ -342,18 +344,37 @@ impl Query{
         self.distinct = true;
     }
     
+    pub fn select_all(&mut self){
+        self.enumerate_column("*");
+    }
+    
     /// all enumerated columns shall be called from this
     /// any conflict of columns from some other table will be automatically renamed
     /// columns that are not conflicts from some other table,
     /// but is the other conflicting column is not explicityly enumerated will not be renamed
     /// 
     pub fn enumerate_column(&mut self, column:&str){
-        let column_name = ColumnName{
-            column:column.to_string(), 
-            table:None, 
-            schema:None,
-            rename:None
+        
+        let column_name = if column.contains("."){
+            let splinters = column.split(".").collect::<Vec<&str>>();
+            assert!(splinters.len() == 2, "There should only be 2 splinters");
+            let table_split = splinters[0].to_string();
+            let column_split = splinters[1].to_string();
+            ColumnName{
+                column:column_split.to_string(), 
+                table:Some(table_split.to_string()), 
+                schema:None,
+                rename:None
+            }
+        } else {
+            ColumnName{
+                column:column.to_string(), 
+                table:None, 
+                schema:None,
+                rename:None
+            }
         };
+        
         let operand = Operand::ColumnName(column_name);
         let field = Field{operand:operand, name:None};
         self.enumerated_fields.push(field);
@@ -407,13 +428,22 @@ impl Query{
         let table_name = TableName::from_table(table);
         let operand = Operand::TableName(table_name);
         let field = Field{ operand:operand, name: None};
-        self.from(field);
+        self.from_field(field);
+    }
+    
+    /// A more terse way to write the query
+    pub fn from<T: IsTable>(&mut self){
+        self.from_table(&T::table());
     }
     
     /// just an alias for from_table to make it terse for Insert queries
     pub fn into_table(&mut self, table:&Table){
         self.sql_type = SqlType::INSERT;
         self.from_table(table);
+    }
+    
+    pub fn into<T:IsTable>(&mut self){
+        self.into_table(&T::table());
     }
     
     /// if the database support CTE declareted query i.e WITH, 
@@ -432,10 +462,10 @@ impl Query{
     pub fn from_query(&mut self, query:Query, alias:&str){
         let operand = Operand::Query(query);
         let field = Field{operand:operand, name:Some(alias.to_string())};
-        self.from(field);
+        self.from_field(field);
     }
     
-    pub fn from(&mut self, field:Field){
+    pub fn from_field(&mut self, field:Field){
         self.from = Some(Box::new(field));
     }
     
@@ -614,6 +644,21 @@ impl Query{
         }
     }
     
+    /// return the list of enumerated columns
+    /// will be used for updating records
+    pub fn get_enumerated_columns(&self)->Vec<&ColumnName>{
+        let mut columns = vec![];
+        for field in &self.enumerated_fields{
+            match field.operand{
+                Operand::ColumnName(ref column_name) => {
+                      columns.push(column_name);
+                },
+                _ => {},
+            }
+        }
+        columns
+    }
+    
     
     pub fn add_filter(&mut self, filter:Filter){
         self.filters.push(filter);
@@ -627,6 +672,11 @@ impl Query{
         self.values.push(value);
     }
     
+    pub fn value(&mut self, value:&ToType){
+        let operand = Operand::Value(value.to_db_type());
+        self.add_value(operand);
+    }
+    
     pub fn enumerate_all_table_column_as_return(&mut self, table:&Table){
          for c in &table.columns{
             let column_name = ColumnName::from_column(c, table);
@@ -637,7 +687,7 @@ impl Query{
     }
     
     /// expects a return, such as select, insert/update with returning clause
-    pub fn execute_with_return(&mut self, db: &Database)->DaoResult{
+    fn execute_with_return(&mut self, db: &Database)->DaoResult{
         self.finalize();
         db.execute_with_return(self)
     }
@@ -646,5 +696,19 @@ impl Query{
     pub fn execute(&mut self, db: &Database)->Result<usize, String>{
         self.finalize();
         db.execute(self)
+    }
+    
+    /// execute the query, then convert the result
+    pub fn collect<T: IsDao>(&mut self, db: &Database)->Vec<T>{
+        let result = self.execute_with_return(db);
+        T::from_dao_result(&result)
+    }
+    
+    /// execute the query then collect only 1 record
+    pub fn collect_one<T: IsDao>(&mut self, db: &Database)->T{
+        let result = self.execute_with_return(db);
+        let mut dao:Vec<T> = T::from_dao_result(&result);
+        assert!(dao.len() == 1, "There should only be 1 returned record");
+        dao.remove(0)
     }
 }

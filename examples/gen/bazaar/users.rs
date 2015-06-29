@@ -19,7 +19,7 @@ use rustorm::table::Table;
 /// This are @Users, will be used for @Login
 ///
 #[derive(RustcDecodable, RustcEncodable)]
-#[derive(Debug)]
+#[derive(Debug,Clone)]
 pub struct Users {
     /// primary
     /// default: uuid_generate_v4()

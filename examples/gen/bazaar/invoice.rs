@@ -10,7 +10,7 @@ use rustorm::table::Table;
 
 
 #[derive(RustcDecodable, RustcEncodable)]
-#[derive(Debug)]
+#[derive(Debug,Clone)]
 pub struct Invoice {
     /// default: uuid_generate_v4()
     /// db data type: uuid

@@ -12,7 +12,7 @@ use rustorm::table::Foreign;
 
 
 #[derive(RustcDecodable, RustcEncodable)]
-#[derive(Debug)]
+#[derive(Debug,Clone)]
 pub struct ExchangeRate {
     /// primary
     /// this will be referred when processing payments with different currencies

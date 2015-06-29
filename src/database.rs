@@ -6,9 +6,11 @@ use query::{Connector, Equality, Operand, Field};
 use query::{Direction, Modifier, JoinType};
 use query::Filter;
 use std::collections::BTreeMap;
+use url::Url;
 
 
-struct DbConfig{
+#[derive(Debug)]
+pub struct DbConfig{
     /// postgres, sqlite, mysql
     /// some fields are optional since sqlite is not applicable for those
     platform: String,
@@ -22,6 +24,33 @@ struct DbConfig{
 }
 
 impl DbConfig{
+    
+    
+    pub fn from_url(url: &str)->Self{
+        let parsed = Url::parse(url).unwrap();
+        let domain = parsed.domain();
+        let port = parsed.port();
+        let path = parsed.path();
+        let scheme = parsed.scheme.to_string();
+        
+        DbConfig{
+            platform: scheme,
+            user: None,
+            password: None,
+            host: match domain{
+                    Some(ref host) => Some(host.to_string()),
+                    None => None,
+                },
+            port: port,
+            database: match path{
+                    Some(ref path) => {
+                        assert!(path.len() == 1, "There should only be 1 path");
+                        path[0].to_string()
+                    },
+                    None => panic!("No database specified"),
+                },    
+        }
+    }
     
     pub fn get_url(&self)->String{
         let mut url = String::new();
@@ -66,6 +95,13 @@ fn test_config_url(){
 }
 
 #[test]
+fn test_config_from_url(){
+    let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v6";
+    let config = DbConfig::from_url(url);
+    assert_eq!(config.get_url(), url.to_string());
+}
+
+#[test]
 fn test_config_url_with_port(){
     let url = "postgres://postgres:p0stgr3s@localhost:5432/bazaar_v6";
     let config = DbConfig{
@@ -92,8 +128,16 @@ impl <'a>Pool<'a>{
         panic!("not yet");
     }
     
-    fn get_db_from_url(url:&str)->&'a Database{
-        panic!("not yet");
+    fn create_new_connection(&self, url:&str){
+        
+    }
+    
+    fn get_db_from_url(&mut self, url:&str)->&'a Database{
+        if (self.database_pool.contains_key(url)){
+            return self.database_pool.remove(url).unwrap()
+        }else{
+            panic!("not yet")
+        }
     }
     
     fn get_db_from_config(db_config:DbConfig)->&'a Database{
@@ -444,17 +488,46 @@ pub trait Database{
         println!("building update query");
         let mut w = SqlFrag::new(self.sql_options());
         w.append("UPDATE ");
-        self.build_enumerated_fields(&mut w, query, &query.enumerated_fields); //TODO: add support for column_sql, fields, functions
-        w.ln();
         let from_table = query.get_from_table();
         assert!(from_table.is_some(), "There should be table to update from");
         if from_table.is_some(){
             w.append(&from_table.unwrap().complete_name());
         }
+        w.ln();
+        let enumerated_columns = query.get_enumerated_columns();
+        let mut do_comma = false;
+        if !enumerated_columns.is_empty(){
+            w.append("SET ");
+        }
+        let mut column_index = 0;
+        for ec in &enumerated_columns{
+            if do_comma{ w.commasp(); } else{do_comma = true;}
+            w.append(&ec.column);
+            w.append(" = ");
+            let value = &query.values[column_index];
+            match value{
+                &Operand::Value(ref value) => {
+                    w.parameter(value.clone());
+                },
+                _ => {}
+            }
+            column_index += 1;
+        }
+       
         if !query.filters.is_empty() {
             w.ln_tab();
             w.append("WHERE ");
             self.build_filters(&mut w, query, &query.filters);
+        }
+        if !query.enumerated_returns.is_empty() {
+            if self.sql_options().contains(&SqlOption::SupportsReturningClause) {
+                w.append("RETURNING ");
+                let mut do_comma = false;
+                for field in &query.enumerated_returns{
+                    if do_comma{ w.commasp(); }else {do_comma = true;}
+                    self.build_field(&mut w, query, field);
+                }
+            }
         }
         w
     }
@@ -573,7 +646,7 @@ pub trait DatabaseDev{
         }
         w.append("#[derive(RustcDecodable, RustcEncodable)]");
         w.ln();
-        w.append("#[derive(Debug)]");
+        w.append("#[derive(Debug, Clone)]");
         w.ln();
         w.append("pub struct ").append(&struct_name).appendln(" {");
 

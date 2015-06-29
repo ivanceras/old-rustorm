@@ -13,7 +13,7 @@ use rustorm::table::Table;
 /// All User table should inherit from this one
 ///
 #[derive(RustcDecodable, RustcEncodable)]
-#[derive(Debug)]
+#[derive(Debug,Clone)]
 pub struct Record {
     /// @Active
     /// default: true

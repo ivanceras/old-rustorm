@@ -14,7 +14,7 @@ use rustorm::table::Table;
 /// @Address
 ///
 #[derive(RustcDecodable, RustcEncodable)]
-#[derive(Debug)]
+#[derive(Debug,Clone)]
 pub struct Address {
     /// primary
     /// default: uuid_generate_v4()

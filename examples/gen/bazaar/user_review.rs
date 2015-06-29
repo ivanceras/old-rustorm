@@ -16,7 +16,7 @@ use rustorm::table::Foreign;
 /// Reviews of the seller by the user
 ///
 #[derive(RustcDecodable, RustcEncodable)]
-#[derive(Debug)]
+#[derive(Debug,Clone)]
 pub struct UserReview {
     /// primary
     /// not nullable 

@@ -15,7 +15,7 @@ use rustorm::table::Table;
 /// Reviews of buyers from the sellers and the sellers' products
 ///
 #[derive(RustcDecodable, RustcEncodable)]
-#[derive(Debug)]
+#[derive(Debug,Clone)]
 pub struct Review {
     /// primary
     /// not nullable 

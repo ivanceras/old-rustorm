@@ -11,7 +11,7 @@ use rustorm::table::Foreign;
 
 
 #[derive(RustcDecodable, RustcEncodable)]
-#[derive(Debug)]
+#[derive(Debug,Clone)]
 pub struct Organization {
     /// primary
     /// default: uuid_generate_v4()

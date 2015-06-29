@@ -26,6 +26,7 @@ uuid = "*"
 log = "*"
 env_logger = "*"
 regex = "*"
+url = "*"
 
 
 [dev-dependencies.bazaar]

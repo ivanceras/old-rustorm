@@ -364,8 +364,10 @@ impl Database for Postgres{
     /// generic execute sql which returns not much information,
     /// returns only the number of affected records or errors
     /// can be used with DDL operations (CREATE, DELETE, ALTER, DROP)
-    fn execute_sql(&self, sql:&String, param:&Vec<Type>)->Result<usize, String>{
-        let to_sql_types = Self::from_rust_type_tosql(param);
+    fn execute_sql(&self, sql:&String, params:&Vec<Type>)->Result<usize, String>{
+        println!("SQL: \n{}", sql);
+        println!("param: {:?}", params);
+        let to_sql_types = Self::from_rust_type_tosql(params);
         let result = self.conn.execute(sql, &to_sql_types);
         let result = match result{
             Ok(x) => { Ok(x as usize)},
