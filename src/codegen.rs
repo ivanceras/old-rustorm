@@ -66,8 +66,8 @@ impl Config{
     
 }
 
-/// [TODO]: support compartmentalizing tables via schema
-/// schema themselves becomes module that holds these tables
+///
+/// retrieve all the table definition in the database
 ///
 pub fn get_all_tables<T:DatabaseDev>(db_dev:&T)->Vec<Table>{
     let all_tables_names = db_dev.get_all_tables();

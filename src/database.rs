@@ -106,6 +106,18 @@ pub trait Database{
             &Operand::Value(ref value) => {
                 w.parameter(value.clone());
             },
+            &Operand::Vec(ref operands) => {
+                let mut do_comma = false;
+                if !operands.is_empty(){
+                    w.append("(");
+                    for op in operands{
+                        println!("op: {:?}",op);
+                        if do_comma {w.commasp();}else{do_comma = true;}
+                        self.build_operand(w, op);
+                    }
+                    w.append(")");
+                }
+            },
         };
     }
     
@@ -170,7 +182,7 @@ pub trait Database{
                 w.ln_tab();
             }
             w.append(" ");
-            w.append(&ec.column);
+            w.append(&ec.complete_name());
         }
     }
 
@@ -369,7 +381,7 @@ pub trait DatabaseDDL{
     fn create_schema(&self, schema:&str);
 
     /// drop the database schema
-    fn drop_schema(&self, schema:&str, forced:bool);
+    fn drop_schema(&self, schema:&str);
 
     /// create a database table based on the Model Definition
     fn create_table(&self, model:&Table);
@@ -378,7 +390,7 @@ pub trait DatabaseDDL{
     fn rename_table(&self, table:&Table, new_tablename:String);
 
     /// drop table
-    fn drop_table(&self, table:&Table, forced:bool);
+    fn drop_table(&self, table:&Table);
 
     /// set the foreign key constraint of a table
     fn set_foreign_constraint(&self, model:&Table);

@@ -359,11 +359,13 @@ impl Database for Postgres{
     fn execute_sql(&self, sql:&String, param:&Vec<Type>)->Result<u64, &str>{
         let to_sql_types = Self::from_rust_type_tosql(param);
         let result = self.conn.execute(sql, &to_sql_types);
-        match result{
-            Ok(x) => { println!("sucess! {}", x);},
-            Err(e) => { panic!("error occured: {}",e);}
-        }
-        Result::Ok(1)//TODO: do the actual result 
+        let result = match result{
+            Ok(x) => { Ok(x)},
+            Err(e) => {
+                panic!("Something is wrong {:?}" ,e) 
+            }
+        };
+        result
     }
 
     /// use by select to build the select query
@@ -383,10 +385,10 @@ impl Database for Postgres{
 impl DatabaseDDL for Postgres{
 
     fn create_schema(&self, schema:&str){}
-    fn drop_schema(&self, schema:&str, forced:bool){}
+    fn drop_schema(&self, schema:&str){}
     fn create_table(&self, model:&Table){}
     fn rename_table(&self, table:&Table, new_tablename:String){}
-    fn drop_table(&self, table:&Table, forced:bool){}
+    fn drop_table(&self, table:&Table){}
     fn set_foreign_constraint(&self, model:&Table){}
     fn set_primary_constraint(&self, model:&Table){}
 

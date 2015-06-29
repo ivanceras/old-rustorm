@@ -125,6 +125,28 @@ impl ToType for NaiveDateTime{
     }
 }
 
+/*
+impl <'a>ToType for &'a [&'a ToType]{
+    fn to_db_type(&self)->Type{
+        let mut vector = vec![];
+        for i in 0..self.len(){
+            vector.push(self[i].to_db_type());
+        }
+        Type::Vec(vector)
+    }
+}
+
+impl <'a>ToType for Vec<&'a ToType>{
+    fn to_db_type(&self)->Type{
+        let mut vector = vec![];
+        for s in self{
+            vector.push(s.to_db_type());
+        }
+        Type::Vec(vector)
+    }
+}
+*/
+
 ///
 ///
 ///
@@ -311,6 +333,7 @@ pub trait IsDao:Sized{
 }
 
 /// meta result of a query useful when doing complex query, and also with paging
+#[derive(Debug)]
 pub struct DaoResult{
     /// an optional table where this Dao values was derived from
     pub from_table:Option<String>,

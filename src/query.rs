@@ -1,21 +1,21 @@
-use dao::{Type, ToType, Dao};
+use dao::{Type, ToType};
 use table::{Table, Column};
 use std::collections::BTreeMap;
 
-
+#[derive(Debug)]
 pub enum JoinType{
     CROSS,
     INNER,
     OUTER,
 }
-
+#[derive(Debug)]
 pub enum Modifier{
     LEFT,
     RIGHT,
     FULL,
 }
 
-
+#[derive(Debug)]
 pub struct Join{
     pub modifier:Option<Modifier>,
     pub join_type:JoinType,
@@ -23,7 +23,7 @@ pub struct Join{
     pub column1:Vec<String>,
     pub column2:Vec<String>
 }
-
+#[derive(Debug)]
 pub enum Direction{
     ASC,
     DESC,
@@ -33,11 +33,13 @@ pub enum Direction{
 ////
 /// Filter struct merged to query
 /// 
+#[derive(Debug)]
 pub enum Connector{
     And,
     Or
 }
 
+#[derive(Debug)]
 pub enum Equality{
     EQ, //EQUAL,
     NE, //NOT_EQUAL,
@@ -54,20 +56,24 @@ pub enum Equality{
 }
 
 /// function in a sql statement
+#[derive(Debug)]
 pub struct Function{
     pub function:String,
     pub params:Vec<Operand>,
 }
 
 /// Operands can be columns, functions, query or value types
+#[derive(Debug)]
 pub enum Operand{
     ColumnName(ColumnName),
     Function(Function),
     Query(Query),
     Value(Type),
+    Vec(Vec<Operand>),
 }
 
 /// TODO: support for functions on columns
+#[derive(Debug)]
 pub struct Filter{
     pub connector:Connector,
     /// TODO: maybe renamed to LHS, supports functions and SQL
@@ -107,6 +113,7 @@ impl Filter{
 }
 
 /// Could have been SqlAction
+#[derive(Debug)]
 pub enum SqlType{
     //DML
     SELECT,
@@ -116,6 +123,7 @@ pub enum SqlType{
 }
 
 #[derive(Clone)]
+#[derive(Debug)]
 pub struct ColumnName{
     pub column:String,
     pub table:Option<String>,
@@ -125,12 +133,14 @@ pub struct ColumnName{
     pub rename:Option<String>
 }
 
+#[derive(Debug)]
 pub struct Field{
     /// the field
     pub operand:Operand,
     /// when renamed as field
     pub name:Option<String>,
 }
+
 
 impl ColumnName{
 
@@ -158,7 +168,7 @@ impl ColumnName{
     /// table name and column name
     pub fn complete_name(&self)->String{
         if self.table.is_some(){
-            return format!("{}_{}", self.table.as_ref().unwrap(), self.column);
+            return format!("{}.{}", self.table.as_ref().unwrap(), self.column);
         }else{
             return self.column.to_string();
         }
@@ -166,7 +176,7 @@ impl ColumnName{
     /// includes the schema, table name and column name
     pub fn super_complete_name(&self)->String{
         if self.schema.is_some(){
-            return format!("{}_{}", self.schema.as_ref().unwrap(), self.complete_name());
+            return format!("{}.{}", self.schema.as_ref().unwrap(), self.complete_name());
         }else{
             return self.complete_name();
         }
@@ -186,6 +196,7 @@ impl PartialEq for ColumnName{
 
 
 #[derive(Clone)]
+#[derive(Debug)]
 pub struct TableName{
     pub schema: String,
     pub name: String,
@@ -217,6 +228,7 @@ impl PartialEq for TableName{
     }
 }
 
+#[derive(Debug)]
 pub struct Query{
     
     ///sql type determine which type of query to form, some fields are not applicable to other types of query
@@ -415,21 +427,21 @@ impl Query{
     
     /// join a table on this query
     ///
-    // # Examples
-    //
-    // ```
-    // let mut q = Query::new();
-    // let join = Join{
-    //        modifier:Some(Modifier::LEFT),
-    //        join_type:Type::OUTER,
-    //        table:table,
-    //        column1:vec![column1],
-    //        column2:vec![column2]
-    //    };
-    //
-    // q.join(join);
-    //
-    // ```
+    /// # Examples
+    ///
+    /// ```
+    /// let mut q = Query::new();
+    /// let join = Join{
+    ///        modifier:Some(Modifier::LEFT),
+    ///        join_type:Type::OUTER,
+    ///        table:table,
+    ///        column1:vec![column1],
+    ///        column2:vec![column2]
+    ///    };
+    ///
+    /// q.join(join);
+    ///
+    /// ```
     pub fn join(&mut self, join:Join){
         self.joins.push(join);
     }

@@ -45,17 +45,17 @@ impl <'a>EntityManager<'a>{
     }
 
     /// drop the database table
-    pub fn drop_table(&self, table:&Table, forced:bool){
+    pub fn drop_table(&self, table:&Table){
         panic!("not yet")
     }
 
     /// drop the database schema
-    pub fn drop_schema(&self, schema:&str, forced:bool){
+    pub fn drop_schema(&self, schema:&str){
         panic!("not yet")
     }
 
     /// empty the database table
-    pub fn truncate_table(&self, table:&Table, forced:bool) ->usize{
+    pub fn truncate_table(&self, table:&Table) ->usize{
         panic!("not yet")
     }
 
@@ -127,6 +127,34 @@ impl <'a>EntityManager<'a>{
 
     /// insert this records to the database, return the inserted dao with
     /// values from default columns included
+    /// # Example
+    /// 
+    /// ```
+    /// extern crate bazaar;
+    /// extern crate rustorm;
+    /// 
+    /// use rustorm::em::EntityManager;
+    /// use rustorm::db::Postgres;
+    /// use rustorm::dao::Dao;
+    /// use bazaar::gen::bazaar::Product;
+    /// fn main(){
+    /// let pg:Result<Postgres,&str> = Postgres::new("postgres://postgres:p0stgr3s@localhost/bazaar_v6");
+    /// match pg{
+    /// 	Ok(pg) => {
+    ///         let em = EntityManager::new(&pg);
+    ///         let mut dao = Dao::new();
+    ///         dao.set("name", &"inserting 1 records");
+    ///         dao.set("description", &"testing insert 1 record to product");
+    ///         let dao = em.insert(&Product::table(), dao);
+    ///         let prod = Product::from_dao(&dao);
+    ///         println!("created: {}", prod.created);
+    ///     }
+    ///     Err(error) =>{
+    ///         println!("{}",error);
+    ///     }
+    /// }
+    /// }
+    /// ```
     pub fn insert(&self, table:&Table, dao:Dao)->Dao{
         let mut q = Query::insert();
         q.into_table(table);
