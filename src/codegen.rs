@@ -127,7 +127,6 @@ fn generate_table<T:DatabaseDev>(db_dev:&T, config:&Config, table:&Table, all_ta
     let (dao_imports, dao_src) = generate_dao_conversion_code(table, all_tables);
     let (meta_imports, meta_src) = generate_meta_code(table);
     let static_columns = generate_static_column_names(table);
-     w.appendln("#[allow(unused_imports)]");
     for i in struct_imports{
         w.appendln(&format!("use {};",i));
     }
@@ -214,7 +213,6 @@ fn generate_meta_code(table: &Table)->(Vec<String>, String){
     let mut imports = Vec::new();
     imports.push("rustorm::table::IsTable".to_string());
     imports.push("rustorm::table::Column".to_string());
-    imports.push("rustorm::table::Foreign".to_string());
     imports.push("rustorm::table::Table".to_string());
     
     w.append("impl IsTable for ");
@@ -226,7 +224,11 @@ fn generate_meta_code(table: &Table)->(Vec<String>, String){
     w.append("fn table()->Table{");
     w.ln();
     w.tab();
-    w.append(&table.to_tabledef_source_code());
+    let (table_imports, table_src) = table.to_tabledef_source_code();
+    for imp in table_imports{
+        imports.push(imp);
+    }
+    w.append(&table_src);
     w.ln();
     w.tab();
     w.append("}");
@@ -262,8 +264,6 @@ fn generate_dao_conversion_code(table: &Table, all_tables:&Vec<Table>)->(Vec<Str
     let mut imports = Vec::new();
     imports.push("rustorm::dao::Dao".to_string());
     imports.push("rustorm::dao::IsDao".to_string());
-    //imports.push("rustorm::dao::DaoResult".to_string());
-    //imports.push("std::collections::BTreeMap".to_string());
     
     w.ln();
     w.append("impl IsDao for ");

@@ -1,4 +1,3 @@
-#[allow(unused_imports)]
 use chrono::datetime::DateTime;
 use chrono::offset::utc::UTC;
 use uuid::Uuid;
@@ -6,8 +5,8 @@ use rustorm::dao::Dao;
 use rustorm::dao::IsDao;
 use rustorm::table::IsTable;
 use rustorm::table::Column;
-use rustorm::table::Foreign;
 use rustorm::table::Table;
+use rustorm::table::Foreign;
 
 
 

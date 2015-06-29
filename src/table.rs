@@ -98,7 +98,8 @@ impl Column{
     }
     
     /// get the column definition of the code
-    pub fn to_column_def_source_code(&self)->String{
+    pub fn to_column_def_source_code(&self)->(Vec<String>, String){
+        let mut imports = vec![];
         let mut w = Writer::new();
         w.ln();
         w.tabs(4);
@@ -146,13 +147,16 @@ impl Column{
         w.append("foreign:");
         if self.foreign.is_some(){
             w.append(&format!("Some({}),", &self.foreign.clone().unwrap().to_source_code()));
+            imports.push("rustorm::table::Foreign".to_string());
         }else{
             w.append("None,");
         }
         w.ln();
         w.tabs(4);
         w.append("}");
-        w.src
+        imports.sort_by(|a, b| a.cmp(&b));
+        imports.dedup();
+        (imports, w.src)
     }
 
 
@@ -708,7 +712,8 @@ impl Table{
  
     /// build a source code which express it self as a table object
     /// which is a meta definition of the struct itself
-    pub fn to_tabledef_source_code(&self)->String{
+    pub fn to_tabledef_source_code(&self)->(Vec<String>, String){
+        let mut imports = vec![];
         let mut w = Writer::new();
         w.ln();
         w.tabs(2);
@@ -757,7 +762,11 @@ impl Table{
         w.tabs(3);
         w.append("vec![");
         for c in &self.columns{
-            w.append(&c.to_column_def_source_code());
+            let (column_imports, column_src) = c.to_column_def_source_code();
+            for imp in column_imports{
+                imports.push(imp);
+            }
+            w.append(&column_src);
             w.append(",");
         }
         w.ln();
@@ -766,7 +775,9 @@ impl Table{
         w.ln();
         w.tabs(2);
         w.append("}");
-        w.src
+        imports.sort_by(|a, b| a.cmp(&b));
+        imports.dedup();
+        (imports, w.src)
     }
 
 
