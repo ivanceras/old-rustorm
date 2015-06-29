@@ -58,6 +58,17 @@ pub struct ProductPhoto {
 }
 
 
+// Generated columns for easier development of dynamic queries without sacrificing wrong spelling of column names
+pub static organization_id: &'static str = "product_photo.organization_id";
+pub static client_id: &'static str = "product_photo.client_id";
+pub static created: &'static str = "product_photo.created";
+pub static created_by: &'static str = "product_photo.created_by";
+pub static updated: &'static str = "product_photo.updated";
+pub static updated_by: &'static str = "product_photo.updated_by";
+pub static priority: &'static str = "product_photo.priority";
+pub static product_id: &'static str = "product_photo.product_id";
+pub static photo_id: &'static str = "product_photo.photo_id";
+
 
 impl IsDao for ProductPhoto{
     fn from_dao(dao:&Dao)->Self{

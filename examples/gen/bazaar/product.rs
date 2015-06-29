@@ -132,6 +132,32 @@ pub struct Product {
 }
 
 
+// Generated columns for easier development of dynamic queries without sacrificing wrong spelling of column names
+pub static organization_id: &'static str = "product.organization_id";
+pub static client_id: &'static str = "product.client_id";
+pub static created: &'static str = "product.created";
+pub static created_by: &'static str = "product.created_by";
+pub static updated: &'static str = "product.updated";
+pub static updated_by: &'static str = "product.updated_by";
+pub static priority: &'static str = "product.priority";
+pub static name: &'static str = "product.name";
+pub static description: &'static str = "product.description";
+pub static help: &'static str = "product.help";
+pub static active: &'static str = "product.active";
+pub static product_id: &'static str = "product.product_id";
+pub static parent_product_id: &'static str = "product.parent_product_id";
+pub static is_service: &'static str = "product.is_service";
+pub static price: &'static str = "product.price";
+pub static use_parent_price: &'static str = "product.use_parent_price";
+pub static unit: &'static str = "product.unit";
+pub static tags: &'static str = "product.tags";
+pub static info: &'static str = "product.info";
+pub static seq_no: &'static str = "product.seq_no";
+pub static upfront_fee: &'static str = "product.upfront_fee";
+pub static barcode: &'static str = "product.barcode";
+pub static owner_id: &'static str = "product.owner_id";
+pub static currency_id: &'static str = "product.currency_id";
+
 
 impl IsDao for Product{
     fn from_dao(dao:&Dao)->Self{

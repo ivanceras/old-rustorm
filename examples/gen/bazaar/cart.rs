@@ -66,6 +66,20 @@ pub struct Cart {
 }
 
 
+// Generated columns for easier development of dynamic queries without sacrificing wrong spelling of column names
+pub static organization_id: &'static str = "cart.organization_id";
+pub static client_id: &'static str = "cart.client_id";
+pub static created: &'static str = "cart.created";
+pub static created_by: &'static str = "cart.created_by";
+pub static updated: &'static str = "cart.updated";
+pub static updated_by: &'static str = "cart.updated_by";
+pub static priority: &'static str = "cart.priority";
+pub static name: &'static str = "cart.name";
+pub static description: &'static str = "cart.description";
+pub static help: &'static str = "cart.help";
+pub static active: &'static str = "cart.active";
+pub static cart_id: &'static str = "cart.cart_id";
+
 
 impl IsDao for Cart{
     fn from_dao(dao:&Dao)->Self{

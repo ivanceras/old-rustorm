@@ -28,8 +28,10 @@ env_logger = "*"
 regex = "*"
 
 
-[dev-dependencies.bazaar]
-path = "../bazaarust"
+#[dev-dependencies.bazaar]
+#path = "../bazaarust"
+#version = "*"
 
-[dev-dependencies.rustorm]
-path = "."
+#[dev-dependencies.rustorm]
+#path = "."
+#version = "*"

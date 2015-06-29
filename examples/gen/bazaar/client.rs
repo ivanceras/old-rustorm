@@ -61,6 +61,19 @@ pub struct Client {
 }
 
 
+// Generated columns for easier development of dynamic queries without sacrificing wrong spelling of column names
+pub static organization_id: &'static str = "client.organization_id";
+pub static client_id: &'static str = "client.client_id";
+pub static created: &'static str = "client.created";
+pub static created_by: &'static str = "client.created_by";
+pub static updated: &'static str = "client.updated";
+pub static updated_by: &'static str = "client.updated_by";
+pub static priority: &'static str = "client.priority";
+pub static name: &'static str = "client.name";
+pub static description: &'static str = "client.description";
+pub static help: &'static str = "client.help";
+pub static active: &'static str = "client.active";
+
 
 impl IsDao for Client{
     fn from_dao(dao:&Dao)->Self{

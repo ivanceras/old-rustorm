@@ -110,6 +110,36 @@ pub struct Orders {
 }
 
 
+// Generated columns for easier development of dynamic queries without sacrificing wrong spelling of column names
+pub static organization_id: &'static str = "orders.organization_id";
+pub static client_id: &'static str = "orders.client_id";
+pub static created: &'static str = "orders.created";
+pub static created_by: &'static str = "orders.created_by";
+pub static updated: &'static str = "orders.updated";
+pub static updated_by: &'static str = "orders.updated_by";
+pub static priority: &'static str = "orders.priority";
+pub static name: &'static str = "orders.name";
+pub static description: &'static str = "orders.description";
+pub static help: &'static str = "orders.help";
+pub static active: &'static str = "orders.active";
+pub static order_id: &'static str = "orders.order_id";
+pub static customer_name: &'static str = "orders.customer_name";
+pub static total_items: &'static str = "orders.total_items";
+pub static grand_total_amount: &'static str = "orders.grand_total_amount";
+pub static charges_amount: &'static str = "orders.charges_amount";
+pub static processing: &'static str = "orders.processing";
+pub static processed: &'static str = "orders.processed";
+pub static is_confirmed: &'static str = "orders.is_confirmed";
+pub static is_tax_included: &'static str = "orders.is_tax_included";
+pub static date_ordered: &'static str = "orders.date_ordered";
+pub static is_invoiced: &'static str = "orders.is_invoiced";
+pub static date_invoiced: &'static str = "orders.date_invoiced";
+pub static is_approved: &'static str = "orders.is_approved";
+pub static date_approved: &'static str = "orders.date_approved";
+pub static amount_tendered: &'static str = "orders.amount_tendered";
+pub static amount_refunded: &'static str = "orders.amount_refunded";
+pub static cart_id: &'static str = "orders.cart_id";
+
 
 impl IsDao for Orders{
     fn from_dao(dao:&Dao)->Self{

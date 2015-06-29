@@ -79,6 +79,24 @@ pub struct UserInfo {
 }
 
 
+// Generated columns for easier development of dynamic queries without sacrificing wrong spelling of column names
+pub static organization_id: &'static str = "user_info.organization_id";
+pub static client_id: &'static str = "user_info.client_id";
+pub static created: &'static str = "user_info.created";
+pub static created_by: &'static str = "user_info.created_by";
+pub static updated: &'static str = "user_info.updated";
+pub static updated_by: &'static str = "user_info.updated_by";
+pub static priority: &'static str = "user_info.priority";
+pub static name: &'static str = "user_info.name";
+pub static description: &'static str = "user_info.description";
+pub static help: &'static str = "user_info.help";
+pub static active: &'static str = "user_info.active";
+pub static user_id: &'static str = "user_info.user_id";
+pub static address_id: &'static str = "user_info.address_id";
+pub static current_location: &'static str = "user_info.current_location";
+pub static displayname: &'static str = "user_info.displayname";
+pub static photo_id: &'static str = "user_info.photo_id";
+
 
 impl IsDao for UserInfo{
     fn from_dao(dao:&Dao)->Self{

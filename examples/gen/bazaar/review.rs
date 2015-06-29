@@ -84,6 +84,25 @@ pub struct Review {
 }
 
 
+// Generated columns for easier development of dynamic queries without sacrificing wrong spelling of column names
+pub static organization_id: &'static str = "review.organization_id";
+pub static client_id: &'static str = "review.client_id";
+pub static created: &'static str = "review.created";
+pub static created_by: &'static str = "review.created_by";
+pub static updated: &'static str = "review.updated";
+pub static updated_by: &'static str = "review.updated_by";
+pub static priority: &'static str = "review.priority";
+pub static name: &'static str = "review.name";
+pub static description: &'static str = "review.description";
+pub static help: &'static str = "review.help";
+pub static active: &'static str = "review.active";
+pub static rating: &'static str = "review.rating";
+pub static comment: &'static str = "review.comment";
+pub static review_id: &'static str = "review.review_id";
+pub static user_id: &'static str = "review.user_id";
+pub static approved: &'static str = "review.approved";
+pub static approvedby: &'static str = "review.approvedby";
+
 
 impl IsDao for Review{
     fn from_dao(dao:&Dao)->Self{

@@ -75,6 +75,23 @@ pub struct ExchangeRate {
 }
 
 
+// Generated columns for easier development of dynamic queries without sacrificing wrong spelling of column names
+pub static organization_id: &'static str = "exchange_rate.organization_id";
+pub static client_id: &'static str = "exchange_rate.client_id";
+pub static created: &'static str = "exchange_rate.created";
+pub static created_by: &'static str = "exchange_rate.created_by";
+pub static updated: &'static str = "exchange_rate.updated";
+pub static updated_by: &'static str = "exchange_rate.updated_by";
+pub static priority: &'static str = "exchange_rate.priority";
+pub static name: &'static str = "exchange_rate.name";
+pub static description: &'static str = "exchange_rate.description";
+pub static help: &'static str = "exchange_rate.help";
+pub static active: &'static str = "exchange_rate.active";
+pub static exchange_rate_id: &'static str = "exchange_rate.exchange_rate_id";
+pub static from_currency: &'static str = "exchange_rate.from_currency";
+pub static exchange_rate: &'static str = "exchange_rate.exchange_rate";
+pub static to_currency: &'static str = "exchange_rate.to_currency";
+
 
 impl IsDao for ExchangeRate{
     fn from_dao(dao:&Dao)->Self{

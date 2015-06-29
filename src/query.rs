@@ -1,6 +1,8 @@
 use dao::{Type, ToType};
 use table::{Table, Column};
 use std::collections::BTreeMap;
+use database::Database;
+use dao::DaoResult;
 
 #[derive(Debug)]
 pub enum JoinType{
@@ -66,6 +68,7 @@ pub struct Function{
 #[derive(Debug)]
 pub enum Operand{
     ColumnName(ColumnName),
+    TableName(TableName),
     Function(Function),
     Query(Query),
     Value(Type),
@@ -236,12 +239,11 @@ pub struct Query{
     
     /// whether to select the records distinct
     pub distinct:bool,
-
-    ///or whether to select columns
-    pub enumerated_columns:Vec<ColumnName>,
     
-        
+    pub declared_query: BTreeMap<String, Query>,
+
     ///fields can be functions, column sql query, and even columns
+    /// TODO; merge enumerated column to this, add a builder for fields
     pub enumerated_fields:Vec<Field>,
     
     /// list of renamed columns whenever there is a conflict
@@ -275,7 +277,10 @@ pub struct Query{
     /// where the focus of values of column selection
     /// this is the table to insert to, update to delete, create, drop
     /// whe used in select, this is the 
-    pub from_table:Option<TableName>,
+    /// pub from_table:Option<TableName>,
+    
+    /// from field, where field can be a query, table, column, or function
+    pub from:Option<Box<Field>>,
     
     /// The data values, used in bulk inserting, updating,
     pub values:Vec<Operand>,
@@ -287,12 +292,12 @@ pub struct Query{
 impl Query{
     
     
-    //the default query is select
+    /// the default query is select
     pub fn new()->Self{
         Query{
             sql_type:SqlType::SELECT,
             distinct:false,
-            enumerated_columns: vec![],
+            declared_query: BTreeMap::new(),
             enumerated_fields: vec![],
             renamed_columns:BTreeMap::new(),
             distinct_on_columns: vec![],
@@ -303,7 +308,8 @@ impl Query{
             excluded_columns:vec![],
             page:None,
             page_size:None,
-            from_table:None,
+            //from_table:None,
+            from: None,
             values:vec![],
             enumerated_returns: vec![],
         }
@@ -331,7 +337,7 @@ impl Query{
         q
     }
     
-    //add DISTINCT ie: SELECT DISTINCT
+    /// add DISTINCT ie: SELECT DISTINCT
     pub fn set_distinct(&mut self){
         self.distinct = true;
     }
@@ -342,29 +348,33 @@ impl Query{
     /// but is the other conflicting column is not explicityly enumerated will not be renamed
     /// 
     pub fn enumerate_column(&mut self, column:&str){
-        let c = ColumnName{
+        let column_name = ColumnName{
             column:column.to_string(), 
             table:None, 
             schema:None,
             rename:None
         };
-        self.enumerated_columns.push(c);
+        let operand = Operand::ColumnName(column_name);
+        let field = Field{operand:operand, name:None};
+        self.enumerated_fields.push(field);
     }
     
+    
     pub fn enumerate_table_column(&mut self, table:&str, column:&str){
-        let c = ColumnName{
+        let column_name = ColumnName{
             column:column.to_string(), 
             table:Some(table.to_string()), 
             schema:None,
             rename:None
         };
-        self.enumerated_columns.push(c);
+        let operand = Operand::ColumnName(column_name);
+        let field = Field{operand:operand, name:None};
+        self.enumerated_fields.push(field);
     }
+    
     /// exclude columns when inserting/updating data
-    /// [FIXME] ?? remove from the enumerated_columns
-    /// can this be called before the mentioned of the enumerated column?
-    /// else these needs to be stored and have a final list of columns
-    /// that is mentioned in the query
+    /// also ignores the column when selecting records
+    /// useful for manipulating thin records by excluding huge binary blobs such as images
     pub fn exclude_column(&mut self, table:&Table, column:&String){
         let c = ColumnName{
                 column:column.clone(),
@@ -382,18 +392,22 @@ impl Query{
         }
     }
     
-    
+    /// when paging multiple records
     pub fn set_page(&mut self, page:usize){
         self.page = Some(page);
     }
     
+    /// the number of items retrieve per page
     pub fn set_page_size(&mut self, items:usize){
         self.page_size = Some(items);
     }
 
     /// The base table where the resulting records will be retrieved from
     pub fn from_table(&mut self, table:&Table){
-        self.from_table = Some(TableName::from_table(table));
+        let table_name = TableName::from_table(table);
+        let operand = Operand::TableName(table_name);
+        let field = Field{ operand:operand, name: None};
+        self.from(field);
     }
     
     /// just an alias for from_table to make it terse for Insert queries
@@ -406,22 +420,46 @@ impl Query{
     /// then this query will be declared
     /// if database doesn't support WITH queries, then this query will be 
     /// wrapped in the from_query
-    pub fn declare_query(&mut self, query:&Query, alias:&str){
-    
+    /// build a builder for this
+    pub fn declare_query(&mut self, query:Query, alias:&str){
+        self.declared_query.insert(alias.to_string(), query);
     }
     
     /// a query to query from
     /// use WITH (query) t1 SELECT from t1 declaration in postgresql, sqlite
     /// use SELECT FROM (query) in oracle, mysql, others 
     /// alias of the table
-    pub fn from_query(&mut self, query:&Query, alias:&str){
-        
+    pub fn from_query(&mut self, query:Query, alias:&str){
+        let operand = Operand::Query(query);
+        let field = Field{operand:operand, name:Some(alias.to_string())};
+        self.from(field);
+    }
+    
+    pub fn from(&mut self, field:Field){
+        self.from = Some(Box::new(field));
+    }
+    
+    pub fn get_from_table(&self)->Option<&TableName>{
+        match self.from{
+            Some(ref field) => {
+                match field.operand{
+                    Operand::TableName(ref table_name) => {
+                        Some(table_name)
+                     },
+                    _ => None
+                }
+            },
+            None => None,
+        }
     }
     
     /// list down the columns of this table then add it to the enumerated list of columns
     pub fn enumerate_table_all_columns(&mut self, table: &Table){
         for c in &table.columns{
-            self.enumerated_columns.push(ColumnName::from_column(c, table));
+            let column_name = ColumnName::from_column(c, table);
+            let operand = Operand::ColumnName(column_name);
+            let field = Field{operand:operand, name:None};
+            self.enumerated_fields.push(field);
         }
     }
     
@@ -449,14 +487,14 @@ impl Query{
     
     /// join a table on this query
     ///
-    // # Examples
-    //
-    // ```
-    // let mut q = Query::new();
-    // q.select_from_table("users");
-    // q.left_join("roles", "role_id", "role_id");
-    //
-    // ```
+    /// # Examples
+    ///
+    /// ```
+    /// let mut q = Query::new();
+    /// q.select_from_table("users");
+    /// q.left_join("roles", "role_id", "role_id");
+    ///
+    /// ```
     
     pub fn left_join(&mut self, table:&Table, column1:&str, column2:&str){
         let join = Join{
@@ -526,16 +564,15 @@ impl Query{
         }
     }
     
-    pub fn get_involved_tables(&self)->Vec<TableName>{
+    pub fn get_involved_tables(&self)->Vec<&TableName>{
         let mut tables = vec![];
-        if self.from_table.is_some(){
-            let from_table = self.from_table.clone().unwrap();
-            tables.push(from_table);
+        let from_table = self.get_from_table();
+        if from_table.is_some(){
+            tables.push(from_table.unwrap());
         }
         for j in &self.joins{
-            let join_table = j.table_name.clone();
-            if !tables.contains(&join_table){
-                tables.push(join_table);
+            if !tables.contains(&&j.table_name){
+                tables.push(&j.table_name);
             }
         }
         tables
@@ -548,28 +585,34 @@ impl Query{
     /// the query will then be built and ready to be executed
     /// TODO: renamed conflicting enumerated columns
     pub fn finalize(&mut self){
+        let excluded_columns = &self.excluded_columns.clone();
         
-        /// function inside function
-        fn index_of(enumerated_column:&Vec<ColumnName>, column:&ColumnName)->Option<usize>{
+        for i in  excluded_columns{
+            self.remove_from_enumerated(&i);
+        }
+    }
+    
+    fn remove_from_enumerated(&mut self, column_name: &ColumnName){
+        fn index_of(enumerated_fields:&Vec<Field>, column: &ColumnName)->Option<usize>{
             let mut cnt = 0;
-            for c in enumerated_column{
-                if c == column{
-                    return Some(cnt);
+            for field in enumerated_fields{
+                match field.operand{
+                    Operand::ColumnName(ref column_name) => {
+                        if column_name == column{
+                            return Some(cnt);
+                        }
+                    },
+                    _ => {},
                 }
                 cnt += 1;
             }
             None
         }
-        
-        for i in &self.excluded_columns{
-            if self.enumerated_columns.contains(i){
-                println!("removing {}", i.column);
-                let index = index_of(&self.enumerated_columns, i);
-                self.enumerated_columns.remove(index.unwrap());
-            }
+        let index = index_of(&self.enumerated_fields, column_name);
+        if index.is_some(){
+            self.enumerated_fields.remove(index.unwrap());
         }
     }
-    
     
     
     pub fn add_filter(&mut self, filter:Filter){
@@ -591,5 +634,17 @@ impl Query{
             let field = Field{operand: operand, name:None};
             self.enumerated_returns.push(field);
         }
+    }
+    
+    /// expects a return, such as select, insert/update with returning clause
+    pub fn execute_with_return(&mut self, db: &Database)->DaoResult{
+        self.finalize();
+        db.execute_with_return(self)
+    }
+    
+    /// delete, update without caring for the return
+    pub fn execute(&mut self, db: &Database)->Result<usize, String>{
+        self.finalize();
+        db.execute(self)
     }
 }

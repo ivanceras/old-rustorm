@@ -78,6 +78,26 @@ pub struct OrderLine {
 }
 
 
+// Generated columns for easier development of dynamic queries without sacrificing wrong spelling of column names
+pub static organization_id: &'static str = "order_line.organization_id";
+pub static client_id: &'static str = "order_line.client_id";
+pub static created: &'static str = "order_line.created";
+pub static created_by: &'static str = "order_line.created_by";
+pub static updated: &'static str = "order_line.updated";
+pub static updated_by: &'static str = "order_line.updated_by";
+pub static priority: &'static str = "order_line.priority";
+pub static name: &'static str = "order_line.name";
+pub static description: &'static str = "order_line.description";
+pub static help: &'static str = "order_line.help";
+pub static active: &'static str = "order_line.active";
+pub static order_id: &'static str = "order_line.order_id";
+pub static product_id: &'static str = "order_line.product_id";
+pub static price_momentary: &'static str = "order_line.price_momentary";
+pub static freight_amt: &'static str = "order_line.freight_amt";
+pub static discount: &'static str = "order_line.discount";
+pub static order_line_id: &'static str = "order_line.order_line_id";
+pub static qty_ordered: &'static str = "order_line.qty_ordered";
+
 
 impl IsDao for OrderLine{
     fn from_dao(dao:&Dao)->Self{

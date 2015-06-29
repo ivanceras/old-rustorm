@@ -79,6 +79,23 @@ pub struct Currency {
 }
 
 
+// Generated columns for easier development of dynamic queries without sacrificing wrong spelling of column names
+pub static organization_id: &'static str = "currency.organization_id";
+pub static client_id: &'static str = "currency.client_id";
+pub static created: &'static str = "currency.created";
+pub static created_by: &'static str = "currency.created_by";
+pub static updated: &'static str = "currency.updated";
+pub static updated_by: &'static str = "currency.updated_by";
+pub static priority: &'static str = "currency.priority";
+pub static name: &'static str = "currency.name";
+pub static description: &'static str = "currency.description";
+pub static help: &'static str = "currency.help";
+pub static active: &'static str = "currency.active";
+pub static currency_id: &'static str = "currency.currency_id";
+pub static country_id: &'static str = "currency.country_id";
+pub static symbol: &'static str = "currency.symbol";
+pub static unicode: &'static str = "currency.unicode";
+
 
 impl IsDao for Currency{
     fn from_dao(dao:&Dao)->Self{

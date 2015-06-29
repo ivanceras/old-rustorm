@@ -66,6 +66,20 @@ pub struct Wishlist {
 }
 
 
+// Generated columns for easier development of dynamic queries without sacrificing wrong spelling of column names
+pub static organization_id: &'static str = "wishlist.organization_id";
+pub static client_id: &'static str = "wishlist.client_id";
+pub static created: &'static str = "wishlist.created";
+pub static created_by: &'static str = "wishlist.created_by";
+pub static updated: &'static str = "wishlist.updated";
+pub static updated_by: &'static str = "wishlist.updated_by";
+pub static priority: &'static str = "wishlist.priority";
+pub static name: &'static str = "wishlist.name";
+pub static description: &'static str = "wishlist.description";
+pub static help: &'static str = "wishlist.help";
+pub static active: &'static str = "wishlist.active";
+pub static wishlist_id: &'static str = "wishlist.wishlist_id";
+
 
 impl IsDao for Wishlist{
     fn from_dao(dao:&Dao)->Self{

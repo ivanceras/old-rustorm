@@ -100,6 +100,23 @@ pub struct Users {
 }
 
 
+// Generated columns for easier development of dynamic queries without sacrificing wrong spelling of column names
+pub static organization_id: &'static str = "users.organization_id";
+pub static client_id: &'static str = "users.client_id";
+pub static created: &'static str = "users.created";
+pub static created_by: &'static str = "users.created_by";
+pub static updated: &'static str = "users.updated";
+pub static updated_by: &'static str = "users.updated_by";
+pub static priority: &'static str = "users.priority";
+pub static name: &'static str = "users.name";
+pub static description: &'static str = "users.description";
+pub static help: &'static str = "users.help";
+pub static active: &'static str = "users.active";
+pub static user_id: &'static str = "users.user_id";
+pub static username: &'static str = "users.username";
+pub static password: &'static str = "users.password";
+pub static email: &'static str = "users.email";
+
 
 impl IsDao for Users{
     fn from_dao(dao:&Dao)->Self{

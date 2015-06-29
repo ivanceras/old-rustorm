@@ -58,6 +58,17 @@ pub struct ProductReview {
 }
 
 
+// Generated columns for easier development of dynamic queries without sacrificing wrong spelling of column names
+pub static organization_id: &'static str = "product_review.organization_id";
+pub static client_id: &'static str = "product_review.client_id";
+pub static created: &'static str = "product_review.created";
+pub static created_by: &'static str = "product_review.created_by";
+pub static updated: &'static str = "product_review.updated";
+pub static updated_by: &'static str = "product_review.updated_by";
+pub static priority: &'static str = "product_review.priority";
+pub static product_id: &'static str = "product_review.product_id";
+pub static review_id: &'static str = "product_review.review_id";
+
 
 impl IsDao for ProductReview{
     fn from_dao(dao:&Dao)->Self{

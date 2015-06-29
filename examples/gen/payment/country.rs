@@ -68,6 +68,21 @@ pub struct Country {
 }
 
 
+// Generated columns for easier development of dynamic queries without sacrificing wrong spelling of column names
+pub static organization_id: &'static str = "country.organization_id";
+pub static client_id: &'static str = "country.client_id";
+pub static created: &'static str = "country.created";
+pub static created_by: &'static str = "country.created_by";
+pub static updated: &'static str = "country.updated";
+pub static updated_by: &'static str = "country.updated_by";
+pub static priority: &'static str = "country.priority";
+pub static name: &'static str = "country.name";
+pub static description: &'static str = "country.description";
+pub static help: &'static str = "country.help";
+pub static active: &'static str = "country.active";
+pub static country_id: &'static str = "country.country_id";
+pub static code: &'static str = "country.code";
+
 
 impl IsDao for Country{
     fn from_dao(dao:&Dao)->Self{

@@ -78,6 +78,26 @@ pub struct UserLocation {
 }
 
 
+// Generated columns for easier development of dynamic queries without sacrificing wrong spelling of column names
+pub static organization_id: &'static str = "user_location.organization_id";
+pub static client_id: &'static str = "user_location.client_id";
+pub static created: &'static str = "user_location.created";
+pub static created_by: &'static str = "user_location.created_by";
+pub static updated: &'static str = "user_location.updated";
+pub static updated_by: &'static str = "user_location.updated_by";
+pub static priority: &'static str = "user_location.priority";
+pub static name: &'static str = "user_location.name";
+pub static description: &'static str = "user_location.description";
+pub static help: &'static str = "user_location.help";
+pub static active: &'static str = "user_location.active";
+pub static true_latitude: &'static str = "user_location.true_latitude";
+pub static true_longitude: &'static str = "user_location.true_longitude";
+pub static set_latitude: &'static str = "user_location.set_latitude";
+pub static set_longitude: &'static str = "user_location.set_longitude";
+pub static accuracy: &'static str = "user_location.accuracy";
+pub static set_accuracy: &'static str = "user_location.set_accuracy";
+pub static user_id: &'static str = "user_location.user_id";
+
 
 impl IsDao for UserLocation{
     fn from_dao(dao:&Dao)->Self{

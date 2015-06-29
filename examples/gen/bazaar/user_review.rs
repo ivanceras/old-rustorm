@@ -76,6 +76,21 @@ pub struct UserReview {
 }
 
 
+// Generated columns for easier development of dynamic queries without sacrificing wrong spelling of column names
+pub static organization_id: &'static str = "user_review.organization_id";
+pub static client_id: &'static str = "user_review.client_id";
+pub static created: &'static str = "user_review.created";
+pub static created_by: &'static str = "user_review.created_by";
+pub static updated: &'static str = "user_review.updated";
+pub static updated_by: &'static str = "user_review.updated_by";
+pub static priority: &'static str = "user_review.priority";
+pub static name: &'static str = "user_review.name";
+pub static description: &'static str = "user_review.description";
+pub static help: &'static str = "user_review.help";
+pub static active: &'static str = "user_review.active";
+pub static user_id: &'static str = "user_review.user_id";
+pub static review_id: &'static str = "user_review.review_id";
+
 
 impl IsDao for UserReview{
     fn from_dao(dao:&Dao)->Self{

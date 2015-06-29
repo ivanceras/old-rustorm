@@ -126,6 +126,7 @@ fn generate_table<T:DatabaseDev>(db_dev:&T, config:&Config, table:&Table, all_ta
     let (struct_imports, imported_tables, struct_src) = db_dev.to_struct_source_code(&table, all_tables);
     let (dao_imports, dao_src) = generate_dao_conversion_code(table, all_tables);
     let (meta_imports, meta_src) = generate_meta_code(table);
+    let static_columns = generate_static_column_names(table);
     
     for i in struct_imports{
         w.append(&format!("use {};",i));
@@ -151,6 +152,9 @@ fn generate_table<T:DatabaseDev>(db_dev:&T, config:&Config, table:&Table, all_ta
     w.append(&struct_src);
     w.ln();
     w.ln();
+    w.append(&static_columns);
+    w.ln();
+    w.ln();
     w.append(&dao_src);
     w.ln();
     w.ln();
@@ -170,7 +174,7 @@ fn generate_mod_per_schema(config:&Config, all_tables:&Vec<Table>){
          let module_dir = config.module_dir(&schema);
          let tables = get_tables_in_schema(&schema, all_tables);
          for table in &tables{
-            w.append(&format!("mod {};",table.name));
+            w.append(&format!("pub mod {};",table.name));
             w.ln();
          }
          for table in &tables{
@@ -236,6 +240,21 @@ fn generate_meta_code(table: &Table)->(Vec<String>, String){
     w.ln();
     w.append("}");
     (imports, w.src)
+}
+
+
+fn generate_static_column_names(table: &Table)->String{
+    let mut w = Writer::new();
+    w.comment(" Generated columns for easier development of dynamic queries without sacrificing wrong spelling of column names");
+    for column in &table.columns{
+        w.ln();
+        w.append("pub static ");
+        w.append(&column.name);
+        w.append(": &'static str = ");
+        w.append(&format!("\"{}.{}\"", table.name, column.name));
+        w.append(";");
+    }
+    w.src
 }
 
 /// TODO: if column names begins with the tablename_, then put this value to the column name hash map

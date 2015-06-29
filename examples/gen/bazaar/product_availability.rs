@@ -70,6 +70,24 @@ pub struct ProductAvailability {
 }
 
 
+// Generated columns for easier development of dynamic queries without sacrificing wrong spelling of column names
+pub static organization_id: &'static str = "product_availability.organization_id";
+pub static client_id: &'static str = "product_availability.client_id";
+pub static created: &'static str = "product_availability.created";
+pub static created_by: &'static str = "product_availability.created_by";
+pub static updated: &'static str = "product_availability.updated";
+pub static updated_by: &'static str = "product_availability.updated_by";
+pub static priority: &'static str = "product_availability.priority";
+pub static product_id: &'static str = "product_availability.product_id";
+pub static available: &'static str = "product_availability.available";
+pub static always_available: &'static str = "product_availability.always_available";
+pub static stocks: &'static str = "product_availability.stocks";
+pub static available_from: &'static str = "product_availability.available_from";
+pub static available_until: &'static str = "product_availability.available_until";
+pub static available_day: &'static str = "product_availability.available_day";
+pub static open_time: &'static str = "product_availability.open_time";
+pub static close_time: &'static str = "product_availability.close_time";
+
 
 impl IsDao for ProductAvailability{
     fn from_dao(dao:&Dao)->Self{

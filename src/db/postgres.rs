@@ -305,14 +305,18 @@ impl Database for Postgres{
     fn sql_options(&self)->Vec<SqlOption>{
         vec![
             SqlOption::UseNumberedParam,  // uses numbered parameters
-            SqlOption::SupportsReturningClause // supports returning clause, feature
+            SqlOption::SupportsReturningClause, // supports returning clause, feature
+            SqlOption::SupportsCTE,
         ]
     }
     
     fn select(&self, query:&Query)->DaoResult{
+        self.execute_with_return(query)
+    }
+    
+    fn execute_with_return(&self, query:&Query)->DaoResult{
         let sql_frag = self.build_query(query);
         DaoResult{
-            from_table:Some(query.from_table.clone().unwrap().complete_name()),
             dao: self.execute_sql_with_return(&sql_frag.sql, &sql_frag.params),
             renamed_columns:query.renamed_columns.clone(),
             total:None,
@@ -320,6 +324,12 @@ impl Database for Postgres{
             page_size:None,
         }
     }
+    
+    fn execute(&self, query:&Query)->Result<usize, String>{
+        let sql_frag = self.build_query(query);
+        self.execute_sql(&sql_frag.sql, &sql_frag.params)
+    }
+    
     fn insert(&self, query:&Query)->Dao{
         let sql_frag = self.build_insert(query);
         let dao = self.execute_sql_with_return(&sql_frag.sql, &sql_frag.params);
@@ -327,9 +337,7 @@ impl Database for Postgres{
         dao[0].clone()
     }
     fn update(&self, query:&Query)->Dao{panic!("not yet")}
-    fn delete(&self, query:&Query)->Result<u64, &str>{panic!("not yet");}
-
-    fn execute_ddl(&self, sql:&String)->Result<(), &str>{panic!("not yet");}
+    fn delete(&self, query:&Query)->Result<usize, String>{panic!("not yet");}
 
     fn execute_sql_with_return(&self, sql:&String, params:&Vec<Type>)->Vec<Dao>{
         println!("SQL: \n{}", sql);
@@ -356,13 +364,13 @@ impl Database for Postgres{
     /// generic execute sql which returns not much information,
     /// returns only the number of affected records or errors
     /// can be used with DDL operations (CREATE, DELETE, ALTER, DROP)
-    fn execute_sql(&self, sql:&String, param:&Vec<Type>)->Result<u64, &str>{
+    fn execute_sql(&self, sql:&String, param:&Vec<Type>)->Result<usize, String>{
         let to_sql_types = Self::from_rust_type_tosql(param);
         let result = self.conn.execute(sql, &to_sql_types);
         let result = match result{
-            Ok(x) => { Ok(x)},
+            Ok(x) => { Ok(x as usize)},
             Err(e) => {
-                panic!("Something is wrong {:?}" ,e) 
+                Err(format!("Something is wrong {:?}" ,e)) 
             }
         };
         result

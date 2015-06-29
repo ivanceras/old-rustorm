@@ -65,6 +65,22 @@ pub struct Invoice {
 }
 
 
+// Generated columns for easier development of dynamic queries without sacrificing wrong spelling of column names
+pub static organization_id: &'static str = "invoice.organization_id";
+pub static client_id: &'static str = "invoice.client_id";
+pub static created: &'static str = "invoice.created";
+pub static created_by: &'static str = "invoice.created_by";
+pub static updated: &'static str = "invoice.updated";
+pub static updated_by: &'static str = "invoice.updated_by";
+pub static priority: &'static str = "invoice.priority";
+pub static name: &'static str = "invoice.name";
+pub static description: &'static str = "invoice.description";
+pub static help: &'static str = "invoice.help";
+pub static active: &'static str = "invoice.active";
+pub static invoice_id: &'static str = "invoice.invoice_id";
+pub static order_id: &'static str = "invoice.order_id";
+pub static is_paid: &'static str = "invoice.is_paid";
+
 
 impl IsDao for Invoice{
     fn from_dao(dao:&Dao)->Self{

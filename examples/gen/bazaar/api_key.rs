@@ -76,6 +76,24 @@ pub struct ApiKey {
 }
 
 
+// Generated columns for easier development of dynamic queries without sacrificing wrong spelling of column names
+pub static organization_id: &'static str = "api_key.organization_id";
+pub static client_id: &'static str = "api_key.client_id";
+pub static created: &'static str = "api_key.created";
+pub static created_by: &'static str = "api_key.created_by";
+pub static updated: &'static str = "api_key.updated";
+pub static updated_by: &'static str = "api_key.updated_by";
+pub static priority: &'static str = "api_key.priority";
+pub static name: &'static str = "api_key.name";
+pub static description: &'static str = "api_key.description";
+pub static help: &'static str = "api_key.help";
+pub static active: &'static str = "api_key.active";
+pub static api_key_id: &'static str = "api_key.api_key_id";
+pub static api_key: &'static str = "api_key.api_key";
+pub static user_id: &'static str = "api_key.user_id";
+pub static valid_starting: &'static str = "api_key.valid_starting";
+pub static valid_until: &'static str = "api_key.valid_until";
+
 
 impl IsDao for ApiKey{
     fn from_dao(dao:&Dao)->Self{

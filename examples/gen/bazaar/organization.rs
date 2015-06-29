@@ -71,6 +71,22 @@ pub struct Organization {
 }
 
 
+// Generated columns for easier development of dynamic queries without sacrificing wrong spelling of column names
+pub static organization_id: &'static str = "organization.organization_id";
+pub static client_id: &'static str = "organization.client_id";
+pub static created: &'static str = "organization.created";
+pub static created_by: &'static str = "organization.created_by";
+pub static updated: &'static str = "organization.updated";
+pub static updated_by: &'static str = "organization.updated_by";
+pub static priority: &'static str = "organization.priority";
+pub static name: &'static str = "organization.name";
+pub static description: &'static str = "organization.description";
+pub static help: &'static str = "organization.help";
+pub static active: &'static str = "organization.active";
+pub static parent_organization_id: &'static str = "organization.parent_organization_id";
+pub static address_id: &'static str = "organization.address_id";
+pub static landmark: &'static str = "organization.landmark";
+
 
 impl IsDao for Organization{
     fn from_dao(dao:&Dao)->Self{

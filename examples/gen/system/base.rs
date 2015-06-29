@@ -41,6 +41,15 @@ pub struct Base {
 }
 
 
+// Generated columns for easier development of dynamic queries without sacrificing wrong spelling of column names
+pub static organization_id: &'static str = "base.organization_id";
+pub static client_id: &'static str = "base.client_id";
+pub static created: &'static str = "base.created";
+pub static created_by: &'static str = "base.created_by";
+pub static updated: &'static str = "base.updated";
+pub static updated_by: &'static str = "base.updated_by";
+pub static priority: &'static str = "base.priority";
+
 
 impl IsDao for Base{
     fn from_dao(dao:&Dao)->Self{

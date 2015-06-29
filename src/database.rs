@@ -16,6 +16,8 @@ pub enum SqlOption{
     UseQuestionMark,
     /// postgresql supports returning clause on insert and update
     SupportsReturningClause,
+    /// support CTE (common table expression ie. WITH)
+    SupportsCTE,
 }
 
 /// A lower level API for manipulating objects in the database
@@ -67,35 +69,42 @@ pub trait Database{
 
     /// delete records
     /// returns the number of deleted records
-    fn delete(&self, query:&Query)->Result<u64, &str>;
+    fn delete(&self, query:&Query)->Result<usize, String>;
 
-    /// DDL executions
-    /// simple sql string with no parameters and no return
-    /// create, alter, drop, truncate, rename, constraint
-    /// returns error if error occurs
-    fn execute_ddl(&self, sql:&String)->Result<(), &str>;
+    /// execute query with return dao
+    fn execute_with_return(&self, query:&Query)->DaoResult;
     
+    /// execute query with no return dao
+    fn execute(&self, query:&Query)->Result<usize, String>;
+
     /// execute insert with returning clause, update with returning clause
     fn execute_sql_with_return(&self, sql:&String, params:&Vec<Type>)->Vec<Dao>;
     
     /// everything else
-    fn execute_sql(&self, sql:&String, param:&Vec<Type>)->Result<u64, &str>;
+    fn execute_sql(&self, sql:&String, param:&Vec<Type>)->Result<usize, String>;
 
     /// build a query, return the sql string and the parameters.
     fn build_query(&self, query:&Query)->SqlFrag;
     
     /// build operand, i.e: columns, query, function, values
-    fn build_operand(&self, w: &mut SqlFrag, operand:&Operand){
+    fn build_operand(&self, w: &mut SqlFrag, parent_query:&Query, operand:&Operand){
         match operand{
-            &Operand::ColumnName(ref column) => {
-                w.append(&column.column); //TODO: needs to do complete/super complete name when there is possible conflict of column names
+            &Operand::ColumnName(ref column_name) => {
+                if parent_query.joins.is_empty(){
+                    w.append(&column_name.column);
+                }else{
+                    w.append(&column_name.complete_name());
+                }
             }, 
+            &Operand::TableName(ref table_name) => {
+                w.append(&table_name.complete_name());
+            },
             &Operand::Function(ref function)=>{
                     w.append("(");
                     let mut do_comma = false;
                     for param in &function.params{
                         if do_comma{ w.commasp(); }else{ do_comma = true;}
-                        self.build_operand(w, param);
+                        self.build_operand(w, parent_query, param);
                     }
                     w.append(")");
                 },
@@ -113,7 +122,7 @@ pub trait Database{
                     for op in operands{
                         println!("op: {:?}",op);
                         if do_comma {w.commasp();}else{do_comma = true;}
-                        self.build_operand(w, op);
+                        self.build_operand(w, parent_query, op);
                     }
                     w.append(")");
                 }
@@ -121,8 +130,8 @@ pub trait Database{
         };
     }
     
-    fn build_field(&self, w: &mut SqlFrag, field:&Field){
-        self.build_operand(w, &field.operand);
+    fn build_field(&self, w: &mut SqlFrag, parent_query:&Query, field:&Field){
+        self.build_operand(w, parent_query, &field.operand);
         match field.name{
             Some(ref name) => {
                 w.append("AS ");
@@ -133,8 +142,8 @@ pub trait Database{
     }
     
     
-    fn build_filter(&self, w: &mut SqlFrag, filter:&Filter){
-        self.build_operand(w, &filter.left_operand);
+    fn build_filter(&self, w: &mut SqlFrag, parent_query:&Query, filter:&Filter){
+        self.build_operand(w, parent_query, &filter.left_operand);
         w.append(" ");
         match filter.equality{
             Equality::EQ => w.append("= "),
@@ -150,12 +159,12 @@ pub trait Database{
             Equality::NOTNULL => w.append("IS NOT NULL "),
             Equality::ISNULL => w.append("IS NULL "),
         };
-        self.build_operand(w, &filter.right_operand);
+        self.build_operand(w, parent_query, &filter.right_operand);
     }
     
     /// build the filter clause or the where clause of the query
     /// TODO: add the sub filters
-    fn build_filters(&self, w: &mut SqlFrag, filters: &Vec<Filter>){
+    fn build_filters(&self, w: &mut SqlFrag, parent_query:&Query, filters: &Vec<Filter>){
         let mut do_connector = false;
         for filter in filters{
             if do_connector{
@@ -167,22 +176,21 @@ pub trait Database{
             }else{
                 do_connector = true;
             }
-            self.build_filter(w, filter);
+            self.build_filter(w, parent_query, filter);
         }
     }
 
     /// build the enumerated, distinct, *, columns
-    fn build_columns(&self, w: &mut SqlFrag, query: &Query){
+    fn build_enumerated_fields(&self, w: &mut SqlFrag, parent_query:&Query, enumerated_fields: &Vec<Field>){
         let mut do_comma = false;
         let mut cnt = 0;
-        for ec in &query.enumerated_columns{
-            if do_comma{w.comma();}else{do_comma=true;}
+        for field in enumerated_fields{
+            if do_comma{w.commasp();}else{do_comma=true;}
             cnt += 1;
             if cnt % 5 == 0{//break at every 5 columns to encourage sql tuning/revising
                 w.ln_tab();
             }
-            w.append(" ");
-            w.append(&ec.complete_name());
+            self.build_field(w, parent_query, field);
         }
     }
 
@@ -191,18 +199,17 @@ pub trait Database{
         println!("building select query");
         let mut w = SqlFrag::new(self.sql_options());
         w.append("SELECT ");
-        self.build_columns(&mut w, query); //TODO: add support for column_sql, fields, functions
+        self.build_enumerated_fields(&mut w, query, &query.enumerated_fields); //TODO: add support for column_sql, fields, functions
         w.ln();
         w.append(" FROM ");
         
-        assert!(query.from_table.is_some());
+        assert!(query.from.is_some(), "There should be table, query, function to select from");
         
-        match query.from_table{
-            Some(ref table) => {
-                w.append(&table.complete_name());
-                w.append(" ");
+        match query.from{
+            Some(ref field) => {
+                self.build_field(&mut w, query, field);
             }
-            None => panic!("No from_table in this query"),
+            None => println!("Warning: No from in this query"),
         };
         if !query.joins.is_empty(){
             w.ln_tab();
@@ -249,7 +256,7 @@ pub trait Database{
         if !query.filters.is_empty() {
             w.ln_tab();
             w.append("WHERE ");
-            self.build_filters(&mut w, &query.filters);
+            self.build_filters(&mut w, query, &query.filters);
         }
         
         if !query.grouped_columns.is_empty() {
@@ -305,16 +312,14 @@ pub trait Database{
         println!("building insert query");
         let mut w = SqlFrag::new(self.sql_options());
         w.append("INSERT INTO ");
-        assert!(query.from_table.is_some());
-        match query.from_table{
-            Some(ref table) => {
-                w.append(&table.complete_name());
-                w.append(" ");
-            }
-            None => panic!("No from_table in this query"),
-        };
+        let into_table = query.get_from_table();
+        assert!(into_table.is_some(), "There should be table to insert to");
+        if into_table.is_some(){
+            w.append(&into_table.unwrap().complete_name());
+        }
+        
         w.append("(");
-        self.build_columns(&mut w, query); //TODO: add support for column_sql, fields, functions
+        self.build_enumerated_fields(&mut w, query, &query.enumerated_fields); //TODO: add support for column_sql, fields, functions
         w.append(") ");
         assert!(!query.values.is_empty(), "values should not be empty, when inserting records");
         if !query.values.is_empty(){
@@ -322,7 +327,7 @@ pub trait Database{
             let mut do_comma = false;
             for vo in &query.values{
                 if do_comma{ w.commasp(); } else{do_comma=true;}
-                self.build_operand(&mut w, vo);
+                self.build_operand(&mut w, query, vo);
             }
             w.append(") ");
         }
@@ -332,7 +337,7 @@ pub trait Database{
                 let mut do_comma = false;
                 for field in &query.enumerated_returns{
                     if do_comma{ w.commasp(); }else {do_comma = true;}
-                    self.build_field(&mut w, field);
+                    self.build_field(&mut w, query, field);
                 }
             }
         }
@@ -345,12 +350,17 @@ pub trait Database{
         println!("building update query");
         let mut w = SqlFrag::new(self.sql_options());
         w.append("UPDATE ");
-        self.build_columns(&mut w, query); //TODO: add support for column_sql, fields, functions
+        self.build_enumerated_fields(&mut w, query, &query.enumerated_fields); //TODO: add support for column_sql, fields, functions
         w.ln();
+        let from_table = query.get_from_table();
+        assert!(from_table.is_some(), "There should be table to update from");
+        if from_table.is_some(){
+            w.append(&from_table.unwrap().complete_name());
+        }
         if !query.filters.is_empty() {
             w.ln_tab();
             w.append("WHERE ");
-            self.build_filters(&mut w, &query.filters);
+            self.build_filters(&mut w, query, &query.filters);
         }
         w
     }
@@ -359,11 +369,15 @@ pub trait Database{
         println!("building delete query");
         let mut w = SqlFrag::new(self.sql_options());
         w.append("DELETE FROM");
-        assert!(query.from_table.is_some());
+        let from_table = query.get_from_table();
+        assert!(from_table.is_some(), "There should be table to delete from");
+        if from_table.is_some(){
+            w.append(&from_table.unwrap().complete_name());
+        }
         if !query.filters.is_empty() {
             w.ln_tab();
             w.append("WHERE ");
-            self.build_filters(&mut w, &query.filters);
+            self.build_filters(&mut w, query, &query.filters);
         }
         w
     }

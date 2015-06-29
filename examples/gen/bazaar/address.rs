@@ -76,6 +76,23 @@ pub struct Address {
 }
 
 
+// Generated columns for easier development of dynamic queries without sacrificing wrong spelling of column names
+pub static organization_id: &'static str = "address.organization_id";
+pub static client_id: &'static str = "address.client_id";
+pub static created: &'static str = "address.created";
+pub static created_by: &'static str = "address.created_by";
+pub static updated: &'static str = "address.updated";
+pub static updated_by: &'static str = "address.updated_by";
+pub static priority: &'static str = "address.priority";
+pub static name: &'static str = "address.name";
+pub static description: &'static str = "address.description";
+pub static help: &'static str = "address.help";
+pub static active: &'static str = "address.active";
+pub static address_id: &'static str = "address.address_id";
+pub static latitude: &'static str = "address.latitude";
+pub static longitude: &'static str = "address.longitude";
+pub static distance: &'static str = "address.distance";
+
 
 impl IsDao for Address{
     fn from_dao(dao:&Dao)->Self{

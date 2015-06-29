@@ -58,6 +58,17 @@ pub struct ProductCategory {
 }
 
 
+// Generated columns for easier development of dynamic queries without sacrificing wrong spelling of column names
+pub static organization_id: &'static str = "product_category.organization_id";
+pub static client_id: &'static str = "product_category.client_id";
+pub static created: &'static str = "product_category.created";
+pub static created_by: &'static str = "product_category.created_by";
+pub static updated: &'static str = "product_category.updated";
+pub static updated_by: &'static str = "product_category.updated_by";
+pub static priority: &'static str = "product_category.priority";
+pub static product_id: &'static str = "product_category.product_id";
+pub static category_id: &'static str = "product_category.category_id";
+
 
 impl IsDao for ProductCategory{
     fn from_dao(dao:&Dao)->Self{

@@ -58,6 +58,19 @@ pub struct Record {
 }
 
 
+// Generated columns for easier development of dynamic queries without sacrificing wrong spelling of column names
+pub static organization_id: &'static str = "record.organization_id";
+pub static client_id: &'static str = "record.client_id";
+pub static created: &'static str = "record.created";
+pub static created_by: &'static str = "record.created_by";
+pub static updated: &'static str = "record.updated";
+pub static updated_by: &'static str = "record.updated_by";
+pub static priority: &'static str = "record.priority";
+pub static name: &'static str = "record.name";
+pub static description: &'static str = "record.description";
+pub static help: &'static str = "record.help";
+pub static active: &'static str = "record.active";
+
 
 impl IsDao for Record{
     fn from_dao(dao:&Dao)->Self{
