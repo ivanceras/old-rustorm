@@ -16,20 +16,6 @@ impl <'a>EntityManager<'a>{
         EntityManager{db:db}
     }
 
-    /// begin transaction
-    pub fn begin(&self){
-        panic!("not yet")
-    }
-
-    /// commit transaction
-    pub fn commit(&self){
-        panic!("not yet")
-    }
-
-    /// count the number of results of this query
-    pub fn count(&self, query:&Query)->usize{
-        panic!("not yet")
-    }
     /// create a database table aligned to this table definition
     pub fn create_table(&self, table: &Table){
         panic!("not yet")
@@ -41,7 +27,15 @@ impl <'a>EntityManager<'a>{
 
     /// delete records of this table
     pub fn delete(&self, table:&Table, filters:&Vec<Filter>)->usize{
-        panic!("not yet")
+        let mut query = Query::delete();
+        for filter in filters{
+            let f = filter.clone();
+            query.add_filter(f);
+        }
+        match query.execute(self.db){
+            Ok(x) => x,
+            Err(e) => panic!("Error deleting record {}",e),
+        }
     }
 
     /// drop the database table

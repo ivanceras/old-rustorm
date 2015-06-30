@@ -1,5 +1,6 @@
 use dao::Type;
 use database::SqlOption;
+use std::fmt;
 
 /// generic string writer
 /// use this for writing source code
@@ -79,6 +80,19 @@ pub struct SqlFrag{
     pub sql:String,
     pub params:Vec<Type>,
     pub sql_options: Vec<SqlOption>,
+}
+
+impl fmt::Display for SqlFrag{
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", self.sql);
+        let mut do_comma = false;
+        write!(f, "[");
+        for param in &self.params{
+            if do_comma {write!(f, ", "); } else {do_comma = true;}
+            write!(f, "{}", param);
+        }
+        write!(f, "]")
+    }
 }
 
 impl SqlFrag{

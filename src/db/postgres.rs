@@ -301,12 +301,15 @@ impl Database for Postgres{
     fn is_valid(&self)->bool{false}
     fn reset(&self){}
     
+    fn get_version(&self)->String{panic!("not yet");}
+    
     /// return this list of options, supported features in the database
     fn sql_options(&self)->Vec<SqlOption>{
         vec![
             SqlOption::UseNumberedParam,  // uses numbered parameters
             SqlOption::SupportsReturningClause, // supports returning clause, feature
             SqlOption::SupportsCTE,
+            SqlOption::SupportsInheritance,
         ]
     }
     
@@ -325,6 +328,8 @@ impl Database for Postgres{
         }
     }
     
+
+    
     fn execute(&self, query:&Query)->Result<usize, String>{
         let sql_frag = self.build_query(query);
         self.execute_sql(&sql_frag.sql, &sql_frag.params)
@@ -332,14 +337,12 @@ impl Database for Postgres{
     
     fn insert(&self, query:&Query)->Dao{
         let sql_frag = self.build_insert(query);
-        let dao = self.execute_sql_with_return(&sql_frag.sql, &sql_frag.params);
-        assert!(dao.len() == 1, "There should be 1 and only 1 record return here");
-        dao[0].clone()
+        self.execute_sql_with_one_return(&sql_frag.sql, &sql_frag.params)
     }
     fn update(&self, query:&Query)->Dao{panic!("not yet")}
     fn delete(&self, query:&Query)->Result<usize, String>{panic!("not yet");}
 
-    fn execute_sql_with_return(&self, sql:&String, params:&Vec<Type>)->Vec<Dao>{
+    fn execute_sql_with_return(&self, sql:&str, params:&Vec<Type>)->Vec<Dao>{
         println!("SQL: \n{}", sql);
         println!("param: {:?}", params);
         let stmt = self.conn.prepare(sql).unwrap();
@@ -361,10 +364,16 @@ impl Database for Postgres{
         daos
     }
     
+    fn execute_sql_with_one_return(&self, sql:&str, params:&Vec<Type>)->Dao{
+        let dao = self.execute_sql_with_return(sql, params);
+        assert!(dao.len() == 1, "There should be 1 and only 1 record return here");
+        dao[0].clone()
+    }
+    
     /// generic execute sql which returns not much information,
     /// returns only the number of affected records or errors
     /// can be used with DDL operations (CREATE, DELETE, ALTER, DROP)
-    fn execute_sql(&self, sql:&String, params:&Vec<Type>)->Result<usize, String>{
+    fn execute_sql(&self, sql:&str, params:&Vec<Type>)->Result<usize, String>{
         println!("SQL: \n{}", sql);
         println!("param: {:?}", params);
         let to_sql_types = Self::from_rust_type_tosql(params);

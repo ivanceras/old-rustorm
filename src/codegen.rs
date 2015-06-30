@@ -41,7 +41,7 @@ impl Config{
         format!("{}::{}",parent,table.struct_name())
     }
     
-    fn module_dir(&self, schema:&String)->String{
+    fn module_dir(&self, schema:&str)->String{
         let base_module = self.base_module.clone();
         match base_module{
             Some(x) => format!("{}/{}/{}",self.base_dir, x, schema),
@@ -56,7 +56,7 @@ impl Config{
         }
     }
     
-    fn module(&self, schema:&String)->String{
+    fn module(&self, schema:&str)->String{
         let base_module = self.base_module.clone();
         match base_module{
             Some(x) => format!("{}::{}", x, schema),
@@ -94,7 +94,7 @@ pub fn get_schemas(all_table:&Vec<Table>)->Vec<String>{
 }
 
 /// get all tables with schema name
-pub fn get_tables_in_schema<'a>(schema:&String, all_table:&'a Vec<Table>)->Vec<&'a Table>{
+pub fn get_tables_in_schema<'a>(schema:&str, all_table:&'a Vec<Table>)->Vec<&'a Table>{
     let mut tables = Vec::new();
     for t in all_table{
         if &t.schema == schema{
@@ -338,7 +338,7 @@ fn generate_fn_get_all_tables(tables:&Vec<Table>)->String{
 
 
 
-fn save_to_file(filename: &str, content:&String){
+fn save_to_file(filename: &str, content:&str){
    match File::create(filename){
         Err(_) => panic!("couldn't create file {}", filename),
         Ok(mut file) => {

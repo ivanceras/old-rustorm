@@ -5,14 +5,17 @@ use database::Database;
 use dao::DaoResult;
 use dao::IsDao;
 use table::IsTable;
+use writer::SqlFrag;
 
 #[derive(Debug)]
+#[derive(Clone)]
 pub enum JoinType{
     CROSS,
     INNER,
     OUTER,
 }
 #[derive(Debug)]
+#[derive(Clone)]
 pub enum Modifier{
     LEFT,
     RIGHT,
@@ -20,6 +23,7 @@ pub enum Modifier{
 }
 
 #[derive(Debug)]
+#[derive(Clone)]
 pub struct Join{
     pub modifier:Option<Modifier>,
     pub join_type:JoinType,
@@ -28,6 +32,7 @@ pub struct Join{
     pub column2:Vec<String>
 }
 #[derive(Debug)]
+#[derive(Clone)]
 pub enum Direction{
     ASC,
     DESC,
@@ -38,12 +43,14 @@ pub enum Direction{
 /// Filter struct merged to query
 /// 
 #[derive(Debug)]
+#[derive(Clone)]
 pub enum Connector{
     And,
     Or
 }
 
 #[derive(Debug)]
+#[derive(Clone)]
 pub enum Equality{
     EQ, //EQUAL,
     NE, //NOT_EQUAL,
@@ -61,6 +68,7 @@ pub enum Equality{
 
 /// function in a sql statement
 #[derive(Debug)]
+#[derive(Clone)]
 pub struct Function{
     pub function:String,
     pub params:Vec<Operand>,
@@ -68,6 +76,7 @@ pub struct Function{
 
 /// Operands can be columns, functions, query or value types
 #[derive(Debug)]
+#[derive(Clone)]
 pub enum Operand{
     ColumnName(ColumnName),
     TableName(TableName),
@@ -79,6 +88,7 @@ pub enum Operand{
 
 /// TODO: support for functions on columns
 #[derive(Debug)]
+#[derive(Clone)]
 pub struct Filter{
     pub connector:Connector,
     /// TODO: maybe renamed to LHS, supports functions and SQL
@@ -119,6 +129,7 @@ impl Filter{
 
 /// Could have been SqlAction
 #[derive(Debug)]
+#[derive(Clone)]
 pub enum SqlType{
     //DML
     SELECT,
@@ -139,6 +150,7 @@ pub struct ColumnName{
 }
 
 #[derive(Debug)]
+#[derive(Clone)]
 pub struct Field{
     /// the field
     pub operand:Operand,
@@ -234,6 +246,7 @@ impl PartialEq for TableName{
 }
 
 #[derive(Debug)]
+#[derive(Clone)]
 pub struct Query{
     
     ///sql type determine which type of query to form, some fields are not applicable to other types of query
@@ -284,6 +297,8 @@ pub struct Query{
     /// from field, where field can be a query, table, column, or function
     pub from:Option<Box<Field>>,
     
+    pub table_in_context: Option<Table>,
+    
     /// The data values, used in bulk inserting, updating,
     pub values:Vec<Operand>,
     
@@ -292,7 +307,6 @@ pub struct Query{
 }
 
 impl Query{
-    
     
     /// the default query is select
     pub fn new()->Self{
@@ -310,8 +324,8 @@ impl Query{
             excluded_columns:vec![],
             page:None,
             page_size:None,
-            //from_table:None,
             from: None,
+            table_in_context:None,
             values:vec![],
             enumerated_returns: vec![],
         }
@@ -340,12 +354,13 @@ impl Query{
     }
     
     /// add DISTINCT ie: SELECT DISTINCT
-    pub fn set_distinct(&mut self){
+    pub fn set_distinct(&mut self)->&mut Self{
         self.distinct = true;
+        self
     }
     
-    pub fn select_all(&mut self){
-        self.enumerate_column("*");
+    pub fn select_all(&mut self)->&mut Self{
+        self.enumerate_column("*")
     }
     
     /// all enumerated columns shall be called from this
@@ -353,8 +368,7 @@ impl Query{
     /// columns that are not conflicts from some other table,
     /// but is the other conflicting column is not explicityly enumerated will not be renamed
     /// 
-    pub fn enumerate_column(&mut self, column:&str){
-        
+    pub fn enumerate_column(&mut self, column:&str)->&mut Self{
         let column_name = if column.contains("."){
             let splinters = column.split(".").collect::<Vec<&str>>();
             assert!(splinters.len() == 2, "There should only be 2 splinters");
@@ -378,10 +392,11 @@ impl Query{
         let operand = Operand::ColumnName(column_name);
         let field = Field{operand:operand, name:None};
         self.enumerated_fields.push(field);
+        self
     }
     
     
-    pub fn enumerate_table_column(&mut self, table:&str, column:&str){
+    pub fn enumerate_table_column(&mut self, table:&str, column:&str)->&mut Self{
         let column_name = ColumnName{
             column:column.to_string(), 
             table:Some(table.to_string()), 
@@ -391,59 +406,73 @@ impl Query{
         let operand = Operand::ColumnName(column_name);
         let field = Field{operand:operand, name:None};
         self.enumerated_fields.push(field);
+        self
+    }
+    
+    pub fn enumerate_all(&mut self)->&mut Self{
+        let table = self.table_in_context.clone();
+        if table.is_some(){
+            self.enumerate_table_all_columns(table.as_ref().unwrap());
+        }
+        self
     }
     
     /// exclude columns when inserting/updating data
     /// also ignores the column when selecting records
     /// useful for manipulating thin records by excluding huge binary blobs such as images
-    pub fn exclude_column(&mut self, table:&Table, column:&String){
+    pub fn exclude_column(&mut self, table:&Table, column:&str)->&mut Self{
         let c = ColumnName{
-                column:column.clone(),
+                column:column.to_string(),
                 table: Some(table.name.to_string()),
                 schema: Some(table.schema.to_string()),
                 rename:None,
             };
         self.excluded_columns.push(c);
+        self
     }
     
-    pub fn distinct_on_columns(&mut self, columns:&Vec<String>){
+    pub fn distinct_on_columns(&mut self, columns:&Vec<String>)->&mut Self{
         let columns = columns.clone();
         for c in columns{
             self.distinct_on_columns.push(c);
         }
+        self
     }
     
     /// when paging multiple records
-    pub fn set_page(&mut self, page:usize){
+    pub fn set_page(&mut self, page:usize)->&mut Self{
         self.page = Some(page);
+        self
     }
     
     /// the number of items retrieve per page
-    pub fn set_page_size(&mut self, items:usize){
+    pub fn set_page_size(&mut self, items:usize)->&mut Self{
         self.page_size = Some(items);
+        self
     }
 
     /// The base table where the resulting records will be retrieved from
-    pub fn from_table(&mut self, table:&Table){
+    pub fn from_table(&mut self, table:&Table)->&mut Self{
+        self.table_in_context = Some(table.clone());
         let table_name = TableName::from_table(table);
         let operand = Operand::TableName(table_name);
         let field = Field{ operand:operand, name: None};
-        self.from_field(field);
+        self.from_field(field)
     }
     
     /// A more terse way to write the query
-    pub fn from<T: IsTable>(&mut self){
-        self.from_table(&T::table());
+    pub fn from<T: IsTable>(&mut self)->&mut Self{
+        self.from_table(&T::table())
     }
     
     /// just an alias for from_table to make it terse for Insert queries
-    pub fn into_table(&mut self, table:&Table){
+    pub fn into_table(&mut self, table:&Table)->&mut Self{
         self.sql_type = SqlType::INSERT;
-        self.from_table(table);
+        self.from_table(table)
     }
     
-    pub fn into<T:IsTable>(&mut self){
-        self.into_table(&T::table());
+    pub fn into<T:IsTable>(&mut self)->&mut Self{
+        self.into_table(&T::table())
     }
     
     /// if the database support CTE declareted query i.e WITH, 
@@ -451,22 +480,24 @@ impl Query{
     /// if database doesn't support WITH queries, then this query will be 
     /// wrapped in the from_query
     /// build a builder for this
-    pub fn declare_query(&mut self, query:Query, alias:&str){
+    pub fn declare_query(&mut self, query:Query, alias:&str)->&mut Self{
         self.declared_query.insert(alias.to_string(), query);
+        self
     }
     
     /// a query to query from
     /// use WITH (query) t1 SELECT from t1 declaration in postgresql, sqlite
     /// use SELECT FROM (query) in oracle, mysql, others 
     /// alias of the table
-    pub fn from_query(&mut self, query:Query, alias:&str){
+    pub fn from_query(&mut self, query:Query, alias:&str)->&mut Self{
         let operand = Operand::Query(query);
         let field = Field{operand:operand, name:Some(alias.to_string())};
-        self.from_field(field);
+        self.from_field(field)
     }
     
-    pub fn from_field(&mut self, field:Field){
+    pub fn from_field(&mut self, field:Field)->&mut Self{
         self.from = Some(Box::new(field));
+        self
     }
     
     pub fn get_from_table(&self)->Option<&TableName>{
@@ -484,13 +515,14 @@ impl Query{
     }
     
     /// list down the columns of this table then add it to the enumerated list of columns
-    pub fn enumerate_table_all_columns(&mut self, table: &Table){
+    pub fn enumerate_table_all_columns(&mut self, table: &Table)->&mut Self{
         for c in &table.columns{
             let column_name = ColumnName::from_column(c, table);
             let operand = Operand::ColumnName(column_name);
             let field = Field{operand:operand, name:None};
             self.enumerated_fields.push(field);
         }
+        self
     }
     
     /// join a table on this query
@@ -510,8 +542,9 @@ impl Query{
     /// q.join(join);
     ///
     /// ```
-    pub fn join(&mut self, join:Join){
+    pub fn join(&mut self, join:Join)->&mut Self{
         self.joins.push(join);
+        self
     }
     
     
@@ -526,7 +559,7 @@ impl Query{
     ///
     /// ```
     
-    pub fn left_join(&mut self, table:&Table, column1:&str, column2:&str){
+    pub fn left_join(&mut self, table:&Table, column1:&str, column2:&str)->&mut Self{
         let join = Join{
             modifier:Some(Modifier::LEFT),
             join_type:JoinType::OUTER,
@@ -534,9 +567,9 @@ impl Query{
             column1:vec![column1.to_string()],
             column2:vec![column2.to_string()]
         };
-        self.join(join);
+        self.join(join)
     }
-    pub fn right_join(&mut self, table:&Table, column1:&str, column2:&str){
+    pub fn right_join(&mut self, table:&Table, column1:&str, column2:&str)->&mut Self{
         let join = Join{
             modifier:Some(Modifier::RIGHT),
             join_type:JoinType::OUTER,
@@ -544,10 +577,10 @@ impl Query{
             column1:vec![column1.to_string()],
             column2:vec![column2.to_string()]
         };
-        self.join(join);
+        self.join(join)
     }
     
-    pub fn full_join(&mut self, table:&Table, column1:&str, column2:&str){
+    pub fn full_join(&mut self, table:&Table, column1:&str, column2:&str)->&mut Self{
         let join = Join{
             modifier:Some(Modifier::FULL),
             join_type:JoinType::OUTER,
@@ -555,10 +588,10 @@ impl Query{
             column1:vec![column1.to_string()],
             column2:vec![column2.to_string()]
         };
-        self.join(join);
+        self.join(join)
     }
     
-    pub fn inner_join(&mut self, table:&Table, column1:&str, column2:&str){
+    pub fn inner_join(&mut self, table:&Table, column1:&str, column2:&str)->&mut Self{
         let join  = Join{
             modifier:None,
             join_type:JoinType::INNER,
@@ -566,20 +599,22 @@ impl Query{
             column1:vec![column1.to_string()],
             column2:vec![column2.to_string()]
         };
-        self.join(join);
+        self.join(join)
     }
     
     ///ascending orderby of this column
-    pub fn asc(&mut self, column:&str){
+    pub fn asc(&mut self, column:&str)->&mut Self{
         self.order_by.push((column.to_string(), Direction::ASC));
+        self
     }
         ///ascending orderby of this column
-    pub fn desc(&mut self, column:&str){
+    pub fn desc(&mut self, column:&str)->&mut Self{
         self.order_by.push((column.to_string(), Direction::DESC));
+        self
     }
     
     
-    pub fn rename(&mut self, table:&str, column:&str, new_column_name:&str){
+    pub fn rename(&mut self, table:&str, column:&str, new_column_name:&str)->&mut Self{
         if self.renamed_columns.get(table).is_some(){
             let mut list:&mut Vec<(String, String)> = self.renamed_columns.get_mut(table).unwrap();
             if list.contains(&(column.to_string(), new_column_name.to_string())){
@@ -592,6 +627,7 @@ impl Query{
         else{
             self.renamed_columns.insert(table.to_string(), vec![(column.to_string(), new_column_name.to_string())]);
         }
+        self
     }
     
     pub fn get_involved_tables(&self)->Vec<&TableName>{
@@ -614,15 +650,16 @@ impl Query{
     /// skipping those which are explicitly ignored
     /// the query will then be built and ready to be executed
     /// TODO: renamed conflicting enumerated columns
-    pub fn finalize(&mut self){
+    pub fn finalize(&mut self)->&mut Self{
         let excluded_columns = &self.excluded_columns.clone();
         
         for i in  excluded_columns{
             self.remove_from_enumerated(&i);
         }
+        self
     }
     
-    fn remove_from_enumerated(&mut self, column_name: &ColumnName){
+    fn remove_from_enumerated(&mut self, column_name: &ColumnName)->&mut Self{
         fn index_of(enumerated_fields:&Vec<Field>, column: &ColumnName)->Option<usize>{
             let mut cnt = 0;
             for field in enumerated_fields{
@@ -642,6 +679,7 @@ impl Query{
         if index.is_some(){
             self.enumerated_fields.remove(index.unwrap());
         }
+        self
     }
     
     /// return the list of enumerated columns
@@ -660,30 +698,41 @@ impl Query{
     }
     
     
-    pub fn add_filter(&mut self, filter:Filter){
+    pub fn add_filter(&mut self, filter:Filter)->&mut Self{
         self.filters.push(filter);
+        self
     }
     
-    pub fn filter(&mut self, column:&str, equality:Equality, value:&ToType){
-        self.add_filter(Filter::new(column, equality, Operand::Value(value.to_db_type())));
+    pub fn filter(&mut self, column:&str, equality:Equality, value:&ToType)->&mut Self{
+        self.add_filter(Filter::new(column, equality, Operand::Value(value.to_db_type())))
     }
     
-    pub fn add_value(&mut self, value:Operand){
+    pub fn add_value(&mut self, value:Operand)->&mut Self{
         self.values.push(value);
+        self
     }
     
-    pub fn value(&mut self, value:&ToType){
+    pub fn value(&mut self, value:&ToType)->&mut Self{
         let operand = Operand::Value(value.to_db_type());
-        self.add_value(operand);
+        self.add_value(operand)
     }
     
-    pub fn enumerate_all_table_column_as_return(&mut self, table:&Table){
+    pub fn enumerate_all_table_column_as_return(&mut self, table:&Table)->&mut Self{
          for c in &table.columns{
             let column_name = ColumnName::from_column(c, table);
             let operand = Operand::ColumnName(column_name);
             let field = Field{operand: operand, name:None};
             self.enumerated_returns.push(field);
         }
+         self
+    }
+    pub fn enumerate_return<T:IsTable>(&mut self)->&mut Self{
+         self.enumerate_all_table_column_as_return(&T::table())
+    }
+    
+    /// build the query only, not executed, useful when debugging
+    pub fn build(&self, db: &Database)->SqlFrag{
+        db.build_query(self)
     }
     
     /// expects a return, such as select, insert/update with returning clause

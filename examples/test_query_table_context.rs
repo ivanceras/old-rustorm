@@ -30,14 +30,16 @@ fn main(){
        match pg{
         Ok(pg) => {
             let mut query = Query::new();
-            
-            query.select_all()
-                .from::<Product>()
+                
+            query.from::<Product>()
+                .enumerate_all()
                 .filter(product::name, Equality::LIKE, &"iphone")
                 .add_filter(
                     Filter::new(product::description, Equality::LIKE, 
                         Operand::Value(Type::String("%Iphone%".to_string())))
                     );
+            let sql = query.build(&pg);
+            println!("SQL FRAG: {}", sql);
             let products: Vec<Product> = query.collect(&pg);
             for prod in products{
                 println!("\n\nprod: {:?}", prod)

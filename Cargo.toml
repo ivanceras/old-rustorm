@@ -11,7 +11,6 @@ documentation = "http://ivanceras.github.io/rustorm/rustorm/"
 [lib]
 name = "rustorm"
 
-
 [dependencies.chrono]
 version = "*"
 features = ["rustc-serialize"]
@@ -27,6 +26,7 @@ log = "*"
 env_logger = "*"
 regex = "*"
 url = "*"
+
 
 
 [dev-dependencies.bazaar]

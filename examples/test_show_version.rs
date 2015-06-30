@@ -2,6 +2,7 @@ extern crate rustorm;
 extern crate uuid;
 extern crate chrono;
 extern crate rustc_serialize;
+extern crate postgres;
 
 
 use rustorm::db::postgres::Postgres;
@@ -14,13 +15,14 @@ use rustc_serialize::json;
 use rustorm::em::EntityManager;
 use rustorm::table::IsTable;
 use rustorm::dao::IsDao;
+use rustorm::dao::Dao;
 use rustorm::query::Query;
 use rustorm::dao::Type;
 use rustorm::query::{Filter,Equality,Operand};
 use gen::bazaar::Product;
 use gen::bazaar::ProductAvailability;
-use gen::bazaar::product;
-use gen::bazaar::product_availability;
+use postgres::types::ToSql;
+use rustorm::database::Database;
 
 mod gen;
  
@@ -29,19 +31,9 @@ fn main(){
     let pg:Result<Postgres,&str> = Postgres::new("postgres://postgres:p0stgr3s@localhost/bazaar_v6");
        match pg{
         Ok(pg) => {
-            let mut query = Query::new();
-            
-            query.select_all()
-                .from::<Product>()
-                .filter(product::name, Equality::LIKE, &"iphone")
-                .add_filter(
-                    Filter::new(product::description, Equality::LIKE, 
-                        Operand::Value(Type::String("%Iphone%".to_string())))
-                    );
-            let products: Vec<Product> = query.collect(&pg);
-            for prod in products{
-                println!("\n\nprod: {:?}", prod)
-            }
+            let sql = "SHOW server_version";
+            let dao = pg.execute_sql_with_one_return(sql, &vec![]);
+            println!("{:?}",dao);
         }
         Err(error) =>{
             println!("{}",error);

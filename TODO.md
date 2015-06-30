@@ -26,3 +26,13 @@ impl RefTable{
 
 ## June 16, 2015
 * Make the query api with filter work
+
+## June 30, 2015
+* Implement COPY from stdin 
+http://sfackler.github.io/rust-postgres/doc/v0.9.2/postgres/struct.Statement.html#method.copy_in
+
+* Add support for sqlite 
+https://github.com/jgallagher/rusqlite
+
+## July 1, 2015
+* Support for deleting children on records that restrict deletion of referred records

@@ -41,6 +41,8 @@ fn main(){
                 Filter::new(product::description, Equality::LIKE, 
                     Operand::Value(Type::String("%Iphone%".to_string())))
                 );
+            let sql = query.build(&pg);
+            println!("SQL FRAG: {}", sql);
             let result:Vec<Product> = query.collect(&pg);
             println!("{:?}",result);
         }

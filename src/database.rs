@@ -156,14 +156,23 @@ pub enum SqlOption{
     SupportsReturningClause,
     /// support CTE (common table expression ie. WITH)
     SupportsCTE,
+    /// supports inheritance (postgresql)
+    SupportsInheritance,
 }
-
-/// A lower level API for manipulating objects in the database
-pub trait Database{
 
 /// Generic Database interface
 /// This is the database interface which will should be implemented to you the specifics of each database platform
 /// At least all methods on this trait should be implemented for target deployment database
+/// A lower level API for manipulating objects in the database
+/// 
+/// TODO: acquire only a connection until a query is about to be executed.
+/// generating query don't really need database connection just yet.
+
+pub trait Database{
+
+    /// return the version of the database
+    /// lower version of database has fewer supported features
+    fn get_version(&self)->String;
 
     /// begin database transaction
     fn begin(&self);
@@ -216,10 +225,12 @@ pub trait Database{
     fn execute(&self, query:&Query)->Result<usize, String>;
 
     /// execute insert with returning clause, update with returning clause
-    fn execute_sql_with_return(&self, sql:&String, params:&Vec<Type>)->Vec<Dao>;
+    fn execute_sql_with_return(&self, sql:&str, params:&Vec<Type>)->Vec<Dao>;
+
+    fn execute_sql_with_one_return(&self, sql:&str, params:&Vec<Type>)->Dao;
     
-    /// everything else
-    fn execute_sql(&self, sql:&String, param:&Vec<Type>)->Result<usize, String>;
+    /// everything else, no required return other than error or affected number of records
+    fn execute_sql(&self, sql:&str, param:&Vec<Type>)->Result<usize, String>;
 
     /// build a query, return the sql string and the parameters.
     fn build_query(&self, query:&Query)->SqlFrag;
@@ -483,7 +494,7 @@ pub trait Database{
         w
     }
 
-    ///TODO :complete this
+    
     fn build_update(&self, query: &Query)->SqlFrag{
         println!("building update query");
         let mut w = SqlFrag::new(self.sql_options());
@@ -535,7 +546,7 @@ pub trait Database{
     fn build_delete(&self, query: &Query)->SqlFrag{
         println!("building delete query");
         let mut w = SqlFrag::new(self.sql_options());
-        w.append("DELETE FROM");
+        w.append("DELETE FROM ");
         let from_table = query.get_from_table();
         assert!(from_table.is_some(), "There should be table to delete from");
         if from_table.is_some(){

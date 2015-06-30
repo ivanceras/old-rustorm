@@ -29,19 +29,15 @@ fn main(){
     let pg:Result<Postgres,&str> = Postgres::new("postgres://postgres:p0stgr3s@localhost/bazaar_v6");
        match pg{
         Ok(pg) => {
-            let mut query = Query::new();
-            
-            query.select_all()
-                .from::<Product>()
-                .filter(product::name, Equality::LIKE, &"iphone")
-                .add_filter(
-                    Filter::new(product::description, Equality::LIKE, 
-                        Operand::Value(Type::String("%Iphone%".to_string())))
-                    );
-            let products: Vec<Product> = query.collect(&pg);
-            for prod in products{
-                println!("\n\nprod: {:?}", prod)
-            }
+            let mut query = Query::delete();
+            query.from::<Product>();
+            query.filter(product::name, Equality::LIKE, &"iphone");
+            let sql = query.build(&pg);
+            println!("SQL FRAG: {}", sql);
+            match query.execute(&pg){
+                Ok(x) => println!("{:?}",x),
+                Err(e) => println!("Error {:?}",e),
+            };
         }
         Err(error) =>{
             println!("{}",error);

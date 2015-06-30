@@ -369,7 +369,7 @@ impl Table{
     }
     
     /// determine if this table has a colum named
-    pub fn has_column_name(&self, column:&String)->bool{
+    pub fn has_column_name(&self, column:&str)->bool{
         for c in &self.columns{
             if c.name == column.clone(){
                 return true;

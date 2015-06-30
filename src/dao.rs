@@ -6,6 +6,7 @@ use chrono::naive::date::NaiveDate;
 use chrono::naive::time::NaiveTime;
 use chrono::naive::datetime::NaiveDateTime;
 use chrono::offset::utc::UTC;
+use std::fmt;
 
 #[derive(RustcDecodable, RustcEncodable)]
 #[derive(Debug)]
@@ -32,6 +33,49 @@ pub enum Type{
     NaiveTime(NaiveTime),
     NaiveDateTime(NaiveDateTime),
     Null,
+}
+
+
+impl fmt::Display for Type{
+    
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match *self {
+            Type::String(ref x) => {
+                write!(f, "'{}'", x)
+            },
+            Type::Uuid(ref x) => {
+                write!(f, "'{}'", x)
+            },
+            Type::Bool(ref x) => {
+                write!(f, "'{}'", x)
+            },
+            Type::I8(ref x) => {
+                write!(f, "'{}'", x)
+            },
+            Type::I16(ref x) => {
+                write!(f, "'{}'", x)
+            },
+            Type::I32(ref x) => {
+                write!(f, "'{}'", x)
+            },
+            Type::I64(ref x) => {
+                write!(f, "'{}'", x)
+            },
+            Type::U8(ref x) => {
+                write!(f, "'{}'", x)
+            },
+            Type::U16(ref x) => {
+                write!(f, "'{}'", x)
+            },
+            Type::U32(ref x) => {
+                write!(f, "'{}'", x)
+            },
+            Type::U64(ref x) => {
+                write!(f, "'{}'", x)
+            },
+            _ => panic!("unfinished here! {:?}", self),
+        }
+    }
 }
 
 pub trait ToType{

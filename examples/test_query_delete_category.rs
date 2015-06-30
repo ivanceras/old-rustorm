@@ -17,10 +17,9 @@ use rustorm::dao::IsDao;
 use rustorm::query::Query;
 use rustorm::dao::Type;
 use rustorm::query::{Filter,Equality,Operand};
-use gen::bazaar::Product;
-use gen::bazaar::ProductAvailability;
-use gen::bazaar::product;
-use gen::bazaar::product_availability;
+use gen::bazaar::Category;
+use gen::bazaar::category;
+use rustorm::dao::Dao;
 
 mod gen;
  
@@ -29,19 +28,20 @@ fn main(){
     let pg:Result<Postgres,&str> = Postgres::new("postgres://postgres:p0stgr3s@localhost/bazaar_v6");
        match pg{
         Ok(pg) => {
-            let mut query = Query::new();
+            let em = EntityManager::new(&pg);
+            let mut dao = Dao::new();
+            dao.set("name", &"test category");
+            em.insert(&Category::table(), dao);
             
-            query.select_all()
-                .from::<Product>()
-                .filter(product::name, Equality::LIKE, &"iphone")
-                .add_filter(
-                    Filter::new(product::description, Equality::LIKE, 
-                        Operand::Value(Type::String("%Iphone%".to_string())))
-                    );
-            let products: Vec<Product> = query.collect(&pg);
-            for prod in products{
-                println!("\n\nprod: {:?}", prod)
-            }
+            let mut query = Query::delete();
+            query.from::<Category>();
+            query.filter(category::name, Equality::LIKE, &"test%");
+            let sql = query.build(&pg);
+            println!("SQL FRAG: {}", sql);
+            match query.execute(&pg){
+                Ok(x) => println!("{:?}",x),
+                Err(e) => println!("Error {:?}",e),
+            };
         }
         Err(error) =>{
             println!("{}",error);
