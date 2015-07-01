@@ -1,3 +1,5 @@
+//! WARNING: This file is generated, derived from table bazaar.cart_line, DO NOT EDIT
+
 use chrono::datetime::DateTime;
 use chrono::offset::utc::UTC;
 use uuid::Uuid;
@@ -12,7 +14,7 @@ use rustorm::table::Foreign;
 
 
 #[derive(RustcDecodable, RustcEncodable)]
-#[derive(Debug,Clone)]
+#[derive(Debug, Clone)]
 pub struct CartLine {
     /// primary
     /// default: uuid_generate_v4()

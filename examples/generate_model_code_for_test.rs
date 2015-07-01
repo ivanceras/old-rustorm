@@ -4,7 +4,7 @@ use rustorm::db::postgres::Postgres;
 use rustorm::codegen;
 use rustorm::codegen::Config;
 
-/// this will generate needed model code for tests in ./examples/gen directory
+/// this will generate needed model code for tests in ./tests/gen directory
 fn main(){
     let pg = Postgres::with_connection("postgres://postgres:p0stgr3s@localhost/bazaar_v6");
     let config =  Config{
@@ -12,7 +12,7 @@ fn main(){
             include_table_references:true,
             use_condensed_name:true,
             generate_table_meta:true,
-            base_dir:"./examples".to_string(),
+            base_dir:"./tests".to_string(),
         };
     codegen::generate_all(&pg, &config);
 }

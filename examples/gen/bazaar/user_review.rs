@@ -1,3 +1,5 @@
+//! WARNING: This file is generated, derived from table bazaar.user_review, DO NOT EDIT
+
 use chrono::datetime::DateTime;
 use chrono::offset::utc::UTC;
 use uuid::Uuid;
@@ -16,7 +18,7 @@ use rustorm::table::Foreign;
 /// Reviews of the seller by the user
 ///
 #[derive(RustcDecodable, RustcEncodable)]
-#[derive(Debug,Clone)]
+#[derive(Debug, Clone)]
 pub struct UserReview {
     /// primary
     /// not nullable 

@@ -1,3 +1,5 @@
+//! WARNING: This file is generated, derived from table bazaar.product, DO NOT EDIT
+
 use chrono::datetime::DateTime;
 use chrono::offset::utc::UTC;
 use uuid::Uuid;
@@ -20,7 +22,7 @@ use rustorm::table::Foreign;
 /// This will be exposed as an @Api, including @Table(users, category, product_availability, photo)
 ///
 #[derive(RustcDecodable, RustcEncodable)]
-#[derive(Debug,Clone)]
+#[derive(Debug, Clone)]
 pub struct Product {
     /// primary
     /// default: uuid_generate_v4()

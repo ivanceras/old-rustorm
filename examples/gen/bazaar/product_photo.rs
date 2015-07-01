@@ -1,3 +1,5 @@
+//! WARNING: This file is generated, derived from table bazaar.product_photo, DO NOT EDIT
+
 use chrono::datetime::DateTime;
 use chrono::offset::utc::UTC;
 use uuid::Uuid;
@@ -13,7 +15,7 @@ use rustorm::table::Foreign;
 
 
 #[derive(RustcDecodable, RustcEncodable)]
-#[derive(Debug,Clone)]
+#[derive(Debug, Clone)]
 pub struct ProductPhoto {
     /// primary
     /// not nullable 

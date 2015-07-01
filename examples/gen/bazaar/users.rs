@@ -1,3 +1,5 @@
+//! WARNING: This file is generated, derived from table bazaar.users, DO NOT EDIT
+
 use chrono::datetime::DateTime;
 use chrono::offset::utc::UTC;
 use uuid::Uuid;
@@ -19,7 +21,7 @@ use rustorm::table::Table;
 /// This are @Users, will be used for @Login
 ///
 #[derive(RustcDecodable, RustcEncodable)]
-#[derive(Debug,Clone)]
+#[derive(Debug, Clone)]
 pub struct Users {
     /// primary
     /// default: uuid_generate_v4()

@@ -1,3 +1,5 @@
+//! WARNING: This file is generated, derived from table bazaar.invoice, DO NOT EDIT
+
 use chrono::datetime::DateTime;
 use chrono::offset::utc::UTC;
 use uuid::Uuid;
@@ -10,7 +12,7 @@ use rustorm::table::Table;
 
 
 #[derive(RustcDecodable, RustcEncodable)]
-#[derive(Debug,Clone)]
+#[derive(Debug, Clone)]
 pub struct Invoice {
     /// default: uuid_generate_v4()
     /// db data type: uuid

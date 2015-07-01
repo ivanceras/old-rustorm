@@ -1,3 +1,5 @@
+//! WARNING: This file is generated, derived from table system.base, DO NOT EDIT
+
 use chrono::datetime::DateTime;
 use chrono::offset::utc::UTC;
 use uuid::Uuid;
@@ -13,7 +15,7 @@ use rustorm::table::Table;
 /// Base table contains the creation and modification status of a record
 ///
 #[derive(RustcDecodable, RustcEncodable)]
-#[derive(Debug,Clone)]
+#[derive(Debug, Clone)]
 pub struct Base {
     /// db data type: uuid
     pub client_id:Option<Uuid>,
