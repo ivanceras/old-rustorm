@@ -3,7 +3,7 @@
 [![Latest Version](https://img.shields.io/crates/v/rustorm.svg)](https://crates.io/crates/rustorm)
 [![Build Status](https://api.travis-ci.org/ivanceras/rustorm.svg)](https://travis-ci.org/ivanceras/rustorm)
 
-An ORM library for rust
+An ORM for rust
 
 ## Features
 * Fluent high-level and low-level API
