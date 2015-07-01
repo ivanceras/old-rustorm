@@ -340,18 +340,14 @@ pub trait IsDao:Sized + Clone{
     fn from_dao_result(dao_result:&DaoResult)->Vec<Self>{
         let mut obj = vec![];
         for d in &dao_result.dao{
-            let p = Self::from_dao_with_renamed(d, &dao_result.renamed_columns);
+            let p = Self::from_dao(d);
             obj.push(p);
         }
         obj
     }
     /// convert a dao object into the an instance of the generated struct from table
     /// taking into considerating the renamed columns
-    fn from_dao_with_renamed(dao:&Dao, renamed_columns:&BTreeMap<String, Vec<(String, String)>>)->Self{
-        let mut dao = dao.clone();
-        dao.resolve_renamed_columns("product", renamed_columns);
-        Self::from_dao(&mut dao)
-    }
+    /// TODO: need to rethink about the renamed columns
     fn from_dao(dao: &Dao)->Self;
 }
 

@@ -14,24 +14,39 @@ use dao::DaoResult;
 use writer::SqlFrag;
 use postgres::rows::Row;
 use database::SqlOption;
-
+use database::DbConfig;
+use uuid::Uuid;
 
 pub struct Postgres {
-    pub conn:Connection,
+    conn_id: Option<Uuid>,
+    pub conn: Option<Connection>,
 }
 
 
 impl Postgres{
-
-    //connection url
-    pub fn new(url:&str)->Result<Self, &str>{
-        let conn = Connection::connect(url, &SslMode::None);
-        let res = match conn{
-            Ok(c) => c,
-            Err(e) => {return Err("Unable to connect to postgres database")}
-        };
-        Ok(Postgres{conn:res})
+    
+    /// create an instance, but without a connection yet,
+    /// useful when just building sql queries specific to this platform
+    /// inexpensive operation, so can have multiple instances
+    pub fn new()->Self{
+        Postgres{conn_id:None, conn:None}
     }
+
+    /// create a postgresql instance and connect right away
+    pub fn with_connection(url:&str)->Self{
+        let mut pg = Self::new();
+        pg.connect(url);
+        pg
+    }
+    
+     pub fn connect(&mut self, url:&str){
+        let conn = Connection::connect(url, &SslMode::None);
+        match conn{
+            Ok(conn) => {self.conn = Some(conn);},
+            Err(e) => {panic!("Unable to connect to db");}
+        };
+    }
+    
 
 
     /// convert Type to ToSql (postgresql native types)
@@ -175,8 +190,8 @@ impl Postgres{
                 AND pg_attribute.attnum > 0
                 ORDER BY number
             ";
-
-        let stmt = self.conn.prepare(&sql).unwrap();
+        assert!(self.conn.is_some());
+        let stmt = self.conn.as_ref().unwrap().prepare(&sql).unwrap();
         let mut columns = Vec::new();
         for row in stmt.query(&[&schema, &table]).unwrap() {
             let name:String = row.get("name");
@@ -290,7 +305,11 @@ impl Postgres{
 
 
 impl Database for Postgres{
-
+    fn db_config(&self)->DbConfig{panic!("not yet");}
+    fn get_connection_id(&self)->Uuid{
+        self.conn_id.unwrap()
+    }
+    fn version(&self)->String{panic!("not yet");}
     fn begin(&self){}
     fn commit(&self){}
     fn rollback(&self){}
@@ -300,8 +319,6 @@ impl Database for Postgres{
     fn close(&self){}
     fn is_valid(&self)->bool{false}
     fn reset(&self){}
-    
-    fn get_version(&self)->String{panic!("not yet");}
     
     /// return this list of options, supported features in the database
     fn sql_options(&self)->Vec<SqlOption>{
@@ -328,7 +345,10 @@ impl Database for Postgres{
         }
     }
     
-
+    fn execute_with_one_return(&self, query:&Query)->Dao{
+        let sql_frag = self.build_query(query);
+        self.execute_sql_with_one_return(&sql_frag.sql, &sql_frag.params)
+    }
     
     fn execute(&self, query:&Query)->Result<usize, String>{
         let sql_frag = self.build_query(query);
@@ -345,7 +365,8 @@ impl Database for Postgres{
     fn execute_sql_with_return(&self, sql:&str, params:&Vec<Type>)->Vec<Dao>{
         println!("SQL: \n{}", sql);
         println!("param: {:?}", params);
-        let stmt = self.conn.prepare(sql).unwrap();
+        assert!(self.conn.is_some());
+        let stmt = self.conn.as_ref().unwrap().prepare(sql).unwrap();
         let mut daos = vec![];
         let param = Self::from_rust_type_tosql(params);
         for row in stmt.query(&param).unwrap() {
@@ -377,7 +398,8 @@ impl Database for Postgres{
         println!("SQL: \n{}", sql);
         println!("param: {:?}", params);
         let to_sql_types = Self::from_rust_type_tosql(params);
-        let result = self.conn.execute(sql, &to_sql_types);
+        assert!(self.conn.is_some());
+        let result = self.conn.as_ref().unwrap().execute(sql, &to_sql_types);
         let result = match result{
             Ok(x) => { Ok(x as usize)},
             Err(e) => {
@@ -430,8 +452,8 @@ impl DatabaseDev for Postgres{
              WHERE pg_namespace.nspname = $1
                  AND relname = $2
                 ";
-
-        let stmt = self.conn.prepare(&sql).unwrap();
+        assert!(self.conn.is_some());
+        let stmt = self.conn.as_ref().unwrap().prepare(&sql).unwrap();
         for row in stmt.query(&[&schema, &table]).unwrap() {
             let parent_table:Option<String> = match row.get_opt("parent_table"){
                     Ok(x) => Some(x),
@@ -456,8 +478,8 @@ impl DatabaseDev for Postgres{
              AND relname = $2
              ORDER BY relname
             ";
-
-        let stmt = self.conn.prepare(&sql).unwrap();
+        assert!(self.conn.is_some());
+        let stmt = self.conn.as_ref().unwrap().prepare(&sql).unwrap();
         let mut sub_classes:Vec<String> = vec![];
         for row in stmt.query(&[&schema, &table]).unwrap() {
             match row.get_opt("sub_class"){
@@ -514,7 +536,8 @@ impl DatabaseDev for Postgres{
                 ORDER BY relname, nspname
 
                 ";
-        let stmt = self.conn.prepare(&sql).unwrap();
+        assert!(self.conn.is_some());
+        let stmt = self.conn.as_ref().unwrap().prepare(&sql).unwrap();
         let mut tables:Vec<(String, String)> = Vec::new();
         for row in stmt.query(&[]).unwrap() {
             let table:String = row.get("table");
@@ -539,8 +562,8 @@ impl DatabaseDev for Postgres{
                     AND nspname = $1
                     AND relname = $2
                 ";
-
-        let stmt = self.conn.prepare(&sql).unwrap();
+        assert!(self.conn.is_some());
+        let stmt = self.conn.as_ref().unwrap().prepare(&sql).unwrap();
         for row in stmt.query(&[&schema, &table]).unwrap() {
             let comment:Option<String> = match row.get_opt("comment"){
                     Ok(x) => Some(x),
@@ -574,7 +597,8 @@ impl DatabaseDev for Postgres{
                     AND child.relname = $2
                     ORDER BY column_parent.attname
                 ";
-        let stmt = self.conn.prepare(&sql).unwrap();
+        assert!(self.conn.is_some());
+        let stmt = self.conn.as_ref().unwrap().prepare(&sql).unwrap();
         let mut inherited_columns = Vec::new();
         for row in stmt.query(&[&schema, &table]).unwrap() {
             let column:String = row.get("column_parent_name");

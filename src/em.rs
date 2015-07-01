@@ -1,8 +1,12 @@
 use query::{Filter,Operand};
 use query::Query;
 use table::Table;
-use dao::{Dao, DaoResult};
+use dao::{Dao};
 use database::Database;
+use table::IsTable;
+use dao::IsDao;
+use dao::ToType;
+use query::Equality;
 
 /// A higher level API for manipulating objects in the database
 pub struct EntityManager<'a>{
@@ -64,35 +68,33 @@ impl <'a>EntityManager<'a>{
     }
 
     /// get all the records of this table
-    pub fn get_all(&self, table:&Table)->DaoResult{
-        println!("Getting all values from table: {}",table.name);
+    pub fn get_all<T>(&self)->Vec<T> where T : IsTable + IsDao{
+        let table = T::table();
         let mut q = Query::select();
-        q.from_table(table);
-        q.enumerate_table_all_columns(table);
-        self.retrieve(&mut q)
+        q.enumerate_table_all_columns(&table);
+        q.from_table(&table);
+        q.collect(self.db)
     }
 
     /// get all the records of this table, but return only the columns mentioned
-    pub fn get_all_only_columns(&self, table:&Table, columns:Vec<&str>)->DaoResult{
-        println!("Getting all values from table: {}",table.name);
+    pub fn get_all_only_columns<T>(&self, columns:Vec<&str>)->Vec<T> 
+        where T : IsTable + IsDao{
+        let table = T::table();
         let mut q = Query::select();
         q.from_table(&table);
-        for c in &columns{
-            q.enumerate_table_column(&table.name, &c.to_string());
-        }
-        self.retrieve(&mut q)
+        q.enumerate_columns(columns);
+        q.collect(self.db)
     }
     
     /// get all the records of this table, ignoring the columns listed, mentioned the other else
-    pub fn get_all_ignore_columns(&self, table:&Table, ignore_columns:Vec<&str>)->DaoResult{
-        println!("Getting all values from table: {}",table.name);
+    pub fn get_all_ignore_columns<T>(&self, ignore_columns:Vec<&str>)->Vec<T> 
+        where T : IsTable + IsDao{
+        let table = T::table();
         let mut q = Query::select();
         q.from_table(&table);
         q.enumerate_table_all_columns(&table);
-        for c in &ignore_columns{
-            q.exclude_column(table, &c.to_string());
-        }
-        self.retrieve(&mut q)
+        q.exclude_columns(ignore_columns);
+        q.collect(self.db)
     }
 
 
@@ -103,20 +105,67 @@ impl <'a>EntityManager<'a>{
 
     /// get all the records on this table which passed thru the filters
     /// any query that specified more than the parameters should use the query api
-    pub fn get_all_with_filter(&self, table:&Table, filters:Vec<Filter>)->DaoResult{
-         println!("Getting all values from table: {}",table.name);
+    pub fn get_all_with_filter<T>(&self, table:&Table, filters:Vec<Filter>)->Vec<T> 
+        where T : IsTable + IsDao{
+        let table = T::table();
         let mut q = Query::select();
-        q.from_table(table);
-        q.enumerate_table_all_columns(table);
+        q.from_table(&table);
+        q.enumerate_table_all_columns(&table);
         for f in filters{
             q.add_filter(f);
         }
-        self.retrieve(&mut q)
+        q.collect(self.db)
     }
 
     /// get the first records of this table that passed thru the filters
-    pub fn get_one(&self, table:&Table, filter:Vec<Filter>)->Dao{
-        panic!("not yet")
+    pub fn get_one<T>(&self, filter:Filter)->Vec<T> 
+        where T : IsTable + IsDao{
+        let table = T::table();
+        let mut q = Query::select();
+        q.from_table(&table);
+        q.enumerate_table_all_columns(&table);
+        q.add_filter(filter);
+        q.collect(self.db)
+    }
+/// 
+/// get an exact match, the value is filter against the primary key of the table
+/// # Examples
+/// ```rust,no_run
+/// extern crate rustorm;
+/// extern crate uuid;
+/// extern crate chrono;
+/// extern crate rustc_serialize;
+/// 
+/// use rustorm::db::postgres::Postgres;
+/// use uuid::Uuid;
+/// 
+/// use rustorm::em::EntityManager;
+/// use gen::bazaar::Product;
+/// 
+/// mod gen;
+///  
+/// 
+/// fn main(){
+///     let pg= Postgres::with_connection("postgres://postgres:p0stgr3s@localhost/bazaar_v6");
+///     let em = EntityManager::new(&pg);
+///     let pid = Uuid::parse_str("6db712e6-cc50-4c3a-8269-451c98ace5ad").unwrap();
+///     let prod: Product = em.get_exact(&pid);
+///     println!("{}  {}  {:?}", prod.product_id, prod.name.unwrap(), prod.description);
+/// }
+/// ```
+/// 
+    pub fn get_exact<T>(&self, id: &ToType)->T 
+        where T : IsTable + IsDao{
+        let table = T::table();
+        let primary = table.primary_columns();
+        assert!(primary.len() == 1, "There should only be 1 primary column for this to work");
+        let pk = primary[0].name.to_string();
+        
+        let mut q = Query::select();
+        q.from_table(&table);
+        q.enumerate_table_all_columns(&table);
+        q.filter(&pk, Equality::EQ, id);
+        q.collect_one(self.db)
     }
 
     /// insert this records to the database, return the inserted dao with
@@ -132,7 +181,7 @@ impl <'a>EntityManager<'a>{
     /// use rustorm::dao::Dao;
     /// use bazaar::gen::bazaar::Product;
     /// fn main(){
-    /// let pg:Result<Postgres,&str> = Postgres::new("postgres://postgres:p0stgr3s@localhost/bazaar_v6");
+    /// let pg = Postgres::with_connection("postgres://postgres:p0stgr3s@localhost/bazaar_v6");
     /// match pg{
     ///     Ok(pg) => {
     ///         let em = EntityManager::new(&pg);
@@ -149,13 +198,15 @@ impl <'a>EntityManager<'a>{
     /// }
     /// }
     /// ```
-    pub fn insert(&self, table:&Table, dao:Dao)->Dao{
+    pub fn insert<T>(&self, dao:Dao)->T
+        where T : IsTable + IsDao{
+        let table = T::table();
         let mut q = Query::insert();
-        q.into_table(table);
+        q.into_table(&table);
         for key in dao.values.keys(){
             q.enumerate_column(key);
         }
-        q.enumerate_all_table_column_as_return(table);
+        q.enumerate_all_table_column_as_return(&table);
         for c in &table.columns{
             let value = dao.values.get(&c.name);
             match value{
@@ -165,20 +216,39 @@ impl <'a>EntityManager<'a>{
                 None => (),
             };
         }
-        self.db.insert(&q)
+        q.collect_one(self.db)
     }
 
     /// insert this record on the database, ignoring some columns
     /// which are set by the database default
     /// columns that are ignored are set by the database automatically
-    pub fn insert_with_ignore_columns(&self, dao:Dao, ignore_columns:Vec<&str>)->Dao{
-        panic!("not yet")
+    pub fn insert_with_ignore_columns<T>(&self, dao:Dao, ignore_columns:Vec<&str>)->T
+        where T: IsTable + IsDao {
+        let table = T::table();
+        let mut q = Query::insert();
+        q.into_table(&table);
+        for key in dao.values.keys(){
+            q.enumerate_column(key);
+        }
+        q.exclude_columns(ignore_columns);
+        q.enumerate_all_table_column_as_return(&table);
+        for c in &table.columns{
+            let value = dao.values.get(&c.name);
+            match value{
+                Some(value) => {
+                    q.add_value(Operand::Value(value.clone()));
+                }
+                None => (),
+            };
+        }
+        q.collect_one(self.db)
     }
 
     /// insert this record on the database, explicitly setting the defaults of the columns
     /// it may produce the same result with insert_with_ignore_columns
     /// the query is different since it may mentions `created` now(),
-    pub fn insert_set_default_columns(&self, dao:Dao, default_columns:Vec<&str>)->Dao{
+    pub fn insert_ignore_defaulted_columns<T>(&self, dao:Dao)->T
+        where T: IsTable + IsDao {
         panic!("not yet")
     }
 
@@ -187,115 +257,58 @@ impl <'a>EntityManager<'a>{
         panic!("not yet")
     }
 
-    /// retrieve records from query object
-    /// This is used for complex query that involves joining multiple tables
-    /// ## Example
-    /// ```rust
-    /// extern crate rustorm;
-    /// extern crate uuid;
-    /// extern crate chrono;
-    /// extern crate rustc_serialize;
-    /// 
-    /// 
-    /// use rustorm::db::postgres::Postgres;
-    /// use rustorm::codegen;
-    /// use uuid::Uuid;
-    /// use chrono::datetime::DateTime;
-    /// use chrono::offset::utc::UTC;
-    /// use rustc_serialize::json;
-    /// 
-    /// use rustorm::em::EntityManager;
-    /// use rustorm::table::IsTable;
-    /// use rustorm::dao::IsDao;
-    /// use rustorm::query::Query;
-    /// use rustorm::dao::Type;
-    /// use rustorm::query::{Filter,Equality,Operand};
-    /// use gen::bazaar::Product;
-    /// use gen::bazaar::ProductAvailability;
-    /// use gen::bazaar::product;
-    /// use gen::bazaar::product_availability;
-    /// 
-    /// mod gen;
-    ///  
-    /// 
-    /// fn main(){
-    ///     let pg:Result<Postgres,&str> = Postgres::new("postgres://postgres:p0stgr3s@localhost/bazaar_v6");
-    ///        match pg{
-    ///         Ok(pg) => {
-    ///             let em = EntityManager::new(&pg);
-    ///             let mut query = Query::new();
-    ///             query.from_table(&Product::table());
-    ///             query.enumerate_table_all_columns(&Product::table());
-    ///             
-    ///             query.left_join(&ProductAvailability::table(), 
-    ///                 product::product_id, product_availability::product_id);
-    ///             query.filter(product::name, Equality::LIKE, &"iphone%");
-    ///             
-    ///             query.add_filter(
-    ///                 Filter::new(product::description, Equality::LIKE, 
-    ///                     Operand::Value(Type::String("%Iphone%".to_string())))
-    ///                 );
-    ///             
-    ///             query.desc(product::created);
-    ///             query.asc(product::product_id);
-    ///             
-    ///             let result = em.retrieve(&mut query);
-    ///             let products = Product::from_dao_result(&result);
-    ///             
-    ///             for p in products{
-    ///                 println!("{}-{}", p.product_id, p.name.unwrap());
-    ///             }
-    ///         }
-    ///         Err(error) =>{
-    ///             println!("{}",error);
-    ///         }
-    ///     }
-    /// }
-    /// ```
-    ///     
-    pub fn retrieve(&self, query:&mut Query)->DaoResult{
-        query.finalize();
-        self.db.select(query)
-    }
-
     /// when there is a problem with the transaction process, this can be called
     pub fn rollback(&self){
         panic!("not yet")
     }
 
     /// update the Dao, return the updated Dao
-    pub fn update(&self, dao:&Dao)->Dao{
+    pub fn update<T>(&self, dao:&Dao)->T
+        where T: IsTable + IsDao {
         panic!("not yet")
     }
 
     /// update the Dao, return the updated Dao
     /// ignored columns will remain unchanged
-    pub fn update_with_ignore_columns(&self, dao:&Dao, ignore_columns:Vec<&str>)->Dao{
+    pub fn update_ignore_columns<T>(&self, dao:&Dao, ignore_columns:Vec<&str>)->T
+        where T: IsTable + IsDao {
         panic!("not yet")
     }
 
     /// update the Dao, return the updated Dao
     /// only the columns specified, the rest is unchanged
-    pub fn update_with_only_columns(&self, dao:&Dao, columns:Vec<&str>)->Dao{
+    pub fn update_only_columns<T>(&self, dao:&Dao, columns:Vec<&str>)->T
+        where T: IsTable + IsDao {
         panic!("not yet")
     }
 
     /// update the Dao, return the updated Dao
     /// the default columns will be reset to whatever the db's default function will come up.
     /// ie. updated column will be defaulted everytime a record is updated.
-    pub fn update_set_default_columns(&self, dao:&Dao, set_default_columns:Vec<&str>)->Dao{
+    pub fn update_ignore_defaulted_columns<T>(&self, dao:&Dao)->T
+        where T: IsTable + IsDao {
         panic!("not yet")
     }
 
     /// update the Dao with filter, return the updated Dao
-    pub fn update_with_filter(&self, dao:&Dao, filter:Vec<Filter>)->Dao{
+    pub fn update_with_filter<T>(&self, dao:&Dao, filter:Vec<Filter>)->T
+        where T: IsTable + IsDao {
         panic!("not yet")
     }
-
+    
+    /// whether to use insert or update
+    /// insert when it is a new record
+    /// update when it is an existing recor
+    /// may use UPSERT in newer versions of postgres
+    /// may use MERGE in oracle, mssql
+    pub fn save<T>(&self, dao:T)->T where T : IsTable + IsDao{
+        panic!("not yet");
+    }
      ///
      /// Search a set of record from the base Query that would have been returned by the base query
      ///
-    fn search(&self, query:&Query, keyword:&str)->Vec<Dao>{
+    fn search<T>(&self, keyword:&str)->Vec<T>
+        where T: IsTable + IsDao {
         panic!("not yet");
     }
 

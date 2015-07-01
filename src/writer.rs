@@ -71,6 +71,18 @@ impl Writer{
         self.append("//");
         self.append(comment)
     }
+    
+    #[inline]
+    pub fn doc_comment(&mut self, comment: &str)->&mut Self{
+        self.append("///");
+        self.append(comment)
+    }
+    
+    #[inline]
+    pub fn inner_doc_comment(&mut self, comment: &str)->&mut Self{
+        self.append("//!");
+        self.append(comment)
+    }
 }
 
 

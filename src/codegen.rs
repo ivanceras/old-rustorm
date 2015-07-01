@@ -127,6 +127,10 @@ fn generate_table<T:DatabaseDev>(db_dev:&T, config:&Config, table:&Table, all_ta
     let (dao_imports, dao_src) = generate_dao_conversion_code(table, all_tables);
     let (meta_imports, meta_src) = generate_meta_code(table);
     let static_columns = generate_static_column_names(table);
+    let warning = format!(" WARNING: This file is generated, derived from table {}, DO NOT EDIT", table.complete_name());
+    w.inner_doc_comment(&warning);
+    w.ln();
+    w.ln();
     for i in struct_imports{
         w.appendln(&format!("use {};",i));
     }

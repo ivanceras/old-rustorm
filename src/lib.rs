@@ -28,7 +28,7 @@
 //!  
 //! 
 //! fn main(){
-//!     let pg:Result<Postgres,&str> = Postgres::new("postgres://postgres:p0stgr3s@localhost/bazaar_v6");
+//!     let pg = Postgres::with_connection("postgres://postgres:p0stgr3s@localhost/bazaar_v6");
 //!        match pg{
 //!         Ok(pg) => {
 //!             let em = EntityManager::new(&pg);
