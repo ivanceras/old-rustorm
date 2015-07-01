@@ -171,10 +171,11 @@ fn test_complex(){
     let mut query = Query::select();
     let mut filters = Filter::new(product::name, Equality::EQ, &"GTX660 Ti videocard");
     filters.and(category::name, Equality::EQ, &"Electronic");
-    query.from::<Product>()
+    query.select_all()
+        .from::<Product>()
         .left_join(&ProductCategory::table(),
-            product_category::product_id, product::product_id)
-         .left_join(&Category::table(),
+           product_category::product_id, product::product_id)
+        .left_join(&Category::table(),
             category::category_id, product_category::category_id)
         .left_join(&ProductPhoto::table(),
             product::product_id, product_photo::product_id)
@@ -188,7 +189,7 @@ fn test_complex(){
         ;
     let frag = query.build(&pg);
     
-    let expected = "SELECT 
+    let expected = "SELECT *
  FROM bazaar.product
     LEFT OUTER JOIN bazaar.product_category 
         ON product_category.product_id = product.product_id 
@@ -235,6 +236,50 @@ fn test_multiple_filters(){
     photo.updated, photo.updated_by, photo.priority, photo.name, photo.description, 
     photo.help, photo.active, photo.photo_id, photo.url, photo.data, 
     photo.seq_no
+ FROM bazaar.product
+    LEFT OUTER JOIN bazaar.product_category 
+        ON product_category.product_id = product.product_id 
+    LEFT OUTER JOIN bazaar.category 
+        ON category.category_id = product_category.category_id 
+    LEFT OUTER JOIN bazaar.product_photo 
+        ON product.product_id = product_photo.product_id 
+    LEFT OUTER JOIN bazaar.photo 
+        ON product_photo.photo_id = photo.photo_id 
+    WHERE product.name = $1 
+        AND category.name = $2 
+    GROUP BY category.name 
+    HAVING count(*) > $3 
+    ORDER BY product.name ASC, product.created DESC".to_string();
+    println!("actual:   {{{}}} [{}]", frag.sql, frag.sql.len());
+    println!("expected: {{{}}} [{}]", expected, expected.len());
+    assert!(frag.sql.trim() == expected.trim());
+}
+
+
+#[test]
+fn test_complex_select_all(){
+    let pg = Postgres::new();
+    let mut query = Query::select();
+    query.from::<Product>()
+        .select_all()
+        .left_join(&ProductCategory::table(),
+            product_category::product_id, product::product_id)
+         .left_join(&Category::table(),
+            category::category_id, product_category::category_id)
+        .left_join(&ProductPhoto::table(),
+            product::product_id, product_photo::product_id)
+        .left_join(&Photo::table(), 
+            product_photo::photo_id, photo::photo_id)
+        .filter(product::name, Equality::EQ, &"GTX660 Ti videocard")
+        .filter(category::name, Equality::EQ, &"Electronic")
+        .group_by(vec![category::name])
+        .having("count(*)", Equality::GT, &1)
+        .asc(product::name)
+        .desc(product::created)
+        ;
+    let frag = query.build(&pg);
+    
+    let expected = "SELECT *
  FROM bazaar.product
     LEFT OUTER JOIN bazaar.product_category 
         ON product_category.product_id = product.product_id 
