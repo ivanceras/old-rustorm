@@ -4,6 +4,7 @@ use std::collections::BTreeMap;
 use database::Database;
 use dao::DaoResult;
 use dao::IsDao;
+use dao::Dao;
 use table::IsTable;
 use writer::SqlFrag;
 
@@ -86,40 +87,50 @@ pub enum Operand{
     Vec(Vec<Operand>),
 }
 
+/// expression has left operand,
+/// equality and right operand
+#[derive(Debug)]
+#[derive(Clone)]
+pub struct Condition{
+    pub left_operand:Operand,
+    pub equality:Equality,
+    pub right_operand:Operand,
+}
+
 /// TODO: support for functions on columns
+/// TODO: need to merge with Expr
 #[derive(Debug)]
 #[derive(Clone)]
 pub struct Filter{
     pub connector:Connector,
     /// TODO: maybe renamed to LHS, supports functions and SQL
-    pub left_operand:Operand,
-    pub equality:Equality,
-    /// TODO: RHS, supports functions and SQL
-    pub right_operand:Operand,
+    pub condition: Condition,
     pub subfilters:Vec<Filter>
 }
 
 impl Filter{
 
-    pub fn new(column:&str, equality:Equality, operand:Operand)->Self{
+    pub fn new(column:&str, equality:Equality, value:&ToType)->Self{
+        let right_operand = Operand::Value(value.to_db_type());
         Filter{
             connector:Connector::And,
-            left_operand:Operand::ColumnName(ColumnName::from_str(column)),
-            equality:equality,
-            right_operand:operand,
+            condition: Condition{left_operand:
+                        Operand::ColumnName(ColumnName::from_str(column)),
+                        equality:equality,
+                        right_operand:right_operand},
             subfilters:vec![],
         }
     }
     
-    pub fn and(mut self, column:&str, equality:Equality, operand:Operand)->Self{
-        let mut filter = Filter::new(column, equality, operand);
+    pub fn and(&mut self, column:&str, equality:Equality, value:&ToType)->&mut Self{
+        let mut filter = Filter::new(column, equality, value);
         filter.connector = Connector::And;
         self.subfilters.push(filter);
         self
     }
     
-    pub fn or(mut self, column:&str, equality:Equality, operand:Operand)->Self{
-        let mut filter = Filter::new(column, equality, operand);
+    pub fn or(&mut self, column:&str, equality:Equality, value:&ToType)->&mut Self{
+        let mut filter = Filter::new(column, equality, value);
         filter.connector = Connector::Or;
         self.subfilters.push(filter);
         self
@@ -171,11 +182,24 @@ impl ColumnName{
     }
     
     fn from_str(column:&str)->Self{
-        ColumnName{
-            column: column.to_string(),
-            table: None,
-            schema: None,
-            rename: None,
+        if column.contains("."){
+            let splinters = column.split(".").collect::<Vec<&str>>();
+            assert!(splinters.len() == 2, "There should only be 2 splinters");
+            let table_split = splinters[0].to_string();
+            let column_split = splinters[1].to_string();
+            ColumnName{
+                column:column_split.to_string(), 
+                table:Some(table_split.to_string()), 
+                schema:None,
+                rename:None
+            }
+        } else {
+            ColumnName{
+                column:column.to_string(), 
+                table:None, 
+                schema:None,
+                rename:None
+            }
         }
     }
     
@@ -278,7 +302,10 @@ pub struct Query{
     pub order_by:Vec<(String, Direction)>,
     
     /// grouping columns to create an aggregate
-    pub grouped_columns: Vec<String>,
+    pub group_by: Vec<Operand>,
+    
+    /// having field
+    pub having: Vec<Condition>,
     
     /// exclude the mention of the columns in the SQL query, useful when ignoring changes in update/insert records
     pub excluded_columns:Vec<ColumnName>,
@@ -296,8 +323,6 @@ pub struct Query{
     
     /// from field, where field can be a query, table, column, or function
     pub from:Option<Box<Field>>,
-    
-    pub table_in_context: Option<Table>,
     
     /// The data values, used in bulk inserting, updating,
     pub values:Vec<Operand>,
@@ -320,12 +345,12 @@ impl Query{
             filters: vec![],
             joins: vec![],
             order_by: vec![],
-            grouped_columns:vec![],
+            group_by: vec![],
+            having: vec![],
             excluded_columns:vec![],
             page:None,
             page_size:None,
             from: None,
-            table_in_context:None,
             values:vec![],
             enumerated_returns: vec![],
         }
@@ -369,26 +394,7 @@ impl Query{
     /// but is the other conflicting column is not explicityly enumerated will not be renamed
     /// 
     pub fn enumerate_column(&mut self, column:&str)->&mut Self{
-        let column_name = if column.contains("."){
-            let splinters = column.split(".").collect::<Vec<&str>>();
-            assert!(splinters.len() == 2, "There should only be 2 splinters");
-            let table_split = splinters[0].to_string();
-            let column_split = splinters[1].to_string();
-            ColumnName{
-                column:column_split.to_string(), 
-                table:Some(table_split.to_string()), 
-                schema:None,
-                rename:None
-            }
-        } else {
-            ColumnName{
-                column:column.to_string(), 
-                table:None, 
-                schema:None,
-                rename:None
-            }
-        };
-        
+        let column_name = ColumnName::from_str(column);
         let operand = Operand::ColumnName(column_name);
         let field = Field{operand:operand, name:None};
         self.enumerated_fields.push(field);
@@ -396,38 +402,50 @@ impl Query{
     }
     
     
-    pub fn enumerate_table_column(&mut self, table:&str, column:&str)->&mut Self{
-        let column_name = ColumnName{
-            column:column.to_string(), 
-            table:Some(table.to_string()), 
-            schema:None,
-            rename:None
-        };
-        let operand = Operand::ColumnName(column_name);
-        let field = Field{operand:operand, name:None};
-        self.enumerated_fields.push(field);
-        self
-    }
-    
-    pub fn enumerate_all(&mut self)->&mut Self{
-        let table = self.table_in_context.clone();
-        if table.is_some(){
-            self.enumerate_table_all_columns(table.as_ref().unwrap());
+    pub fn enumerate_columns(&mut self, columns:Vec<&str>)->&mut Self{
+        for c in columns{
+            self.enumerate_column(c);
         }
         self
+    }
+    
+    pub fn group_by(&mut self, columns:Vec<&str>)->&mut Self{
+        for c in columns{
+            let column_name = ColumnName::from_str(c);
+            let operand = Operand::ColumnName(column_name);
+            self.group_by.push(operand);
+        }
+        self
+    }
+    
+    pub fn having(&mut self, column:&str, equality: Equality, value :&ToType)->&mut Self{
+        let column_name = ColumnName::from_str(column);
+        let left_operand = Operand::ColumnName(column_name);
+        let cond = Condition{
+            left_operand: left_operand,
+            equality: equality,
+            right_operand: Operand::Value(value.to_db_type())
+        };
+        self.having.push(cond);
+        self
+    }
+    
+    pub fn enumerate(&mut self, columns:Vec<&str>)->&mut Self{
+        self.enumerate_columns(columns)
     }
     
     /// exclude columns when inserting/updating data
     /// also ignores the column when selecting records
     /// useful for manipulating thin records by excluding huge binary blobs such as images
-    pub fn exclude_column(&mut self, table:&Table, column:&str)->&mut Self{
-        let c = ColumnName{
-                column:column.to_string(),
-                table: Some(table.name.to_string()),
-                schema: Some(table.schema.to_string()),
-                rename:None,
-            };
+    pub fn exclude_column(&mut self, column:&str)->&mut Self{
+        let c = ColumnName::from_str(column);
         self.excluded_columns.push(c);
+        self
+    }
+    pub fn exclude_columns(&mut self, columns:Vec<&str>)->&mut Self{
+        for c in columns{
+            self.exclude_column(c);
+        }
         self
     }
     
@@ -451,9 +469,12 @@ impl Query{
         self
     }
 
+    /// the number of items retrieve per page
+    pub fn limit(&mut self, limit:usize)->&mut Self{
+        self.set_page_size(limit)
+    }
     /// The base table where the resulting records will be retrieved from
     pub fn from_table(&mut self, table:&Table)->&mut Self{
-        self.table_in_context = Some(table.clone());
         let table_name = TableName::from_table(table);
         let operand = Operand::TableName(table_name);
         let field = Field{ operand:operand, name: None};
@@ -650,9 +671,14 @@ impl Query{
     /// skipping those which are explicitly ignored
     /// the query will then be built and ready to be executed
     /// TODO: renamed conflicting enumerated columns
+    /// if no enumerated fields and no excluded columns
+    /// do a select all
     pub fn finalize(&mut self)->&mut Self{
+         if self.excluded_columns.is_empty() 
+            && self.enumerated_fields.is_empty(){
+            self.select_all();
+        }
         let excluded_columns = &self.excluded_columns.clone();
-        
         for i in  excluded_columns{
             self.remove_from_enumerated(&i);
         }
@@ -704,7 +730,7 @@ impl Query{
     }
     
     pub fn filter(&mut self, column:&str, equality:Equality, value:&ToType)->&mut Self{
-        self.add_filter(Filter::new(column, equality, Operand::Value(value.to_db_type())))
+        self.add_filter(Filter::new(column, equality, value))
     }
     
     pub fn add_value(&mut self, value:Operand)->&mut Self{
@@ -726,8 +752,19 @@ impl Query{
         }
          self
     }
-    pub fn enumerate_return<T:IsTable>(&mut self)->&mut Self{
-         self.enumerate_all_table_column_as_return(&T::table())
+    pub fn returns(&mut self, columns: Vec<&str>)->&mut Self{
+        for c in columns{
+            self.enumerate_column_as_return(c);
+        }
+        self
+    }
+    
+    pub fn enumerate_column_as_return(&mut self, column:&str)->&mut Self{
+        let column_name = ColumnName::from_str(column);
+        let operand = Operand::ColumnName(column_name);
+        let field = Field{operand: operand, name:None};
+        self.enumerated_returns.push(field);
+        self
     }
     
     /// build the query only, not executed, useful when debugging
@@ -739,6 +776,12 @@ impl Query{
     fn execute_with_return(&mut self, db: &Database)->DaoResult{
         self.finalize();
         db.execute_with_return(self)
+    }
+    
+       /// expects a return, such as select, insert/update with returning clause
+    pub fn execute_with_one_return(&mut self, db: &Database)->Dao{
+        self.finalize();
+        db.execute_with_one_return(self)
     }
     
     /// delete, update without caring for the return
@@ -754,7 +797,11 @@ impl Query{
     }
     
     /// execute the query then collect only 1 record
+    /// put a limit 1 if not already
     pub fn collect_one<T: IsDao>(&mut self, db: &Database)->T{
+        if self.page_size.is_none(){
+            self.limit(1);
+        }
         let result = self.execute_with_return(db);
         let mut dao:Vec<T> = T::from_dao_result(&result);
         assert!(dao.len() == 1, "There should only be 1 returned record");
