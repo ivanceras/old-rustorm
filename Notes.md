@@ -220,3 +220,9 @@ https://blog.sleeplessbeastie.eu/2014/04/04/how-to-remotely-check-postgresql-ver
 SHOW server_version;
 select version();
 
+
+## Uuid
+* uuid has 16 bytes  -> (128 bits/8) 
+* 32 characters
+* 36 when including hyphens
+* 22 character when encododed to base64

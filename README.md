@@ -327,21 +327,32 @@ product:iphone4s(f7521093734d488a9f60fc9f11f7e750)
 
 
 
-##Documentation
+## Documentation
 [docs](http://ivanceras.github.io/rustorm/rustorm)
 
-##Roadmap
-* Implement all the features in ivanceras/orm
-  * Automatic conversion of Row to objects (of the generated model)
-  * Automatic conversion of HashMap to objects
-  * Implement the declarative Query API
-* become a full blown ORM for rust
+## What's already done
+* Code model generation based on database tables
+* Query API
+
+## Todo List
+* Automated table creation on deployment
+    * Automatically create tables required on deployment of the binary,
+    * The target database doesn't have to be the same with the development database
+    * Ideal development database is postgresql, where most common features are implemented and supported.
+* 
+
+
+## Roadmap
+
 * Support for sqlite
+* Support for Oracle
+* Support for MySql
 
 
 
 # For Updates
 Follow me on twitter: [@ivanceras](https://twitter.com/ivanceras)
 
-# Support this project at bountysource
+# Support this project
+* This is a 1 man show, so if you feel generous, please support this project at bountysource
 [bountysource](https://www.bountysource.com/teams/rustorm)
