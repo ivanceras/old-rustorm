@@ -119,7 +119,10 @@ SELECT photo.organization_id, photo.client_id, photo.created, photo.created_by,
     assert!(frag.sql.trim() == expected.trim());
 
 ```
-
+## Todo list
+* implement all DML API
+* start working on DDL API
+* start support in Sqlite
 
 ## Roadmap
 
