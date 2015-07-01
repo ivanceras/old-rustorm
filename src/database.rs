@@ -4,20 +4,23 @@ use dao::{Dao,DaoResult, Type};
 use writer::{SqlFrag, Writer};
 use query::{Connector, Equality, Operand, Field};
 use query::{Direction, Modifier, JoinType};
-use query::Filter;
-use std::collections::BTreeMap;
-use url::Url;
-
+use query::{Filter, Condition};
+use url::{Url, Host, SchemeData};
+use db::Postgres;
+use std::collections::HashMap;
+use uuid::Uuid;
 
 #[derive(Debug)]
+#[derive(PartialEq)]
+#[derive(Clone)]
 pub struct DbConfig{
     /// postgres, sqlite, mysql
     /// some fields are optional since sqlite is not applicable for those
     platform: String,
-    user: Option<String>,
+    username: Option<String>,
     password: Option<String>,
     /// localhost
-    host: Option<String>,
+    host: Host,
     /// 5432
     port: Option<u16>,
     database: String,
@@ -25,49 +28,62 @@ pub struct DbConfig{
 
 impl DbConfig{
     
-    
+    /// TODO: get rid of the hacky way parsing database url
+    /// https://github.com/servo/rust-url/issues/40
     pub fn from_url(url: &str)->Self{
         let parsed = Url::parse(url).unwrap();
-        let domain = parsed.domain();
-        let port = parsed.port();
-        let path = parsed.path();
-        let scheme = parsed.scheme.to_string();
+        
+    
+        let non_relative = match parsed.scheme_data{
+                SchemeData::NonRelative(ref x) =>{
+                    x
+                },
+                SchemeData::Relative(ref x)=> {
+                    panic!("Expecting a NonRelative SchemeData {}",x)
+                }
+            };
+        
+        // FIXME: This is a hacky way to parse database url, using servo/url parser
+        let hacky_url = non_relative.trim_left_matches("postgres://");
+        let https_url = format!("https://{}", hacky_url);
+        let reparse = Url::parse(&https_url).unwrap();
+        let reparse_relative = match reparse.scheme_data{
+                SchemeData::Relative(ref relative) =>{
+                    relative
+                },
+                SchemeData::NonRelative(ref x)=> {
+                    panic!("Expecting a Relative SchemeData {}",x)
+                },
+        };
         
         DbConfig{
-            platform: scheme,
-            user: None,
-            password: None,
-            host: match domain{
-                    Some(ref host) => Some(host.to_string()),
-                    None => None,
-                },
-            port: port,
-            database: match path{
-                    Some(ref path) => {
-                        assert!(path.len() == 1, "There should only be 1 path");
-                        path[0].to_string()
-                    },
-                    None => panic!("No database specified"),
-                },    
+            platform: parsed.scheme.to_string(),
+            username: Some(reparse_relative.username.clone()),
+            password: reparse_relative.password.clone(),
+            host: reparse_relative.host.clone(),
+            port: reparse_relative.port,
+            database: {
+                assert!(reparse_relative.path.len() == 1, "There should only be 1 path");
+                reparse_relative.path[0].to_string()
+            }    
         }
     }
     
     pub fn get_url(&self)->String{
         let mut url = String::new();
-        url.push_str(&self.platform);
+        url.push_str(&self.platform.to_string());
         url.push_str("://");
-        if self.user.is_some(){
-            url.push_str(self.user.as_ref().unwrap());
+        if self.username.is_some(){
+            url.push_str(self.username.as_ref().unwrap());
         }
         if self.password.is_some(){
             url.push_str(":");
             url.push_str(self.password.as_ref().unwrap());
         }
         
-        if self.host.is_some(){
-            url.push_str("@");
-            url.push_str(self.host.as_ref().unwrap());
-        }
+        url.push_str("@");
+        url.push_str(&self.host.serialize());
+        
         if self.port.is_some(){
             url.push_str(":");
             url.push_str(&format!("{}", self.port.as_ref().unwrap()));
@@ -77,16 +93,37 @@ impl DbConfig{
         url
     }
 }
+pub enum DbStatus{
+    InUsed,
+    Free,
+}
 
+pub enum Platform{
+    Postgres(Postgres),
+    Sqlite,
+    Oracle,
+    Mysql,
+}
+
+impl Platform{
+    
+    fn get_db(&self)->&Database{
+        match *self{
+            Platform::Postgres(ref pg) => pg,
+            _ => panic!("others not yet..")
+        }
+    }
+    
+}
 
 #[test]
 fn test_config_url(){
     let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v6";
     let config = DbConfig{
         platform: "postgres".to_string(),
-        user: Some("postgres".to_string()),
+        username: Some("postgres".to_string()),
         password: Some("p0stgr3s".to_string()), 
-        host: Some("localhost".to_string()),
+        host: Host::Domain("localhost".to_string()),
         port: None,
         database: "bazaar_v6".to_string(),
     };
@@ -106,9 +143,9 @@ fn test_config_url_with_port(){
     let url = "postgres://postgres:p0stgr3s@localhost:5432/bazaar_v6";
     let config = DbConfig{
         platform: "postgres".to_string(),
-        user: Some("postgres".to_string()),
+        username: Some("postgres".to_string()),
         password: Some("p0stgr3s".to_string()), 
-        host: Some("localhost".to_string()),
+        host: Host::Domain("localhost".to_string()),
         port: Some(5432),
         database: "bazaar_v6".to_string(),
     };
@@ -116,32 +153,97 @@ fn test_config_url_with_port(){
     assert_eq!(config.get_url(), url.to_string());
 }
 
+
+
+/// This pool contains database that are not necessarily same platform and configs
 /// database pools are stored using treemap, with the key is the url of the database
-struct Pool<'a>{
-    database_pool: BTreeMap<String, &'a Database>,
+/// owns the database, and only lend out reference when api tries to connect to the database
+struct Pool{
+    /// the available list of connections
+    free: Vec<Platform>,
+    /// current inused connection, a generated id is used to index the 
+    /// the inused database to access it later when releasing the connection back to the free pool
+    in_used: HashMap<Uuid, Platform>,
 }
 
 
-impl <'a>Pool<'a>{
+impl <'a>Pool{
     
-    fn new()->Self{
-        panic!("not yet");
-    }
-    
-    fn create_new_connection(&self, url:&str){
-        
-    }
-    
-    fn get_db_from_url(&mut self, url:&str)->&'a Database{
-        if (self.database_pool.contains_key(url)){
-            return self.database_pool.remove(url).unwrap()
-        }else{
-            panic!("not yet")
+    /// create a new database connection,
+    /// and add it to the free pool
+    /// used only when there is no available connection
+    fn add_connection(&'a mut self, db_config: &DbConfig){
+        let platform:&str = &db_config.platform;
+        match platform{
+            "postgres" => {
+                    let url = db_config.get_url();
+                    let pg = Postgres::with_connection(&url);
+                    let platform = Platform::Postgres(pg);
+                    self.free.push(platform);
+                },
+            _ => panic!("Support for other platform coming..."),
         }
     }
     
-    fn get_db_from_config(db_config:DbConfig)->&'a Database{
-        panic!("not yet");
+    /// exposed api to get connection from a pooled connection
+    pub fn get_db_with_url(&'a mut self, url:&str)->&'a Database{
+        let db_config = DbConfig::from_url(url);
+        self.get_db(&db_config)
+    }
+    
+    /// where the pool is checked if there are free connection,
+    /// create a new one if nothing is available
+    fn get_db(&'a mut self, db_config:&DbConfig)->&'a Database{
+        let mut index = self.first_match(db_config);
+        match index{
+            Some(index) => {
+                let platform = self.free.remove(index);
+                let conn_id = platform.get_db().get_connection_id();
+                self.in_used.insert(conn_id, platform);
+                self.in_used.get(&conn_id).unwrap().get_db()
+            },
+            None => {
+                // if no free connection, add a new one then try again
+                self.add_connection(db_config);
+                self.get_db(db_config)
+            }
+        }
+    }
+    /// get first matching database connection from the free pool
+    fn first_match(&mut self, db_config:&DbConfig)->Option<usize>{
+        let mut index = 0;
+        for db in &self.free{
+            if &db.get_db().db_config() == db_config{
+                Some(index);
+            }
+            index += 1;
+        }
+        None
+    }
+    
+    /// release the used connection back to the free pool
+    pub fn release(&mut self, database: &Database){
+        let conn_id = database.get_connection_id();
+        if self.in_used.contains_key(&conn_id){
+            let platform = self.in_used.remove(&conn_id).unwrap();
+            self.free.push(platform);
+        }
+        else{
+            panic!("releasing a connection that is not inused");
+        }
+    }
+    
+    /// return the number of total connections in the pool
+    pub fn total_pool_connection(&self)->usize{
+        self.free.len() + self.in_used.len()
+    }
+    /// return the number of free available connection in the pool
+    pub fn total_free_connection(&self)->usize{
+        self.free.len()
+    }
+    /// return the total number of inused connections
+    pub fn total_in_used_connection(&self)->usize{
+        self.in_used.len()
     }
 }
 
@@ -170,9 +272,15 @@ pub enum SqlOption{
 
 pub trait Database{
 
+    /// the configuration used to connect to this database
+    fn db_config(&self)->DbConfig;
+    
+    /// get the connection id of the database
+    fn get_connection_id(&self)->Uuid;
+    
     /// return the version of the database
     /// lower version of database has fewer supported features
-    fn get_version(&self)->String;
+    fn version(&self)->String;
 
     /// begin database transaction
     fn begin(&self);
@@ -220,6 +328,9 @@ pub trait Database{
 
     /// execute query with return dao
     fn execute_with_return(&self, query:&Query)->DaoResult;
+
+    /// execute query with 1 return dao
+    fn execute_with_one_return(&self, query:&Query)->Dao;
     
     /// execute query with no return dao
     fn execute(&self, query:&Query)->Result<usize, String>;
@@ -279,22 +390,10 @@ pub trait Database{
         };
     }
     
-    fn build_field(&self, w: &mut SqlFrag, parent_query:&Query, field:&Field){
-        self.build_operand(w, parent_query, &field.operand);
-        match field.name{
-            Some(ref name) => {
-                w.append("AS ");
-                w.append(name);
-            }
-            None => (),
-        };
-    }
-    
-    
-    fn build_filter(&self, w: &mut SqlFrag, parent_query:&Query, filter:&Filter){
-        self.build_operand(w, parent_query, &filter.left_operand);
+    fn build_condition(&self, w: &mut SqlFrag, parent_query:&Query, cond:&Condition){
+        self.build_operand(w, parent_query, &cond.left_operand);
         w.append(" ");
-        match filter.equality{
+        match cond.equality{
             Equality::EQ => w.append("= "),
             Equality::NE => w.append("!= "),
             Equality::LT => w.append("< "),
@@ -308,22 +407,52 @@ pub trait Database{
             Equality::NOTNULL => w.append("IS NOT NULL "),
             Equality::ISNULL => w.append("IS NULL "),
         };
-        self.build_operand(w, parent_query, &filter.right_operand);
+        self.build_operand(w, parent_query, &cond.right_operand);
+    }
+    
+    fn build_field(&self, w: &mut SqlFrag, parent_query:&Query, field:&Field){
+        self.build_operand(w, parent_query, &field.operand);
+        match field.name{
+            Some(ref name) => {
+                w.append("AS ");
+                w.append(name);
+            }
+            None => (),
+        };
+    }
+    
+    
+    fn build_filter(&self, w: &mut SqlFrag, parent_query:&Query, filter:&Filter){
+        if !filter.subfilters.is_empty(){
+            w.append("( ");
+        }
+        self.build_condition(w, parent_query, &filter.condition);
+        for filt in &filter.subfilters{
+            match filt.connector{
+                Connector::And =>{
+                    w.append("AND ");
+                }
+                Connector::Or => {
+                    w.append("OR ");
+                }
+            }
+            self.build_filter(w, parent_query, filt);// build sub filters as well
+        }
+        if !filter.subfilters.is_empty(){
+            w.append(" )");
+        }
     }
     
     /// build the filter clause or the where clause of the query
     /// TODO: add the sub filters
     fn build_filters(&self, w: &mut SqlFrag, parent_query:&Query, filters: &Vec<Filter>){
-        let mut do_connector = false;
+        let mut do_and = false;
         for filter in filters{
-            if do_connector{
+            if do_and{
                 w.ln_tabs(2);
-                match filter.connector{
-                    Connector::And => w.append("AND "),
-                    Connector::Or => w.append("OR "),
-                };
+                w.append("AND ");
             }else{
-                do_connector = true;
+                do_and = true;
             }
             self.build_filter(w, parent_query, filter);
         }
@@ -361,8 +490,8 @@ pub trait Database{
             None => println!("Warning: No from in this query"),
         };
         if !query.joins.is_empty(){
-            w.ln_tab();
             for join in &query.joins{
+                w.ln_tab();
                 match join.modifier{
                     Some(ref modifier) => {
                             match modifier{
@@ -408,16 +537,26 @@ pub trait Database{
             self.build_filters(&mut w, query, &query.filters);
         }
         
-        if !query.grouped_columns.is_empty() {
+        if !query.group_by.is_empty() {
             w.ln_tab();
             w.append("GROUP BY ");
             let mut do_comma = false;
-            for column in &query.grouped_columns{
+            for operand in &query.group_by{
                 if do_comma{ w.comma(); }else{ do_comma = true;}
-                w.append(column);
+                self.build_operand(&mut w, query, operand);
                 w.append(" ");
             }
         };
+        
+        if !query.having.is_empty() {
+            w.ln_tab();
+            w.append("HAVING ");
+            let mut do_comma = false;
+            for hav in &query.having{
+                if do_comma { w.commasp(); }else{ do_comma=true; }
+                self.build_condition(&mut w, query, hav);
+            }
+        }
         
         if !query.order_by.is_empty(){
             w.ln_tab();
@@ -721,7 +860,7 @@ pub trait DatabaseDev{
                 }
             }
             else{
-                "unreachable!"
+                unreachable!();
             };
             w.append(comment);
             w.ln_tab();
