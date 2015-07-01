@@ -54,7 +54,8 @@ fn test_select_filter(){
     query.asc(product::product_id);
     
     let frag = query.build(&pg);
-    let expected = "SELECT product.organization_id, product.client_id, product.created, product.created_by, 
+    let expected = "
+SELECT product.organization_id, product.client_id, product.created, product.created_by, 
     product.updated, product.updated_by, product.priority, product.name, product.description, 
     product.help, product.active, product.product_id, product.parent_product_id, product.is_service, 
     product.price, product.use_parent_price, product.unit, product.tags, product.info, 
@@ -94,7 +95,8 @@ fn test_update_query(){
     
     query.add_filter(Filter::new(product::description, Equality::LIKE, &"%Iphone%"));
     let frag = query.build(&pg);
-    let expected = "UPDATE bazaar.product
+    let expected = "
+UPDATE bazaar.product
 SET name = $1 
     WHERE name LIKE $2 
         AND description LIKE $3 RETURNING organization_id, client_id, created, created_by, updated, updated_by, priority, name, description, help, active, product_id, parent_product_id, is_service, price, use_parent_price, unit, tags, info, seq_no, upfront_fee, barcode, owner_id, currency_id ".to_string();
@@ -152,7 +154,8 @@ fn test_join(){
     
     let frag = query.build(&pg);
     
-    let expected = "SELECT product.organization_id, product.client_id, product.created, product.created_by, 
+    let expected = "
+SELECT product.organization_id, product.client_id, product.created, product.created_by, 
     product.updated, product.updated_by, product.priority, product.name, product.description, 
     product.help, product.active, product.product_id, product.parent_product_id, product.is_service, 
     product.price, product.use_parent_price, product.unit, product.tags, product.info, 
@@ -189,7 +192,8 @@ fn test_complex(){
         ;
     let frag = query.build(&pg);
     
-    let expected = "SELECT *
+    let expected = "
+SELECT *
  FROM bazaar.product
     LEFT OUTER JOIN bazaar.product_category 
         ON product_category.product_id = product.product_id 
@@ -232,7 +236,8 @@ fn test_multiple_filters(){
         ;
     let frag = query.build(&pg);
     
-    let expected = "SELECT photo.organization_id, photo.client_id, photo.created, photo.created_by, 
+    let expected = "
+SELECT photo.organization_id, photo.client_id, photo.created, photo.created_by, 
     photo.updated, photo.updated_by, photo.priority, photo.name, photo.description, 
     photo.help, photo.active, photo.photo_id, photo.url, photo.data, 
     photo.seq_no
@@ -279,7 +284,8 @@ fn test_complex_select_all(){
         ;
     let frag = query.build(&pg);
     
-    let expected = "SELECT *
+    let expected = "
+SELECT *
  FROM bazaar.product
     LEFT OUTER JOIN bazaar.product_category 
         ON product_category.product_id = product.product_id 

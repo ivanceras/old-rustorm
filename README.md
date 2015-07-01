@@ -24,40 +24,13 @@ An ORM library for rust
 
 ```rust
 
-extern crate rustorm;
-extern crate uuid;
-extern crate chrono;
-extern crate rustc_serialize;
-
-
-use rustorm::db::postgres::Postgres;
-use rustorm::codegen;
-use uuid::Uuid;
-use chrono::datetime::DateTime;
-use chrono::offset::utc::UTC;
-use rustc_serialize::json;
-
-use rustorm::em::EntityManager;
-use rustorm::table::IsTable;
-use rustorm::dao::IsDao;
-use rustorm::query::Query;
-use rustorm::dao::Type;
-use rustorm::query::{Filter,Equality,Operand};
-use gen::bazaar::Product;
-use gen::bazaar::ProductAvailability;
-use gen::bazaar::product;
-use gen::bazaar::product_availability;
-
-mod gen;
- 
-
 fn main(){
     let pg= Postgres::with_connection("postgres://postgres:p0stgr3s@localhost/bazaar_v6");
     let products:Vec<Product> = Query::select()
                 .enumerate_table_all_columns(&Product::table())
                 .from::<Product>()
                 .collect(&pg);
-                
+
     for prod in products{
         println!("{}  {}  {:?}", prod.product_id, prod.name.unwrap(), prod.description);
     }
@@ -69,7 +42,7 @@ fn main(){
 * Get one photo of a product
 
 ```rust
- 
+
 
 fn main(){
     let pg= Postgres::with_connection("postgres://postgres:p0stgr3s@localhost/bazaar_v6");
@@ -77,7 +50,7 @@ fn main(){
                         .from::<Product>()
                         .left_join(&ProductPhoto::table(),
                             product::product_id, product_photo::product_id)
-                        .left_join(&Photo::table(), 
+                        .left_join(&Photo::table(),
                             product_photo::photo_id, photo::photo_id)
                         .filter(product::name, Equality::EQ, &"GTX660 Ti videocard")
                         .collect_one(&pg);
@@ -85,7 +58,7 @@ fn main(){
 }
 ```
 
-Get one exact match of a product
+* Get one exact match of a product
 
 ```rust
 fn main(){
@@ -101,10 +74,10 @@ fn main(){
 
 ```rust
 
-     let pg = Postgres::new();
+    let pg = Postgres::new();
     let mut query = Query::select();
     query.from::<Product>()
-        .select_all()
+        .enumerate_table_all_columns(&Photo::table())
         .left_join(&ProductCategory::table(),
             product_category::product_id, product::product_id)
          .left_join(&Category::table(),
@@ -122,7 +95,11 @@ fn main(){
         ;
     let frag = query.build(&pg);
     
-    let expected = "SELECT *
+    let expected = "
+SELECT photo.organization_id, photo.client_id, photo.created, photo.created_by, 
+    photo.updated, photo.updated_by, photo.priority, photo.name, photo.description, 
+    photo.help, photo.active, photo.photo_id, photo.url, photo.data, 
+    photo.seq_no
  FROM bazaar.product
     LEFT OUTER JOIN bazaar.product_category 
         ON product_category.product_id = product.product_id 
