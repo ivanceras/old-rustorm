@@ -223,6 +223,6 @@ select version();
 
 ## Uuid
 * uuid has 16 bytes  -> (128 bits/8) 
-* 32 characters
+* 32 characters (hex digit)
 * 36 when including hyphens
 * 22 character when encododed to base64

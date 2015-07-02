@@ -33,6 +33,8 @@ use gen::bazaar::photo;
 
 
 mod gen;
+
+mod test_pool;
  
 #[test]
 fn test_select_filter(){

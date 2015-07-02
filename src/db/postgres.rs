@@ -14,11 +14,11 @@ use dao::DaoResult;
 use writer::SqlFrag;
 use postgres::rows::Row;
 use database::SqlOption;
-use database::DbConfig;
 use uuid::Uuid;
+use std::error::Error;
 
 pub struct Postgres {
-    conn_id: Option<Uuid>,
+    conn_id: Uuid,
     pub conn: Option<Connection>,
 }
 
@@ -29,22 +29,23 @@ impl Postgres{
     /// useful when just building sql queries specific to this platform
     /// inexpensive operation, so can have multiple instances
     pub fn new()->Self{
-        Postgres{conn_id:None, conn:None}
-    }
-
-    /// create a postgresql instance and connect right away
-    pub fn with_connection(url:&str)->Self{
-        let mut pg = Self::new();
-        pg.connect(url);
-        pg
+        Postgres{conn_id: Uuid::new_v4(), conn:None}
     }
     
-     pub fn connect(&mut self, url:&str){
+    pub fn connect_with_url(url:&str)->Result<Self, String>{
+        let mut pg = Self::new();
         let conn = Connection::connect(url, &SslMode::None);
         match conn{
-            Ok(conn) => {self.conn = Some(conn);},
-            Err(e) => {panic!("Unable to connect to db");}
-        };
+            Ok(conn) => {
+                pg.conn = Some(conn);
+                Ok(pg)
+            },
+            Err(e) => {
+                let error = format!("Unable to connect to database due to {}", e.description());
+                println!("{:?}",e);
+                Err(error)
+            }
+        }
     }
     
 
@@ -305,9 +306,9 @@ impl Postgres{
 
 
 impl Database for Postgres{
-    fn db_config(&self)->DbConfig{panic!("not yet");}
+    
     fn get_connection_id(&self)->Uuid{
-        self.conn_id.unwrap()
+        self.conn_id
     }
     fn version(&self)->String{panic!("not yet");}
     fn begin(&self){}

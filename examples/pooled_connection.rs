@@ -22,17 +22,24 @@ use gen::bazaar::ProductAvailability;
 use gen::bazaar::product;
 use gen::bazaar::product_availability;
 
+use rustorm::database::Pool;
+
 mod gen;
- 
 
 fn main(){
-    let pg= Postgres::connect_with_url("postgres://postgres:p0stgr3s@localhost/bazaar_v6").unwrap();
-    let mut query = Query::select();
+    let mut pool = Pool::init();
+    let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v6";
+    println!("{} connections..", pool.total_pool_connection());
+    let db = pool.get_db_with_url(&url);
     
-    let prod: Product = query.select_all()
+        let mut query = Query::select();
+    query.select_all()
         .from::<Product>()
-        .filter(product::name, Equality::EQ, &"GTX660 Ti videocard")
-        .collect_one(&pg);
-        
+        .filter(product::name, Equality::EQ, &"GTX660 Ti videocard");
+    
+    let db = db.unwrap();
+    let prod: Product =  query.collect_one(db.db.as_ref());
     println!("{}  {}  {:?}", prod.product_id, prod.name.unwrap(), prod.description);
+    
+    pool.release(db);
 }

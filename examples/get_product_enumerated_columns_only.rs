@@ -26,7 +26,7 @@ mod gen;
  
 
 fn main(){
-    let pg= Postgres::with_connection("postgres://postgres:p0stgr3s@localhost/bazaar_v6");
+    let pg= Postgres::connect_with_url("postgres://postgres:p0stgr3s@localhost/bazaar_v6").unwrap();
     
     // we can not cast right away to product since other columns are ommited, therefore can not create 
     // a product instance

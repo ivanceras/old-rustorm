@@ -6,7 +6,7 @@ use rustorm::codegen::Config;
 
 /// this will generate needed model code for tests in ./tests/gen directory
 fn main(){
-    let pg = Postgres::with_connection("postgres://postgres:p0stgr3s@localhost/bazaar_v6");
+    let pg = Postgres::connect_with_url("postgres://postgres:p0stgr3s@localhost/bazaar_v6").unwrap();
     let config =  Config{
             base_module:Some("gen".to_string()),
             include_table_references:true,

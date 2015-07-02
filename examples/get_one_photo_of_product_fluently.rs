@@ -30,7 +30,7 @@ mod gen;
  
 
 fn main(){
-    let pg= Postgres::with_connection("postgres://postgres:p0stgr3s@localhost/bazaar_v6");
+    let pg= Postgres::connect_with_url("postgres://postgres:p0stgr3s@localhost/bazaar_v6").unwrap();
      let photo: Photo = Query::select()
                         .from::<Product>()
                         .left_join(&ProductPhoto::table(),
