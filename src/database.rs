@@ -93,27 +93,29 @@ impl DbConfig{
         url
     }
 }
-pub enum DbStatus{
-    InUsed,
-    Free,
-}
 
-pub enum Platform{
+pub enum Db{
     Postgres(Postgres),
     Sqlite,
     Oracle,
     Mysql,
 }
 
-impl Platform{
+impl Db{
     
-    fn get_db(&self)->&Database{
+    pub fn as_ref(&self)->&Database{
         match *self{
-            Platform::Postgres(ref pg) => pg,
+            Db::Postgres(ref pg) => pg,
             _ => panic!("others not yet..")
         }
     }
     
+}
+pub struct Platform{
+    /// the instantiated connection of the database
+    pub db: Db,
+    /// configuration used in this platform connection
+    config: DbConfig,
 }
 
 #[test]
@@ -158,7 +160,7 @@ fn test_config_url_with_port(){
 /// This pool contains database that are not necessarily same platform and configs
 /// database pools are stored using treemap, with the key is the url of the database
 /// owns the database, and only lend out reference when api tries to connect to the database
-struct Pool{
+pub struct Pool{
     /// the available list of connections
     free: Vec<Platform>,
     /// current inused connection, a generated id is used to index the 
@@ -167,45 +169,82 @@ struct Pool{
 }
 
 
-impl <'a>Pool{
+impl Pool{
+    
+    /// initialize a pool for database connection container
+    /// call only once per application
+    pub fn init()->Self{
+        Pool{free: vec![], in_used: HashMap::new()}
+    }
+    
+    /// reserve a number of connections using the url config
+    pub fn reserve_connection(&mut self, url:&str, n: usize)->&mut Self{
+        let db_config = DbConfig::from_url(url);
+        for _ in 0..n{
+            match self.add_connection(&db_config){
+                Ok(_) => (),
+                Err(_) => panic!("can not add more connection"),
+            }
+        }
+        self
+    }
     
     /// create a new database connection,
     /// and add it to the free pool
     /// used only when there is no available connection
-    fn add_connection(&'a mut self, db_config: &DbConfig){
+    fn add_connection(&mut self, db_config: &DbConfig)->Result<(), String>{
         let platform:&str = &db_config.platform;
         match platform{
             "postgres" => {
                     let url = db_config.get_url();
-                    let pg = Postgres::with_connection(&url);
-                    let platform = Platform::Postgres(pg);
-                    self.free.push(platform);
+                    let pg = Postgres::connect_with_url(&url);
+                    match pg{
+                        Ok(pg) => {
+                            let db = Db::Postgres(pg);
+                            let platform_config = Platform{
+                                    db: db,
+                                    config: db_config.clone(),
+                                };
+                            self.free.push(platform_config);
+                            Ok(())
+                        }
+                        Err(e) =>{
+                            Err(format!("Unable to connect after {} total connection due to {}", self.total_pool_connection(), e))
+                        }
+                    }
                 },
             _ => panic!("Support for other platform coming..."),
         }
     }
     
     /// exposed api to get connection from a pooled connection
-    pub fn get_db_with_url(&'a mut self, url:&str)->&'a Database{
+    pub fn get_db_with_url(&mut self, url:&str)->Result<Platform, String>{
         let db_config = DbConfig::from_url(url);
         self.get_db(&db_config)
     }
     
     /// where the pool is checked if there are free connection,
     /// create a new one if nothing is available
-    fn get_db(&'a mut self, db_config:&DbConfig)->&'a Database{
-        let mut index = self.first_match(db_config);
+    fn get_db(&mut self, db_config:&DbConfig)->Result<Platform, String>{
+        let index = self.first_match(db_config);
         match index{
             Some(index) => {
                 let platform = self.free.remove(index);
-                let conn_id = platform.get_db().get_connection_id();
+                let conn_id = platform.db.as_ref().get_connection_id();
                 self.in_used.insert(conn_id, platform);
-                self.in_used.get(&conn_id).unwrap().get_db()
+                Ok(self.in_used.remove(&conn_id).unwrap())
             },
             None => {
                 // if no free connection, add a new one then try again
-                self.add_connection(db_config);
-                self.get_db(db_config)
+                println!("no matching connection for {}", db_config.get_url());
+                match self.add_connection(db_config){
+                    Ok(_) => {
+                        self.get_db(db_config)
+                    },
+                    Err(e) => { 
+                        panic!("Unable to get more connections due to :{}",e);
+                    }
+                }
             }
         }
     }
@@ -213,8 +252,8 @@ impl <'a>Pool{
     fn first_match(&mut self, db_config:&DbConfig)->Option<usize>{
         let mut index = 0;
         for db in &self.free{
-            if &db.get_db().db_config() == db_config{
-                Some(index);
+            if &db.config == db_config{
+                return Some(index);
             }
             index += 1;
         }
@@ -222,15 +261,9 @@ impl <'a>Pool{
     }
     
     /// release the used connection back to the free pool
-    pub fn release(&mut self, database: &Database){
-        let conn_id = database.get_connection_id();
-        if self.in_used.contains_key(&conn_id){
-            let platform = self.in_used.remove(&conn_id).unwrap();
-            self.free.push(platform);
-        }
-        else{
-            panic!("releasing a connection that is not inused");
-        }
+    pub fn release(&mut self, database: Platform)->&mut Self{
+        self.free.push(database);
+        self
     }
     
     /// return the number of total connections in the pool
@@ -272,16 +305,12 @@ pub enum SqlOption{
 
 pub trait Database{
 
-    /// the configuration used to connect to this database
-    fn db_config(&self)->DbConfig;
-    
-    /// get the connection id of the database
-    fn get_connection_id(&self)->Uuid;
-    
     /// return the version of the database
     /// lower version of database has fewer supported features
     fn version(&self)->String;
 
+    fn get_connection_id(&self)->Uuid;
+    
     /// begin database transaction
     fn begin(&self);
 
