@@ -72,7 +72,7 @@ impl <'a>EntityManager<'a>{
         let table = T::table();
         let mut q = Query::select();
         q.enumerate_table_all_columns(&table);
-        q.from_table(&table);
+        q.from(&table);
         q.collect(self.db)
     }
 
@@ -81,7 +81,7 @@ impl <'a>EntityManager<'a>{
         where T : IsTable + IsDao{
         let table = T::table();
         let mut q = Query::select();
-        q.from_table(&table);
+        q.from(&table);
         q.enumerate_columns(columns);
         q.collect(self.db)
     }
@@ -91,7 +91,7 @@ impl <'a>EntityManager<'a>{
         where T : IsTable + IsDao{
         let table = T::table();
         let mut q = Query::select();
-        q.from_table(&table);
+        q.from(&table);
         q.enumerate_table_all_columns(&table);
         q.exclude_columns(ignore_columns);
         q.collect(self.db)
@@ -109,7 +109,7 @@ impl <'a>EntityManager<'a>{
         where T : IsTable + IsDao{
         let table = T::table();
         let mut q = Query::select();
-        q.from_table(&table);
+        q.from(&table);
         q.enumerate_table_all_columns(&table);
         for f in filters{
             q.add_filter(f);
@@ -122,7 +122,7 @@ impl <'a>EntityManager<'a>{
         where T : IsTable + IsDao{
         let table = T::table();
         let mut q = Query::select();
-        q.from_table(&table);
+        q.from(&table);
         q.enumerate_table_all_columns(&table);
         q.add_filter(filter);
         q.collect(self.db)
@@ -162,7 +162,7 @@ impl <'a>EntityManager<'a>{
         let pk = primary[0].name.to_string();
         
         let mut q = Query::select();
-        q.from_table(&table);
+        q.from(&table);
         q.enumerate_table_all_columns(&table);
         q.filter(&pk, Equality::EQ, id);
         q.collect_one(self.db)

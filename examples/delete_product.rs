@@ -28,7 +28,7 @@ mod gen;
 fn main(){
     let pg= Postgres::connect_with_url("postgres://postgres:p0stgr3s@localhost/bazaar_v6").unwrap();
     let mut query = Query::delete();
-    query.from::<Product>();
+    query.from(&Product::table());
     query.filter(product::name, Equality::LIKE, &"iphone");
     let sql = query.build(&pg);
     println!("SQL FRAG: {}", sql);

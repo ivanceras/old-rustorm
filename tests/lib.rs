@@ -31,6 +31,8 @@ use gen::bazaar::product_photo;
 use gen::bazaar::Photo;
 use gen::bazaar::photo;
 
+use rustorm::database::Pool;
+
 
 mod gen;
 
@@ -41,7 +43,7 @@ fn test_select_filter(){
     let pg = Postgres::new();
     let em = EntityManager::new(&pg);
     let mut query = Query::new();
-    query.from_table(&Product::table());
+    query.from(&Product::table());
     query.enumerate_table_all_columns(&Product::table());
     
     query.left_join(&ProductAvailability::table(), 
@@ -89,7 +91,7 @@ fn test_update_query(){
     let pg = Postgres::new();
     let em = EntityManager::new(&pg);
     let mut query = Query::update();
-    query.from::<Product>();
+    query.from(&Product::table());
     query.enumerate_column(product::name);
     query.enumerate_all_table_column_as_return(&Product::table());
     query.value(&"iphone");
@@ -126,7 +128,7 @@ SET name = $1
 fn test_query_delete_category(){
     let pg = Postgres::new();
     let mut query = Query::delete();
-    query.from::<Category>();
+    query.from(&Category::table());
     query.filter(category::name, Equality::LIKE, &"test%");
     let frag = query.build(&pg);
     let expected = "DELETE FROM bazaar.category
@@ -148,7 +150,7 @@ fn test_query_delete_category(){
 fn test_join(){
     let pg = Postgres::new();
     let mut query = Query::new();
-    query.from_table(&Product::table());
+    query.from(&Product::table());
     query.enumerate_table_all_columns(&Product::table());
     
     query.left_join(&ProductAvailability::table(), 
@@ -176,8 +178,8 @@ fn test_complex(){
     let mut query = Query::select();
     let mut filters = Filter::new(product::name, Equality::EQ, &"GTX660 Ti videocard");
     filters.and(category::name, Equality::EQ, &"Electronic");
-    query.select_all()
-        .from::<Product>()
+    query.all()
+        .from(&Product::table())
         .left_join(&ProductCategory::table(),
            product_category::product_id, product::product_id)
         .left_join(&Category::table(),
@@ -219,7 +221,7 @@ SELECT *
 fn test_multiple_filters(){
     let pg = Postgres::new();
     let mut query = Query::select();
-    query.from::<Product>()
+    query.from(&Product::table())
         .enumerate_table_all_columns(&Photo::table())
         .left_join(&ProductCategory::table(),
             product_category::product_id, product::product_id)
@@ -267,8 +269,8 @@ SELECT photo.organization_id, photo.client_id, photo.created, photo.created_by,
 fn test_complex_select_all(){
     let pg = Postgres::new();
     let mut query = Query::select();
-    query.from::<Product>()
-        .select_all()
+    query.from(&Product::table())
+        .all()
         .left_join(&ProductCategory::table(),
             product_category::product_id, product::product_id)
          .left_join(&Category::table(),
@@ -305,4 +307,23 @@ SELECT *
     println!("actual:   {{{}}} [{}]", frag.sql, frag.sql.len());
     println!("expected: {{{}}} [{}]", expected, expected.len());
     assert!(frag.sql.trim() == expected.trim());
+}
+
+
+
+#[test]
+fn test_flex_query(){
+    let mut pool = Pool::init();
+    let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v6";
+    pool.reserve_connection(&url, 5);
+    println!("{} connections..", pool.total_free_connections());
+    let db = pool.get_db_with_url(&url).unwrap();
+    
+    let prod: Product = Query::select_all()
+            .from_table("bazaar.product")
+            .filter("name", Equality::EQ, &"GTX660 Ti videocard")
+            .collect_one(db.as_ref());
+
+    println!("{}  {}  {:?}", prod.product_id, prod.name.unwrap(), prod.description);
+    pool.release(db);
 }

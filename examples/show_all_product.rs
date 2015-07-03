@@ -28,8 +28,8 @@ mod gen;
 fn main(){
     let pg= Postgres::connect_with_url("postgres://postgres:p0stgr3s@localhost/bazaar_v6").unwrap();
     let mut query = Query::select();
-            query.select_all()
-        .from::<Product>();
+            query.all()
+        .from(&Product::table());
     
     let products:Vec<Product> =  query.collect(&pg);
     for prod in products{

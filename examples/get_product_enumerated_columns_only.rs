@@ -32,7 +32,7 @@ fn main(){
     // a product instance
     let dao = Query::select()
         .enumerate(vec![product::name, product::description, product::product_id])
-        .from::<Product>()
+        .from(&Product::table())
         .filter(product::name, Equality::EQ, &"GTX660 Ti videocard")
         .execute_with_one_return(&pg);
         

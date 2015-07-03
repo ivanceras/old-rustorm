@@ -27,10 +27,9 @@ mod gen;
 
 fn main(){
     let pg= Postgres::connect_with_url("postgres://postgres:p0stgr3s@localhost/bazaar_v6").unwrap();
-    let mut query = Query::select();
     
-    let prod: Product = query.select_all()
-        .from::<Product>()
+    let prod: Product = Query::select_all()
+        .from(&Product::table())
         .filter(product::name, Equality::EQ, &"GTX660 Ti videocard")
         .collect_one(&pg);
         

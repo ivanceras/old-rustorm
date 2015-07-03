@@ -7,8 +7,6 @@ use query::{Direction, Modifier, JoinType};
 use query::{Filter, Condition};
 use url::{Url, Host, SchemeData};
 use db::Postgres;
-use std::collections::HashMap;
-use uuid::Uuid;
 
 #[derive(Debug)]
 #[derive(PartialEq)]
@@ -94,28 +92,28 @@ impl DbConfig{
     }
 }
 
-pub enum Db{
+pub enum Platform{
     Postgres(Postgres),
     Sqlite,
     Oracle,
     Mysql,
 }
 
-impl Db{
+impl Platform{
     
     pub fn as_ref(&self)->&Database{
         match *self{
-            Db::Postgres(ref pg) => pg,
+            Platform::Postgres(ref pg) => pg,
             _ => panic!("others not yet..")
         }
     }
     
 }
-pub struct Platform{
-    /// the instantiated connection of the database
-    pub db: Db,
-    /// configuration used in this platform connection
-    config: DbConfig,
+
+impl Drop for Platform {
+    fn drop(&mut self) {
+        println!("Warning: Dropping a connection is expensive, please return this to the pool");
+    }
 }
 
 #[test]
@@ -163,9 +161,6 @@ fn test_config_url_with_port(){
 pub struct Pool{
     /// the available list of connections
     free: Vec<Platform>,
-    /// current inused connection, a generated id is used to index the 
-    /// the inused database to access it later when releasing the connection back to the free pool
-    in_used: HashMap<Uuid, Platform>,
 }
 
 
@@ -174,9 +169,15 @@ impl Pool{
     /// initialize a pool for database connection container
     /// call only once per application
     pub fn init()->Self{
-        Pool{free: vec![], in_used: HashMap::new()}
+        Pool{free: vec![]}
     }
     
+    
+    pub fn reserve(url:&str, n: usize)->Self{
+        let mut pool = Self::init();
+        pool.reserve_connection(url, n);
+        pool
+    }
     /// reserve a number of connections using the url config
     pub fn reserve_connection(&mut self, url:&str, n: usize)->&mut Self{
         let db_config = DbConfig::from_url(url);
@@ -200,16 +201,12 @@ impl Pool{
                     let pg = Postgres::connect_with_url(&url);
                     match pg{
                         Ok(pg) => {
-                            let db = Db::Postgres(pg);
-                            let platform_config = Platform{
-                                    db: db,
-                                    config: db_config.clone(),
-                                };
-                            self.free.push(platform_config);
+                            let platform = Platform::Postgres(pg);
+                            self.free.push( platform );
                             Ok(())
                         }
                         Err(e) =>{
-                            Err(format!("Unable to connect after {} total connection due to {}", self.total_pool_connection(), e))
+                            Err(format!("Unable to connect due to {}", e))
                         }
                     }
                 },
@@ -230,13 +227,11 @@ impl Pool{
         match index{
             Some(index) => {
                 let platform = self.free.remove(index);
-                let conn_id = platform.db.as_ref().get_connection_id();
-                self.in_used.insert(conn_id, platform);
-                Ok(self.in_used.remove(&conn_id).unwrap())
+                Ok( platform )
             },
             None => {
                 // if no free connection, add a new one then try again
-                println!("no matching connection for {}", db_config.get_url());
+                //println!("no matching connection for {}", db_config.get_url());
                 match self.add_connection(db_config){
                     Ok(_) => {
                         self.get_db(db_config)
@@ -251,8 +246,8 @@ impl Pool{
     /// get first matching database connection from the free pool
     fn first_match(&mut self, db_config:&DbConfig)->Option<usize>{
         let mut index = 0;
-        for db in &self.free{
-            if &db.config == db_config{
+        for platform in &self.free{
+            if &platform.as_ref().get_config() == db_config{
                 return Some(index);
             }
             index += 1;
@@ -261,22 +256,15 @@ impl Pool{
     }
     
     /// release the used connection back to the free pool
-    pub fn release(&mut self, database: Platform)->&mut Self{
-        self.free.push(database);
+    pub fn release(&mut self, platform: Platform)->&mut Self{
+        //println!("Releasing connection back to the pool");
+        self.free.push( platform );
         self
     }
     
-    /// return the number of total connections in the pool
-    pub fn total_pool_connection(&self)->usize{
-        self.free.len() + self.in_used.len()
-    }
     /// return the number of free available connection in the pool
-    pub fn total_free_connection(&self)->usize{
+    pub fn total_free_connections(&self)->usize{
         self.free.len()
-    }
-    /// return the total number of inused connections
-    pub fn total_in_used_connection(&self)->usize{
-        self.in_used.len()
     }
 }
 
@@ -308,8 +296,10 @@ pub trait Database{
     /// return the version of the database
     /// lower version of database has fewer supported features
     fn version(&self)->String;
-
-    fn get_connection_id(&self)->Uuid;
+    
+    /// get the configuration used when connecting to this database
+    /// also, this is used when comparing from a database pool
+    fn get_config(&self)->DbConfig;
     
     /// begin database transaction
     fn begin(&self);
@@ -503,7 +493,6 @@ pub trait Database{
 
     /// TODO include filters, joins, groups, paging
     fn build_select(&self, query: &Query)->SqlFrag{
-        println!("building select query");
         let mut w = SqlFrag::new(self.sql_options());
         w.append("SELECT ");
         self.build_enumerated_fields(&mut w, query, &query.enumerated_fields); //TODO: add support for column_sql, fields, functions
@@ -626,7 +615,6 @@ pub trait Database{
     
     /// TODO complete this
     fn build_insert(&self, query: &Query)->SqlFrag{
-        println!("building insert query");
         let mut w = SqlFrag::new(self.sql_options());
         w.append("INSERT INTO ");
         let into_table = query.get_from_table();
@@ -664,7 +652,6 @@ pub trait Database{
 
     
     fn build_update(&self, query: &Query)->SqlFrag{
-        println!("building update query");
         let mut w = SqlFrag::new(self.sql_options());
         w.append("UPDATE ");
         let from_table = query.get_from_table();
@@ -712,7 +699,6 @@ pub trait Database{
     }
 
     fn build_delete(&self, query: &Query)->SqlFrag{
-        println!("building delete query");
         let mut w = SqlFrag::new(self.sql_options());
         w.append("DELETE FROM ");
         let from_table = query.get_from_table();

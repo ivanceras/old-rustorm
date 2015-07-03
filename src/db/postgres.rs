@@ -14,11 +14,11 @@ use dao::DaoResult;
 use writer::SqlFrag;
 use postgres::rows::Row;
 use database::SqlOption;
-use uuid::Uuid;
 use std::error::Error;
+use database::DbConfig;
 
 pub struct Postgres {
-    conn_id: Uuid,
+    config: Option<DbConfig>,
     pub conn: Option<Connection>,
 }
 
@@ -29,15 +29,15 @@ impl Postgres{
     /// useful when just building sql queries specific to this platform
     /// inexpensive operation, so can have multiple instances
     pub fn new()->Self{
-        Postgres{conn_id: Uuid::new_v4(), conn:None}
+        Postgres{conn:None, config: None}
     }
     
     pub fn connect_with_url(url:&str)->Result<Self, String>{
-        let mut pg = Self::new();
         let conn = Connection::connect(url, &SslMode::None);
         match conn{
             Ok(conn) => {
-                pg.conn = Some(conn);
+                let config = DbConfig::from_url(url);
+                let pg = Postgres{config: Some(config), conn: Some(conn)};
                 Ok(pg)
             },
             Err(e) => {
@@ -307,8 +307,8 @@ impl Postgres{
 
 impl Database for Postgres{
     
-    fn get_connection_id(&self)->Uuid{
-        self.conn_id
+    fn get_config(&self)->DbConfig{
+        self.config.clone().unwrap()
     }
     fn version(&self)->String{panic!("not yet");}
     fn begin(&self){}
@@ -414,7 +414,6 @@ impl Database for Postgres{
     /// build all types of query
     /// TODO: need to supply the number of parameters where to start the numbering of the number parameters
     fn build_query(&self, query:&Query)->SqlFrag{
-        println!("building the query here");
         match query.sql_type{
             SqlType::SELECT => self.build_select(query),
             SqlType::INSERT => self.build_insert(query),

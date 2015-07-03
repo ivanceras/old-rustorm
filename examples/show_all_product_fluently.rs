@@ -29,7 +29,7 @@ fn main(){
     let pg= Postgres::connect_with_url("postgres://postgres:p0stgr3s@localhost/bazaar_v6").unwrap();
     let products:Vec<Product> = Query::select()
                 .enumerate_table_all_columns(&Product::table())
-                .from::<Product>()
+                .from(&Product::table())
                 .collect(&pg);
                 
     for prod in products{

@@ -239,23 +239,37 @@ impl PartialEq for ColumnName{
 #[derive(Clone)]
 #[derive(Debug)]
 pub struct TableName{
-    pub schema: String,
+    pub schema: Option<String>,
     pub name: String,
-    pub column_names: Vec<ColumnName>,
 }
 
 impl TableName{
     
-    fn from_table(table:&Table)->Self{
-        TableName{
-            schema:table.schema.to_string(),
-            name: table.name.to_string(),
-            column_names:vec![],
+    fn from_str(str: &str)->Self{
+        if str.contains("."){
+            let splinters = str.split(".").collect::<Vec<&str>>();
+            assert!(splinters.len() == 2, "There should only be 2 splinters");
+            let schema_split = splinters[0].to_string();
+            let table_split = splinters[1].to_string();
+            
+            TableName{
+                schema: Some(schema_split),
+                name: table_split,
+            }
+            
+        } else {
+             TableName{
+                schema: None,
+                name: str.to_string(),
+            }
         }
     }
-
+    
     pub fn complete_name(&self)->String{
-        format!("{}.{}",self.schema, self.name)
+        match self.schema{
+            Some (ref schema) => format!("{}.{}",schema, self.name),
+            None => self.name.to_string()
+        }
     }
 }
 
@@ -266,6 +280,29 @@ impl PartialEq for TableName{
 
     fn ne(&self, other: &Self) -> bool {
         self.name != other.name || self.schema != other.schema
+    }
+}
+
+/// convert str, IsTable to TableName
+pub trait ToTableName{
+    
+    fn to_table_name(&self)->TableName;
+    
+}
+
+impl <'a>ToTableName for &'a str{
+    
+    fn to_table_name(&self)->TableName{
+        TableName::from_str(self)
+    }
+}
+impl ToTableName for Table{
+    
+    fn to_table_name(&self)->TableName{
+        TableName{
+            schema:Some(self.schema.to_string()),
+            name: self.name.to_string(),
+        }
     }
 }
 
@@ -384,7 +421,13 @@ impl Query{
         self
     }
     
-    pub fn select_all(&mut self)->&mut Self{
+    pub fn select_all()->Self{
+        let mut q = Self::select();
+        q.all();
+        q
+    }
+    
+    pub fn all(&mut self)->&mut Self{
         self.enumerate_column("*")
     }
     
@@ -473,27 +516,22 @@ impl Query{
     pub fn limit(&mut self, limit:usize)->&mut Self{
         self.set_page_size(limit)
     }
-    /// The base table where the resulting records will be retrieved from
-    pub fn from_table(&mut self, table:&Table)->&mut Self{
-        let table_name = TableName::from_table(table);
+    
+    /// A more terse way to write the query
+    pub fn from(&mut self, table: &ToTableName)->&mut Self{
+        let table_name = table.to_table_name();
         let operand = Operand::TableName(table_name);
         let field = Field{ operand:operand, name: None};
         self.from_field(field)
     }
     
-    /// A more terse way to write the query
-    pub fn from<T: IsTable>(&mut self)->&mut Self{
-        self.from_table(&T::table())
+     pub fn from_table(&mut self, table:&str)->&mut Self{
+        self.from(&table)
     }
-    
-    /// just an alias for from_table to make it terse for Insert queries
-    pub fn into_table(&mut self, table:&Table)->&mut Self{
+    /// can not use into since it's rust .into built-in (owned)
+    pub fn into_table(&mut self, table: &ToTableName)->&mut Self{
         self.sql_type = SqlType::INSERT;
-        self.from_table(table)
-    }
-    
-    pub fn into<T:IsTable>(&mut self)->&mut Self{
-        self.into_table(&T::table())
+        self.from(table)
     }
     
     /// if the database support CTE declareted query i.e WITH, 
@@ -580,43 +618,43 @@ impl Query{
     ///
     /// ```
     
-    pub fn left_join(&mut self, table:&Table, column1:&str, column2:&str)->&mut Self{
+    pub fn left_join(&mut self, table:&ToTableName, column1:&str, column2:&str)->&mut Self{
         let join = Join{
             modifier:Some(Modifier::LEFT),
             join_type:JoinType::OUTER,
-            table_name: TableName::from_table(table),
+            table_name: table.to_table_name(),
             column1:vec![column1.to_string()],
             column2:vec![column2.to_string()]
         };
         self.join(join)
     }
-    pub fn right_join(&mut self, table:&Table, column1:&str, column2:&str)->&mut Self{
+    pub fn right_join(&mut self, table:&ToTableName, column1:&str, column2:&str)->&mut Self{
         let join = Join{
             modifier:Some(Modifier::RIGHT),
             join_type:JoinType::OUTER,
-            table_name: TableName::from_table(table),
+            table_name: table.to_table_name(),
             column1:vec![column1.to_string()],
             column2:vec![column2.to_string()]
         };
         self.join(join)
     }
     
-    pub fn full_join(&mut self, table:&Table, column1:&str, column2:&str)->&mut Self{
+    pub fn full_join(&mut self, table:&ToTableName, column1:&str, column2:&str)->&mut Self{
         let join = Join{
             modifier:Some(Modifier::FULL),
             join_type:JoinType::OUTER,
-            table_name: TableName::from_table(table),
+            table_name: table.to_table_name(),
             column1:vec![column1.to_string()],
             column2:vec![column2.to_string()]
         };
         self.join(join)
     }
     
-    pub fn inner_join(&mut self, table:&Table, column1:&str, column2:&str)->&mut Self{
+    pub fn inner_join(&mut self, table:&ToTableName, column1:&str, column2:&str)->&mut Self{
         let join  = Join{
             modifier:None,
             join_type:JoinType::INNER,
-            table_name: TableName::from_table(table),
+            table_name: table.to_table_name(),
             column1:vec![column1.to_string()],
             column2:vec![column2.to_string()]
         };
@@ -676,7 +714,7 @@ impl Query{
     pub fn finalize(&mut self)->&mut Self{
          if self.excluded_columns.is_empty() 
             && self.enumerated_fields.is_empty(){
-            self.select_all();
+            self.all();
         }
         let excluded_columns = &self.excluded_columns.clone();
         for i in  excluded_columns{
@@ -752,6 +790,11 @@ impl Query{
         }
          self
     }
+    
+     pub fn return_all(&mut self)->&mut Self{
+        self.enumerate_column_as_return("*")
+    }
+    
     pub fn returns(&mut self, columns: Vec<&str>)->&mut Self{
         for c in columns{
             self.enumerate_column_as_return(c);

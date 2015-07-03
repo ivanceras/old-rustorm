@@ -32,7 +32,7 @@ mod gen;
 fn main(){
     let pg= Postgres::connect_with_url("postgres://postgres:p0stgr3s@localhost/bazaar_v6").unwrap();
      let photo: Photo = Query::select()
-                        .from::<Product>()
+                        .from(&Product::table())
                         .left_join(&ProductPhoto::table(),
                             product::product_id, product_photo::product_id)
                         .left_join(&Photo::table(), 

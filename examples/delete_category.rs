@@ -32,8 +32,9 @@ fn main(){
     em.insert::<Category>(dao);
     
     let mut query = Query::delete();
-    query.from::<Category>();
-    query.filter(category::name, Equality::LIKE, &"test%");
+    
+    query.from(&Category::table())
+        .filter(category::name, Equality::LIKE, &"test%");
     let sql = query.build(&pg);
     println!("SQL FRAG: {}", sql);
     match query.execute(&pg){
