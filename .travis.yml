@@ -1,1 +1,11 @@
 language: rust
+rust:
+- nightly
+- beta
+- stable
+addons:
+  postgresql: 9.4
+before_script:
+- "./script/setup.sh"
+script:
+- cargo test
