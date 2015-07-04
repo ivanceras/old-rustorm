@@ -26,4 +26,6 @@ log = "*"
 env_logger = "*"
 regex = "*"
 url = "*"
+rusqlite = "*"
+time = "*"
 

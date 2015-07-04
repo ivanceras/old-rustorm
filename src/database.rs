@@ -1,13 +1,15 @@
 use query::Query;
 use table::{Table, Column};
 use dao::{Dao,DaoResult, Type};
-use writer::{SqlFrag, Writer};
+use writer::SqlFrag;
 use query::{Connector, Equality, Operand, Field};
 use query::{Direction, Modifier, JoinType};
 use query::{Filter, Condition};
 use url::{Url, Host, SchemeData};
-use platform::Postgres;
 use platform::Platform;
+use platform::Postgres;
+use platform::Sqlite;
+
 
 #[derive(Debug)]
 #[derive(PartialEq)]
@@ -19,7 +21,7 @@ pub struct DbConfig{
     username: Option<String>,
     password: Option<String>,
     /// localhost
-    host: Host,
+    host: Option<Host>,
     /// 5432
     port: Option<u16>,
     database: String,
@@ -59,7 +61,7 @@ impl DbConfig{
             platform: parsed.scheme.to_string(),
             username: Some(reparse_relative.username.clone()),
             password: reparse_relative.password.clone(),
-            host: reparse_relative.host.clone(),
+            host: Some(reparse_relative.host.clone()),
             port: reparse_relative.port,
             database: {
                 assert!(reparse_relative.path.len() == 1, "There should only be 1 path");
@@ -80,8 +82,10 @@ impl DbConfig{
             url.push_str(self.password.as_ref().unwrap());
         }
         
-        url.push_str("@");
-        url.push_str(&self.host.serialize());
+        if self.host.is_some(){
+            url.push_str("@");
+            url.push_str(&self.host.as_ref().unwrap().serialize());
+        }
         
         if self.port.is_some(){
             url.push_str(":");
@@ -100,7 +104,7 @@ fn test_config_url(){
         platform: "postgres".to_string(),
         username: Some("postgres".to_string()),
         password: Some("p0stgr3s".to_string()), 
-        host: Host::Domain("localhost".to_string()),
+        host: Some(Host::Domain("localhost".to_string())),
         port: None,
         database: "bazaar_v6".to_string(),
     };
@@ -115,6 +119,7 @@ fn test_config_from_url(){
     assert_eq!(config.get_url(), url.to_string());
 }
 
+
 #[test]
 fn test_config_url_with_port(){
     let url = "postgres://postgres:p0stgr3s@localhost:5432/bazaar_v6";
@@ -122,7 +127,7 @@ fn test_config_url_with_port(){
         platform: "postgres".to_string(),
         username: Some("postgres".to_string()),
         password: Some("p0stgr3s".to_string()), 
-        host: Host::Domain("localhost".to_string()),
+        host: Some(Host::Domain("localhost".to_string())),
         port: Some(5432),
         database: "bazaar_v6".to_string(),
     };
@@ -130,6 +135,20 @@ fn test_config_url_with_port(){
     assert_eq!(config.get_url(), url.to_string());
 }
 
+#[test]
+fn test_config_sqlite_url_with_port(){
+    let url = "sqlite:///bazaar_v6.db";
+    let config = DbConfig{
+        platform: "sqlite".to_string(),
+        username: None,
+        password: None, 
+        host: None,
+        port: None,
+        database: "bazaar_v6.db".to_string(),
+    };
+    
+    assert_eq!(config.get_url(), url.to_string());
+}
 
 
 /// This pool contains database that are not necessarily same platform and configs
@@ -178,10 +197,24 @@ impl Pool{
         match platform{
             "postgres" => {
                     let url = db_config.get_url();
-                    let pg = Postgres::connect_with_url(&url);
-                    match pg{
-                        Ok(pg) => {
-                            let platform = Platform::Postgres(pg);
+                    let db = Postgres::connect_with_url(&url);
+                    match db{
+                        Ok(db) => {
+                            let platform = Platform::Postgres(db);
+                            self.free.push( platform );
+                            Ok(())
+                        }
+                        Err(e) =>{
+                            Err(format!("Unable to connect due to {}", e))
+                        }
+                    }
+                },
+                "sqlite" => {
+                    let url = db_config.get_url();
+                    let db = Sqlite::connect_with_url(&url);
+                    match db{
+                        Ok(db) => {
+                            let platform = Platform::Sqlite(db);
                             self.free.push( platform );
                             Ok(())
                         }
@@ -347,6 +380,9 @@ pub trait Database{
 
     /// execute insert with returning clause, update with returning clause
     fn execute_sql_with_return(&self, sql:&str, params:&Vec<Type>)->Vec<Dao>;
+    
+    /// specify which return columns to get, ie. sqlite doesn't support getting the meta data of the return
+    fn execute_sql_with_return_columns(&self, sql:&str, params:&Vec<Type>, return_columns:Vec<&str>)->Vec<Dao>;
 
     fn execute_sql_with_one_return(&self, sql:&str, params:&Vec<Type>)->Dao;
     
@@ -767,193 +803,5 @@ pub trait DatabaseDev{
     fn dbtype_to_rust_type(&self, db_type: &str)->(Vec<String>, String);
     
     fn rust_type_to_dbtype(&self, rust_type: &str, db_data_type:&str)->String;
-
-    /// build a source code for the struct defined by this table
-    ///(imports, imported_tables, source code)
-    fn source_code<'a>(&self, table:&'a Table, all_tables:&'a Vec<Table>)->(Vec<String>, Vec<&'a Table>, String){
-        let mut w = Writer::new();
-        //imported tables needed since we are partitioning the tables in schemas
-        let mut imported_tables = Vec::new();
-        //imports
-        let mut imports:Vec<String> = Vec::new();
-        for c in &table.columns{
-            let (package, _) = self.dbtype_to_rust_type(&c.db_data_type);
-            if !package.is_empty(){
-                for i in package{
-                    imports.push(i);
-                }
-            }
-        }
-        imports.sort_by(|a, b| a.cmp(b));
-        imports.dedup();
-
-        //struct
-        let struct_name = table.struct_name();
-        w.ln();
-        if table.comment.is_some(){
-            w.append("///");
-            w.ln();
-            w.append("/// ");
-            w.append(&table.comment.clone().unwrap());
-            w.ln();
-            w.append("///");
-            w.ln();
-        }
-        w.append("#[derive(RustcDecodable, RustcEncodable)]");
-        w.ln();
-        w.append("#[derive(Debug, Clone)]");
-        w.ln();
-        w.append("pub struct ").append(&struct_name).appendln(" {");
-
-        let mut included_columns = Vec::new();
-        //primary columns
-        for p in table.primary_columns(){
-            if !included_columns.contains(&p.name){
-                w.tab();
-                w.append("/// primary");
-                w.ln();
-                Self::write_column(&mut w, p);
-                included_columns.push(p.name.clone());
-            }
-        }
-        //unique columns
-        for u in table.unique_columns(){
-            if !included_columns.contains(&u.name){
-                w.tab();
-                w.append("/// unique");
-                w.ln();
-                Self::write_column(&mut w, u);
-                included_columns.push(u.name.clone());
-            }
-        }
-
-        // uninherited columns
-        for uc in &table.uninherited_columns(){
-            if !included_columns.contains(&uc.name){
-                Self::write_column(&mut w, uc);
-                included_columns.push(uc.name.clone());
-            }
-        }
-
-        // inherited columns
-        for ic in &table.inherited_columns(){
-            if !included_columns.contains(&ic.name){
-                Self::write_column(&mut w, ic);
-                included_columns.push(ic.name.clone());
-            }
-        }
-        
-        let referenced_table = table.get_all_referenced_table(all_tables);
-        for ref_table in referenced_table{
-            w.ln_tab();
-            w.append("/// ");
-            let comment = if ref_table.is_has_one{
-                if ref_table.table != table{
-                    "has one"
-                }
-                else{
-                    "has one, self referential"
-                }
-            }else if ref_table.is_ext{
-                "has one, extension table"
-            }
-            else if ref_table.is_has_many{
-                if ref_table.is_direct{
-                    "has many"
-                }else{
-                    "has many, indirect"
-                }
-            }
-            else{
-                unreachable!();
-            };
-            w.append(comment);
-            w.ln_tab();
-            let member_name = ref_table.member_name(table);
-            w.append("pub ");
-            w.append(&member_name);
-            w.append(": ");
-            if ref_table.is_has_one {
-                if ref_table.table != table{
-                    w.append("Option<");
-                    w.append(&ref_table.table.struct_name());
-                    w.append(">");
-                }else{
-                    w.append("Option<Box<");
-                    w.append(&ref_table.table.struct_name());
-                    w.append(">>");
-                }
-            }
-            if ref_table.is_ext{
-                w.append("Option<Box<");
-                w.append(&ref_table.table.struct_name());
-                w.append(">>");
-            }
-            if ref_table.is_has_many{
-                w.append("Vec<");//put it inside the box to get rid of illegal recursive struct
-                w.append(&ref_table.table.struct_name());
-                w.append(">");
-            }
-            w.comma();
-            imported_tables.push(ref_table.table);
-            
-        }
-        w.ln();
-        w.append("}");
-        w.ln();
-        imported_tables.sort_by(|a, b| (a.complete_name().cmp(&b.complete_name())));
-        imported_tables.dedup();
-
-        (imports, imported_tables, w.src)
-    }
-
-    fn write_column(w:&mut Writer, c:&Column){
-        if c.comment.is_some(){
-            let comment = &c.comment.clone().unwrap();
-            for split in comment.split("\n"){
-                w.tab();
-                w.append("/// ");
-                w.append(split);
-                w.ln();
-            }
-        }
-        if c.default.is_some(){
-            let default = &c.default.clone().unwrap();
-            for split in default.split("\n"){
-                w.tab();
-                w.append("/// default: ");
-                w.append(split);
-                w.ln();
-            }
-        }
-        if c.not_null{
-            w.tab();
-            w.append("/// not nullable ");
-            w.ln();
-        }
-        if c.is_inherited{
-            w.tab();
-            w.append("/// --inherited-- ");
-            w.ln();
-        }
-        w.tab();
-        w.append("/// db data type: ");
-        w.append(&c.db_data_type);
-        w.ln();
-
-        w.tab();
-        w.append("pub ");
-        w.append(&c.corrected_name());
-        w.append(":");
-        if c.not_null{
-            w.append(&c.data_type);
-        }else{
-            w.append("Option<");
-            w.append(&c.data_type);
-            w.append(">");
-        }
-        w.comma();
-        w.ln();
-    }
 
 }

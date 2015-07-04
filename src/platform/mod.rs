@@ -1,6 +1,8 @@
 pub mod postgres;
+pub mod sqlite;
 
 pub use self::postgres::Postgres;
+pub use self::sqlite::Sqlite;
 
 use database::Database;
 
@@ -9,7 +11,7 @@ use database::Database;
 
 pub enum Platform{
     Postgres(Postgres),
-    Sqlite,
+    Sqlite(Sqlite),
     Oracle,
     Mysql,
 }
@@ -19,6 +21,7 @@ impl Platform{
     pub fn as_ref(&self)->&Database{
         match *self{
             Platform::Postgres(ref pg) => pg,
+            Platform::Sqlite(ref lite) => lite,
             _ => panic!("others not yet..")
         }
     }

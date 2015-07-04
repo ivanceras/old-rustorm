@@ -101,13 +101,18 @@ impl <'a>EntityManager<'a>{
 
 
     /// get all the distinct records of this table
-    pub fn get_all_distinct(&self, table:&Table)->Vec<Dao>{
-        panic!("not yet")
+    pub fn get_all_distinct<T>(&self)->Vec<T>
+        where T : IsTable + IsDao{
+        let table = T::table();
+        let mut q = Query::select_all();
+        q.distinct();
+        q.from_table(&table.complete_name());
+        q.collect(self.db)
     }
 
     /// get all the records on this table which passed thru the filters
     /// any query that specified more than the parameters should use the query api
-    pub fn get_all_with_filter<T>(&self, table:&Table, filters:Vec<Filter>)->Vec<T> 
+    pub fn get_all_with_filter<T>(&self, filters:Vec<Filter>)->Vec<T> 
         where T : IsTable + IsDao{
         let table = T::table();
         let mut q = Query::select_all();

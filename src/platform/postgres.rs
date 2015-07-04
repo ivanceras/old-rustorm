@@ -390,7 +390,9 @@ impl Database for Postgres{
         }
         daos
     }
-    
+    fn execute_sql_with_return_columns(&self, sql:&str, params:&Vec<Type>, return_columns:Vec<&str>)->Vec<Dao>{
+        panic!("not yet.. but postgresql can support this")
+    }
     fn execute_sql_with_one_return(&self, sql:&str, params:&Vec<Type>)->Dao{
         let dao = self.execute_sql_with_return(sql, params);
         assert!(dao.len() == 1, "There should be 1 and only 1 record return here");

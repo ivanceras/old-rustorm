@@ -396,7 +396,7 @@ impl Query{
     }
     
     /// add DISTINCT ie: SELECT DISTINCT
-    pub fn set_distinct(&mut self)->&mut Self{
+    pub fn distinct(&mut self)->&mut Self{
         self.distinct = true;
         self
     }
