@@ -1,16 +1,16 @@
 extern crate rustorm;
 extern crate uuid;
 extern crate chrono;
-extern crate rustc_serialize;
+// extern crate rustc_serialize;
 
 use uuid::Uuid;
 use chrono::datetime::DateTime;
 use chrono::offset::utc::UTC;
-use rustc_serialize::json;
+// use rustc_serialize::json;
 
-use rustorm::db::postgres::Postgres;
+// use rustorm::platform::postgres::Postgres;
 use rustorm::query::Query;
-use rustorm::query::{Filter,Equality};
+// use rustorm::query::{Filter,Equality};
 use rustorm::dao::{Dao,IsDao};
 use rustorm::database::Pool;
 

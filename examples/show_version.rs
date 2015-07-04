@@ -8,7 +8,7 @@ use chrono::datetime::DateTime;
 use chrono::offset::utc::UTC;
 use rustc_serialize::json;
 
-use rustorm::db::postgres::Postgres;
+use rustorm::platform::postgres::Postgres;
 use rustorm::query::Query;
 use rustorm::query::{Filter,Equality};
 use rustorm::dao::{Dao,IsDao};
