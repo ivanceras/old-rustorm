@@ -8,7 +8,6 @@ use chrono::datetime::DateTime;
 use chrono::offset::utc::UTC;
 use rustc_serialize::json;
 
-use rustorm::db::postgres::Postgres;
 use rustorm::query::Query;
 use rustorm::query::{Filter,Equality};
 use rustorm::dao::{Dao,IsDao};
@@ -17,7 +16,9 @@ use rustorm::database::Database;
  
 
 fn main(){
-    let pg = Postgres::connect_with_url("postgres://postgres:p0stgr3s@localhost/bazaar_v6").unwrap();
-    let version = pg.version();
+    let mut pool = Pool::init();
+    let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v6";
+    let db = pool.get_db_with_url(&url).unwrap();
+    let version = db.as_ref().version();
     println!("version: {}", version);
 }

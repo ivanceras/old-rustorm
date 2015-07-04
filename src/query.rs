@@ -1,5 +1,5 @@
 use dao::{Type, ToType};
-use table::{Table, Column};
+//use table::{Table, Column};
 use std::collections::BTreeMap;
 use database::Database;
 use dao::DaoResult;
@@ -172,15 +172,6 @@ pub struct Field{
 
 impl ColumnName{
 
-    fn from_column(column:&Column, table:&Table)->Self{
-        ColumnName{
-            column: column.name.to_string(),
-            table: Some(table.name.to_string()),
-            schema: Some(table.schema.to_string()),
-            rename: None,
-        }
-    }
-    
     fn from_str(column:&str)->Self{
         if column.contains("."){
             let splinters = column.split(".").collect::<Vec<&str>>();
@@ -203,9 +194,6 @@ impl ColumnName{
         }
     }
     
-    fn rename(&self)->String{
-        return format!("{}_{}", self.table.as_ref().unwrap(), self.column)
-    }
     /// table name and column name
     pub fn complete_name(&self)->String{
         if self.table.is_some(){
@@ -227,7 +215,7 @@ impl ColumnName{
 
 impl PartialEq for ColumnName{
     fn eq(&self, other: &Self) -> bool{
-        self.column == other.column
+        self.column == other.column && self.table == other.table
      }
 
     fn ne(&self, other: &Self) -> bool {
@@ -296,15 +284,7 @@ impl <'a>ToTableName for &'a str{
         TableName::from_str(self)
     }
 }
-impl ToTableName for Table{
-    
-    fn to_table_name(&self)->TableName{
-        TableName{
-            schema:Some(self.schema.to_string()),
-            name: self.name.to_string(),
-        }
-    }
-}
+
 
 #[derive(Debug)]
 #[derive(Clone)]
@@ -529,9 +509,9 @@ impl Query{
         self.from(&table)
     }
     /// can not use into since it's rust .into built-in (owned)
-    pub fn into_table(&mut self, table: &ToTableName)->&mut Self{
+    pub fn into_table(&mut self, table: &str)->&mut Self{
         self.sql_type = SqlType::INSERT;
-        self.from(table)
+        self.from_table(table)
     }
     
     /// if the database support CTE declareted query i.e WITH, 
@@ -573,34 +553,9 @@ impl Query{
         }
     }
     
-    /// list down the columns of this table then add it to the enumerated list of columns
-    pub fn enumerate_table_all_columns(&mut self, table: &Table)->&mut Self{
-        for c in &table.columns{
-            let column_name = ColumnName::from_column(c, table);
-            let operand = Operand::ColumnName(column_name);
-            let field = Field{operand:operand, name:None};
-            self.enumerated_fields.push(field);
-        }
-        self
-    }
     
     /// join a table on this query
     ///
-    /// # Examples
-    ///
-    /// ```
-    /// let mut q = Query::new();
-    /// let join = Join{
-    ///        modifier:Some(Modifier::LEFT),
-    ///        join_type:Type::OUTER,
-    ///        table:table,
-    ///        column1:vec![column1],
-    ///        column2:vec![column2]
-    ///    };
-    ///
-    /// q.join(join);
-    ///
-    /// ```
     pub fn join(&mut self, join:Join)->&mut Self{
         self.joins.push(join);
         self
@@ -609,15 +564,6 @@ impl Query{
     
     /// join a table on this query
     ///
-    /// # Examples
-    ///
-    /// ```
-    /// let mut q = Query::new();
-    /// q.select_from_table("users");
-    /// q.left_join("roles", "role_id", "role_id");
-    ///
-    /// ```
-    
     pub fn left_join(&mut self, table:&ToTableName, column1:&str, column2:&str)->&mut Self{
         let join = Join{
             modifier:Some(Modifier::LEFT),
@@ -785,16 +731,6 @@ impl Query{
     pub fn set(&mut self, column: &str, value:&ToType)->&mut Self{
         self.enumerate_column(column);
         self.value(value)
-    }
-    
-    pub fn enumerate_all_table_column_as_return(&mut self, table:&Table)->&mut Self{
-         for c in &table.columns{
-            let column_name = ColumnName::from_column(c, table);
-            let operand = Operand::ColumnName(column_name);
-            let field = Field{operand: operand, name:None};
-            self.enumerated_returns.push(field);
-        }
-         self
     }
     
      pub fn return_all(&mut self)->&mut Self{

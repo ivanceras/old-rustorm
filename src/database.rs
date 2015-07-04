@@ -9,8 +9,6 @@ use url::{Url, Host, SchemeData};
 use platform::Postgres;
 use platform::Platform;
 
-use std::sync::{Arc, Mutex};
-
 #[derive(Debug)]
 #[derive(PartialEq)]
 #[derive(Clone)]
@@ -140,7 +138,9 @@ fn test_config_url_with_port(){
 /// TODO: protect the free form here with locks
 pub struct Pool{
     /// the available list of connections
-    free: Arc<Mutex<Vec<Platform>>>,
+    free: Vec<Platform>,
+    /// the number of used count, may not be accurate
+    used: usize,
 }
 
 
@@ -149,7 +149,7 @@ impl Pool{
     /// initialize a pool for database connection container
     /// call only once per application
     pub fn init()->Self{
-        Pool{free: Arc::new(Mutex::new(vec![]))}
+        Pool{free: vec![], used: 0}
     }
     
     
@@ -182,7 +182,7 @@ impl Pool{
                     match pg{
                         Ok(pg) => {
                             let platform = Platform::Postgres(pg);
-                            self.free.lock().unwrap().push( platform );
+                            self.free.push( platform );
                             Ok(())
                         }
                         Err(e) =>{
@@ -206,7 +206,8 @@ impl Pool{
         let index = self.first_match(db_config);
         match index{
             Some(index) => {
-                let platform = self.free.lock().unwrap().remove(index);
+                let platform = self.free.remove(index);
+                self.used += 1;
                 Ok( platform )
             },
             None => {
@@ -228,7 +229,7 @@ impl Pool{
         let mut index = 0;
         let len = self.total_free_connections();
         for i in 0..len{
-    		if &self.free.lock().unwrap()[i].as_ref().get_config() == db_config{
+    		if &self.free[i].as_ref().get_config() == db_config{
 				return Some(index);
 			}
     		index += 1;
@@ -239,13 +240,22 @@ impl Pool{
     /// release the used connection back to the free pool
     pub fn release(&mut self, platform: Platform)->&mut Self{
         //println!("Releasing connection back to the pool");
-        self.free.lock().unwrap().push( platform );
+        self.free.push( platform );
+        self.used -= 1;
         self
+    }
+    pub fn total_connections(&self)->usize{
+        self.free.len() + self.used
     }
     
     /// return the number of free available connection in the pool
     pub fn total_free_connections(&self)->usize{
-        self.free.lock().unwrap().len()
+        self.free.len()
+    }
+    
+    /// return the number of free available connection in the pool
+    pub fn total_used_connections(&self)->usize{
+        self.used
     }
 }
 
@@ -758,10 +768,9 @@ pub trait DatabaseDev{
     
     fn rust_type_to_dbtype(&self, rust_type: &str, db_data_type:&str)->String;
 
-
     /// build a source code for the struct defined by this table
     ///(imports, imported_tables, source code)
-    fn to_struct_source_code<'a>(&self, table:&'a Table, all_tables:&'a Vec<Table>)->(Vec<String>, Vec<&'a Table>, String){
+    fn source_code<'a>(&self, table:&'a Table, all_tables:&'a Vec<Table>)->(Vec<String>, Vec<&'a Table>, String){
         let mut w = Writer::new();
         //imported tables needed since we are partitioning the tables in schemas
         let mut imported_tables = Vec::new();
@@ -946,6 +955,5 @@ pub trait DatabaseDev{
         w.comma();
         w.ln();
     }
-
 
 }

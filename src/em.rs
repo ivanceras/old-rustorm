@@ -9,6 +9,7 @@ use dao::ToType;
 use query::Equality;
 
 /// A higher level API for manipulating objects in the database
+/// This serves as a helper function for the query api
 pub struct EntityManager<'a>{
     pub db:&'a Database,
 }
@@ -70,9 +71,8 @@ impl <'a>EntityManager<'a>{
     /// get all the records of this table
     pub fn get_all<T>(&self)->Vec<T> where T : IsTable + IsDao{
         let table = T::table();
-        let mut q = Query::select();
-        q.enumerate_table_all_columns(&table);
-        q.from(&table);
+        let mut q = Query::select_all();
+        q.from_table(&table.complete_name());
         q.collect(self.db)
     }
 
@@ -81,7 +81,7 @@ impl <'a>EntityManager<'a>{
         where T : IsTable + IsDao{
         let table = T::table();
         let mut q = Query::select();
-        q.from(&table);
+        q.from_table(&table.complete_name());
         q.enumerate_columns(columns);
         q.collect(self.db)
     }
@@ -91,8 +91,10 @@ impl <'a>EntityManager<'a>{
         where T : IsTable + IsDao{
         let table = T::table();
         let mut q = Query::select();
-        q.from(&table);
-        q.enumerate_table_all_columns(&table);
+        q.from_table(&table.complete_name());
+        for c in table.columns{
+            q.enumerate_column(&c.name);
+        }
         q.exclude_columns(ignore_columns);
         q.collect(self.db)
     }
@@ -108,9 +110,8 @@ impl <'a>EntityManager<'a>{
     pub fn get_all_with_filter<T>(&self, table:&Table, filters:Vec<Filter>)->Vec<T> 
         where T : IsTable + IsDao{
         let table = T::table();
-        let mut q = Query::select();
-        q.from(&table);
-        q.enumerate_table_all_columns(&table);
+        let mut q = Query::select_all();
+        q.from_table(&table.complete_name());
         for f in filters{
             q.add_filter(f);
         }
@@ -121,38 +122,13 @@ impl <'a>EntityManager<'a>{
     pub fn get_one<T>(&self, filter:Filter)->Vec<T> 
         where T : IsTable + IsDao{
         let table = T::table();
-        let mut q = Query::select();
-        q.from(&table);
-        q.enumerate_table_all_columns(&table);
+        let mut q = Query::select_all();
+        q.from_table(&table.complete_name());
         q.add_filter(filter);
         q.collect(self.db)
     }
 /// 
 /// get an exact match, the value is filter against the primary key of the table
-/// # Examples
-/// ```rust,no_run
-/// extern crate rustorm;
-/// extern crate uuid;
-/// extern crate chrono;
-/// extern crate rustc_serialize;
-/// 
-/// use rustorm::db::postgres::Postgres;
-/// use uuid::Uuid;
-/// 
-/// use rustorm::em::EntityManager;
-/// use gen::bazaar::Product;
-/// 
-/// mod gen;
-///  
-/// 
-/// fn main(){
-///     let pg= Postgres::connect_with_url("postgres://postgres:p0stgr3s@localhost/bazaar_v6").unwrap();
-///     let em = EntityManager::new(&pg);
-///     let pid = Uuid::parse_str("6db712e6-cc50-4c3a-8269-451c98ace5ad").unwrap();
-///     let prod: Product = em.get_exact(&pid);
-///     println!("{}  {}  {:?}", prod.product_id, prod.name.unwrap(), prod.description);
-/// }
-/// ```
 /// 
     pub fn get_exact<T>(&self, id: &ToType)->T 
         where T : IsTable + IsDao{
@@ -161,52 +137,21 @@ impl <'a>EntityManager<'a>{
         assert!(primary.len() == 1, "There should only be 1 primary column for this to work");
         let pk = primary[0].name.to_string();
         
-        let mut q = Query::select();
-        q.from(&table);
-        q.enumerate_table_all_columns(&table);
-        q.filter(&pk, Equality::EQ, id);
-        q.collect_one(self.db)
+        Query::select_all()
+            .from_table(&table.complete_name())
+            .filter(&pk, Equality::EQ, id)
+            .collect_one(self.db)
     }
 
-    /// insert this records to the database, return the inserted dao with
-    /// values from default columns included
-    /// # Example
-    /// 
-    /// ```
-    /// extern crate bazaar;
-    /// extern crate rustorm;
-    /// 
-    /// use rustorm::em::EntityManager;
-    /// use rustorm::db::Postgres;
-    /// use rustorm::dao::Dao;
-    /// use bazaar::gen::bazaar::Product;
-    /// fn main(){
-    /// let pg = Postgres::with_connection("postgres://postgres:p0stgr3s@localhost/bazaar_v6");
-    /// match pg{
-    ///     Ok(pg) => {
-    ///         let em = EntityManager::new(&pg);
-    ///         let mut dao = Dao::new();
-    ///         dao.set("name", &"inserting 1 records");
-    ///         dao.set("description", &"testing insert 1 record to product");
-    ///         let dao = em.insert(&Product::table(), dao);
-    ///         let prod = Product::from_dao(&dao);
-    ///         println!("created: {}", prod.created);
-    ///     }
-    ///     Err(error) =>{
-    ///         println!("{}",error);
-    ///     }
-    /// }
-    /// }
-    /// ```
     pub fn insert<T>(&self, dao:Dao)->T
         where T : IsTable + IsDao{
         let table = T::table();
         let mut q = Query::insert();
-        q.into_table(&table);
+        q.into_table(&table.complete_name());
         for key in dao.values.keys(){
             q.enumerate_column(key);
         }
-        q.enumerate_all_table_column_as_return(&table);
+        q.return_all();
         for c in &table.columns{
             let value = dao.values.get(&c.name);
             match value{
@@ -226,12 +171,12 @@ impl <'a>EntityManager<'a>{
         where T: IsTable + IsDao {
         let table = T::table();
         let mut q = Query::insert();
-        q.into_table(&table);
+        q.into_table(&table.complete_name());
         for key in dao.values.keys(){
             q.enumerate_column(key);
         }
         q.exclude_columns(ignore_columns);
-        q.enumerate_all_table_column_as_return(&table);
+        q.return_all();
         for c in &table.columns{
             let value = dao.values.get(&c.name);
             match value{

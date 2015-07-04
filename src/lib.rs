@@ -1,59 +1,54 @@
 //! Rustorm is a simple ORM implemented in rust.
 //! 
 //!
-//! ```rust,no_run
+//! ```rust
 //! extern crate rustorm;
 //! extern crate uuid;
 //! extern crate chrono;
 //! extern crate rustc_serialize;
-
-
-//! use rustorm::db::postgres::Postgres;
-//! use rustorm::codegen;
+//! 
 //! use uuid::Uuid;
 //! use chrono::datetime::DateTime;
 //! use chrono::offset::utc::UTC;
 //! use rustc_serialize::json;
 //! 
-//! use rustorm::em::EntityManager;
-//! use rustorm::table::IsTable;
-//! use rustorm::dao::IsDao;
 //! use rustorm::query::Query;
-//! use rustorm::dao::Type;
-//! use rustorm::query::{Filter,Equality,Operand};
-//! use gen::bazaar::Product;
-//! use gen::bazaar::ProductAvailability;
+//! use rustorm::query::{Filter,Equality};
+//! use rustorm::dao::{Dao,IsDao};
+//! use rustorm::database::Pool;
 //! 
-//! mod gen;
-//!  
 //! 
-//! fn main(){
-//!     let pg = Postgres::with_connection("postgres://postgres:p0stgr3s@localhost/bazaar_v6");
-//!        match pg{
-//!         Ok(pg) => {
-//!             let em = EntityManager::new(&pg);
-//!             let mut query = Query::new();
-//!             query.from_table(&Product::table());
-//!             query.enumerate_column("*");
-//!             
-//!             query.left_join(&ProductAvailability::table(), 
-//!                 "product.product_id", "product_availability.product_id");
-//!             query.filter("product.name", Equality::LIKE, &"iphone%");
-//!             query.add_filter(Filter::new("product.description", Equality::LIKE, Operand::Value(Type::String("%Iphone%".to_string()))));
-//!             query.desc("product.created");
-//!             query.asc("product.product_id");
-//!             
-//!             let result = em.retrieve(&mut query);
-//!             let products = Product::from_dao_result(&result);
-//!             
-//!             for p in products{
-//!                 println!("{}-{}", p.product_id, p.name.unwrap());
-//!             }
-//!         }
-//!         Err(error) =>{
-//!             println!("{}",error);
+//! 
+//! #[derive(Debug, Clone)]
+//! pub struct Product {
+//!     pub product_id:Uuid,
+//!     pub name:Option<String>,
+//!     pub description:Option<String>,
+//! }
+//! 
+//! impl IsDao for Product{
+//!     fn from_dao(dao:&Dao)->Self{
+//!         Product{
+//!             product_id: dao.get("product_id"),
+//!             name: dao.get_opt("name"),
+//!             description: dao.get_opt("description"),
 //!         }
 //!     }
+//! }
+//! 
+//! 
+//! fn main(){
+//!     let mut pool = Pool::init();
+//!     let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v6";
+//!     let db = pool.get_db_with_url(&url).unwrap();
+//!     
+//!     let prod: Product = Query::select_all()
+//!             .from_table("bazaar.product")
+//!             .filter("name", Equality::EQ, &"GTX660 Ti videocard")
+//!             .collect_one(db.as_ref());
+//! 
+//!     println!("{}  {}  {:?}", prod.product_id, prod.name.unwrap(), prod.description);
+//!     pool.release(db);
 //! }
 //! ```
 //!

@@ -2,7 +2,6 @@ extern crate rustorm;
 use rustorm::database::Pool;
 use std::sync::{Arc, Mutex};
 use std::thread;
-use std::sync::mpsc::channel;
 
 #[test]
 fn test_pool(){
@@ -43,23 +42,15 @@ fn test_use_no_reserve(){
 #[test]
 fn test_arc_mutex_connection(){
     let mut pool = Arc::new(Mutex::new(Pool::init()));
-    let (tx, rx) = channel();
-    let mut total = 0;
     for i in 0..10{
         let pool = pool.clone();
-        let tx = tx.clone();
         thread::spawn( move || {
             let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v6";
             let mut pool = pool.lock().unwrap();
             //println!("index[{}] has {} connections..", i, pool.total_pool_connection());
             let db = pool.get_db_with_url(&url);
-            tx.send(1);
         });
-        let mut str = String::
-        let cnt = rx.recv().unwrap();
-        total += cnt;
     }
-    println!("total: {}",total);
     
 }
 

@@ -4,28 +4,32 @@ extern crate chrono;
 extern crate rustc_serialize;
 
 
-use rustorm::db::postgres::Postgres;
-use rustorm::codegen;
 use uuid::Uuid;
-use chrono::datetime::DateTime;
-use chrono::offset::utc::UTC;
-use rustc_serialize::json;
 
-use rustorm::em::EntityManager;
-use rustorm::table::IsTable;
-use rustorm::dao::IsDao;
 use rustorm::query::Query;
-use rustorm::dao::Type;
 use rustorm::query::{Filter,Equality,Operand};
-use gen::bazaar::Product;
-use gen::bazaar::ProductAvailability;
-use gen::bazaar::product;
-use gen::bazaar::product_availability;
 
 use rustorm::database::Pool;
 use rustorm::database::Database;
+use rustorm::dao::{IsDao, Dao};
 
-mod gen;
+
+#[derive(Debug, Clone)]
+pub struct Product {
+    pub product_id:Uuid,
+    pub name:Option<String>,
+    pub description:Option<String>,
+}
+
+impl IsDao for Product{
+    fn from_dao(dao:&Dao)->Self{
+        Product{
+            product_id: dao.get("product_id"),
+            name: dao.get_opt("name"),
+            description: dao.get_opt("description"),
+        }
+    }
+}
 
 /// on a webserver this will be the main thread, where it instantiate
 /// the connection pool in the entirety of the application
@@ -35,12 +39,11 @@ fn main(){
     let mut pool = Pool::init();
     let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v6";
     let db = pool.get_db_with_url(&url);
+    
     match db{
             Ok(db) => {
             show_product(db.as_ref());//borrow a database
-            println!("There are {} free connection", pool.total_free_connections());
             pool.release(db);//borrow has ended, release it
-            println!("There are {} free connection", pool.total_free_connections());
          }
         Err(e) => {
             println!("Unable to connect to database {}", e);
