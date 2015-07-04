@@ -6,6 +6,6 @@ rust:
 addons:
   postgresql: 9.4
 before_script:
-- "./script/setup.sh"
+- "./scripts/setup.sh"
 script:
 - cargo test
