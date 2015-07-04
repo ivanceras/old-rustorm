@@ -6,7 +6,10 @@ use query::{Connector, Equality, Operand, Field};
 use query::{Direction, Modifier, JoinType};
 use query::{Filter, Condition};
 use url::{Url, Host, SchemeData};
-use db::Postgres;
+use platform::Postgres;
+use platform::Platform;
+
+use std::sync::{Arc, Mutex};
 
 #[derive(Debug)]
 #[derive(PartialEq)]
@@ -92,30 +95,6 @@ impl DbConfig{
     }
 }
 
-pub enum Platform{
-    Postgres(Postgres),
-    Sqlite,
-    Oracle,
-    Mysql,
-}
-
-impl Platform{
-    
-    pub fn as_ref(&self)->&Database{
-        match *self{
-            Platform::Postgres(ref pg) => pg,
-            _ => panic!("others not yet..")
-        }
-    }
-    
-}
-
-impl Drop for Platform {
-    fn drop(&mut self) {
-        println!("Warning: Dropping a connection is expensive, please return this to the pool");
-    }
-}
-
 #[test]
 fn test_config_url(){
     let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v6";
@@ -158,9 +137,10 @@ fn test_config_url_with_port(){
 /// This pool contains database that are not necessarily same platform and configs
 /// database pools are stored using treemap, with the key is the url of the database
 /// owns the database, and only lend out reference when api tries to connect to the database
+/// TODO: protect the free form here with locks
 pub struct Pool{
     /// the available list of connections
-    free: Vec<Platform>,
+    free: Arc<Mutex<Vec<Platform>>>,
 }
 
 
@@ -169,7 +149,7 @@ impl Pool{
     /// initialize a pool for database connection container
     /// call only once per application
     pub fn init()->Self{
-        Pool{free: vec![]}
+        Pool{free: Arc::new(Mutex::new(vec![]))}
     }
     
     
@@ -202,7 +182,7 @@ impl Pool{
                     match pg{
                         Ok(pg) => {
                             let platform = Platform::Postgres(pg);
-                            self.free.push( platform );
+                            self.free.lock().unwrap().push( platform );
                             Ok(())
                         }
                         Err(e) =>{
@@ -226,7 +206,7 @@ impl Pool{
         let index = self.first_match(db_config);
         match index{
             Some(index) => {
-                let platform = self.free.remove(index);
+                let platform = self.free.lock().unwrap().remove(index);
                 Ok( platform )
             },
             None => {
@@ -246,25 +226,26 @@ impl Pool{
     /// get first matching database connection from the free pool
     fn first_match(&mut self, db_config:&DbConfig)->Option<usize>{
         let mut index = 0;
-        for platform in &self.free{
-            if &platform.as_ref().get_config() == db_config{
-                return Some(index);
-            }
-            index += 1;
-        }
+        let len = self.total_free_connections();
+        for i in 0..len{
+    		if &self.free.lock().unwrap()[i].as_ref().get_config() == db_config{
+				return Some(index);
+			}
+    		index += 1;
+    	}
         None
     }
     
     /// release the used connection back to the free pool
     pub fn release(&mut self, platform: Platform)->&mut Self{
         //println!("Releasing connection back to the pool");
-        self.free.push( platform );
+        self.free.lock().unwrap().push( platform );
         self
     }
     
     /// return the number of free available connection in the pool
     pub fn total_free_connections(&self)->usize{
-        self.free.len()
+        self.free.lock().unwrap().len()
     }
 }
 

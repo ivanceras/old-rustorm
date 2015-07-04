@@ -55,6 +55,7 @@ fn test_arc_mutex_connection(){
             let db = pool.get_db_with_url(&url);
             tx.send(1);
         });
+        let mut str = String::
         let cnt = rx.recv().unwrap();
         total += cnt;
     }

@@ -72,7 +72,6 @@ pub mod em;
 pub mod query;
 pub mod dao;
 pub mod database;
-pub mod db;
+pub mod platform;
 pub mod table;
 pub mod writer;
-pub mod codegen;

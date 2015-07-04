@@ -781,6 +781,12 @@ impl Query{
         self.add_value(operand)
     }
     
+    /// set a value of a column when inserting/updating records
+    pub fn set(&mut self, column: &str, value:&ToType)->&mut Self{
+        self.enumerate_column(column);
+        self.value(value)
+    }
+    
     pub fn enumerate_all_table_column_as_return(&mut self, table:&Table)->&mut Self{
          for c in &table.columns{
             let column_name = ColumnName::from_column(c, table);

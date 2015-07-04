@@ -15,7 +15,6 @@ use rustorm::dao::{Dao,IsDao};
 use rustorm::database::Pool;
 
 
-
 #[derive(Debug, Clone)]
 pub struct Product {
     pub product_id:Uuid,
@@ -80,17 +79,11 @@ fn main(){
     let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v6";
     let db = pool.get_db_with_url(&url).unwrap();
     
-    let products: Vec<Product> = Query::select_all()
+    let prod: Product = Query::select_all()
             .from_table("bazaar.product")
-            .collect(db.as_ref());
-    
-    for prod in products{
-        let name = prod.name.unwrap();
-        let desc = match prod.description{
-                        Some(desc) => desc,
-                        None => "".to_string()
-                    };
-        println!("{}  {}  {:?}", prod.product_id, name, desc);
-    }
+            .filter("name", Equality::EQ, &"GTX660 Ti videocard")
+            .collect_one(db.as_ref());
+
+    println!("{}  {}  {:?}", prod.product_id, prod.name.unwrap(), prod.description);
     pool.release(db);
 }

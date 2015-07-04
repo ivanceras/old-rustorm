@@ -1,37 +1,10 @@
 use std::fmt;
-use writer::Writer;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct Foreign{
     pub schema:String,
     pub table:String,
     pub column:String,
-}
-
-impl Foreign{
-    /// get the definition express in string code
-    pub fn to_source_code(&self)->String{
-        let mut w = Writer::new();
-        w.ln();
-        w.tabs(6);
-        w.append("Foreign{");
-        w.ln();
-        w.tabs(7);
-        w.append("schema:");
-        w.append(&format!("\"{}\".to_string(),",self.schema));
-        w.ln();
-        w.tabs(7);
-        w.append("table:");
-        w.append(&format!("\"{}\".to_string(),",self.table));
-        w.ln();
-        w.tabs(7);
-        w.append("column:");
-        w.append(&format!("\"{}\".to_string(),",self.column));
-        w.ln();
-        w.tabs(6);
-        w.append("}");
-        w.src
-    }
 }
 
 #[derive(Debug, Clone)]
@@ -96,69 +69,6 @@ impl Column{
         }
         clean_name
     }
-    
-    /// get the column definition of the code
-    pub fn to_column_def_source_code(&self)->(Vec<String>, String){
-        let mut imports = vec![];
-        let mut w = Writer::new();
-        w.ln();
-        w.tabs(4);
-        w.append("Column{");
-        w.ln();
-        w.tabs(5);
-        w.append("name:");
-        w.append(&format!("\"{}\".to_string(),",self.name));
-        w.ln();
-        w.tabs(5);
-        w.append("data_type:");
-        w.append(&format!("\"{}\".to_string(),",self.data_type));
-        w.ln();
-        w.tabs(5);
-        w.append("db_data_type:");
-        w.append(&format!("\"{}\".to_string(),",self.db_data_type));
-        w.ln();
-        w.tabs(5);
-        w.append("is_primary:");
-        w.append(&format!("{}, ",self.is_primary));
-        w.append("is_unique:");
-        w.append(&format!("{}, ",self.is_unique));
-        w.append("not_null:");
-        w.append(&format!("{}, ",self.not_null));
-        w.append("is_inherited:");
-        w.append(&format!("{}, ",self.is_inherited));
-        w.ln();
-        w.tabs(5);
-        w.append("default:");
-        if self.default.is_some(){
-            w.append(&format!("Some(\"{}\".to_string()),", &self.default.clone().unwrap()));
-        }else{
-            w.append("None,");
-        }
-        w.ln();
-        w.tabs(5);
-        w.append("comment:");
-        if self.comment.is_some(){
-            w.append(&format!("Some(\"{}\".to_string()),", &self.comment.clone().unwrap().replace("\"","\\\"").replace("\n", "\\n")));
-        }else{
-            w.append("None,");
-        }
-        w.ln();
-        w.tabs(5);
-        w.append("foreign:");
-        if self.foreign.is_some(){
-            w.append(&format!("Some({}),", &self.foreign.clone().unwrap().to_source_code()));
-            imports.push("rustorm::table::Foreign".to_string());
-        }else{
-            w.append("None,");
-        }
-        w.ln();
-        w.tabs(4);
-        w.append("}");
-        imports.sort_by(|a, b| a.cmp(&b));
-        imports.dedup();
-        (imports, w.src)
-    }
-
 
 }
 
@@ -706,80 +616,6 @@ impl Table{
         }
         cnt == rt_fk.len()
     }
-
-
-
- 
-    /// build a source code which express it self as a table object
-    /// which is a meta definition of the struct itself
-    pub fn to_tabledef_source_code(&self)->(Vec<String>, String){
-        let mut imports = vec![];
-        let mut w = Writer::new();
-        w.ln();
-        w.tabs(2);
-        w.append("Table{");
-        w.ln();
-        w.tabs(3);
-        w.append("schema:");
-        w.append(&format!("\"{}\".to_string(),", self.schema));
-        w.ln();
-        w.tabs(3);
-        w.append("name:");
-        w.append(&format!("\"{}\".to_string(),", self.name));
-        w.ln();
-        w.tabs(3);
-        w.append("parent_table:");
-        if self.parent_table.is_some(){
-            w.append(&format!("Some(\"{}\".to_string()),", &self.parent_table.clone().unwrap()));
-        }else{
-            w.append("None,");
-        }
-        w.ln();
-        w.tabs(3);
-        w.append("sub_table:");
-        if !self.sub_table.is_empty(){
-            let sub_table = self.sub_table.clone();
-            w.append("vec![");
-            for s in sub_table{
-                w.append(&format!("\"{}\".to_string(),",s));
-            }
-            w.append("],");
-        }else{
-            w.append("vec![],");
-        }
-        w.ln();
-        w.tabs(3);
-        w.append("comment:");
-        if self.comment.is_some(){
-            w.append(&format!("Some(\"{}\".to_string()),", &self.comment.clone().unwrap().replace("\"","\\\"").replace("\n", "\\n")));
-        }else{
-            w.append("None,");
-        }
-        w.ln();
-        w.tabs(3);
-        w.append("columns:");
-        w.ln();
-        w.tabs(3);
-        w.append("vec![");
-        for c in &self.columns{
-            let (column_imports, column_src) = c.to_column_def_source_code();
-            for imp in column_imports{
-                imports.push(imp);
-            }
-            w.append(&column_src);
-            w.append(",");
-        }
-        w.ln();
-        w.tabs(3);
-        w.append("],");
-        w.ln();
-        w.tabs(2);
-        w.append("}");
-        imports.sort_by(|a, b| a.cmp(&b));
-        imports.dedup();
-        (imports, w.src)
-    }
-
 
 }
 
