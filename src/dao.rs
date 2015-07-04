@@ -273,7 +273,7 @@ impl FromType for f64{
     fn from_type(ty:Type)->Self{
         match ty{
             Type::F64(x) => x,
-            _ => panic!("error!"),
+            _ => panic!("error! {:?}",ty),
         }
     }
 }
