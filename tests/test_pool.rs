@@ -1,5 +1,5 @@
 extern crate rustorm;
-use rustorm::database::Pool;
+use self::rustorm::database::Pool;
 use std::sync::{Arc, Mutex};
 use std::thread;
 use std::sync::mpsc::channel;
@@ -55,7 +55,7 @@ fn test_arc_mutex_connection(){
             let db = pool.get_db_with_url(&url);
             tx.send(1);
         });
-        let mut str = String::
+        // let mut str = String::new(); 
         let cnt = rx.recv().unwrap();
         total += cnt;
     }
