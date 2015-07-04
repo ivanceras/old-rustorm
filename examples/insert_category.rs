@@ -1,6 +1,6 @@
 extern crate rustorm;
 
-use rustorm::db::postgres::Postgres;
+use rustorm::platform::postgres::Postgres;
 use rustorm::query::Query;
 use rustorm::query::{Filter,Equality};
 
