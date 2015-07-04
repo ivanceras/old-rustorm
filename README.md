@@ -85,17 +85,38 @@ fn main(){
 ```rust
 
 
+#[derive(Debug, Clone)]
+pub struct Photo {
+    pub photo_id:Uuid,
+    pub url:Option<String>,
+}
+
+impl IsDao for Photo{
+    fn from_dao(dao:&Dao)->Self{
+        Photo{
+            photo_id: dao.get("photo_id"),
+            url: dao.get_opt("url"),
+        }
+    }
+}
+
 fn main(){
-    let pg= Postgres::with_connection("postgres://postgres:p0stgr3s@localhost/bazaar_v6");
-     let photo: Photo = Query::select()
-                        .from::<Product>()
-                        .left_join(&ProductPhoto::table(),
-                            product::product_id, product_photo::product_id)
-                        .left_join(&Photo::table(),
-                            product_photo::photo_id, photo::photo_id)
-                        .filter(product::name, Equality::EQ, &"GTX660 Ti videocard")
-                        .collect_one(&pg);
-    println!("debug: {:?}", photo);
+    let mut pool = Pool::init();
+    let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v6";
+    let db = pool.get_db_with_url(&url).unwrap();
+    
+    let photo: Photo = Query::select_all()
+                        .enumerate_column("photo.url")
+                        .from_table("bazaar.product")
+                        .left_join("bazaar.product_photo",
+                            "product.product_id", "product_photo.product_id")
+                        .left_join("bazaar.photo",
+                            "product_photo.photo_id", "photo.photo_id")
+                        .filter("product.name", Equality::EQ, &"GTX660 Ti videocard")
+                        .collect_one(db.as_ref());
+                        
+    println!("photo: {} {}",photo.photo_id, photo.url.unwrap());
+    pool.release(db);
 }
 ```
 
@@ -115,38 +136,38 @@ fn main(){
 
 ```rust
 
-    let pg = Postgres::new();
-    let mut query = Query::select();
-    query.from::<Product>()
-        .enumerate_table_all_columns(&Photo::table())
-        .left_join(&ProductCategory::table(),
-            product_category::product_id, product::product_id)
-         .left_join(&Category::table(),
-            category::category_id, product_category::category_id)
-        .left_join(&ProductPhoto::table(),
-            product::product_id, product_photo::product_id)
-        .left_join(&Photo::table(), 
-            product_photo::photo_id, photo::photo_id)
-        .filter(product::name, Equality::EQ, &"GTX660 Ti videocard")
-        .filter(category::name, Equality::EQ, &"Electronic")
-        .group_by(vec![category::name])
+    let mut pool = Pool::init();
+    let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v6";
+    let db = pool.get_db_with_url(&url).unwrap();
+    
+    let mut query = Query::select_all();
+    
+    query.from_table("bazaar.product")
+        .left_join("bazaar.product_category",
+            "product_category.product_id", "product.product_id")
+         .left_join("bazaar.category",
+            "category.category_id", "product_category.category_id")
+        .left_join("product_photo",
+            "product.product_id", "product_photo.product_id")
+        .left_join("bazaar.photo", 
+            "product_photo.photo_id", "photo.photo_id")
+        .filter("product.name", Equality::EQ, &"GTX660 Ti videocard")
+        .filter("category.name", Equality::EQ, &"Electronic")
+        .group_by(vec!["category.name"])
         .having("count(*)", Equality::GT, &1)
-        .asc(product::name)
-        .desc(product::created)
+        .asc("product.name")
+        .desc("product.created")
         ;
-    let frag = query.build(&pg);
+    let frag = query.build(db.as_ref());
     
     let expected = "
-SELECT photo.organization_id, photo.client_id, photo.created, photo.created_by, 
-    photo.updated, photo.updated_by, photo.priority, photo.name, photo.description, 
-    photo.help, photo.active, photo.photo_id, photo.url, photo.data, 
-    photo.seq_no
+SELECT *
  FROM bazaar.product
     LEFT OUTER JOIN bazaar.product_category 
         ON product_category.product_id = product.product_id 
     LEFT OUTER JOIN bazaar.category 
         ON category.category_id = product_category.category_id 
-    LEFT OUTER JOIN bazaar.product_photo 
+    LEFT OUTER JOIN product_photo 
         ON product.product_id = product_photo.product_id 
     LEFT OUTER JOIN bazaar.photo 
         ON product_photo.photo_id = photo.photo_id 
@@ -158,6 +179,8 @@ SELECT photo.organization_id, photo.client_id, photo.created, photo.created_by,
     println!("actual:   {{{}}} [{}]", frag.sql, frag.sql.len());
     println!("expected: {{{}}} [{}]", expected, expected.len());
     assert!(frag.sql.trim() == expected.trim());
+    
+    pool.release(db);
 
 ```
 ## Todo list
