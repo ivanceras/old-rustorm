@@ -45,7 +45,7 @@ fn test_arc_mutex_connection(){
     let mut pool = Arc::new(Mutex::new(Pool::init()));
     let (tx, rx) = channel();
     let mut total = 0;
-    for i in 0..10{
+    for _ in 0..10{
         let pool = pool.clone();
         let tx = tx.clone();
         thread::spawn( move || {
