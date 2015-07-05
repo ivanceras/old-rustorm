@@ -1,5 +1,5 @@
 use dao::{Type, ToType};
-//use table::{Table, Column};
+use table::Table;
 use std::collections::BTreeMap;
 use database::Database;
 use dao::DaoResult;
@@ -285,6 +285,16 @@ impl <'a>ToTableName for &'a str{
     }
 }
 
+impl ToTableName for Table{
+    
+    fn to_table_name(&self)->TableName{
+        TableName{
+            schema:Some(self.schema.to_string()),
+            name: self.name.to_string(),
+        }
+    }
+}
+
 
 #[derive(Debug)]
 #[derive(Clone)]
@@ -564,43 +574,54 @@ impl Query{
     
     /// join a table on this query
     ///
-    pub fn left_join(&mut self, table:&str, column1:&str, column2:&str)->&mut Self{
+    pub fn left_join_table(&mut self, table:&str, column1:&str, column2:&str)->&mut Self{
+        self.left_join(&table, column1, column2)
+    }
+    pub fn left_join(&mut self, table:&ToTableName, column1:&str, column2:&str)->&mut Self{
         let join = Join{
             modifier:Some(Modifier::LEFT),
             join_type:JoinType::OUTER,
-            table_name: TableName::from_str(table),
+            table_name: table.to_table_name(),
             column1:vec![column1.to_string()],
             column2:vec![column2.to_string()]
         };
         self.join(join)
     }
-    pub fn right_join(&mut self, table:&str, column1:&str, column2:&str)->&mut Self{
+    pub fn right_join_table(&mut self, table:&str, column1:&str, column2:&str)->&mut Self{
+        self.right_join(&table, column1, column2)
+    }
+    pub fn right_join(&mut self, table:&ToTableName, column1:&str, column2:&str)->&mut Self{
         let join = Join{
             modifier:Some(Modifier::RIGHT),
             join_type:JoinType::OUTER,
-            table_name: TableName::from_str(table),
+            table_name: table.to_table_name(),
             column1:vec![column1.to_string()],
             column2:vec![column2.to_string()]
         };
         self.join(join)
     }
-    
-    pub fn full_join(&mut self, table:&str, column1:&str, column2:&str)->&mut Self{
+    pub fn full_join_table(&mut self, table:&str, column1:&str, column2:&str)->&mut Self{
+        self.full_join(&table, column1, column2)
+    }
+    pub fn full_join(&mut self, table:&ToTableName, column1:&str, column2:&str)->&mut Self{
         let join = Join{
             modifier:Some(Modifier::FULL),
             join_type:JoinType::OUTER,
-            table_name: TableName::from_str(table),
+            table_name: table.to_table_name(),
             column1:vec![column1.to_string()],
             column2:vec![column2.to_string()]
         };
         self.join(join)
     }
     
-    pub fn inner_join(&mut self, table:&str, column1:&str, column2:&str)->&mut Self{
+    pub fn inner_join_table(&mut self, table:&str, column1:&str, column2:&str)->&mut Self{
+        self.inner_join(&table, column1, column2)
+    }
+    pub fn inner_join(&mut self, table:&ToTableName, column1:&str, column2:&str)->&mut Self{
         let join  = Join{
             modifier:None,
             join_type:JoinType::INNER,
-            table_name: TableName::from_str(table),
+            table_name: table.to_table_name(),
             column1:vec![column1.to_string()],
             column2:vec![column2.to_string()]
         };
