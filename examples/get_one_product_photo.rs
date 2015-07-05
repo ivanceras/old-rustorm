@@ -36,9 +36,9 @@ fn main(){
     let photo: Photo = Query::select_all()
                         .enumerate_column("photo.url")
                         .from_table("bazaar.product")
-                        .left_join("bazaar.product_photo",
+                        .left_join_table("bazaar.product_photo",
                             "product.product_id", "product_photo.product_id")
-                        .left_join("bazaar.photo",
+                        .left_join_table("bazaar.photo",
                             "product_photo.photo_id", "photo.photo_id")
                         .filter("product.name", Equality::EQ, &"GTX660 Ti videocard")
                         .collect_one(db.as_ref());
