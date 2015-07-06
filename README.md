@@ -61,7 +61,7 @@ impl IsDao for Product{
 fn main(){
     let mut pool = Pool::init();
     let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v6";
-    let db = pool.get_db_with_url(&url).unwrap();
+    let db = pool.from_url(&url).unwrap();
     
     let products: Vec<Product> = Query::select_all()
             .from_table("bazaar.product")
@@ -103,7 +103,7 @@ impl IsDao for Photo{
 fn main(){
     let mut pool = Pool::init();
     let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v6";
-    let db = pool.get_db_with_url(&url).unwrap();
+    let db = pool.from_url(&url).unwrap();
     
     let photo: Photo = Query::select_all()
                         .enumerate_column("photo.url")
@@ -126,7 +126,7 @@ fn main(){
 
     let mut pool = Pool::init();
     let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v6";
-    let db = pool.get_db_with_url(&url).unwrap();
+    let db = pool.from_url(&url).unwrap();
     
     let mut query = Query::select_all();
     
