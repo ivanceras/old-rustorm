@@ -540,6 +540,7 @@ pub trait DatabaseDDL{
     /// create a database table based on the Model Definition
     fn create_table(&self, model:&Table);
     
+    /// build sql for create table
     fn build_create_table(&self, table:&Table)->SqlFrag;
 
     /// rename table, in the same schema

@@ -21,15 +21,6 @@ impl <'a>EntityManager<'a>{
         EntityManager{db:db}
     }
 
-    /// create a database table aligned to this table definition
-    pub fn create_table(&self, table: &Table){
-        panic!("not yet")
-    }
-    /// create a schema or namespace in the database
-    pub fn create_schema(&self, schema: &str){
-        panic!("not yet")
-    }
-
     /// delete records of this table
     pub fn delete(&self, table:&Table, filters:&Vec<Filter>)->usize{
         let mut query = Query::delete();
@@ -41,31 +32,6 @@ impl <'a>EntityManager<'a>{
             Ok(x) => x,
             Err(e) => panic!("Error deleting record {}",e),
         }
-    }
-
-    /// drop the database table
-    pub fn drop_table(&self, table:&Table){
-        panic!("not yet")
-    }
-
-    /// drop the database schema
-    pub fn drop_schema(&self, schema:&str){
-        panic!("not yet")
-    }
-
-    /// empty the database table
-    pub fn truncate_table(&self, table:&Table) ->usize{
-        panic!("not yet")
-    }
-
-    /// determine if the table exist
-    pub fn exist_table(&self, table:&Table)->bool{
-        panic!("not yet")
-    }
-
-    /// determine if the schema exist
-    pub fn exist_schema(&self, schema: &str)->bool{
-        panic!("not yet")
     }
 
     /// get all the records of this table
@@ -82,7 +48,7 @@ impl <'a>EntityManager<'a>{
         let table = T::table();
         let mut q = Query::select();
         q.from_table(&table.complete_name());
-        q.enumerate_columns(columns);
+        q.columns(columns);
         q.collect(self.db)
     }
     
@@ -93,7 +59,7 @@ impl <'a>EntityManager<'a>{
         let mut q = Query::select();
         q.from_table(&table.complete_name());
         for c in table.columns{
-            q.enumerate_column(&c.name);
+            q.column(&c.name);
         }
         q.exclude_columns(ignore_columns);
         q.collect(self.db)
@@ -154,7 +120,7 @@ impl <'a>EntityManager<'a>{
         let mut q = Query::insert();
         q.into_table(&table.complete_name());
         for key in dao.values.keys(){
-            q.enumerate_column(key);
+            q.column(key);
         }
         q.return_all();
         for c in &table.columns{
@@ -178,7 +144,7 @@ impl <'a>EntityManager<'a>{
         let mut q = Query::insert();
         q.into_table(&table.complete_name());
         for key in dao.values.keys(){
-            q.enumerate_column(key);
+            q.column(key);
         }
         q.exclude_columns(ignore_columns);
         q.return_all();

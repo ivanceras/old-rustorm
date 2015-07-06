@@ -420,7 +420,7 @@ impl Query{
     }
     
     pub fn all(&mut self)->&mut Self{
-        self.enumerate_column("*")
+        self.column("*")
     }
     
     /// all enumerated columns shall be called from this
@@ -428,7 +428,7 @@ impl Query{
     /// columns that are not conflicts from some other table,
     /// but is the other conflicting column is not explicityly enumerated will not be renamed
     /// 
-    pub fn enumerate_column(&mut self, column:&str)->&mut Self{
+    pub fn column(&mut self, column:&str)->&mut Self{
         let column_name = ColumnName::from_str(column);
         let operand = Operand::ColumnName(column_name);
         let field = Field{operand:operand, name:None};
@@ -437,9 +437,9 @@ impl Query{
     }
     
     
-    pub fn enumerate_columns(&mut self, columns:Vec<&str>)->&mut Self{
+    pub fn columns(&mut self, columns:Vec<&str>)->&mut Self{
         for c in columns{
-            self.enumerate_column(c);
+            self.column(c);
         }
         self
     }
@@ -463,10 +463,6 @@ impl Query{
         };
         self.having.push(cond);
         self
-    }
-    
-    pub fn enumerate(&mut self, columns:Vec<&str>)->&mut Self{
-        self.enumerate_columns(columns)
     }
     
     /// exclude columns when inserting/updating data
@@ -528,6 +524,10 @@ impl Query{
     /// can not use into since it's rust .into built-in (owned)
     pub fn into_table(&mut self, table: &str)->&mut Self{
         self.into_(&table)
+    }
+    /// can be used in behalf of into_, from, 
+    pub fn table(&mut self, table: &ToTableName)->&mut Self{
+        self.from(table)
     }
     
     /// if the database support CTE declareted query i.e WITH, 
@@ -756,7 +756,7 @@ impl Query{
     
     /// set a value of a column when inserting/updating records
     pub fn set(&mut self, column: &str, value:&ToValue)->&mut Self{
-        self.enumerate_column(column);
+        self.column(column);
         self.value(value)
     }
     
@@ -815,10 +815,7 @@ impl Query{
             self.limit(1);
         }
         let result = self.execute_with_return(db);
-        println!("pre conversion.. {:?}", result);
         let mut dao:Vec<T> = T::from_dao_result(&result);
-        println!("after conversion..");
-
         assert!(dao.len() == 1, "There should only be 1 returned record returned:\n {:?}",result);
         dao.remove(0)
     }

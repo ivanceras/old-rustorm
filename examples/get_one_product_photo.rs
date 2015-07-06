@@ -34,7 +34,7 @@ fn main(){
     let db = pool.get_db_with_url(&url).unwrap();
     
     let photo: Photo = Query::select_all()
-                        .enumerate_column("photo.url")
+                        .column("photo.url")
                         .from_table("bazaar.product")
                         .left_join_table("bazaar.product_photo",
                             "product.product_id", "product_photo.product_id")

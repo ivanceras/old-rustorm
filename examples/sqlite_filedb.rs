@@ -79,7 +79,7 @@ fn main(){
     query.execute(db.as_ref());
     
     let category: Category = Query::select()
-        .enumerate_columns(vec!["name","description"])
+        .columns(vec!["name","description"])
         .from(&Category::table())
         .collect_one(db.as_ref());
     
