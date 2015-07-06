@@ -1,6 +1,6 @@
 use query::Query;
 use table::{Table, Column};
-use dao::{Dao,DaoResult, Type};
+use dao::{Dao,DaoResult, Value};
 use writer::SqlFrag;
 use query::{Connector, Equality, Operand, Field};
 use query::{Direction, Modifier, JoinType};
@@ -379,15 +379,15 @@ pub trait Database{
     fn execute(&self, query:&Query)->Result<usize, String>;
 
     /// execute insert with returning clause, update with returning clause
-    fn execute_sql_with_return(&self, sql:&str, params:&Vec<Type>)->Vec<Dao>;
+    fn execute_sql_with_return(&self, sql:&str, params:&Vec<Value>)->Vec<Dao>;
     
     /// specify which return columns to get, ie. sqlite doesn't support getting the meta data of the return
-    fn execute_sql_with_return_columns(&self, sql:&str, params:&Vec<Type>, return_columns:Vec<&str>)->Vec<Dao>;
+    fn execute_sql_with_return_columns(&self, sql:&str, params:&Vec<Value>, return_columns:Vec<&str>)->Vec<Dao>;
 
-    fn execute_sql_with_one_return(&self, sql:&str, params:&Vec<Type>)->Dao;
+    fn execute_sql_with_one_return(&self, sql:&str, params:&Vec<Value>)->Dao;
     
     /// everything else, no required return other than error or affected number of records
-    fn execute_sql(&self, sql:&str, param:&Vec<Type>)->Result<usize, String>;
+    fn execute_sql(&self, sql:&str, param:&Vec<Value>)->Result<usize, String>;
 
     /// build a query, return the sql string and the parameters.
     fn build_query(&self, query:&Query)->SqlFrag;

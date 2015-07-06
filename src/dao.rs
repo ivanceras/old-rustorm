@@ -12,7 +12,7 @@ use std::fmt;
 #[derive(Debug)]
 #[derive(Clone)]
 ///supported generic datatypes for an ORM
-pub enum Type{
+pub enum Value{
     Bool(bool),
     I8(i8),
     I16(i16),
@@ -36,41 +36,41 @@ pub enum Type{
 }
 
 
-impl fmt::Display for Type{
+impl fmt::Display for Value{
     
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
-            Type::String(ref x) => {
+            Value::String(ref x) => {
                 write!(f, "'{}'", x)
             },
-            Type::Uuid(ref x) => {
+            Value::Uuid(ref x) => {
                 write!(f, "'{}'", x)
             },
-            Type::Bool(ref x) => {
+            Value::Bool(ref x) => {
                 write!(f, "'{}'", x)
             },
-            Type::I8(ref x) => {
+            Value::I8(ref x) => {
                 write!(f, "'{}'", x)
             },
-            Type::I16(ref x) => {
+            Value::I16(ref x) => {
                 write!(f, "'{}'", x)
             },
-            Type::I32(ref x) => {
+            Value::I32(ref x) => {
                 write!(f, "'{}'", x)
             },
-            Type::I64(ref x) => {
+            Value::I64(ref x) => {
                 write!(f, "'{}'", x)
             },
-            Type::U8(ref x) => {
+            Value::U8(ref x) => {
                 write!(f, "'{}'", x)
             },
-            Type::U16(ref x) => {
+            Value::U16(ref x) => {
                 write!(f, "'{}'", x)
             },
-            Type::U32(ref x) => {
+            Value::U32(ref x) => {
                 write!(f, "'{}'", x)
             },
-            Type::U64(ref x) => {
+            Value::U64(ref x) => {
                 write!(f, "'{}'", x)
             },
             _ => panic!("unfinished here! {:?}", self),
@@ -78,94 +78,95 @@ impl fmt::Display for Type{
     }
 }
 
-pub trait ToType{
-    fn to_db_type(&self)->Type;
+/// rename to ToValue
+pub trait ToValue{
+    fn to_db_type(&self)->Value;
 }
 /// signed INTs
-impl ToType for i8{
-    fn to_db_type(&self)->Type{
-        Type::I8(self.clone())
+impl ToValue for i8{
+    fn to_db_type(&self)->Value{
+        Value::I8(self.clone())
     }
 }
 
-impl ToType for i16{
-    fn to_db_type(&self)->Type{
-        Type::I16(self.clone())
+impl ToValue for i16{
+    fn to_db_type(&self)->Value{
+        Value::I16(self.clone())
     }
 }
-impl ToType for i32{
-    fn to_db_type(&self)->Type{
-        Type::I32(self.clone())
+impl ToValue for i32{
+    fn to_db_type(&self)->Value{
+        Value::I32(self.clone())
     }
 }
 
-impl ToType for i64{
-    fn to_db_type(&self)->Type{
-        Type::I64(self.clone())
+impl ToValue for i64{
+    fn to_db_type(&self)->Value{
+        Value::I64(self.clone())
     }
 }
 /// unsigned INTs
-impl ToType for u8{
-    fn to_db_type(&self)->Type{
-        Type::U8(self.clone())
+impl ToValue for u8{
+    fn to_db_type(&self)->Value{
+        Value::U8(self.clone())
     }
 }
 
-impl ToType for u16{
-    fn to_db_type(&self)->Type{
-        Type::U16(self.clone())
+impl ToValue for u16{
+    fn to_db_type(&self)->Value{
+        Value::U16(self.clone())
     }
 }
-impl ToType for u32{
-    fn to_db_type(&self)->Type{
-        Type::U32(self.clone())
-    }
-}
-
-impl ToType for u64{
-    fn to_db_type(&self)->Type{
-        Type::U64(self.clone())
+impl ToValue for u32{
+    fn to_db_type(&self)->Value{
+        Value::U32(self.clone())
     }
 }
 
-impl <'a>ToType for &'a str{
-    fn to_db_type(&self)->Type{
-        Type::String(self.to_string())
+impl ToValue for u64{
+    fn to_db_type(&self)->Value{
+        Value::U64(self.clone())
     }
 }
 
-impl ToType for String{
-    fn to_db_type(&self)->Type{
-        Type::String(self.clone())
+impl <'a>ToValue for &'a str{
+    fn to_db_type(&self)->Value{
+        Value::String(self.to_string())
     }
 }
 
-impl ToType for Uuid{
-    fn to_db_type(&self)->Type{
-        Type::Uuid(self.clone())
+impl ToValue for String{
+    fn to_db_type(&self)->Value{
+        Value::String(self.clone())
     }
 }
 
-impl ToType for DateTime<UTC>{
-    fn to_db_type(&self)->Type{
-        Type::DateTime(self.clone())
+impl ToValue for Uuid{
+    fn to_db_type(&self)->Value{
+        Value::Uuid(self.clone())
     }
 }
 
-impl ToType for NaiveDate{
-    fn to_db_type(&self)->Type{
-        Type::NaiveDate(self.clone())
+impl ToValue for DateTime<UTC>{
+    fn to_db_type(&self)->Value{
+        Value::DateTime(self.clone())
     }
 }
 
-impl ToType for NaiveTime{
-    fn to_db_type(&self)->Type{
-        Type::NaiveTime(self.clone())
+impl ToValue for NaiveDate{
+    fn to_db_type(&self)->Value{
+        Value::NaiveDate(self.clone())
     }
 }
-impl ToType for NaiveDateTime{
-    fn to_db_type(&self)->Type{
-        Type::NaiveDateTime(self.clone())
+
+impl ToValue for NaiveTime{
+    fn to_db_type(&self)->Value{
+        Value::NaiveTime(self.clone())
+    }
+}
+impl ToValue for NaiveDateTime{
+    fn to_db_type(&self)->Value{
+        Value::NaiveDateTime(self.clone())
     }
 }
 
@@ -182,151 +183,150 @@ impl ToType for NaiveDateTime{
 ///
 ///
 ///
-///
-pub trait FromType{
-    fn from_type(ty:Type)->Self;
+pub trait FromValue{
+    fn from_type(ty:Value)->Self;
 }
 
-impl FromType for bool{
-    fn from_type(ty:Type)->Self{
+impl FromValue for bool{
+    fn from_type(ty:Value)->Self{
         match ty{
-            Type::Bool(x) => x,
+            Value::Bool(x) => x,
             _ => panic!("error!"),
         }
     }
 }
 
-impl FromType for i8{
-    fn from_type(ty:Type)->Self{
+impl FromValue for i8{
+    fn from_type(ty:Value)->Self{
         match ty{
-            Type::I8(x) => x,
+            Value::I8(x) => x,
             _ => panic!("error!"),
         }
     }
 }
-impl FromType for i16{
-    fn from_type(ty:Type)->Self{
+impl FromValue for i16{
+    fn from_type(ty:Value)->Self{
         match ty{
-            Type::I16(x) => x,
+            Value::I16(x) => x,
             _ => panic!("error!"),
         }
     }
 }
-impl FromType for i32{
-    fn from_type(ty:Type)->Self{
+impl FromValue for i32{
+    fn from_type(ty:Value)->Self{
         match ty{
-            Type::I32(x) => x,
+            Value::I32(x) => x,
             _ => panic!("error!"),
         }
     }
 }
-impl FromType for i64{
-    fn from_type(ty:Type)->Self{
+impl FromValue for i64{
+    fn from_type(ty:Value)->Self{
         match ty{
-            Type::I64(x) => x,
+            Value::I64(x) => x,
             _ => panic!("error!"),
         }
     }
 }
-impl FromType for u8{
-    fn from_type(ty:Type)->Self{
+impl FromValue for u8{
+    fn from_type(ty:Value)->Self{
         match ty{
-            Type::U8(x) => x,
+            Value::U8(x) => x,
             _ => panic!("error!"),
         }
     }
 }
-impl FromType for u16{
-    fn from_type(ty:Type)->Self{
+impl FromValue for u16{
+    fn from_type(ty:Value)->Self{
         match ty{
-            Type::U16(x) => x,
+            Value::U16(x) => x,
             _ => panic!("error!"),
         }
     }
 }
-impl FromType for u32{
-    fn from_type(ty:Type)->Self{
+impl FromValue for u32{
+    fn from_type(ty:Value)->Self{
         match ty{
-            Type::U32(x) => x,
+            Value::U32(x) => x,
             _ => panic!("error!"),
         }
     }
 }
-impl FromType for u64{
-    fn from_type(ty:Type)->Self{
+impl FromValue for u64{
+    fn from_type(ty:Value)->Self{
         match ty{
-            Type::U64(x) => x,
+            Value::U64(x) => x,
             _ => panic!("error!"),
         }
     }
 }
 
-impl FromType for f32{
-    fn from_type(ty:Type)->Self{
+impl FromValue for f32{
+    fn from_type(ty:Value)->Self{
         match ty{
-            Type::F32(x) => x,
+            Value::F32(x) => x,
             _ => panic!("error!"),
         }
     }
 }
-impl FromType for f64{
-    fn from_type(ty:Type)->Self{
+impl FromValue for f64{
+    fn from_type(ty:Value)->Self{
         match ty{
-            Type::F64(x) => x,
+            Value::F64(x) => x,
             _ => panic!("error! {:?}",ty),
         }
     }
 }
 
-impl FromType for String{
-    fn from_type(ty:Type)->Self{
+impl FromValue for String{
+    fn from_type(ty:Value)->Self{
         match ty{
-            Type::String(x) => x,
+            Value::String(x) => x,
             _ => panic!("error! {:?}", ty),
         }
     }
 }
 
-impl FromType for Uuid{
-    fn from_type(ty:Type)->Self{
+impl FromValue for Uuid{
+    fn from_type(ty:Value)->Self{
         match ty{
-            Type::Uuid(x) => x,
+            Value::Uuid(x) => x,
             _ => panic!("error!"),
         }
     }
 }
 
-impl FromType for DateTime<UTC>{
-    fn from_type(ty:Type)->Self{
+impl FromValue for DateTime<UTC>{
+    fn from_type(ty:Value)->Self{
         match ty{
-            Type::DateTime(x) => x,
+            Value::DateTime(x) => x,
             _ => panic!("error!"),
         }
     }
 }
 
-impl FromType for NaiveTime{
-    fn from_type(ty:Type)->Self{
+impl FromValue for NaiveTime{
+    fn from_type(ty:Value)->Self{
         match ty{
-            Type::NaiveTime(x) => x,
+            Value::NaiveTime(x) => x,
             _ => panic!("error!"),
         }
     }
 }
 
-impl FromType for NaiveDate{
-    fn from_type(ty:Type)->Self{
+impl FromValue for NaiveDate{
+    fn from_type(ty:Value)->Self{
         match ty{
-            Type::NaiveDate(x) => x,
+            Value::NaiveDate(x) => x,
             _ => panic!("error!"),
         }
     }
 }
 
-impl FromType for NaiveDateTime{
-    fn from_type(ty:Type)->Self{
+impl FromValue for NaiveDateTime{
+    fn from_type(ty:Value)->Self{
         match ty{
-            Type::NaiveDateTime(x) => x,
+            Value::NaiveDateTime(x) => x,
             _ => panic!("error!"),
         }
     }
@@ -370,7 +370,7 @@ pub struct DaoResult{
 #[derive(RustcDecodable, RustcEncodable)]
 #[derive(Debug, Clone)]
 pub struct Dao{
-    pub values:HashMap<String, Type>,
+    pub values:HashMap<String, Value>,
 }
 
 impl Dao{
@@ -379,14 +379,14 @@ impl Dao{
         Dao{values:HashMap::new()}
     }
     
-    pub fn set(&mut self, column: &str, value:&ToType){
+    pub fn set(&mut self, column: &str, value:&ToValue){
         self.values.insert(column.to_string(), value.to_db_type());
     }
     
-    pub fn set_value(&mut self, column: &str, value:Type){
+    pub fn set_value(&mut self, column: &str, value:Value){
         self.values.insert(column.to_string(), value);
     }
-    pub fn get_value(&self, column: &str)->Type{
+    pub fn get_value(&self, column: &str)->Value{
         let value = self.values.get(column);
         match value{
             Some(value) => value.clone(),
@@ -394,24 +394,24 @@ impl Dao{
         }
     }
     /// take the value and remove the content 
-    pub fn remove<T>(&mut self, column: &str) -> T where T: FromType{
+    pub fn remove<T>(&mut self, column: &str) -> T where T: FromValue{
         let value = self.values.remove(column).unwrap();
-        FromType::from_type(value)
+        FromValue::from_type(value)
     }
 
     /// take the value but not removing the content
-    pub fn get<T>(&self, column: &str) -> T where T: FromType{
+    pub fn get<T>(&self, column: &str) -> T where T: FromValue{
         let value = self.values.get(column).unwrap();
-        FromType::from_type(value.clone())
+        FromValue::from_type(value.clone())
     }
     /// get optional value
-    pub fn get_opt<T>(&self, column: &str) -> Option<T> where T: FromType{
+    pub fn get_opt<T>(&self, column: &str) -> Option<T> where T: FromValue{
         let value = self.values.get(column);
         if value.is_some(){
             let v = value.as_ref().unwrap().clone();
             match v{
-                &Type::Null => None,
-                _ => Some(FromType::from_type(v.clone()))
+                &Value::Null => None,
+                _ => Some(FromValue::from_type(v.clone()))
             }
         }else{
             None
@@ -419,7 +419,7 @@ impl Dao{
     }
     
     /// get a reference of the type
-    pub fn get_ref(&self, column: &str)->&Type{
+    pub fn get_ref(&self, column: &str)->&Value{
         self.values.get(column).unwrap()
     }
     

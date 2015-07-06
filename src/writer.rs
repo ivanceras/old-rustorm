@@ -1,4 +1,4 @@
-use dao::Type;
+use dao::Value;
 use database::SqlOption;
 use std::fmt;
 
@@ -6,7 +6,7 @@ use std::fmt;
 /// use this for writing SQL statements
 pub struct SqlFrag{
     pub sql:String,
-    pub params:Vec<Type>,
+    pub params:Vec<Value>,
     pub sql_options: Vec<SqlOption>,
 }
 
@@ -86,7 +86,7 @@ impl SqlFrag{
         self.append(comment)
     }
     ///append parameter including the needed sql keywords
-    pub fn parameter(&mut self, param:Type){
+    pub fn parameter(&mut self, param:Value){
         self.params.push(param);
         if self.sql_options.contains(&SqlOption::UseNumberedParam){
             let numbered_param = format!("${} ", self.params.len());

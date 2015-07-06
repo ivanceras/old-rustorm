@@ -5,7 +5,7 @@ use dao::{Dao};
 use database::Database;
 use table::IsTable;
 use dao::IsDao;
-use dao::ToType;
+use dao::ToValue;
 use query::Equality;
 
 /// A higher level API for manipulating objects in the database
@@ -135,7 +135,7 @@ impl <'a>EntityManager<'a>{
 /// 
 /// get an exact match, the value is filter against the primary key of the table
 /// 
-    pub fn get_exact<T>(&self, id: &ToType)->T 
+    pub fn get_exact<T>(&self, id: &ToValue)->T 
         where T : IsTable + IsDao{
         let table = T::table();
         let primary = table.primary_columns();

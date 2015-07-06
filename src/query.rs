@@ -1,4 +1,4 @@
-use dao::{Type, ToType};
+use dao::{Value, ToValue};
 use table::Table;
 use std::collections::BTreeMap;
 use database::Database;
@@ -83,7 +83,7 @@ pub enum Operand{
     TableName(TableName),
     Function(Function),
     Query(Query),
-    Value(Type),
+    Value(Value),
     Vec(Vec<Operand>),
 }
 
@@ -110,7 +110,7 @@ pub struct Filter{
 
 impl Filter{
 
-    pub fn new(column:&str, equality:Equality, value:&ToType)->Self{
+    pub fn new(column:&str, equality:Equality, value:&ToValue)->Self{
         let right_operand = Operand::Value(value.to_db_type());
         Filter{
             connector:Connector::And,
@@ -122,14 +122,14 @@ impl Filter{
         }
     }
     
-    pub fn and(&mut self, column:&str, equality:Equality, value:&ToType)->&mut Self{
+    pub fn and(&mut self, column:&str, equality:Equality, value:&ToValue)->&mut Self{
         let mut filter = Filter::new(column, equality, value);
         filter.connector = Connector::And;
         self.subfilters.push(filter);
         self
     }
     
-    pub fn or(&mut self, column:&str, equality:Equality, value:&ToType)->&mut Self{
+    pub fn or(&mut self, column:&str, equality:Equality, value:&ToValue)->&mut Self{
         let mut filter = Filter::new(column, equality, value);
         filter.connector = Connector::Or;
         self.subfilters.push(filter);
@@ -451,7 +451,7 @@ impl Query{
         self
     }
     
-    pub fn having(&mut self, column:&str, equality: Equality, value :&ToType)->&mut Self{
+    pub fn having(&mut self, column:&str, equality: Equality, value :&ToValue)->&mut Self{
         let column_name = ColumnName::from_str(column);
         let left_operand = Operand::ColumnName(column_name);
         let cond = Condition{
@@ -734,7 +734,7 @@ impl Query{
         self
     }
     
-    pub fn filter(&mut self, column:&str, equality:Equality, value:&ToType)->&mut Self{
+    pub fn filter(&mut self, column:&str, equality:Equality, value:&ToValue)->&mut Self{
         self.add_filter(Filter::new(column, equality, value))
     }
     
@@ -743,13 +743,13 @@ impl Query{
         self
     }
     
-    pub fn value(&mut self, value:&ToType)->&mut Self{
+    pub fn value(&mut self, value:&ToValue)->&mut Self{
         let operand = Operand::Value(value.to_db_type());
         self.add_value(operand)
     }
     
     /// set a value of a column when inserting/updating records
-    pub fn set(&mut self, column: &str, value:&ToType)->&mut Self{
+    pub fn set(&mut self, column: &str, value:&ToValue)->&mut Self{
         self.enumerate_column(column);
         self.value(value)
     }

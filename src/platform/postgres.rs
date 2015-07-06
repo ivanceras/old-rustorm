@@ -5,7 +5,7 @@ use dao::Dao;
 use postgres::Connection;
 use postgres::SslMode;
 use regex::Regex;
-use dao::Type;
+use dao::Value;
 use query::SqlType;
 use database::{Database, DatabaseDev, DatabaseDDL};
 use postgres::types::Type as PgType;
@@ -54,14 +54,14 @@ impl Postgres{
     /// This is used when inserting records to the database
     /// TODO: put this somewhere organized
     /// TODO: match all the other filter types
-    fn from_rust_type_tosql<'a>(types: &'a Vec<Type>)->Vec<&'a ToSql>{
+    fn from_rust_type_tosql<'a>(types: &'a Vec<Value>)->Vec<&'a ToSql>{
         let mut params:Vec<&ToSql> = vec![];
         for t in types{
             match t {
-                &Type::String(ref x) => {
+                &Value::String(ref x) => {
                     params.push(x);
                 },
-                &Type::Uuid(ref x) => {
+                &Value::Uuid(ref x) => {
                     params.push(x);
                 },
                 _ => panic!("not yet here {:?}", t),
@@ -71,62 +71,62 @@ impl Postgres{
     }
     
     /// convert a record of a row into rust type
-    fn from_sql_to_rust_type(dtype:&PgType, row: &Row, index:usize)->Type{
+    fn from_sql_to_rust_type(dtype:&PgType, row: &Row, index:usize)->Value{
         match dtype{
             &PgType::Uuid => {
                 let value = row.get_opt(index);
                 match value{
-                    Ok(value) => Type::Uuid(value),
-                    Err(_) => Type::Null,
+                    Ok(value) => Value::Uuid(value),
+                    Err(_) => Value::Null,
                 }
             },
             &PgType::Varchar | &PgType::Text => {
                 let value = row.get_opt(index);
                  match value{
-                    Ok(value) => Type::String(value),
-                    Err(_) => Type::Null,
+                    Ok(value) => Value::String(value),
+                    Err(_) => Value::Null,
                 }
             },
              &PgType::TimestampTZ => {
                 let value = row.get_opt(index);
                  match value{
-                    Ok(value) => Type::DateTime(value),
-                    Err(_) => Type::Null,
+                    Ok(value) => Value::DateTime(value),
+                    Err(_) => Value::Null,
                 }
             },
              &PgType::Numeric => {
                 let value = row.get_opt(index);
                  match value{
-                    Ok(value) => Type::F64(value),
-                    Err(_) => Type::Null,
+                    Ok(value) => Value::F64(value),
+                    Err(_) => Value::Null,
                 }
             },
             &PgType::Bool => {
                 let value = row.get_opt(index);
                  match value{
-                    Ok(value) => Type::Bool(value),
-                    Err(_) => Type::Null,
+                    Ok(value) => Value::Bool(value),
+                    Err(_) => Value::Null,
                 }
             },
             &PgType::Json => {
                 let value = row.get_opt(index);
                  match value{
-                    Ok(value) => Type::String(value),
-                    Err(_) => Type::Null,
+                    Ok(value) => Value::String(value),
+                    Err(_) => Value::Null,
                 }
             },
             &PgType::Int4 => {
                 let value = row.get_opt(index);
                  match value{
-                    Ok(value) => Type::I32(value),
-                    Err(_) => Type::Null,
+                    Ok(value) => Value::I32(value),
+                    Err(_) => Value::Null,
                 }
             },
             &PgType::Timetz => {
                 let value = row.get_opt(index);
                  match value{
-                    Ok(value) => Type::DateTime(value),
-                    Err(_) => Type::Null,
+                    Ok(value) => Value::DateTime(value),
+                    Err(_) => Value::Null,
                 }
             },
              
@@ -368,7 +368,7 @@ impl Database for Postgres{
     fn update(&self, query:&Query)->Dao{panic!("not yet")}
     fn delete(&self, query:&Query)->Result<usize, String>{panic!("not yet");}
 
-    fn execute_sql_with_return(&self, sql:&str, params:&Vec<Type>)->Vec<Dao>{
+    fn execute_sql_with_return(&self, sql:&str, params:&Vec<Value>)->Vec<Dao>{
         println!("SQL: \n{}", sql);
         println!("param: {:?}", params);
         assert!(self.conn.is_some());
@@ -390,10 +390,10 @@ impl Database for Postgres{
         }
         daos
     }
-    fn execute_sql_with_return_columns(&self, sql:&str, params:&Vec<Type>, return_columns:Vec<&str>)->Vec<Dao>{
+    fn execute_sql_with_return_columns(&self, sql:&str, params:&Vec<Value>, return_columns:Vec<&str>)->Vec<Dao>{
         panic!("not yet.. but postgresql can support this")
     }
-    fn execute_sql_with_one_return(&self, sql:&str, params:&Vec<Type>)->Dao{
+    fn execute_sql_with_one_return(&self, sql:&str, params:&Vec<Value>)->Dao{
         let dao = self.execute_sql_with_return(sql, params);
         assert!(dao.len() == 1, "There should be 1 and only 1 record return here");
         dao[0].clone()
@@ -402,7 +402,7 @@ impl Database for Postgres{
     /// generic execute sql which returns not much information,
     /// returns only the number of affected records or errors
     /// can be used with DDL operations (CREATE, DELETE, ALTER, DROP)
-    fn execute_sql(&self, sql:&str, params:&Vec<Type>)->Result<usize, String>{
+    fn execute_sql(&self, sql:&str, params:&Vec<Value>)->Result<usize, String>{
         println!("SQL: \n{}", sql);
         println!("param: {:?}", params);
         let to_sql_types = Self::from_rust_type_tosql(params);
