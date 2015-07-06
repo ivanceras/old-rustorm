@@ -48,7 +48,7 @@ fn main(){
     let mut pool = Arc::new(Mutex::new(Pool::init()));
     for i in 0..3000{
     	let pool = pool.clone();
-        let db = pool.lock().unwrap().get_db_with_url(&url);//important to obtain a connection before opening a thread
+        let db = pool.lock().unwrap().from_url(&url);//important to obtain a connection before opening a thread
         thread::spawn(move || {
             println!("spawning thread {}", i);
             match db{

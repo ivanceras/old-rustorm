@@ -69,7 +69,7 @@ impl IsTable for Category{
 fn main(){
     let mut pool = Pool::init();
     let url = "sqlite:///:memory:";
-    let db = pool.get_db_with_url(&url).unwrap();
+    let db = pool.from_url(&url).unwrap();
     let result = db.as_ddl().create_table(&Category::table());
     
     let mut query = Query::insert();

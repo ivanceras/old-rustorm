@@ -50,7 +50,7 @@ impl IsDao for Category{
 fn main(){
     let mut pool = Pool::init();
     let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v6";
-    let db = pool.get_db_with_url(&url).unwrap();
+    let db = pool.from_url(&url).unwrap();
         
     let category: Category = Query::insert()
             .set("name", &"Test Category11")

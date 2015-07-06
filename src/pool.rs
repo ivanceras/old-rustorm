@@ -84,7 +84,7 @@ impl Pool{
     }
     
     /// exposed api to get connection from a pooled connection
-    pub fn get_db_with_url(&mut self, url:&str)->Result<Platform, String>{
+    pub fn from_url(&mut self, url:&str)->Result<Platform, String>{
         let db_config = DbConfig::from_url(url);
         self.get_db(&db_config)
     }

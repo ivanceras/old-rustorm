@@ -42,7 +42,7 @@ fn main(){
     
     let pool1 = pool.clone();
     
-    let db = pool1.lock().unwrap().get_db_with_url(&url);
+    let db = pool1.lock().unwrap().from_url(&url);
     
     match db{
             Ok(db) => {
@@ -58,7 +58,7 @@ fn main(){
     };
     
     let pool2 = pool.clone();
-    let db = pool2.lock().unwrap().get_db_with_url(&url);
+    let db = pool2.lock().unwrap().from_url(&url);
     match db{
             Ok(db) => {
                 thread::spawn(move || {

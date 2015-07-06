@@ -27,7 +27,7 @@ fn test_use(){
     let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v6";
     pool.reserve_connection(&url, 5);
     assert_eq!(pool.total_free_connections(), 5);
-    pool.get_db_with_url(&url);
+    pool.from_url(&url);
 }
 
 
@@ -36,7 +36,7 @@ fn test_use_no_reserve(){
     let mut pool = Pool::init();
     let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v6";
     assert_eq!(pool.total_free_connections(), 0);
-    pool.get_db_with_url(&url);
+    pool.from_url(&url);
 }
 
 #[test]
@@ -48,7 +48,7 @@ fn test_arc_mutex_connection(){
             let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v6";
             let mut pool = pool.lock().unwrap();
             //println!("index[{}] has {} connections..", i, pool.total_pool_connection());
-            let db = pool.get_db_with_url(&url);
+            let db = pool.from_url(&url);
         });
     }
     
@@ -61,7 +61,7 @@ fn test_release_connection(){
     let mut pool = Pool::init();
     let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v6";
     println!("{} connections..", pool.total_free_connections());
-    let db = pool.get_db_with_url(&url);
+    let db = pool.from_url(&url);
     pool.release(db.unwrap());
     
 }
