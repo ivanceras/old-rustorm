@@ -7,7 +7,7 @@ use database::{Database};
 use dao::DaoResult;
 use writer::SqlFrag;
 use database::SqlOption;
-use database::DbConfig;
+use config::DbConfig;
 use rusqlite::SqliteConnection;
 use rusqlite::types::ToSql;
 use rusqlite::SqliteRow;

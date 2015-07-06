@@ -71,3 +71,4 @@ pub mod database;
 pub mod platform;
 pub mod table;
 pub mod writer;
+pub mod config;

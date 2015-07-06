@@ -15,7 +15,7 @@ use writer::SqlFrag;
 use postgres::rows::Row;
 use database::SqlOption;
 use std::error::Error;
-use database::DbConfig;
+use config::DbConfig;
 
 pub struct Postgres {
     config: Option<DbConfig>,
