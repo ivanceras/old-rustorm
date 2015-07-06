@@ -72,3 +72,4 @@ pub mod platform;
 pub mod table;
 pub mod writer;
 pub mod config;
+pub mod pool;
