@@ -17,7 +17,7 @@ use rustorm::platform::postgres::Postgres;
 use rustorm::query::Query;
 use rustorm::query::{Filter,Equality};
 use rustorm::dao::{Dao,IsDao};
-use rustorm::database::Pool;
+use rustorm::pool::Pool;
 
 
 #[derive(Debug, Clone)]

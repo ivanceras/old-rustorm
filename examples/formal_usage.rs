@@ -9,7 +9,7 @@ use uuid::Uuid;
 use rustorm::query::Query;
 use rustorm::query::{Filter,Equality,Operand};
 
-use rustorm::database::Pool;
+use rustorm::pool::Pool;
 use rustorm::database::Database;
 use rustorm::dao::{IsDao, Dao};
 

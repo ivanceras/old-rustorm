@@ -9,7 +9,7 @@ use chrono::offset::utc::UTC;
 
 use rustorm::query::Query;
 use rustorm::dao::{Dao,IsDao};
-use rustorm::database::Pool;
+use rustorm::pool::Pool;
 
 #[derive(Debug, Clone)]
 struct Category {

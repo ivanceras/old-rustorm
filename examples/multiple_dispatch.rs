@@ -11,7 +11,7 @@ use rustc_serialize::json;
 use rustorm::query::Query;
 use rustorm::query::{Filter,Equality};
 use rustorm::dao::{Dao,IsDao};
-use rustorm::database::Pool;
+use rustorm::pool::Pool;
 use rustorm::database::Database;
 use std::sync::{Arc, Mutex};
 use std::thread;

@@ -1,5 +1,5 @@
 extern crate rustorm;
-use rustorm::database::Pool;
+use rustorm::pool::Pool;
 use std::sync::{Arc, Mutex};
 use std::thread;
 

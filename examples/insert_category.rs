@@ -2,7 +2,7 @@ extern crate rustorm;
 
 use rustorm::query::Query;
 use rustorm::query::{Filter,Equality};
-use rustorm::database::Pool;
+use rustorm::pool::Pool;
 
 fn main(){
     let mut pool = Pool::init();
