@@ -6,11 +6,9 @@ use postgres::Connection;
 use postgres::SslMode;
 use regex::Regex;
 use dao::Value;
-use query::SqlType;
 use database::{Database, DatabaseDev, DatabaseDDL};
 use postgres::types::Type as PgType;
 use postgres::types::ToSql;
-use dao::DaoResult;
 use writer::SqlFrag;
 use postgres::rows::Row;
 use database::SqlOption;
@@ -329,42 +327,16 @@ impl Database for Postgres{
     /// return this list of options, supported features in the database
     fn sql_options(&self)->Vec<SqlOption>{
         vec![
-            SqlOption::UseNumberedParam,  // uses numbered parameters
+            SqlOption::UsesNumberedParam,  // uses numbered parameters
             SqlOption::SupportsReturningClause, // supports returning clause, feature
             SqlOption::SupportsCTE,
             SqlOption::SupportsInheritance,
+            SqlOption::UsesSchema,
+            SqlOption::ReturnMetaColumns,// whether to use the column names returned in a statement
         ]
     }
     
-    fn select(&self, query:&Query)->DaoResult{
-        self.execute_with_return(query)
-    }
     
-    fn execute_with_return(&self, query:&Query)->DaoResult{
-        let sql_frag = self.build_query(query);
-        DaoResult{
-            dao: self.execute_sql_with_return(&sql_frag.sql, &sql_frag.params),
-            renamed_columns:query.renamed_columns.clone(),
-            total:None,
-            page:None,
-            page_size:None,
-        }
-    }
-    
-    fn execute_with_one_return(&self, query:&Query)->Dao{
-        let sql_frag = self.build_query(query);
-        self.execute_sql_with_one_return(&sql_frag.sql, &sql_frag.params)
-    }
-    
-    fn execute(&self, query:&Query)->Result<usize, String>{
-        let sql_frag = self.build_query(query);
-        self.execute_sql(&sql_frag.sql, &sql_frag.params)
-    }
-    
-    fn insert(&self, query:&Query)->Dao{
-        let sql_frag = self.build_insert(query);
-        self.execute_sql_with_one_return(&sql_frag.sql, &sql_frag.params)
-    }
     fn update(&self, query:&Query)->Dao{panic!("not yet")}
     fn delete(&self, query:&Query)->Result<usize, String>{panic!("not yet");}
 
@@ -393,11 +365,7 @@ impl Database for Postgres{
     fn execute_sql_with_return_columns(&self, sql:&str, params:&Vec<Value>, return_columns:Vec<&str>)->Vec<Dao>{
         panic!("not yet.. but postgresql can support this")
     }
-    fn execute_sql_with_one_return(&self, sql:&str, params:&Vec<Value>)->Dao{
-        let dao = self.execute_sql_with_return(sql, params);
-        assert!(dao.len() == 1, "There should be 1 and only 1 record return here");
-        dao[0].clone()
-    }
+    
     
     /// generic execute sql which returns not much information,
     /// returns only the number of affected records or errors
@@ -417,17 +385,6 @@ impl Database for Postgres{
         result
     }
 
-    /// use by select to build the select query
-    /// build all types of query
-    /// TODO: need to supply the number of parameters where to start the numbering of the number parameters
-    fn build_query(&self, query:&Query)->SqlFrag{
-        match query.sql_type{
-            SqlType::SELECT => self.build_select(query),
-            SqlType::INSERT => self.build_insert(query),
-            SqlType::UPDATE => self.build_update(query),
-            SqlType::DELETE => self.build_delete(query),
-        }
-    }
 }
 
 impl DatabaseDDL for Postgres{
@@ -435,6 +392,7 @@ impl DatabaseDDL for Postgres{
     fn create_schema(&self, schema:&str){}
     fn drop_schema(&self, schema:&str){}
     fn create_table(&self, model:&Table){}
+    fn build_create_table(&self, table:&Table)->SqlFrag{panic!("not yet")}
     fn rename_table(&self, table:&Table, new_tablename:String){}
     fn drop_table(&self, table:&Table){}
     fn set_foreign_constraint(&self, model:&Table){}
@@ -690,7 +648,7 @@ impl DatabaseDev for Postgres{
     /// convert rust data type names to database data type names
     /// will be used in generating SQL for table creation
     /// FIXME, need to restore the exact data type as before
-    fn rust_type_to_dbtype(&self, rust_type: &str, db_data_type:&str)->String{
+    fn rust_type_to_dbtype(&self, rust_type: &str)->String{
 
         let rust_type = match rust_type{
             "bool" => {

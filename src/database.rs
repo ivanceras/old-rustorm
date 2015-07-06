@@ -6,21 +6,27 @@ use query::{Connector, Equality, Operand, Field};
 use query::{Direction, Modifier, JoinType};
 use query::{Filter, Condition};
 use config::DbConfig;
+use query::SqlType;
 
 
 /// SqlOption, contains the info about the features and quirks of underlying database
 #[derive(PartialEq)]
 pub enum SqlOption{
     /// use the numbered parameters, as the case with rust-postgres
-    UseNumberedParam,
+    UsesNumberedParam,
     /// sqlite, jdbc
-    UseQuestionMark,
+    UsesQuestionMark,
     /// postgresql supports returning clause on insert and update
     SupportsReturningClause,
-    /// support CTE (common table expression ie. WITH)
+    /// support CTE (common table expression ie. WITH) (postgresql, sqlite)
     SupportsCTE,
     /// supports inheritance (postgresql)
     SupportsInheritance,
+    /// whether the database uses schema (postgresl, oracle)
+    UsesSchema,
+    /// wheter the returned rows in a query included Meta columns for easy extraction of records
+    /// (postgres returns this), sqlite does not return meta columns, so you have to extract it by index yourself.
+    ReturnMetaColumns,
 }
 
 /// Generic Database interface
@@ -70,12 +76,17 @@ pub trait Database{
 
     /// select
     /// returns an array to the qualified records
-    fn select(&self, query:&Query)->DaoResult;
+    fn select(&self, query:&Query)->DaoResult{
+        self.execute_with_return(query)
+    }
 
     /// insert
     /// insert an object, returns the inserted Dao value
     /// including the value generated via the defaults
-    fn insert(&self, query:&Query)->Dao;
+    fn insert(&self, query:&Query)->Dao{
+        let sql_frag = self.build_insert(query);
+        self.execute_sql_with_one_return(&sql_frag.sql, &sql_frag.params)
+    }
 
     /// update
     /// returns the updated Dao
@@ -85,14 +96,40 @@ pub trait Database{
     /// returns the number of deleted records
     fn delete(&self, query:&Query)->Result<usize, String>;
 
-    /// execute query with return dao
-    fn execute_with_return(&self, query:&Query)->DaoResult;
+    /// execute query with return dao,
+    /// use the enumerated column for data extraction when db doesn't support returning the records column names
+    fn execute_with_return(&self, query:&Query)->DaoResult{
+        let sql_frag = self.build_query(query);
+        let result = if self.sql_options().contains(&SqlOption::ReturnMetaColumns){
+            self.execute_sql_with_return(&sql_frag.sql, &sql_frag.params)
+        }else{
+            let mut columns:Vec<&str> = vec![];
+            for c in query.get_enumerated_columns(){
+                columns.push(&c.column);//TODO deal with the renames, and functions, fields
+            }
+            self.execute_sql_with_return_columns(&sql_frag.sql, &sql_frag.params, columns)
+        };
+        
+        DaoResult{
+            dao: result,
+            renamed_columns:query.renamed_columns.clone(),
+            total:None,
+            page:None,
+            page_size:None,
+        }
+    }
 
     /// execute query with 1 return dao
-    fn execute_with_one_return(&self, query:&Query)->Dao;
+    fn execute_with_one_return(&self, query:&Query)->Dao{
+        let sql_frag = self.build_query(query);
+        self.execute_sql_with_one_return(&sql_frag.sql, &sql_frag.params)
+    }
     
     /// execute query with no return dao
-    fn execute(&self, query:&Query)->Result<usize, String>;
+    fn execute(&self, query:&Query)->Result<usize, String>{
+        let sql_frag = self.build_query(query);
+        self.execute_sql(&sql_frag.sql, &sql_frag.params)
+    }
 
     /// execute insert with returning clause, update with returning clause
     fn execute_sql_with_return(&self, sql:&str, params:&Vec<Value>)->Vec<Dao>;
@@ -100,13 +137,27 @@ pub trait Database{
     /// specify which return columns to get, ie. sqlite doesn't support getting the meta data of the return
     fn execute_sql_with_return_columns(&self, sql:&str, params:&Vec<Value>, return_columns:Vec<&str>)->Vec<Dao>;
 
-    fn execute_sql_with_one_return(&self, sql:&str, params:&Vec<Value>)->Dao;
+    fn execute_sql_with_one_return(&self, sql:&str, params:&Vec<Value>)->Dao{
+        let dao = self.execute_sql_with_return(sql, params);
+        assert!(dao.len() == 1, "There should be 1 and only 1 record return here");
+        dao[0].clone()
+    }
     
     /// everything else, no required return other than error or affected number of records
     fn execute_sql(&self, sql:&str, param:&Vec<Value>)->Result<usize, String>;
 
     /// build a query, return the sql string and the parameters.
-    fn build_query(&self, query:&Query)->SqlFrag;
+    /// use by select to build the select query
+    /// build all types of query
+    /// TODO: need to supply the number of parameters where to start the numbering of the number parameters
+    fn build_query(&self, query:&Query)->SqlFrag{
+        match query.sql_type{
+            SqlType::SELECT => self.build_select(query),
+            SqlType::INSERT => self.build_insert(query),
+            SqlType::UPDATE => self.build_update(query),
+            SqlType::DELETE => self.build_delete(query),
+        }
+    }
     
     /// build operand, i.e: columns, query, function, values
     fn build_operand(&self, w: &mut SqlFrag, parent_query:&Query, operand:&Operand){
@@ -119,7 +170,11 @@ pub trait Database{
                 }
             }, 
             &Operand::TableName(ref table_name) => {
-                w.append(&table_name.complete_name());
+                if self.sql_options().contains(&SqlOption::UsesSchema){
+                    w.append(&table_name.complete_name());
+                }else{
+                    w.append(&table_name.name);
+                }
             },
             &Operand::Function(ref function)=>{
                     w.append("(");
@@ -363,8 +418,14 @@ pub trait Database{
         let into_table = query.get_from_table();
         assert!(into_table.is_some(), "There should be table to insert to");
         if into_table.is_some(){
-            w.append(&into_table.unwrap().complete_name());
+            let table_name = into_table.unwrap();
+            if self.sql_options().contains(&SqlOption::UsesSchema){
+                w.append(&table_name.complete_name());
+            }else{
+                w.append(&table_name.name);
+            }
         }
+        
         
         w.append("(");
         self.build_enumerated_fields(&mut w, query, &query.enumerated_fields); //TODO: add support for column_sql, fields, functions
@@ -461,6 +522,10 @@ pub trait Database{
 
 }
 
+
+/// Deployment Database should implement this trait,
+/// to enable automated installation of the app, regardless what database platform
+/// the app is developed from.
 pub trait DatabaseDDL{
     //////////////////////////////////////////
     /// The following methods involves DDL(Data definition language) operation
@@ -474,6 +539,8 @@ pub trait DatabaseDDL{
 
     /// create a database table based on the Model Definition
     fn create_table(&self, model:&Table);
+    
+    fn build_create_table(&self, table:&Table)->SqlFrag;
 
     /// rename table, in the same schema
     fn rename_table(&self, table:&Table, new_tablename:String);
@@ -488,6 +555,9 @@ pub trait DatabaseDDL{
     fn set_primary_constraint(&self, model:&Table);
 }
 
+
+/// implement this for database that you use as your development platform, to extract meta data information
+/// about the tables and their relationship to each other
 pub trait DatabaseDev{
 
 ////////////////////////////////////////
@@ -518,6 +588,6 @@ pub trait DatabaseDev{
     /// returns (module, type)
     fn dbtype_to_rust_type(&self, db_type: &str)->(Vec<String>, String);
     
-    fn rust_type_to_dbtype(&self, rust_type: &str, db_data_type:&str)->String;
+    fn rust_type_to_dbtype(&self, rust_type: &str)->String;
 
 }

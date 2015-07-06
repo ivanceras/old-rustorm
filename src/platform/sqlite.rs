@@ -12,6 +12,8 @@ use rusqlite::SqliteConnection;
 use rusqlite::types::ToSql;
 use rusqlite::SqliteRow;
 use std::path::Path;
+use table::Table;
+use database::DatabaseDDL;
 
 pub struct Sqlite {
     config: Option<DbConfig>,
@@ -26,8 +28,20 @@ impl Sqlite{
     }
     
     pub fn connect_with_url(url:&str)->Result<Self, String>{
-        let path = Path::new(url);
-        let conn = SqliteConnection::open(&path);
+        let config = DbConfig::from_url(url);
+        let database:&str = &config.database;
+        let conn = match database{
+             ":memory:" => {
+                println!("using in memory database");
+                SqliteConnection::open_in_memory()
+            },
+             _ => {
+                 let path = Path::new(database);
+                 println!("Using file path {:?}", path);
+                 println!("config{:?}", config);
+                 SqliteConnection::open(&path)
+             }
+        };
         match conn{
             Ok(conn) => {
                 let config = DbConfig::from_url(url);
@@ -64,6 +78,70 @@ impl Sqlite{
         }
     }
     
+    ///
+    /// convert rust data type names to database data type names
+    /// will be used in generating SQL for table creation
+    /// FIXME, need to restore the exact data type as before
+    fn rust_type_to_dbtype(&self, rust_type: &str)->String{
+
+        let rust_type = match rust_type{
+            "bool" => {
+                "boolean".to_string()
+            },
+            "i8" => {
+                "integer".to_string()
+            },
+            "i16" => {
+                "integer".to_string()
+            },
+            "i32"  => {
+                "integer".to_string()
+            },
+            "u32"  => {
+                "integer".to_string()
+            },
+            "i64"  => {
+                "integer".to_string()
+            },
+            "f32" => {
+                "real".to_string()
+            },
+            "f64" => {
+                "real".to_string()
+            },
+            "String" =>{
+                "text".to_string()
+            },
+            "Vec<u8>" =>{
+                "blob".to_string()
+            },
+            "Json" => {
+                "text".to_string()
+            },
+            "Uuid" => {
+                "text".to_string()
+            },
+            "NaiveDateTime" => {
+                "numeric".to_string()
+            },
+            "DateTime<UTC>" => {
+                "numeric".to_string()
+            },
+            "NaiveDate" => {
+                "numeric".to_string()
+            },
+            "NaiveTime" => {
+                "numeric".to_string()
+            },
+            "HashMap<String, Option<String>>" => {
+                "text".to_string()
+            },
+            _ => panic!("Unable to get the equivalent database data type for {}", rust_type),
+        };
+        rust_type
+
+    }
+    
 }
 
 impl Database for Sqlite{
@@ -71,10 +149,7 @@ impl Database for Sqlite{
         self.config.clone().unwrap()
     }
     fn version(&self)->String{
-        let sql = "SHOW server_version";
-        let dao = self.execute_sql_with_one_return(sql, &vec![]);
-        let version = dao.get("server_version");
-        version
+       panic!("not yet")
     }
     fn begin(&self){}
     fn commit(&self){}
@@ -89,36 +164,9 @@ impl Database for Sqlite{
     /// return this list of options, supported features in the database
     fn sql_options(&self)->Vec<SqlOption>{
         vec![
-            SqlOption::UseNumberedParam,  // uses numbered parameters
-            SqlOption::SupportsReturningClause, // supports returning clause, feature
+            SqlOption::UsesNumberedParam,  // uses numbered parameters
             SqlOption::SupportsCTE,
-            SqlOption::SupportsInheritance,
         ]
-    }
-    
-    fn select(&self, query:&Query)->DaoResult{
-        self.execute_with_return(query)
-    }
-    
-    fn execute_with_return(&self, query:&Query)->DaoResult{
-        let sql_frag = self.build_query(query);
-        DaoResult{
-            dao: self.execute_sql_with_return(&sql_frag.sql, &sql_frag.params),
-            renamed_columns:query.renamed_columns.clone(),
-            total:None,
-            page:None,
-            page_size:None,
-        }
-    }
-    
-    fn execute_with_one_return(&self, query:&Query)->Dao{
-        let sql_frag = self.build_query(query);
-        self.execute_sql_with_one_return(&sql_frag.sql, &sql_frag.params)
-    }
-    
-    fn execute(&self, query:&Query)->Result<usize, String>{
-        let sql_frag = self.build_query(query);
-        self.execute_sql(&sql_frag.sql, &sql_frag.params)
     }
     
     fn insert(&self, query:&Query)->Dao{
@@ -127,11 +175,10 @@ impl Database for Sqlite{
     }
     fn update(&self, query:&Query)->Dao{panic!("not yet")}
     fn delete(&self, query:&Query)->Result<usize, String>{panic!("not yet");}
-
+    
     fn execute_sql_with_return(&self, sql:&str, params:&Vec<Value>)->Vec<Dao>{
-        panic!("not yet");
+        panic!("unsupported!");
     }
-
     fn execute_sql_with_return_columns(&self, sql:&str, params:&Vec<Value>, return_columns:Vec<&str>)->Vec<Dao>{
         println!("SQL: \n{}", sql);
         println!("param: {:?}", params);
@@ -139,22 +186,27 @@ impl Database for Sqlite{
         let mut stmt = self.conn.as_ref().unwrap().prepare(sql).unwrap();
         let mut daos = vec![];
         let param = Self::from_rust_type_tosql(params);
-        for row in stmt.query(&param).unwrap() {
-            match row{
-                Ok(row) => {
-                    let mut index = 0;
-                    let mut dao = Dao::new();
-                    for rc in &return_columns{
-                        let rtype = Self::from_sql_to_rust_type(&row, index);
-                        dao.set_value(rc, rtype);
-                        index += 1;
+        let rows = stmt.query(&param);
+        match rows{
+            Ok(rows) => 
+            for row in rows {
+                match row{
+                    Ok(row) => {
+                        let mut index = 0;
+                        let mut dao = Dao::new();
+                        for rc in &return_columns{
+                            let rtype = Self::from_sql_to_rust_type(&row, index);
+                            dao.set_value(rc, rtype);
+                            index += 1;
+                        }
+                        daos.push(dao);
                     }
-                    daos.push(dao);
+                    Err(e) => {
+                        println!("error! {}",e) 
+                    }
                 }
-                Err(e) => {
-                    println!("error! {}",e) 
-                }
-            }
+            },
+            Err(e) => println!("Something is wrong")
         }
         daos
     }
@@ -185,7 +237,6 @@ impl Database for Sqlite{
 
     /// use by select to build the select query
     /// build all types of query
-    /// TODO: need to supply the number of parameters where to start the numbering of the number parameters
     fn build_query(&self, query:&Query)->SqlFrag{
         match query.sql_type{
             SqlType::SELECT => self.build_select(query),
@@ -193,5 +244,59 @@ impl Database for Sqlite{
             SqlType::UPDATE => self.build_update(query),
             SqlType::DELETE => self.build_delete(query),
         }
+    }
+}
+
+impl DatabaseDDL for Sqlite{
+    fn create_schema(&self, schema:&str){
+        panic!("sqlite does not support schema")
+    }
+
+    fn drop_schema(&self, schema:&str){
+        panic!("sqlite does not support schema")
+    }
+    
+    fn build_create_table(&self, table:&Table)->SqlFrag{
+        let mut w = SqlFrag::new(self.sql_options());
+        w.append("CREATE TABLE ");
+        w.append(&table.name);
+        w.append("(");
+        w.ln_tab();
+        let mut do_comma = false;
+        for c in &table.columns{
+            if do_comma {w.commasp();}else {do_comma=true;}
+            w.append(&c.name);
+            w.append(" ");
+            let dt = self.rust_type_to_dbtype(&c.data_type);
+            w.append(&dt);
+            if c.is_primary {
+                w.append(" PRIMARY KEY ");
+            }
+        }
+        w.append(")");
+        w
+    }
+    fn create_table(&self, table:&Table){
+         let frag = self.build_create_table(table);
+         match self.execute_sql(&frag.sql, &vec![]){
+            Ok(x) => println!("created table.."),
+            Err(e) => panic!("table not created {}", e),
+         }
+    }
+
+    fn rename_table(&self, table:&Table, new_tablename:String){
+        
+    }
+
+    fn drop_table(&self, table:&Table){
+        panic!("not yet");
+    }
+
+    fn set_foreign_constraint(&self, model:&Table){
+        panic!("not yet");
+    }
+
+    fn set_primary_constraint(&self, model:&Table){
+        panic!("not yet");
     }
 }

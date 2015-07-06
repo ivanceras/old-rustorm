@@ -88,11 +88,11 @@ impl SqlFrag{
     ///append parameter including the needed sql keywords
     pub fn parameter(&mut self, param:Value){
         self.params.push(param);
-        if self.sql_options.contains(&SqlOption::UseNumberedParam){
+        if self.sql_options.contains(&SqlOption::UsesNumberedParam){
             let numbered_param = format!("${} ", self.params.len());
             self.append(&numbered_param);
         }
-        else if self.sql_options.contains(&SqlOption::UseQuestionMark){
+        else if self.sql_options.contains(&SqlOption::UsesQuestionMark){
             self.append("?");
         }
     }

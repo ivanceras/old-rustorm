@@ -9,13 +9,13 @@ pub struct DbConfig{
     /// postgres, sqlite, mysql
     /// some fields are optional since sqlite is not applicable for those
     pub platform: String,
-    username: Option<String>,
-    password: Option<String>,
+    pub username: Option<String>,
+    pub password: Option<String>,
     /// localhost
-    host: Option<Host>,
+    pub host: Option<Host>,
     /// 5432
-    port: Option<u16>,
-    database: String,
+    pub port: Option<u16>,
+    pub database: String,
 }
 
 impl DbConfig{
@@ -37,7 +37,6 @@ impl DbConfig{
                 let scheme: &str = &parsed.scheme;
                 // FIXME: This is a hacky way to parse database url, using servo/url parser
                 let https_url = format!("https:{}", non_relative);
-                println!("https_url: {}", https_url);
                 let reparse = Url::parse(&https_url);
                 
                 let reparse_relative = match reparse {

@@ -7,6 +7,7 @@ use dao::IsDao;
 use dao::Dao;
 use table::IsTable;
 use writer::SqlFrag;
+use database::SqlOption;
 
 #[derive(Debug)]
 #[derive(Clone)]
@@ -285,6 +286,7 @@ impl <'a>ToTableName for &'a str{
     }
 }
 
+
 impl ToTableName for Table{
     
     fn to_table_name(&self)->TableName{
@@ -518,10 +520,14 @@ impl Query{
      pub fn from_table(&mut self, table:&str)->&mut Self{
         self.from(&table)
     }
+    /// `into` is used in rust, os settled with `into_`
+    pub fn into_(&mut self, table :&ToTableName)->&mut Self{
+        self.sql_type = SqlType::INSERT;
+        self.from(table)
+    }
     /// can not use into since it's rust .into built-in (owned)
     pub fn into_table(&mut self, table: &str)->&mut Self{
-        self.sql_type = SqlType::INSERT;
-        self.from_table(table)
+        self.into_(&table)
     }
     
     /// if the database support CTE declareted query i.e WITH, 
@@ -809,8 +815,11 @@ impl Query{
             self.limit(1);
         }
         let result = self.execute_with_return(db);
+        println!("pre conversion.. {:?}", result);
         let mut dao:Vec<T> = T::from_dao_result(&result);
-        assert!(dao.len() == 1, "There should only be 1 returned record");
+        println!("after conversion..");
+
+        assert!(dao.len() == 1, "There should only be 1 returned record returned:\n {:?}",result);
         dao.remove(0)
     }
 }
