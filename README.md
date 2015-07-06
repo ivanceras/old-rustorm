@@ -108,9 +108,9 @@ fn main(){
     let photo: Photo = Query::select_all()
                         .enumerate_column("photo.url")
                         .from_table("bazaar.product")
-                        .left_join("bazaar.product_photo",
+                        .left_join_table("bazaar.product_photo",
                             "product.product_id", "product_photo.product_id")
-                        .left_join("bazaar.photo",
+                        .left_join_table("bazaar.photo",
                             "product_photo.photo_id", "photo.photo_id")
                         .filter("product.name", Equality::EQ, &"GTX660 Ti videocard")
                         .collect_one(db.as_ref());
@@ -131,13 +131,13 @@ fn main(){
     let mut query = Query::select_all();
     
     query.from_table("bazaar.product")
-        .left_join("bazaar.product_category",
+        .left_join_table("bazaar.product_category",
             "product_category.product_id", "product.product_id")
-         .left_join("bazaar.category",
+         .left_join_table("bazaar.category",
             "category.category_id", "product_category.category_id")
-        .left_join("product_photo",
+        .left_join_table("product_photo",
             "product.product_id", "product_photo.product_id")
-        .left_join("bazaar.photo", 
+        .left_join_table("bazaar.photo", 
             "product_photo.photo_id", "photo.photo_id")
         .filter("product.name", Equality::EQ, &"GTX660 Ti videocard")
         .filter("category.name", Equality::EQ, &"Electronic")
