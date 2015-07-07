@@ -15,13 +15,16 @@ use database::SqlOption;
 use std::error::Error;
 use config::DbConfig;
 
-pub struct Postgres {
+pub struct Postgres<'a>{
     config: Option<DbConfig>,
-    pub conn: Option<Connection>,
+    pub conn: Option<&'a Connection>,
 }
 
+/// Build the Query into a SQL statements that is a valid
+/// PostgreSQL sql query,
+/// TODO: support version SqlOptions/specific syntax
 
-impl Postgres{
+impl <'a>Postgres<'a>{
     
     /// create an instance, but without a connection yet,
     /// useful when just building sql queries specific to this platform
@@ -30,6 +33,10 @@ impl Postgres{
         Postgres{conn:None, config: None}
     }
     
+    pub fn with_connection(conn:&'a Connection)->Self{
+        Postgres{conn: Some(conn), config: None}
+    }
+    /*
     pub fn connect_with_url(url:&str)->Result<Self, String>{
         let conn = Connection::connect(url, &SslMode::None);
         match conn{
@@ -45,6 +52,7 @@ impl Postgres{
             }
         }
     }
+    */
     
 
 
@@ -52,7 +60,7 @@ impl Postgres{
     /// This is used when inserting records to the database
     /// TODO: put this somewhere organized
     /// TODO: match all the other filter types
-    fn from_rust_type_tosql<'a>(types: &'a Vec<Value>)->Vec<&'a ToSql>{
+    fn from_rust_type_tosql<'b>(&self, types: &'b Vec<Value>)->Vec<&'b ToSql>{
         let mut params:Vec<&ToSql> = vec![];
         for t in types{
             match t {
@@ -69,7 +77,7 @@ impl Postgres{
     }
     
     /// convert a record of a row into rust type
-    fn from_sql_to_rust_type(dtype:&PgType, row: &Row, index:usize)->Value{
+    fn from_sql_to_rust_type(&self, dtype:&PgType, row: &Row, index:usize)->Value{
         match dtype{
             &PgType::Uuid => {
                 let value = row.get_opt(index);
@@ -267,11 +275,11 @@ impl Postgres{
         }
         //unify due to the fact that postgresql return a separate row for
         // both primary and foreign columns
-        Self::unify_primary_and_foreign_column(&columns)
+        self.unify_primary_and_foreign_column(&columns)
     }
 
     /// column that is both primary and foreign should be unified
-    fn unify_primary_and_foreign_column(columns:&Vec<Column>)->Vec<Column>{
+    fn unify_primary_and_foreign_column(&self, columns:&Vec<Column>)->Vec<Column>{
         let mut unified_columns = Vec::new();
         let mut primary_columns = Vec::new();
         let mut foreign_columns = Vec::new();
@@ -303,7 +311,7 @@ impl Postgres{
 }
 
 
-impl Database for Postgres{
+impl <'a>Database for Postgres<'a>{
     
     fn get_config(&self)->DbConfig{
         self.config.clone().unwrap()
@@ -346,7 +354,7 @@ impl Database for Postgres{
         assert!(self.conn.is_some());
         let stmt = self.conn.as_ref().unwrap().prepare(sql).unwrap();
         let mut daos = vec![];
-        let param = Self::from_rust_type_tosql(params);
+        let param = self.from_rust_type_tosql(params);
         for row in stmt.query(&param).unwrap() {
             let columns = row.columns();
             let mut index = 0;
@@ -354,7 +362,7 @@ impl Database for Postgres{
             for c in columns{
                 let column_name = c.name();
                 let dtype = c.type_();
-                let rtype = Self::from_sql_to_rust_type(&dtype, &row, index);
+                let rtype = self.from_sql_to_rust_type(&dtype, &row, index);
                 dao.set_value(column_name, rtype);
                 index += 1;
             }
@@ -373,7 +381,7 @@ impl Database for Postgres{
     fn execute_sql(&self, sql:&str, params:&Vec<Value>)->Result<usize, String>{
         println!("SQL: \n{}", sql);
         println!("param: {:?}", params);
-        let to_sql_types = Self::from_rust_type_tosql(params);
+        let to_sql_types = self.from_rust_type_tosql(params);
         assert!(self.conn.is_some());
         let result = self.conn.as_ref().unwrap().execute(sql, &to_sql_types);
         let result = match result{
@@ -387,7 +395,7 @@ impl Database for Postgres{
 
 }
 
-impl DatabaseDDL for Postgres{
+impl <'a>DatabaseDDL for Postgres<'a>{
 
     fn create_schema(&self, schema:&str){}
     fn drop_schema(&self, schema:&str){}
@@ -401,7 +409,7 @@ impl DatabaseDDL for Postgres{
 }
 
 /// this can be condensed with using just extracting the table definition
-impl DatabaseDev for Postgres{
+impl <'a>DatabaseDev for Postgres<'a>{
 
     fn get_parent_table(&self, schema:&str, table:&str)->Option<String>{
         let sql ="

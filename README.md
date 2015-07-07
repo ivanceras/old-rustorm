@@ -2,6 +2,7 @@
 
 [![Latest Version](https://img.shields.io/crates/v/rustorm.svg)](https://crates.io/crates/rustorm)
 [![Build Status](https://api.travis-ci.org/ivanceras/rustorm.svg)](https://travis-ci.org/ivanceras/rustorm)
+[![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 
 An ORM for rust
 
@@ -171,14 +172,16 @@ SELECT *
     pool.release(db);
 
 ```
-## Todo list
-* implement all DML API
-* start working on DDL API
-* start support in Sqlite
+
+## Supported Database
+ - [x] PostgreSQL
+ - [x] Sqlite
+ - [ ] MySQL
+ - [ ] Oracle
+ 
 
 ## Roadmap
 
-* Support for Sqlite
 * Support for Oracle
 * Support for MySql
 

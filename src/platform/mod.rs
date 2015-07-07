@@ -4,11 +4,8 @@ pub mod sqlite;
 pub use self::postgres::Postgres;
 pub use self::sqlite::Sqlite;
 
-use database::Database;
-use database::DatabaseDDL;
 
-
-
+/*
 
 pub enum Platform{
     Postgres(Postgres),
@@ -41,3 +38,4 @@ impl Drop for Platform {
         println!("Warning: Dropping a connection is expensive, please return this to the pool");
     }
 }
+*/

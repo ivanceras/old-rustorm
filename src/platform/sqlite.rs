@@ -4,7 +4,6 @@ use dao::Dao;
 use dao::Value;
 use query::SqlType;
 use database::{Database};
-use dao::DaoResult;
 use writer::SqlFrag;
 use database::SqlOption;
 use config::DbConfig;
@@ -56,7 +55,7 @@ impl Sqlite{
         }
     }
     
-    fn from_rust_type_tosql<'a>(types: &'a Vec<Value>)->Vec<&'a ToSql>{
+    fn from_rust_type_tosql<'a>(&self, types: &'a Vec<Value>)->Vec<&'a ToSql>{
         let mut params:Vec<&ToSql> = vec![];
         for t in types{
             match t {
@@ -70,7 +69,7 @@ impl Sqlite{
     }
     
         /// convert a record of a row into rust type
-    fn from_sql_to_rust_type(row: &SqliteRow, index:usize)->Value{
+    fn from_sql_to_rust_type(&self, row: &SqliteRow, index:usize)->Value{
         let value = row.get_opt(index as i32);
          match value{
             Ok(value) => Value::String(value),
@@ -185,7 +184,7 @@ impl Database for Sqlite{
         assert!(self.conn.is_some());
         let mut stmt = self.conn.as_ref().unwrap().prepare(sql).unwrap();
         let mut daos = vec![];
-        let param = Self::from_rust_type_tosql(params);
+        let param = self.from_rust_type_tosql(params);
         let rows = stmt.query(&param);
         match rows{
             Ok(rows) => 
@@ -195,7 +194,7 @@ impl Database for Sqlite{
                         let mut index = 0;
                         let mut dao = Dao::new();
                         for rc in &return_columns{
-                            let rtype = Self::from_sql_to_rust_type(&row, index);
+                            let rtype = self.from_sql_to_rust_type(&row, index);
                             dao.set_value(rc, rtype);
                             index += 1;
                         }
@@ -223,7 +222,7 @@ impl Database for Sqlite{
     fn execute_sql(&self, sql:&str, params:&Vec<Value>)->Result<usize, String>{
         println!("SQL: \n{}", sql);
         println!("param: {:?}", params);
-        let to_sql_types = Self::from_rust_type_tosql(params);
+        let to_sql_types = self.from_rust_type_tosql(params);
         assert!(self.conn.is_some());
         let result = self.conn.as_ref().unwrap().execute(sql, &to_sql_types);
         let result = match result{

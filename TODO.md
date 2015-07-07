@@ -36,3 +36,7 @@ https://github.com/jgallagher/rusqlite
 
 ## July 1, 2015
 * Support for deleting children on records that restrict deletion of referred records
+
+## July 7, 2015
+* Use r2d2 connection pooling
+* use connection pooling for sqlite in memory database, such that only 1 instance of in-memory database with the same configuration will exist.
