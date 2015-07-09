@@ -38,7 +38,7 @@ use rustc_serialize::json;
 use rustorm::query::Query;
 use rustorm::query::{Filter,Equality};
 use rustorm::dao::{Dao,IsDao};
-use rustorm::database::Pool;
+use rustorm::pool::ManagedPool;
 
 
 #[derive(Debug, Clone)]
@@ -60,9 +60,9 @@ impl IsDao for Product{
 
 
 fn main(){
-    let mut pool = Pool::init();
     let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v6";
-    let db = pool.from_url(&url).unwrap();
+    let mut pool = ManagedPool::init(&url, 1);
+    let db = pool.connect().unwrap();
     
     let products: Vec<Product> = Query::select_all()
             .from_table("bazaar.product")
@@ -76,7 +76,6 @@ fn main(){
                     };
         println!("{}  {}  {:?}", prod.product_id, name, desc);
     }
-    pool.release(db);
 }
 ```
 
@@ -102,12 +101,12 @@ impl IsDao for Photo{
 }
 
 fn main(){
-    let mut pool = Pool::init();
     let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v6";
-    let db = pool.from_url(&url).unwrap();
+    let mut pool = ManagedPool::init(url, 1);
+    let db = pool.connect().unwrap();
     
     let photo: Photo = Query::select_all()
-                        .enumerate_column("photo.url")
+                        .column("photo.url")
                         .from_table("bazaar.product")
                         .left_join_table("bazaar.product_photo",
                             "product.product_id", "product_photo.product_id")
@@ -117,17 +116,18 @@ fn main(){
                         .collect_one(db.as_ref());
                         
     println!("photo: {} {}",photo.photo_id, photo.url.unwrap());
-    pool.release(db);
 }
+
 ```
 
 * One complex query
 
 ```rust
 
-    let mut pool = Pool::init();
+fn main(){
     let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v6";
-    let db = pool.from_url(&url).unwrap();
+    let mut pool = ManagedPool::init(&url, 1);
+    let db = pool.connect().unwrap();
     
     let mut query = Query::select_all();
     
@@ -169,8 +169,7 @@ SELECT *
     println!("expected: {{{}}} [{}]", expected, expected.len());
     assert!(frag.sql.trim() == expected.trim());
     
-    pool.release(db);
-
+}
 ```
 
 ## Supported Database
