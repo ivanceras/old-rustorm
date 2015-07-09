@@ -11,7 +11,7 @@ use rustc_serialize::json;
 use rustorm::query::Query;
 use rustorm::query::{Filter,Equality};
 use rustorm::dao::{Dao,IsDao};
-use rustorm::pool::Pool;
+use rustorm::pool::ManagedPool;
 
 
 #[derive(Debug, Clone)]
@@ -33,9 +33,9 @@ impl IsDao for Product{
 
 
 fn main(){
-    let mut pool = Pool::init();
     let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v6";
-    let db = pool.from_url(&url).unwrap();
+    let mut pool = ManagedPool::init(&url, 1);
+    let db = pool.connect().unwrap();
     
     let products: Vec<Product> = Query::select_all()
             .from_table("bazaar.product")
@@ -49,5 +49,4 @@ fn main(){
                     };
         println!("{}  {}  {:?}", prod.product_id, name, desc);
     }
-    pool.release(db);
 }

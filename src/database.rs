@@ -5,7 +5,6 @@ use writer::SqlFrag;
 use query::{Connector, Equality, Operand, Field};
 use query::{Direction, Modifier, JoinType};
 use query::{Filter, Condition};
-use config::DbConfig;
 use query::SqlType;
 
 
@@ -42,10 +41,6 @@ pub trait Database{
     /// return the version of the database
     /// lower version of database has fewer supported features
     fn version(&self)->String;
-    
-    /// get the configuration used when connecting to this database
-    /// also, this is used when comparing from a database pool
-    fn get_config(&self)->DbConfig;
     
     /// begin database transaction
     fn begin(&self);

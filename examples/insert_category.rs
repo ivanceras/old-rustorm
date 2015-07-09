@@ -2,15 +2,15 @@ extern crate rustorm;
 
 use rustorm::query::Query;
 use rustorm::query::{Filter,Equality};
-use rustorm::pool::Pool;
+use rustorm::pool::ManagedPool;
 
 fn main(){
-    let mut pool = Pool::init();
     let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v6";
-    let db = pool.from_url(&url).unwrap();
+    let mut pool = ManagedPool::init(&url, 1);
+    let db = pool.connect().unwrap();
         
         Query::insert()
-            .set("name", &"Test Category")
+            .set("name", &"Test Category112")
         .into_table(&"bazaar.category")
             .execute(db.as_ref());
 }

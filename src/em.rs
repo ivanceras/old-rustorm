@@ -22,11 +22,11 @@ impl <'a>EntityManager<'a>{
     }
 
     /// delete records of this table
-    pub fn delete(&self, table:&Table, filters:&Vec<Filter>)->usize{
+    pub fn delete(&self, table:&Table, filters:Vec<Filter>)->usize{
         let mut query = Query::delete();
+        query.from(table);
         for filter in filters{
-            let f = filter.clone();
-            query.add_filter(f);
+            query.add_filter(filter);
         }
         match query.execute(self.db){
             Ok(x) => x,

@@ -11,7 +11,7 @@ use rustc_serialize::json;
 use rustorm::query::Query;
 use rustorm::query::{Filter,Equality};
 use rustorm::dao::{Dao,IsDao};
-use rustorm::pool::Pool;
+use rustorm::pool::ManagedPool;
 use rustorm::em::EntityManager;
 use rustorm::table::{Table,Column};
 use rustorm::table::IsTable;
@@ -82,9 +82,9 @@ impl IsTable for Product{
 
 
 fn main(){
-    let mut pool = Pool::init();
     let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v6";
-    let db = pool.from_url(&url).unwrap();
+    let mut pool = ManagedPool::init(&url, 1);
+    let db = pool.connect().unwrap();
     let em = EntityManager::new(db.as_ref());
     
     let pid = Uuid::parse_str("6db712e6-cc50-4c3a-8269-451c98ace5ad").unwrap();

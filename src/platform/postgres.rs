@@ -3,7 +3,6 @@ use table::{Table, Column, Foreign};
 use dao::Dao;
 
 use postgres::Connection;
-use postgres::SslMode;
 use regex::Regex;
 use dao::Value;
 use database::{Database, DatabaseDev, DatabaseDDL};
@@ -12,49 +11,42 @@ use postgres::types::ToSql;
 use writer::SqlFrag;
 use postgres::rows::Row;
 use database::SqlOption;
-use std::error::Error;
-use config::DbConfig;
+use r2d2::PooledConnection;
+use r2d2_postgres::PostgresConnectionManager;
 
-pub struct Postgres<'a>{
-    config: Option<DbConfig>,
-    pub conn: Option<&'a Connection>,
+pub struct Postgres{
+    /// a connection pool is provided
+    pub pool: Option<PooledConnection<PostgresConnectionManager>>,
 }
 
 /// Build the Query into a SQL statements that is a valid
 /// PostgreSQL sql query,
 /// TODO: support version SqlOptions/specific syntax
 
-impl <'a>Postgres<'a>{
+impl Postgres{
     
     /// create an instance, but without a connection yet,
     /// useful when just building sql queries specific to this platform
     /// inexpensive operation, so can have multiple instances
     pub fn new()->Self{
-        Postgres{conn:None, config: None}
+        Postgres{pool: None}
     }
     
-    pub fn with_connection(conn:&'a Connection)->Self{
-        Postgres{conn: Some(conn), config: None}
+    
+    pub fn with_pooled_connection(pool: PooledConnection<PostgresConnectionManager>)->Self{
+       Postgres{pool: Some(pool)}
     }
-    /*
-    pub fn connect_with_url(url:&str)->Result<Self, String>{
-        let conn = Connection::connect(url, &SslMode::None);
-        match conn{
-            Ok(conn) => {
-                let config = DbConfig::from_url(url);
-                let pg = Postgres{config: Some(config), conn: Some(conn)};
-                Ok(pg)
-            },
-            Err(e) => {
-                let error = format!("Unable to connect to database due to {}", e.description());
-                println!("{:?}",e);
-                Err(error)
-            }
+    
+    
+    
+    pub fn get_connection(&self)->&Connection{
+       if self.pool.is_some(){
+            &self.pool.as_ref().unwrap()
+        }
+        else{
+            panic!("No connection for this database")
         }
     }
-    */
-    
-
 
     /// convert Type to ToSql (postgresql native types)
     /// This is used when inserting records to the database
@@ -197,8 +189,8 @@ impl <'a>Postgres<'a>{
                 AND pg_attribute.attnum > 0
                 ORDER BY number
             ";
-        assert!(self.conn.is_some());
-        let stmt = self.conn.as_ref().unwrap().prepare(&sql).unwrap();
+        let conn = self.get_connection();
+        let stmt = conn.prepare(&sql).unwrap();
         let mut columns = Vec::new();
         for row in stmt.query(&[&schema, &table]).unwrap() {
             let name:String = row.get("name");
@@ -311,11 +303,8 @@ impl <'a>Postgres<'a>{
 }
 
 
-impl <'a>Database for Postgres<'a>{
+impl Database for Postgres{
     
-    fn get_config(&self)->DbConfig{
-        self.config.clone().unwrap()
-    }
     fn version(&self)->String{
         let sql = "SHOW server_version";
         let dao = self.execute_sql_with_one_return(sql, &vec![]);
@@ -351,8 +340,8 @@ impl <'a>Database for Postgres<'a>{
     fn execute_sql_with_return(&self, sql:&str, params:&Vec<Value>)->Vec<Dao>{
         println!("SQL: \n{}", sql);
         println!("param: {:?}", params);
-        assert!(self.conn.is_some());
-        let stmt = self.conn.as_ref().unwrap().prepare(sql).unwrap();
+        let conn = self.get_connection();
+        let stmt = conn.prepare(sql).unwrap();
         let mut daos = vec![];
         let param = self.from_rust_type_tosql(params);
         for row in stmt.query(&param).unwrap() {
@@ -382,8 +371,8 @@ impl <'a>Database for Postgres<'a>{
         println!("SQL: \n{}", sql);
         println!("param: {:?}", params);
         let to_sql_types = self.from_rust_type_tosql(params);
-        assert!(self.conn.is_some());
-        let result = self.conn.as_ref().unwrap().execute(sql, &to_sql_types);
+        let conn = self.get_connection();
+        let result = conn.execute(sql, &to_sql_types);
         let result = match result{
             Ok(x) => { Ok(x as usize)},
             Err(e) => {
@@ -395,7 +384,7 @@ impl <'a>Database for Postgres<'a>{
 
 }
 
-impl <'a>DatabaseDDL for Postgres<'a>{
+impl DatabaseDDL for Postgres{
 
     fn create_schema(&self, schema:&str){}
     fn drop_schema(&self, schema:&str){}
@@ -409,7 +398,7 @@ impl <'a>DatabaseDDL for Postgres<'a>{
 }
 
 /// this can be condensed with using just extracting the table definition
-impl <'a>DatabaseDev for Postgres<'a>{
+impl DatabaseDev for Postgres{
 
     fn get_parent_table(&self, schema:&str, table:&str)->Option<String>{
         let sql ="
@@ -425,8 +414,8 @@ impl <'a>DatabaseDev for Postgres<'a>{
              WHERE pg_namespace.nspname = $1
                  AND relname = $2
                 ";
-        assert!(self.conn.is_some());
-        let stmt = self.conn.as_ref().unwrap().prepare(&sql).unwrap();
+        let conn = self.get_connection();
+        let stmt = conn.prepare(&sql).unwrap();
         for row in stmt.query(&[&schema, &table]).unwrap() {
             let parent_table:Option<String> = match row.get_opt("parent_table"){
                     Ok(x) => Some(x),
@@ -451,8 +440,8 @@ impl <'a>DatabaseDev for Postgres<'a>{
              AND relname = $2
              ORDER BY relname
             ";
-        assert!(self.conn.is_some());
-        let stmt = self.conn.as_ref().unwrap().prepare(&sql).unwrap();
+        let conn = self.get_connection();
+        let stmt = conn.prepare(&sql).unwrap();
         let mut sub_classes:Vec<String> = vec![];
         for row in stmt.query(&[&schema, &table]).unwrap() {
             match row.get_opt("sub_class"){
@@ -509,8 +498,8 @@ impl <'a>DatabaseDev for Postgres<'a>{
                 ORDER BY relname, nspname
 
                 ";
-        assert!(self.conn.is_some());
-        let stmt = self.conn.as_ref().unwrap().prepare(&sql).unwrap();
+        let conn = self.get_connection();
+        let stmt = conn.prepare(&sql).unwrap();
         let mut tables:Vec<(String, String)> = Vec::new();
         for row in stmt.query(&[]).unwrap() {
             let table:String = row.get("table");
@@ -535,8 +524,8 @@ impl <'a>DatabaseDev for Postgres<'a>{
                     AND nspname = $1
                     AND relname = $2
                 ";
-        assert!(self.conn.is_some());
-        let stmt = self.conn.as_ref().unwrap().prepare(&sql).unwrap();
+        let conn = self.get_connection();
+        let stmt = conn.prepare(&sql).unwrap();
         for row in stmt.query(&[&schema, &table]).unwrap() {
             let comment:Option<String> = match row.get_opt("comment"){
                     Ok(x) => Some(x),
@@ -570,8 +559,8 @@ impl <'a>DatabaseDev for Postgres<'a>{
                     AND child.relname = $2
                     ORDER BY column_parent.attname
                 ";
-        assert!(self.conn.is_some());
-        let stmt = self.conn.as_ref().unwrap().prepare(&sql).unwrap();
+        let conn = self.get_connection();
+        let stmt = conn.prepare(&sql).unwrap();
         let mut inherited_columns = Vec::new();
         for row in stmt.query(&[&schema, &table]).unwrap() {
             let column:String = row.get("column_parent_name");

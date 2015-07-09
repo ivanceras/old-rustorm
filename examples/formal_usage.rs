@@ -9,7 +9,7 @@ use uuid::Uuid;
 use rustorm::query::Query;
 use rustorm::query::{Filter,Equality,Operand};
 
-use rustorm::pool::Pool;
+use rustorm::pool::ManagedPool;
 use rustorm::database::Database;
 use rustorm::dao::{IsDao, Dao};
 
@@ -36,14 +36,13 @@ impl IsDao for Product{
 /// when a request in made, a thread is spawned for that request
 /// with an access to the a connection pool 
 fn main(){
-    let mut pool = Pool::init();
     let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v6";
-    let db = pool.from_url(&url);
+    let mut pool = ManagedPool::init(url, 1);
+    let db = pool.connect();
     
     match db{
             Ok(db) => {
             show_product(db.as_ref());//borrow a database
-            pool.release(db);//borrow has ended, release it
          }
         Err(e) => {
             println!("Unable to connect to database {}", e);

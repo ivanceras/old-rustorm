@@ -11,11 +11,12 @@ use rustc_serialize::json;
 use rustorm::query::Query;
 use rustorm::query::{Filter,Equality};
 use rustorm::dao::{Dao,IsDao};
-use rustorm::pool::Pool;
+use rustorm::pool::ManagedPool;
 use rustorm::database::Database;
 use std::sync::{Arc, Mutex};
 use std::thread;
 use std::sync::mpsc::channel;
+use rustorm::pool::Platform;
 
 
 
@@ -45,29 +46,16 @@ impl IsDao for Product{
 ///TODO: need to revisit rust concurrency
 fn main(){
     let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v6";
-    let mut pool = Arc::new(Mutex::new(Pool::init()));
+    let mut pool = Arc::new(Mutex::new(ManagedPool::init(url, 5)));
     for i in 0..3000{
     	let pool = pool.clone();
-        let db = pool.lock().unwrap().from_url(&url);//important to obtain a connection before opening a thread
+        let db: Platform = pool.lock().unwrap().connect().unwrap();//important to obtain a connection before opening a thread
         thread::spawn(move || {
-            println!("spawning thread {}", i);
-            match db{
-                    Ok(db) => {
-                    show_product(db.as_ref());//borrow a database
-                    //thread::sleep_ms(10*i);
-                    println!("And then there are {} free connection", pool.lock().unwrap().total_free_connections());
-                    println!("Used conection: {}", pool.lock().unwrap().total_used_connections());
-                    pool.lock().unwrap().release(db);//borrow has ended, release it
-                    println!("Finally {} free connection", pool.lock().unwrap().total_free_connections());
-                 }
-                Err(e) => {
-                    println!("Unable to connect to database {}", e);
-                }
-            }
+                println!("spawning thread {}", i);
+                show_product(db.as_ref());//borrow a database
         });
     }
      thread::sleep_ms(5000);
-     println!("=------>>>>over all used conection: {}", pool.lock().unwrap().total_connections());
 }
 
 

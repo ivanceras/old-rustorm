@@ -1,7 +1,3 @@
-
-mod test_pool;
-
-
 extern crate rustorm;
 extern crate uuid;
 extern crate chrono;
@@ -17,7 +13,7 @@ use rustorm::platform::postgres::Postgres;
 use rustorm::query::Query;
 use rustorm::query::{Filter,Equality};
 use rustorm::dao::{Dao,IsDao};
-use rustorm::pool::Pool;
+use rustorm::pool::ManagedPool;
 
 
 #[derive(Debug, Clone)]
@@ -39,9 +35,9 @@ impl IsDao for Product{
 
 #[test]
 fn test_simple_query(){
-    let mut pool = Pool::init();
     let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v6";
-    let db = pool.from_url(&url).unwrap();
+    let mut pool = ManagedPool::init(&url, 1);
+    let db = pool.connect().unwrap();
     
     let prod: Product = Query::select_all()
             .from_table("bazaar.product")
@@ -49,5 +45,4 @@ fn test_simple_query(){
             .collect_one(db.as_ref());
 
     println!("{}  {}  {:?}", prod.product_id, prod.name.unwrap(), prod.description);
-    pool.release(db);
 }

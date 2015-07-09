@@ -15,7 +15,6 @@ use table::Table;
 use database::DatabaseDDL;
 
 pub struct Sqlite {
-    config: Option<DbConfig>,
     pub conn: Option<SqliteConnection>,
 }
 
@@ -23,7 +22,7 @@ pub struct Sqlite {
 impl Sqlite{
     
     pub fn new()->Self{
-        Sqlite{conn:None, config: None}
+        Sqlite{conn:None}
     }
     
     pub fn connect_with_url(url:&str)->Result<Self, String>{
@@ -43,8 +42,7 @@ impl Sqlite{
         };
         match conn{
             Ok(conn) => {
-                let config = DbConfig::from_url(url);
-                let pg = Sqlite{config: Some(config), conn: Some(conn)};
+                let pg = Sqlite{conn: Some(conn)};
                 Ok(pg)
             },
             Err(e) => {
@@ -144,9 +142,6 @@ impl Sqlite{
 }
 
 impl Database for Sqlite{
-    fn get_config(&self)->DbConfig{
-        self.config.clone().unwrap()
-    }
     fn version(&self)->String{
        panic!("not yet")
     }
