@@ -7,6 +7,7 @@ use chrono::naive::time::NaiveTime;
 use chrono::naive::datetime::NaiveDateTime;
 use chrono::offset::utc::UTC;
 use std::fmt;
+use query::ColumnName;
 
 #[derive(RustcDecodable, RustcEncodable)]
 #[derive(Debug)]
@@ -357,7 +358,7 @@ pub struct DaoResult{
     pub dao: Vec<Dao>,
     ///renamed columns for each table
     /// ie. product => [(name, product_name),..];
-    pub renamed_columns: BTreeMap<String, Vec<(String, String)>>, 
+    pub renamed_columns: Vec< (ColumnName, String) >, 
     
     /// the total number of records
     pub total:Option<usize>,

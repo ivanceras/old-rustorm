@@ -1,5 +1,5 @@
 use dao::{Value, ToValue};
-use table::Table;
+use table::{Table};
 use std::collections::BTreeMap;
 use database::Database;
 use dao::DaoResult;
@@ -7,7 +7,7 @@ use dao::IsDao;
 use dao::Dao;
 use table::IsTable;
 use writer::SqlFrag;
-use database::SqlOption;
+use std::fmt;
 
 #[derive(Debug)]
 #[derive(Clone)]
@@ -157,8 +157,6 @@ pub struct ColumnName{
     pub table:Option<String>,
     ////optional schema, if ever there are same tables resideing in  different schema/namespace
     pub schema:Option<String>,
-    /// as rename
-    pub rename:Option<String>
 }
 
 #[derive(Debug)]
@@ -170,6 +168,22 @@ pub struct Field{
     pub name:Option<String>,
 }
 
+impl Field{
+
+    fn rename(&self)->Field{
+        match self.operand{
+            Operand::ColumnName(ref column_name) => {
+                let mut column_name = column_name.clone();
+                let rename = column_name.default_rename();
+                Field{
+                    operand:Operand::ColumnName(column_name), 
+                    name:Some(rename)
+                }
+            },
+            _ => panic!("not yet")
+        }
+    }
+}
 
 impl ColumnName{
 
@@ -183,15 +197,21 @@ impl ColumnName{
                 column:column_split.to_string(), 
                 table:Some(table_split.to_string()), 
                 schema:None,
-                rename:None
             }
         } else {
             ColumnName{
                 column:column.to_string(), 
                 table:None, 
                 schema:None,
-                rename:None
             }
+        }
+    }
+    
+    fn default_rename(&self)->String{
+         if self.table.is_some(){
+            return format!("{}_{}", self.table.as_ref().unwrap(), self.column);
+        }else{
+            panic!("Unable to rename {} since table is not specified", self.column);
         }
     }
     
@@ -212,6 +232,17 @@ impl ColumnName{
         }
     }
     
+    /// is this column conflicts the other column
+    /// conflicts means, when used both in a SQL query, it will result to ambiguous columns
+    fn is_conflicted(&self, other:&ColumnName)->bool{
+        self.column == other.column
+    }
+}
+
+impl fmt::Display for ColumnName{
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", self.complete_name())
+    }
 }
 
 impl PartialEq for ColumnName{
@@ -220,7 +251,7 @@ impl PartialEq for ColumnName{
      }
 
     fn ne(&self, other: &Self) -> bool {
-        self.column != other.column
+        self.column != other.column || self.table != other.table || self.schema != other.schema
     }
 }
 
@@ -230,6 +261,8 @@ impl PartialEq for ColumnName{
 pub struct TableName{
     pub schema: Option<String>,
     pub name: String,
+    /// optional columns needed when rename for conflicting columns are needed
+    pub columns: Vec<ColumnName>,
 }
 
 impl TableName{
@@ -244,12 +277,14 @@ impl TableName{
             TableName{
                 schema: Some(schema_split),
                 name: table_split,
+                columns: vec![],
             }
             
         } else {
              TableName{
                 schema: None,
                 name: str.to_string(),
+                columns: vec![],
             }
         }
     }
@@ -272,6 +307,12 @@ impl PartialEq for TableName{
     }
 }
 
+impl fmt::Display for TableName{
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", self.complete_name())
+    }
+}
+
 /// convert str, IsTable to TableName
 pub trait ToTableName{
     
@@ -289,10 +330,21 @@ impl <'a>ToTableName for &'a str{
 
 impl ToTableName for Table{
     
+    /// contain the columns for later use when renaming is necessary
     fn to_table_name(&self)->TableName{
+        let mut columns = vec![];
+        for c in &self.columns{
+            let column_name = ColumnName{
+                schema: Some(self.schema.to_string()), 
+                table: Some(self.name.to_string()), 
+                column: c.name.to_string(), 
+            };
+            columns.push(column_name);
+        }
         TableName{
             schema:Some(self.schema.to_string()),
             name: self.name.to_string(),
+            columns: columns,
         }
     }
 }
@@ -306,17 +358,16 @@ pub struct Query{
     pub sql_type:SqlType,
     
     /// whether to select the records distinct
-    pub distinct:bool,
+    pub distinct: bool,
+    
+    /// whether to enumate all columns in involved models
+    pub enumerate_all: bool,
     
     pub declared_query: BTreeMap<String, Query>,
 
     ///fields can be functions, column sql query, and even columns
     /// TODO; merge enumerated column to this, add a builder for fields
     pub enumerated_fields:Vec<Field>,
-    
-    /// list of renamed columns whenever there is a conflict
-    /// Vec(table, column, new_column_name)
-    pub renamed_columns:BTreeMap<String, Vec<(String, String)>>,
     
     /// specify to use distinct ON set of columns 
     pub distinct_on_columns:Vec<String>,
@@ -367,9 +418,9 @@ impl Query{
         Query{
             sql_type:SqlType::SELECT,
             distinct:false,
+            enumerate_all: false,
             declared_query: BTreeMap::new(),
             enumerated_fields: vec![],
-            renamed_columns:BTreeMap::new(),
             distinct_on_columns: vec![],
             filters: vec![],
             joins: vec![],
@@ -418,9 +469,21 @@ impl Query{
         q.all();
         q
     }
+    pub fn enumerate_all()->Self{
+        let mut q = Self::select();
+        q.enumerate_all = true;
+        q
+    }
     
     pub fn all(&mut self)->&mut Self{
         self.column("*")
+    }
+    
+    fn enumerate(&mut self, column_name: ColumnName)->&mut Self{
+        let operand = Operand::ColumnName(column_name);
+        let field = Field{operand:operand, name:None};
+        self.enumerated_fields.push(field);
+        self
     }
     
     /// all enumerated columns shall be called from this
@@ -430,9 +493,7 @@ impl Query{
     /// 
     pub fn column(&mut self, column:&str)->&mut Self{
         let column_name = ColumnName::from_str(column);
-        let operand = Operand::ColumnName(column_name);
-        let field = Field{operand:operand, name:None};
-        self.enumerated_fields.push(field);
+        self.enumerate(column_name);
         self
     }
     
@@ -645,32 +706,44 @@ impl Query{
         self
     }
     
-    
-    pub fn rename(&mut self, table:&str, column:&str, new_column_name:&str)->&mut Self{
-        if self.renamed_columns.get(table).is_some(){
-            let mut list:&mut Vec<(String, String)> = self.renamed_columns.get_mut(table).unwrap();
-            if list.contains(&(column.to_string(), new_column_name.to_string())){
-                println!("This is already renamed");
-            }else{
-                println!("renamed {} to {}", column, new_column_name);
-                list.push((column.to_string(), new_column_name.to_string()));
+    /// get the indexes of the fields that matches the the column name
+    fn match_fields_indexes(&self, column: &str)->Vec<usize>{
+        let mut indexes = vec![];
+        let mut cnt = 0;
+        for field in &self.enumerated_fields{
+            match field.operand{
+                Operand::ColumnName(ref column_name) => {
+                    if column_name.column == column{
+                        indexes.push(cnt);
+                    }
+                },
+                _ => {},
             }
+            cnt += 1;
         }
-        else{
-            self.renamed_columns.insert(table.to_string(), vec![(column.to_string(), new_column_name.to_string())]);
+        indexes
+    }
+    
+    /// take the enumerated field that is a column that matched the name
+    fn rename_fields(&mut self, column:&str)->&mut Self{
+        let matched_indexes = self.match_fields_indexes(column);
+        for index in matched_indexes{
+            let field = self.enumerated_fields.remove(index);//remove it
+            let field = field.rename(); //rename it
+            self.enumerated_fields.insert(index, field); //insert it back to the same location
         }
         self
     }
     
-    pub fn get_involved_tables(&self)->Vec<&TableName>{
+    pub fn get_involved_tables(&self)->Vec<TableName>{
         let mut tables = vec![];
         let from_table = self.get_from_table();
         if from_table.is_some(){
-            tables.push(from_table.unwrap());
+            tables.push(from_table.unwrap().clone());
         }
         for j in &self.joins{
             if !tables.contains(&&j.table_name){
-                tables.push(&j.table_name);
+                tables.push(j.table_name.clone());
             }
         }
         tables
@@ -684,35 +757,110 @@ impl Query{
     /// TODO: renamed conflicting enumerated columns
     /// if no enumerated fields and no excluded columns
     /// do a select all
-    pub fn finalize(&mut self)->&mut Self{
-         if self.excluded_columns.is_empty() 
-            && self.enumerated_fields.is_empty(){
-            self.all();
-        }
+    pub fn finalize(&mut self)->&Self{
+        
         let excluded_columns = &self.excluded_columns.clone();
         for i in  excluded_columns{
             self.remove_from_enumerated(&i);
         }
+        let involved_models = self.get_involved_tables();
+        if involved_models.len() > 1{
+            //enumerate all columns when there is a join
+            println!("There are more than 1 involved models..");
+            if self.enumerate_all{
+                self.enumerate_involved_tables_columns(&involved_models);
+            }
+            self.rename_conflicting_columns(); // rename an enumerated columns that conflicts
+        }
+        if self.excluded_columns.is_empty() 
+            && self.enumerated_fields.is_empty(){
+            self.all();
+        }
         self
     }
     
-    fn remove_from_enumerated(&mut self, column_name: &ColumnName)->&mut Self{
-        fn index_of(enumerated_fields:&Vec<Field>, column: &ColumnName)->Option<usize>{
-            let mut cnt = 0;
-            for field in enumerated_fields{
-                match field.operand{
-                    Operand::ColumnName(ref column_name) => {
-                        if column_name == column{
-                            return Some(cnt);
-                        }
-                    },
-                    _ => {},
-                }
-                cnt += 1;
+    fn enumerate_involved_tables_columns(&mut self, involved_models:&Vec<TableName>){
+        for m in involved_models{
+            for c in &m.columns{
+                self.enumerate(c.clone());
             }
-            None
         }
-        let index = index_of(&self.enumerated_fields, column_name);
+    }
+    
+    fn get_renamed_fields(&self)->Vec<&Field>{
+        let mut renamed = vec![];
+        for field in &self.enumerated_fields{
+            if field.name.is_some(){
+                renamed.push(field);
+            }
+        }
+        renamed
+    }
+    
+    /// return the list of renamed columns, used in dao conversion to struc types
+    pub fn get_renamed_columns(&self)->Vec<(ColumnName, String)>{
+        let mut renamed_columns = vec![];
+        let renamed_fields = self.get_renamed_fields();
+        for field in &renamed_fields{
+            match field.operand{
+                Operand::ColumnName(ref column_name) => {
+                    if field.name.is_some(){
+                        let rename = field.name.as_ref().unwrap().to_string();
+                        renamed_columns.push( (column_name.clone(), rename ) );
+                    }
+                },
+                _ => ()
+            }
+        }
+        renamed_columns
+    }
+    
+    /// determine which columns are conflicting and rename it accordingly
+    /// rename only the columns that are in the enumerated list
+    fn get_conflicting_columns(&self)->Vec<String>{
+        let mut conflicts = vec![];
+        let enumerated_columns = self.get_enumerated_columns();
+        for c in &enumerated_columns{
+            for d in &enumerated_columns{
+                if c != d {
+                    if c.is_conflicted(d){
+                        conflicts.push(c.column.to_string());
+                    }
+                }else{
+                    println!("skipping {} == {}", c, d);
+                }
+            }
+        }
+        conflicts
+    }
+    /// rename the fields that has a conflicting column
+    fn rename_conflicting_columns(&mut self)->&mut Self{
+        let conflicts = self.get_conflicting_columns();
+        for c in conflicts{
+            self.rename_fields(&c);
+        }
+        self
+    }
+    
+    /// used by removed_from_enumerated
+    fn index_of_field(&self, column: &ColumnName)->Option<usize>{
+        let mut cnt = 0;
+        for field in &self.enumerated_fields{
+            match field.operand{
+                Operand::ColumnName(ref column_name) => {
+                    if column_name == column{
+                        return Some(cnt);
+                    }
+                },
+                _ => {},
+            }
+            cnt += 1;
+        }
+        None
+    }
+    
+    fn remove_from_enumerated(&mut self, column_name: &ColumnName)->&mut Self{
+        let index = self.index_of_field(column_name);
         if index.is_some(){
             self.enumerated_fields.remove(index.unwrap());
         }
@@ -780,12 +928,13 @@ impl Query{
     }
     
     /// build the query only, not executed, useful when debugging
-    pub fn build(&self, db: &Database)->SqlFrag{
+    pub fn build(&mut self, db: &Database)->SqlFrag{
+        self.finalize();
         db.build_query(self)
     }
     
     /// expects a return, such as select, insert/update with returning clause
-    fn execute_with_return(&mut self, db: &Database)->DaoResult{
+    pub fn execute_with_return(&mut self, db: &Database)->DaoResult{
         self.finalize();
         db.execute_with_return(self)
     }

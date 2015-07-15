@@ -107,7 +107,7 @@ pub trait Database{
         
         DaoResult{
             dao: result,
-            renamed_columns:query.renamed_columns.clone(),
+            renamed_columns:query.get_renamed_columns(),
             total:None,
             page:None,
             page_size:None,
@@ -226,7 +226,7 @@ pub trait Database{
         self.build_operand(w, parent_query, &field.operand);
         match field.name{
             Some(ref name) => {
-                w.append("AS ");
+                w.append(" AS ");
                 w.append(name);
             }
             None => (),
@@ -277,7 +277,7 @@ pub trait Database{
         for field in enumerated_fields{
             if do_comma{w.commasp();}else{do_comma=true;}
             cnt += 1;
-            if cnt % 5 == 0{//break at every 5 columns to encourage sql tuning/revising
+            if cnt % 4 == 0{//break at every 4 columns to encourage sql tuning/revising
                 w.ln_tab();
             }
             self.build_field(w, parent_query, field);
