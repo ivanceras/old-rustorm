@@ -101,7 +101,7 @@ impl <'a>EntityManager<'a>{
 /// 
 /// get an exact match, the value is filter against the primary key of the table
 /// 
-    pub fn get_exact<T>(&self, id: &ToValue)->T 
+    pub fn get_exact<T>(&self, id: &ToValue)->Option<T> 
         where T : IsTable + IsDao{
         let table = T::table();
         let primary = table.primary_columns();
@@ -114,7 +114,7 @@ impl <'a>EntityManager<'a>{
             .collect_one(self.db)
     }
 
-    pub fn insert<T>(&self, dao:Dao)->T
+    pub fn insert<T>(&self, dao:Dao)->Option<T>
         where T : IsTable + IsDao{
         let table = T::table();
         let mut q = Query::insert();
@@ -138,7 +138,7 @@ impl <'a>EntityManager<'a>{
     /// insert this record on the database, ignoring some columns
     /// which are set by the database default
     /// columns that are ignored are set by the database automatically
-    pub fn insert_with_ignore_columns<T>(&self, dao:Dao, ignore_columns:Vec<&str>)->T
+    pub fn insert_with_ignore_columns<T>(&self, dao:Dao, ignore_columns:Vec<&str>)->Option<T>
         where T: IsTable + IsDao {
         let table = T::table();
         let mut q = Query::insert();

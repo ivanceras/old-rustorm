@@ -173,10 +173,9 @@ impl Field{
     fn rename(&self)->Field{
         match self.operand{
             Operand::ColumnName(ref column_name) => {
-                let mut column_name = column_name.clone();
                 let rename = column_name.default_rename();
                 Field{
-                    operand:Operand::ColumnName(column_name), 
+                    operand:Operand::ColumnName(column_name.clone()), 
                     name:Some(rename)
                 }
             },
@@ -759,18 +758,17 @@ impl Query{
     /// do a select all
     pub fn finalize(&mut self)->&Self{
         
-        let excluded_columns = &self.excluded_columns.clone();
-        for i in  excluded_columns{
-            self.remove_from_enumerated(&i);
-        }
         let involved_models = self.get_involved_tables();
         if involved_models.len() > 1{
             //enumerate all columns when there is a join
-            println!("There are more than 1 involved models..");
             if self.enumerate_all{
                 self.enumerate_involved_tables_columns(&involved_models);
             }
             self.rename_conflicting_columns(); // rename an enumerated columns that conflicts
+        }
+        let excluded_columns = &self.excluded_columns.clone();
+        for i in  excluded_columns{
+            self.remove_from_enumerated(&i);
         }
         if self.excluded_columns.is_empty() 
             && self.enumerated_fields.is_empty(){
@@ -826,8 +824,6 @@ impl Query{
                     if c.is_conflicted(d){
                         conflicts.push(c.column.to_string());
                     }
-                }else{
-                    println!("skipping {} == {}", c, d);
                 }
             }
         }
@@ -952,20 +948,15 @@ impl Query{
     }
     
     /// execute the query, then convert the result
-    pub fn collect<T: IsDao>(&mut self, db: &Database)->Vec<T>{
+    pub fn collect<T: IsDao+IsTable>(&mut self, db: &Database)->Vec<T>{
         let result = self.execute_with_return(db);
-        T::from_dao_result(&result)
+        result.cast()
     }
     
     /// execute the query then collect only 1 record
     /// put a limit 1 if not already
-    pub fn collect_one<T: IsDao>(&mut self, db: &Database)->T{
-        if self.page_size.is_none(){
-            self.limit(1);
-        }
+    pub fn collect_one<T: IsDao+IsTable>(&mut self, db: &Database)->Option<T>{
         let result = self.execute_with_return(db);
-        let mut dao:Vec<T> = T::from_dao_result(&result);
-        assert!(dao.len() == 1, "There should only be 1 returned record returned:\n {:?}",result);
-        dao.remove(0)
+        result.cast_one()
     }
 }

@@ -300,6 +300,16 @@ impl Table{
         primary_columns
     }
     
+    pub fn non_nullable_columns(&self)->Vec<String>{
+        let mut non_nulls = vec![];
+        for c in &self.columns{
+            if c.not_null{
+                non_nulls.push(c.name.to_string());
+            }
+        }
+        non_nulls
+    }
+    
     /// return all the columns of this table excluding the inherited columns
     pub fn uninherited_columns(&self)->Vec<&Column>{
         let mut included = Vec::new();

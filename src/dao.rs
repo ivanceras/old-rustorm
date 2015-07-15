@@ -1,5 +1,4 @@
 use std::collections::HashMap;
-use std::collections::BTreeMap;
 use uuid::Uuid;
 use chrono::datetime::DateTime;
 use chrono::naive::date::NaiveDate;
@@ -8,6 +7,7 @@ use chrono::naive::datetime::NaiveDateTime;
 use chrono::offset::utc::UTC;
 use std::fmt;
 use query::ColumnName;
+use table::IsTable;
 
 #[derive(RustcDecodable, RustcEncodable)]
 #[derive(Debug)]
@@ -292,6 +292,7 @@ impl FromValue for Uuid{
     fn from_type(ty:Value)->Self{
         match ty{
             Value::Uuid(x) => x,
+            Value::Null => panic!("No value!"),
             _ => panic!("error!"),
         }
     }
@@ -335,18 +336,8 @@ impl FromValue for NaiveDateTime{
 
 /// trait for converting dao to model
 /// sized and clonable
-pub trait IsDao:Sized + Clone{
+pub trait IsDao{
     
-    /// converts a vector of dao to an object
-    fn from_dao_result(dao_result:&DaoResult)->Vec<Self>{
-        let mut obj = vec![];
-        for d in &dao_result.dao{
-            let p = Self::from_dao(d);
-            obj.push(p);
-        }
-        obj
-    }
-    /// convert a dao object into the an instance of the generated struct from table
     /// taking into considerating the renamed columns
     /// TODO: need to rethink about the renamed columns
     fn from_dao(dao: &Dao)->Self;
@@ -366,6 +357,48 @@ pub struct DaoResult{
     pub page: Option<usize>,
     /// page size
     pub page_size: Option<usize>,
+}
+
+impl DaoResult{
+    /// get the list of renamed column name in matching table name
+    fn get_renamed_columns(&self, table:&str)->Vec< (String, String) >{
+        let mut columns = vec![];
+        for &(ref col, ref rename) in &self.renamed_columns{
+            if col.table.is_some(){
+                if col.table.as_ref().unwrap() == table{
+                    columns.push( (col.column.to_string(), rename.to_string()) );
+                }
+            }
+        }
+        columns
+    }
+    
+    /// cast the dao to the specific struct instance
+    /// do not include if non nullable parts contains null
+    pub fn cast<T:IsTable+IsDao>(&self)->Vec<T>{
+        let table = T::table();
+        let non_nulls = table.non_nullable_columns();
+        let mut obj = vec![];
+        let renamed_columns = self.get_renamed_columns(&table.name);
+        for dao in &self.dao{
+            let mut dao_clone = dao.clone();
+            dao_clone.correct_renamed_columns(&renamed_columns);
+            if dao_clone.all_has_values(&non_nulls){
+                let p = T::from_dao(&dao_clone);
+                obj.push(p);
+            }
+        }
+        obj
+    }
+    
+    pub fn cast_one<T:IsTable+IsDao>(&self)->Option<T>{
+        let mut casted = self.cast::<T>();
+        if casted.len() < 1{
+            return None;
+        }
+        assert!(casted.len() == 1);
+        Some(casted.remove(0))
+    }
 }
 
 #[derive(RustcDecodable, RustcEncodable)]
@@ -420,29 +453,34 @@ impl Dao{
     }
     
     /// get a reference of the type
-    pub fn get_ref(&self, column: &str)->&Value{
+    pub fn as_ref(&self, column: &str)->&Value{
         self.values.get(column).unwrap()
     }
     
-    /// set the short column names using the renamed columns from the table specified
-    /// will be used when casting a generic dao to multiple dao values, 
-    /// ie. useful when querying 1 time using 1:1 joins
-    /// TODO: deal with the optional columns
-    pub fn resolve_renamed_columns(&mut self, in_table:&str, renamed_columns:&BTreeMap<String, Vec<(String, String)>>){
-        let renamed_columns = renamed_columns.get(in_table);
-        match renamed_columns{
-            Some(renamed_columns)=>{
-                for c in renamed_columns{
-                    let &(ref column, ref renamed) = c;
-                    println!("setting: {} to value: {}", renamed, column);
-                    let orig = self.values.get(renamed).unwrap().clone();
-                    self.values.insert(column.to_string(), orig);
-                }
-             },
-            None => (),
-        };
+    
+    fn correct_renamed_columns(&mut self, renamed_columns:&Vec<(String, String)>){
+        for &(ref column, ref rename) in renamed_columns{
+            let value = self.get_value(rename);
+            self.set_value(&column, value);
+        }
     }
-
+    
+    fn all_has_values(&self, non_nulls: &Vec<String>)->bool{
+        for column in non_nulls{
+            let value = self.values.get(column);
+            if value.is_none(){
+                return false;
+            }
+            if value.is_some(){
+                let v = value.as_ref().unwrap().clone();
+                match v{
+                    &Value::Null => return false,
+                    _ => ()
+                };
+            }
+        }
+        true
+    }
 }
 
 #[test]
