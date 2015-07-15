@@ -10,6 +10,7 @@ use chrono::offset::utc::UTC;
 use rustorm::query::Query;
 use rustorm::dao::{Dao,IsDao};
 use rustorm::pool::ManagedPool;
+use rustorm::table::{IsTable,Table};
 
 #[derive(Debug, Clone)]
 struct Category {
@@ -47,6 +48,21 @@ impl IsDao for Category{
 }
 
 
+impl IsTable for Category{
+
+    fn table()->Table{
+    
+        Table{
+            schema:"bazaar".to_string(),
+            name:"category".to_string(),
+            parent_table:Some("record".to_string()),
+            sub_table:vec![],
+            comment:None,
+            columns:vec![],
+        }
+    }
+}
+
 fn main(){
     let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v6";
     let mut pool = ManagedPool::init(&url, 1);
@@ -56,6 +72,6 @@ fn main(){
             .set("name", &"Test Category12121")
         .into_table(&"bazaar.category")
             .return_all()
-            .collect_one(db.as_ref());
+            .collect_one(db.as_ref()).unwrap();
     println!("category: {}", category.name.unwrap());
 }

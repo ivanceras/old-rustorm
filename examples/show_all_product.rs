@@ -12,6 +12,7 @@ use rustorm::query::Query;
 use rustorm::query::{Filter,Equality};
 use rustorm::dao::{Dao,IsDao};
 use rustorm::pool::ManagedPool;
+use rustorm::table::{IsTable,Table};
 
 
 #[derive(Debug, Clone)]
@@ -27,6 +28,20 @@ impl IsDao for Product{
             product_id: dao.get("product_id"),
             name: dao.get_opt("name"),
             description: dao.get_opt("description"),
+        }
+    }
+}
+
+impl IsTable for Product{
+    
+    fn table()->Table{
+        Table{
+            schema:"bazaar".to_string(),
+            name:"product".to_string(),
+            parent_table:None,
+            sub_table:vec![],
+            comment:None,
+            columns:vec![]
         }
     }
 }

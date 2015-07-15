@@ -14,6 +14,7 @@ use rustorm::query::Query;
 use rustorm::query::{Filter,Equality};
 use rustorm::dao::{Dao,IsDao};
 use rustorm::pool::ManagedPool;
+use rustorm::table::{IsTable,Table};
 
 
 #[derive(Debug, Clone)]
@@ -33,6 +34,20 @@ impl IsDao for Product{
     }
 }
 
+impl IsTable for Product{
+    
+    fn table()->Table{
+        Table{
+            schema:"bazaar".to_string(),
+            name:"product".to_string(),
+            parent_table:None,
+            sub_table:vec![],
+            comment:None,
+            columns:vec![]
+        }
+    }
+}
+
 #[test]
 fn test_simple_query(){
     let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v6";
@@ -42,7 +57,7 @@ fn test_simple_query(){
     let prod: Product = Query::select_all()
             .from_table("bazaar.product")
             .filter("name", Equality::EQ, &"GTX660 Ti videocard")
-            .collect_one(db.as_ref());
+            .collect_one(db.as_ref()).unwrap();
 
     println!("{}  {}  {:?}", prod.product_id, prod.name.unwrap(), prod.description);
 }

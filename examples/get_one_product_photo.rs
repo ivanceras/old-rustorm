@@ -12,6 +12,7 @@ use rustorm::query::Query;
 use rustorm::query::{Filter,Equality};
 use rustorm::dao::{Dao,IsDao};
 use rustorm::pool::ManagedPool;
+use rustorm::table::{IsTable,Table};
 
 #[derive(Debug, Clone)]
 pub struct Photo {
@@ -24,6 +25,20 @@ impl IsDao for Photo{
         Photo{
             photo_id: dao.get("photo_id"),
             url: dao.get_opt("url"),
+        }
+    }
+}
+
+impl IsTable for Photo{
+    
+    fn table()->Table{
+        Table{
+            schema:"bazaar".to_string(),
+            name:"photo".to_string(),
+            parent_table:None,
+            sub_table:vec![],
+            comment:None,
+            columns:vec![]
         }
     }
 }
@@ -41,7 +56,7 @@ fn main(){
                         .left_join_table("bazaar.photo",
                             "product_photo.photo_id", "photo.photo_id")
                         .filter("product.name", Equality::EQ, &"GTX660 Ti videocard")
-                        .collect_one(db.as_ref());
+                        .collect_one(db.as_ref()).unwrap();
                         
     println!("photo: {} {}",photo.photo_id, photo.url.unwrap());
 }

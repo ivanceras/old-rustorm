@@ -12,6 +12,7 @@ use rustorm::query::{Filter,Equality,Operand};
 use rustorm::pool::ManagedPool;
 use rustorm::database::Database;
 use rustorm::dao::{IsDao, Dao};
+use rustorm::table::{IsTable,Table};
 
 
 #[derive(Debug, Clone)]
@@ -27,6 +28,20 @@ impl IsDao for Product{
             product_id: dao.get("product_id"),
             name: dao.get_opt("name"),
             description: dao.get_opt("description"),
+        }
+    }
+}
+
+impl IsTable for Product{
+    
+    fn table()->Table{
+        Table{
+            schema:"bazaar".to_string(),
+            name:"product".to_string(),
+            parent_table:None,
+            sub_table:vec![],
+            comment:None,
+            columns:vec![]
         }
     }
 }
@@ -55,7 +70,7 @@ fn show_product(db: &Database){
     let prod: Product = Query::select_all()
         .from_table("bazaar.product")
         .filter("name", Equality::EQ, &"GTX660 Ti videocard")
-        .collect_one(db);
+        .collect_one(db).unwrap();
 
     println!("{}  {}  {:?}", prod.product_id, prod.name.unwrap(), prod.description);
     

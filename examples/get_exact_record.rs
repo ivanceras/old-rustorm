@@ -88,7 +88,7 @@ fn main(){
     let em = EntityManager::new(db.as_ref());
     
     let pid = Uuid::parse_str("6db712e6-cc50-4c3a-8269-451c98ace5ad").unwrap();
-    let prod: Product = em.get_exact(&pid);
+    let prod: Product = em.get_exact(&pid).unwrap();
     
     println!("{}  {}  {:?}", prod.product_id, prod.name, prod.description);
     //pool.release(db);

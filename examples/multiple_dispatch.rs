@@ -17,6 +17,7 @@ use std::sync::{Arc, Mutex};
 use std::thread;
 use std::sync::mpsc::channel;
 use rustorm::pool::Platform;
+use rustorm::table::{IsTable,Table};
 
 
 
@@ -37,6 +38,19 @@ impl IsDao for Product{
     }
 }
 
+impl IsTable for Product{
+    
+    fn table()->Table{
+        Table{
+            schema:"bazaar".to_string(),
+            name:"product".to_string(),
+            parent_table:None,
+            sub_table:vec![],
+            comment:None,
+            columns:vec![]
+        }
+    }
+}
 
 /// on a webserver this will be the main thread, where it instantiate
 /// the connection pool in the entirety of the application
@@ -64,7 +78,7 @@ fn show_product(db: &Database){
     let prod: Product = Query::select_all()
         .from_table("bazaar.product")
         .filter("name", Equality::EQ, &"GTX660 Ti videocard")
-        .collect_one(db);
+        .collect_one(db).unwrap();
 
     println!("{}  {}  {:?}", prod.product_id, prod.name.unwrap(), prod.description);
  }
