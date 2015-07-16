@@ -7,6 +7,7 @@ description = "An ORM for rust"
 readme = "README.md"
 repository = "https://github.com/ivanceras/rustorm"
 documentation = "https://ivanceras.github.io/rustorm/rustorm/"
+keywords = ["orm", "database", "sql"]
 
 [lib]
 name = "rustorm"

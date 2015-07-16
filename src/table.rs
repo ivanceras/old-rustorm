@@ -419,21 +419,29 @@ impl Table{
         referring
     }
     
+    
+    /// all the referenced table of this table, this is used in building the structs as stubs or final model definitions
+    /// it does not include the parent is this table is just an extension to it
     pub fn get_all_referenced_table<'a>(&'a self, all_tables:&'a Vec<Table>)->Vec<RefTable>{
         let mut referenced_tables = vec![];
         
         let has_one = self.referred_tables(all_tables);
         for (column, table) in has_one{
-            let ref_table = RefTable{
-                                table: table,
-                                column: Some(column),
-                                linker_table: None,
-                                is_has_one: true,
-                                is_ext: false,
-                                is_has_many: false,
-                                is_direct: true,
-                            };
-            referenced_tables.push(ref_table);
+            if self.is_extension_of(&table, all_tables){
+                println!("skipping master table {} since {} is just an extension to it ",table, self);
+            }else{
+                println!("Includes {} ",table);
+                let ref_table = RefTable{
+                                    table: table,
+                                    column: Some(column),
+                                    linker_table: None,
+                                    is_has_one: true,
+                                    is_ext: false,
+                                    is_has_many: false,
+                                    is_direct: true,
+                                };
+                referenced_tables.push(ref_table);
+            }
         }
         
         
@@ -587,6 +595,13 @@ impl Table{
             }
         }
         extension_tables
+    }
+    
+    /// determines if this table is just an extension of the table specified
+    /// extension tables need not to contain a reference of their parent table
+    pub fn is_extension_of(&self, table:&Table, all_tables:&Vec<Table>)->bool{
+        let ext_tables = table.extension_tables(all_tables);
+        ext_tables.contains(&self)
     }
     
     /// returns only columns that are both primary and foreign
