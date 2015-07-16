@@ -422,26 +422,41 @@ impl Table{
     
     /// all the referenced table of this table, this is used in building the structs as stubs or final model definitions
     /// it does not include the parent is this table is just an extension to it
-    pub fn get_all_referenced_table<'a>(&'a self, all_tables:&'a Vec<Table>)->Vec<RefTable>{
+    /// when a linker table, no applicable referenced is returned
+    /// parent of extension tables are not returned
+    pub fn get_all_applicable_reference<'a>(&'a self, all_tables:&'a Vec<Table>)->Vec<RefTable>{
+        let mut applicable_ref = vec![];
+        if self.is_linker_table(){
+            println!("Skipping reference listing for table {}, Linker table should not contain objects", self);
+            return vec![];
+        }
+        let all_ref = self.get_all_referenced_table(all_tables);
+        for ref_table in all_ref{
+            if self.is_extension_of(ref_table.table, all_tables){
+                 println!("skipping master table {} since {} is just an extension to it ",ref_table.table, self);
+            }
+            else{
+                applicable_ref.push(ref_table)
+            }
+        }
+        applicable_ref
+    }
+    
+    fn get_all_referenced_table<'a>(&'a self, all_tables:&'a Vec<Table>)->Vec<RefTable>{
         let mut referenced_tables = vec![];
         
         let has_one = self.referred_tables(all_tables);
         for (column, table) in has_one{
-            if self.is_extension_of(&table, all_tables){
-                println!("skipping master table {} since {} is just an extension to it ",table, self);
-            }else{
-                println!("Includes {} ",table);
-                let ref_table = RefTable{
-                                    table: table,
-                                    column: Some(column),
-                                    linker_table: None,
-                                    is_has_one: true,
-                                    is_ext: false,
-                                    is_has_many: false,
-                                    is_direct: true,
-                                };
-                referenced_tables.push(ref_table);
-            }
+            let ref_table = RefTable{
+                                table: table,
+                                column: Some(column),
+                                linker_table: None,
+                                is_has_one: true,
+                                is_ext: false,
+                                is_has_many: false,
+                                is_direct: true,
+                            };
+            referenced_tables.push(ref_table);
         }
         
         
@@ -503,7 +518,7 @@ impl Table{
     
     ///determine if this table is a linker table
     /// FIXME: make sure that there are 2 different tables referred to it
-    fn is_linker_table(&self)->bool{
+    pub fn is_linker_table(&self)->bool{
         let pk = self.primary_columns();
         let fk = self.foreign_columns();
         let uc = self.uninherited_columns();
