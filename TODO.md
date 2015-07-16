@@ -7,7 +7,10 @@
 ## June 12, 2015 
 * Improve the implementation of table methods to 
 get table references to have a unified logic
- get_references()->RefTable
+
+``
+
+fn get_references()->RefTable
 RefTable {  
     table,
     is_has_one,
@@ -23,6 +26,7 @@ impl RefTable{
         //checks to see if conflicts to other has_ones, has_many, ext
     }
 }
+``
 
 ## June 16, 2015
 * Make the query api with filter work
@@ -40,3 +44,8 @@ https://github.com/jgallagher/rusqlite
 ## July 7, 2015
 * Use r2d2 connection pooling
 * use connection pooling for sqlite in memory database, such that only 1 instance of in-memory database with the same configuration will exist.
+
+## July 17, 2015
+* Add support for from_hashmap for DAO
+* Add support for to_json for decoding the representation of the object when used as a primary object or an extension object
+* Extension object doesn't involve the both foreign and primary key values, null values etc.

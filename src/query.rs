@@ -935,7 +935,9 @@ impl Query{
         db.execute_with_return(self)
     }
     
-       /// expects a return, such as select, insert/update with returning clause
+    /// expects a return, such as select, insert/update with returning clause
+    /// no casting of data to structs is done
+    /// This is used when retrieving multiple models in 1 query, then casting the records to its equivalent structs
     pub fn execute_with_one_return(&mut self, db: &Database)->Dao{
         self.finalize();
         db.execute_with_one_return(self)
@@ -954,7 +956,6 @@ impl Query{
     }
     
     /// execute the query then collect only 1 record
-    /// put a limit 1 if not already
     pub fn collect_one<T: IsDao+IsTable>(&mut self, db: &Database)->Option<T>{
         let result = self.execute_with_return(db);
         result.cast_one()

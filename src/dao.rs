@@ -83,6 +83,13 @@ impl fmt::Display for Value{
 pub trait ToValue{
     fn to_db_type(&self)->Value;
 }
+
+impl ToValue for bool{
+    fn to_db_type(&self)->Value{
+        Value::Bool(self.clone())
+    }
+}
+
 /// signed INTs
 impl ToValue for i8{
     fn to_db_type(&self)->Value{
@@ -127,6 +134,18 @@ impl ToValue for u32{
 impl ToValue for u64{
     fn to_db_type(&self)->Value{
         Value::U64(self.clone())
+    }
+}
+
+impl ToValue for f32{
+    fn to_db_type(&self)->Value{
+        Value::F32(self.clone())
+    }
+}
+
+impl ToValue for f64{
+    fn to_db_type(&self)->Value{
+        Value::F64(self.clone())
     }
 }
 
@@ -338,9 +357,13 @@ impl FromValue for NaiveDateTime{
 /// sized and clonable
 pub trait IsDao{
     
+    /// convert dao to an instance of the corresponding struct of the model
     /// taking into considerating the renamed columns
-    /// TODO: need to rethink about the renamed columns
     fn from_dao(dao: &Dao)->Self;
+    
+    /// convert from an instance of the struct to a dao representation
+    /// to be saved into the database
+    fn to_dao(&self)->Dao;
 }
 
 /// meta result of a query useful when doing complex query, and also with paging
@@ -415,6 +438,11 @@ impl Dao{
     
     pub fn set(&mut self, column: &str, value:&ToValue){
         self.values.insert(column.to_string(), value.to_db_type());
+    }
+    
+    /// set to null the value of this column
+    pub fn set_null(&mut self, column: &str){
+        self.set_value(column, Value::Null);
     }
     
     pub fn set_value(&mut self, column: &str, value:Value){
