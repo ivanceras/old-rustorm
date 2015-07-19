@@ -60,6 +60,7 @@
 //!
 //!
 
+extern crate mysql;
 extern crate postgres;
 extern crate rusqlite;
 extern crate rustc_serialize;

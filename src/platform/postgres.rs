@@ -305,7 +305,7 @@ impl Postgres{
 
 impl Database for Postgres{
     
-    fn version(&self)->String{
+    fn version(&mut self)->String{
         let sql = "SHOW server_version";
         let dao = self.execute_sql_with_one_return(sql, &vec![]);
         let version = dao.get("server_version");
@@ -337,7 +337,7 @@ impl Database for Postgres{
     fn update(&self, query:&Query)->Dao{panic!("not yet")}
     fn delete(&self, query:&Query)->Result<usize, String>{panic!("not yet");}
 
-    fn execute_sql_with_return(&self, sql:&str, params:&Vec<Value>)->Vec<Dao>{
+    fn execute_sql_with_return(&mut self, sql:&str, params:&Vec<Value>)->Vec<Dao>{
         println!("SQL: \n{}", sql);
         println!("param: {:?}", params);
         let conn = self.get_connection();
@@ -359,7 +359,7 @@ impl Database for Postgres{
         }
         daos
     }
-    fn execute_sql_with_return_columns(&self, sql:&str, params:&Vec<Value>, return_columns:Vec<&str>)->Vec<Dao>{
+    fn execute_sql_with_return_columns(&mut self, sql:&str, params:&Vec<Value>, return_columns:Vec<&str>)->Vec<Dao>{
         panic!("not yet.. but postgresql can support this")
     }
     
@@ -367,7 +367,7 @@ impl Database for Postgres{
     /// generic execute sql which returns not much information,
     /// returns only the number of affected records or errors
     /// can be used with DDL operations (CREATE, DELETE, ALTER, DROP)
-    fn execute_sql(&self, sql:&str, params:&Vec<Value>)->Result<usize, String>{
+    fn execute_sql(&mut self, sql:&str, params:&Vec<Value>)->Result<usize, String>{
         println!("SQL: \n{}", sql);
         println!("param: {:?}", params);
         let to_sql_types = self.from_rust_type_tosql(params);
@@ -388,7 +388,7 @@ impl DatabaseDDL for Postgres{
 
     fn create_schema(&self, schema:&str){}
     fn drop_schema(&self, schema:&str){}
-    fn create_table(&self, model:&Table){}
+    fn create_table(&mut self, model:&Table){}
     fn build_create_table(&self, table:&Table)->SqlFrag{panic!("not yet")}
     fn rename_table(&self, table:&Table, new_tablename:String){}
     fn drop_table(&self, table:&Table){}

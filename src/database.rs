@@ -40,7 +40,7 @@ pub trait Database{
 
     /// return the version of the database
     /// lower version of database has fewer supported features
-    fn version(&self)->String;
+    fn version(&mut self)->String;
     
     /// begin database transaction
     fn begin(&self);
@@ -71,14 +71,14 @@ pub trait Database{
 
     /// select
     /// returns an array to the qualified records
-    fn select(&self, query:&Query)->DaoResult{
+    fn select(&mut self, query:&Query)->DaoResult{
         self.execute_with_return(query)
     }
 
     /// insert
     /// insert an object, returns the inserted Dao value
     /// including the value generated via the defaults
-    fn insert(&self, query:&Query)->Dao{
+    fn insert(&mut self, query:&Query)->Dao{
         let sql_frag = self.build_insert(query);
         self.execute_sql_with_one_return(&sql_frag.sql, &sql_frag.params)
     }
@@ -93,7 +93,7 @@ pub trait Database{
 
     /// execute query with return dao,
     /// use the enumerated column for data extraction when db doesn't support returning the records column names
-    fn execute_with_return(&self, query:&Query)->DaoResult{
+    fn execute_with_return(&mut self, query:&Query)->DaoResult{
         let sql_frag = self.build_query(query);
         let result = if self.sql_options().contains(&SqlOption::ReturnMetaColumns){
             self.execute_sql_with_return(&sql_frag.sql, &sql_frag.params)
@@ -115,31 +115,31 @@ pub trait Database{
     }
 
     /// execute query with 1 return dao
-    fn execute_with_one_return(&self, query:&Query)->Dao{
+    fn execute_with_one_return(&mut self, query:&Query)->Dao{
         let sql_frag = self.build_query(query);
         self.execute_sql_with_one_return(&sql_frag.sql, &sql_frag.params)
     }
     
     /// execute query with no return dao
-    fn execute(&self, query:&Query)->Result<usize, String>{
+    fn execute(&mut self, query:&Query)->Result<usize, String>{
         let sql_frag = self.build_query(query);
         self.execute_sql(&sql_frag.sql, &sql_frag.params)
     }
 
     /// execute insert with returning clause, update with returning clause
-    fn execute_sql_with_return(&self, sql:&str, params:&Vec<Value>)->Vec<Dao>;
+    fn execute_sql_with_return(&mut self, sql:&str, params:&Vec<Value>)->Vec<Dao>;
     
     /// specify which return columns to get, ie. sqlite doesn't support getting the meta data of the return
-    fn execute_sql_with_return_columns(&self, sql:&str, params:&Vec<Value>, return_columns:Vec<&str>)->Vec<Dao>;
+    fn execute_sql_with_return_columns(&mut self, sql:&str, params:&Vec<Value>, return_columns:Vec<&str>)->Vec<Dao>;
 
-    fn execute_sql_with_one_return(&self, sql:&str, params:&Vec<Value>)->Dao{
+    fn execute_sql_with_one_return(&mut self, sql:&str, params:&Vec<Value>)->Dao{
         let dao = self.execute_sql_with_return(sql, params);
         assert!(dao.len() == 1, "There should be 1 and only 1 record return here");
         dao[0].clone()
     }
     
     /// everything else, no required return other than error or affected number of records
-    fn execute_sql(&self, sql:&str, param:&Vec<Value>)->Result<usize, String>;
+    fn execute_sql(&mut self, sql:&str, param:&Vec<Value>)->Result<usize, String>;
 
     /// build a query, return the sql string and the parameters.
     /// use by select to build the select query
@@ -533,7 +533,7 @@ pub trait DatabaseDDL{
     fn drop_schema(&self, schema:&str);
 
     /// create a database table based on the Model Definition
-    fn create_table(&self, model:&Table);
+    fn create_table(&mut self, model:&Table);
     
     /// build sql for create table
     fn build_create_table(&self, table:&Table)->SqlFrag;

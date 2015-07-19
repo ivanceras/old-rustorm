@@ -930,32 +930,32 @@ impl Query{
     }
     
     /// expects a return, such as select, insert/update with returning clause
-    pub fn execute_with_return(&mut self, db: &Database)->DaoResult{
+    pub fn execute_with_return(&mut self, db: &mut Database)->DaoResult{
         self.finalize();
         db.execute_with_return(self)
     }
     
        /// expects a return, such as select, insert/update with returning clause
-    pub fn execute_with_one_return(&mut self, db: &Database)->Dao{
+    pub fn execute_with_one_return(&mut self, db: &mut Database)->Dao{
         self.finalize();
         db.execute_with_one_return(self)
     }
     
     /// delete, update without caring for the return
-    pub fn execute(&mut self, db: &Database)->Result<usize, String>{
+    pub fn execute(&mut self, db: &mut Database)->Result<usize, String>{
         self.finalize();
         db.execute(self)
     }
     
     /// execute the query, then convert the result
-    pub fn collect<T: IsDao+IsTable>(&mut self, db: &Database)->Vec<T>{
+    pub fn collect<T: IsDao+IsTable>(&mut self, db: &mut Database)->Vec<T>{
         let result = self.execute_with_return(db);
         result.cast()
     }
     
     /// execute the query then collect only 1 record
     /// put a limit 1 if not already
-    pub fn collect_one<T: IsDao+IsTable>(&mut self, db: &Database)->Option<T>{
+    pub fn collect_one<T: IsDao+IsTable>(&mut self, db: &mut Database)->Option<T>{
         let result = self.execute_with_return(db);
         result.cast_one()
     }
