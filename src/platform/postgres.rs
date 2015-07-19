@@ -322,6 +322,13 @@ impl Database for Postgres{
     fn reset(&self){}
     
     /// return this list of options, supported features in the database
+    /// TODO: make this features version specific
+    /// http://www.postgresql.org/about/featurematrix/
+    /// writer CTE  >= 9.1
+    /// Inheritance  >= 9.0
+    /// JSON >= 9.2
+    /// JSONB >= 9.4
+    /// Returning >= 8.2
     fn sql_options(&self)->Vec<SqlOption>{
         vec![
             SqlOption::UsesNumberedParam,  // uses numbered parameters

@@ -9,9 +9,8 @@ use std::fmt;
 use query::ColumnName;
 use table::IsTable;
 use rustc_serialize::json;
-use rustc_serialize::{Encodable,Encoder};
+use rustc_serialize::{Decodable, Encodable,Encoder};
 
-#[derive(RustcDecodable, RustcEncodable)]
 #[derive(Debug)]
 #[derive(Clone)]
 ///supported generic datatypes for an ORM
@@ -38,43 +37,52 @@ pub enum Value{
     Null,
 }
 
+
+/// custom implementation for value encoding to json,
+/// does not include unnecessary enum variants fields.
+impl Encodable for Value{
+    
+    fn encode<S: Encoder>(&self, s: &mut S) -> Result<(), S::Error> {
+        match *self {
+            Value::Bool(ref x) => x.encode(s),
+            Value::I8(ref x) => x.encode(s),
+            Value::I16(ref x) => x.encode(s),
+            Value::I32(ref x) => x.encode(s),
+            Value::I64(ref x) => x.encode(s),
+            Value::U8(ref x) => x.encode(s),
+            Value::U16(ref x) => x.encode(s),
+            Value::U32(ref x) => x.encode(s),
+            Value::U64(ref x) => x.encode(s),
+            Value::F32(ref x) => x.encode(s),
+            Value::F64(ref x) => x.encode(s),
+            Value::String(ref x) => x.encode(s),
+            Value::VecU8(ref x) => x.encode(s),
+            Value::Uuid(ref x) => x.encode(s),
+            Value::DateTime(ref x) => x.encode(s),
+            Value::NaiveDate(ref x) => x.encode(s),
+            Value::NaiveTime(ref x) => x.encode(s),
+            Value::NaiveDateTime(ref x) => x.encode(s),
+            Value::Null => s.emit_nil(),
+             _ => panic!("unsupported/unexpected type! {:?}", self),
+        }
+    }
+}
+
 impl fmt::Display for Value{
     
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
-            Value::String(ref x) => {
-                write!(f, "'{}'", x)
-            },
-            Value::Uuid(ref x) => {
-                write!(f, "'{}'", x)
-            },
-            Value::Bool(ref x) => {
-                write!(f, "'{}'", x)
-            },
-            Value::I8(ref x) => {
-                write!(f, "'{}'", x)
-            },
-            Value::I16(ref x) => {
-                write!(f, "'{}'", x)
-            },
-            Value::I32(ref x) => {
-                write!(f, "'{}'", x)
-            },
-            Value::I64(ref x) => {
-                write!(f, "'{}'", x)
-            },
-            Value::U8(ref x) => {
-                write!(f, "'{}'", x)
-            },
-            Value::U16(ref x) => {
-                write!(f, "'{}'", x)
-            },
-            Value::U32(ref x) => {
-                write!(f, "'{}'", x)
-            },
-            Value::U64(ref x) => {
-                write!(f, "'{}'", x)
-            },
+            Value::String(ref x) => write!(f, "'{}'", x),
+            Value::Uuid(ref x) => write!(f, "'{}'", x),
+            Value::Bool(ref x) => write!(f, "'{}'", x),
+            Value::I8(ref x) => write!(f, "'{}'", x),
+            Value::I16(ref x) => write!(f, "'{}'", x),
+            Value::I32(ref x) => write!(f, "'{}'", x),
+            Value::I64(ref x) => write!(f, "'{}'", x),
+            Value::U8(ref x) => write!(f, "'{}'", x),
+            Value::U16(ref x) => write!(f, "'{}'", x),
+            Value::U32(ref x) => write!(f, "'{}'", x),
+            Value::U64(ref x) => write!(f, "'{}'", x),
             _ => panic!("unfinished here! {:?}", self),
         }
     }
@@ -425,8 +433,6 @@ impl DaoResult{
     }
 }
 
-#[derive(RustcDecodable)]
-#[derive(RustcEncodable)]
 #[derive(Debug, Clone)]
 /// TODO: optimization, used enum types for the key values
 /// This will save allocation of string to enum keys which is a few bytes, int 
@@ -434,12 +440,13 @@ pub struct Dao{
     pub values:HashMap<String, Value>,
 }
 
-/// TODO emit only values
-//impl Encodable for Dao{
-//    fn encode<S: Encoder>(&self, s: &mut S) -> Result<(), S::Error>{
-//        s.emit_str("todo, emit only the hashmap values not the entire struct")
-//    }
-//}
+/// custom Encoder for Dao,
+/// decodes directly the content of `values`, instead of `values` as field of this `Dao` struct
+impl Encodable for Dao{
+    fn encode<S: Encoder>(&self, s: &mut S) -> Result<(), S::Error>{
+        self.values.encode(s)
+    }
+}
 
 impl Dao{
 
