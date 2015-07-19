@@ -20,7 +20,7 @@ An ORM for rust
 ## Example
 
 
-* Get all contents of product table
+* [Get all contents of product table](https://github.com/ivanceras/rustorm/blob/master/examples/show_all_product.rs)
 
 
 ```rust
@@ -39,6 +39,7 @@ use rustorm::query::Query;
 use rustorm::query::{Filter,Equality};
 use rustorm::dao::{Dao,IsDao};
 use rustorm::pool::ManagedPool;
+use rustorm::table::{IsTable,Table};
 
 
 #[derive(Debug, Clone)]
@@ -54,6 +55,33 @@ impl IsDao for Product{
             product_id: dao.get("product_id"),
             name: dao.get_opt("name"),
             description: dao.get_opt("description"),
+        }
+    }
+    fn to_dao(&self)->Dao{
+        let mut dao = Dao::new();
+        dao.set("product_id", &self.product_id);
+        match self.name{
+            Some(ref _value) => dao.set("name", _value),
+            None => dao.set_null("name"),
+        };
+        match self.description{
+            Some(ref _value) => dao.set("description", _value),
+            None => dao.set_null("description"),
+        };
+        dao
+    }
+}
+
+impl IsTable for Product{
+    
+    fn table()->Table{
+        Table{
+            schema:"bazaar".to_string(),
+            name:"product".to_string(),
+            parent_table:None,
+            sub_table:vec![],
+            comment:None,
+            columns:vec![]
         }
     }
 }
@@ -80,10 +108,9 @@ fn main(){
 ```
 
 
-* Get one photo of a product
+* [Get one photo of a product](https://github.com/ivanceras/rustorm/blob/master/examples/get_one_product_photo.rs)
 
 ```rust
-
 
 #[derive(Debug, Clone)]
 pub struct Photo {
@@ -96,6 +123,29 @@ impl IsDao for Photo{
         Photo{
             photo_id: dao.get("photo_id"),
             url: dao.get_opt("url"),
+        }
+    }
+    fn to_dao(&self)->Dao{
+        let mut dao = Dao::new();
+        dao.set("photo_id", &self.photo_id);
+        match self.url{
+            Some(ref _value) => dao.set("url", _value),
+            None => dao.set_null("url"),
+        };
+        dao
+    }
+}
+
+impl IsTable for Photo{
+    
+    fn table()->Table{
+        Table{
+            schema:"bazaar".to_string(),
+            name:"photo".to_string(),
+            parent_table:None,
+            sub_table:vec![],
+            comment:None,
+            columns:vec![]
         }
     }
 }
@@ -113,16 +163,40 @@ fn main(){
                         .left_join_table("bazaar.photo",
                             "product_photo.photo_id", "photo.photo_id")
                         .filter("product.name", Equality::EQ, &"GTX660 Ti videocard")
-                        .collect_one(db.as_ref());
+                        .collect_one(db.as_ref()).unwrap();
                         
     println!("photo: {} {}",photo.photo_id, photo.url.unwrap());
 }
 
 ```
 
-* One complex query
+* [One complex query](https://github.com/ivanceras/rustorm/blob/master/examples/complex_query.rs)
 
 ```rust
+
+#[derive(Debug, Clone)]
+pub struct Photo {
+    pub photo_id:Uuid,
+    pub url:Option<String>,
+}
+
+impl IsDao for Photo{
+    fn from_dao(dao:&Dao)->Self{
+        Photo{
+            photo_id: dao.get("photo_id"),
+            url: dao.get_opt("url"),
+        }
+    }
+    fn to_dao(&self)->Dao{
+        let mut dao = Dao::new();
+        dao.set("photo_id", &self.photo_id);
+        match self.url{
+            Some(ref _value) => dao.set("url", _value),
+            None => dao.set_null("url"),
+        };
+        dao
+    }
+}
 
 fn main(){
     let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v6";
@@ -170,6 +244,7 @@ SELECT *
     assert!(frag.sql.trim() == expected.trim());
     
 }
+
 ```
 
 ## Supported Database
