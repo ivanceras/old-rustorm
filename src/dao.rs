@@ -8,6 +8,8 @@ use chrono::offset::utc::UTC;
 use std::fmt;
 use query::ColumnName;
 use table::IsTable;
+use rustc_serialize::json;
+use rustc_serialize::{Encodable,Encoder};
 
 #[derive(RustcDecodable, RustcEncodable)]
 #[derive(Debug)]
@@ -35,7 +37,6 @@ pub enum Value{
     NaiveDateTime(NaiveDateTime),
     Null,
 }
-
 
 impl fmt::Display for Value{
     
@@ -424,11 +425,21 @@ impl DaoResult{
     }
 }
 
-#[derive(RustcDecodable, RustcEncodable)]
+#[derive(RustcDecodable)]
+#[derive(RustcEncodable)]
 #[derive(Debug, Clone)]
+/// TODO: optimization, used enum types for the key values
+/// This will save allocation of string to enum keys which is a few bytes, int 
 pub struct Dao{
     pub values:HashMap<String, Value>,
 }
+
+/// TODO emit only values
+//impl Encodable for Dao{
+//    fn encode<S: Encoder>(&self, s: &mut S) -> Result<(), S::Error>{
+//        s.emit_str("todo, emit only the hashmap values not the entire struct")
+//    }
+//}
 
 impl Dao{
 
@@ -511,6 +522,7 @@ impl Dao{
     }
 }
 
+
 #[test]
 fn test_dao(){
     let s = "lee";
@@ -528,4 +540,22 @@ fn test_dao(){
     assert_eq!(age, 20i8);
     assert_eq!(date, created);
     assert_eq!(none, None);
+}
+
+#[test]
+fn test_json(){
+    let s = "lee";
+    let n = 20i8;
+    let date = UTC::now();
+    let mut dao = Dao::new();
+    dao.set("name", &s);
+    dao.set("age", &n);
+    dao.set("created", &date);
+    let name:String = dao.get("name");
+    let age:i8 = dao.get("age");
+    let created:DateTime<UTC> = dao.get("created");
+    let none:Option<u8> = dao.get_opt("none");
+    println!("json: {}",json::encode(&dao).unwrap());
+    assert_eq!(
+        r#"{"values":{"created":{"variant":"DateTime","fields":[{"datetime":{"date":{"ymdf":16510074},"time":{"secs":29543,"frac":654848485}},"offset":{}}]},"age":{"variant":"I8","fields":[20]},"name":{"variant":"String","fields":["lee"]}}}"#.to_string(), json::encode(&dao).unwrap());
 }

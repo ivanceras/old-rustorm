@@ -26,6 +26,15 @@ impl IsDao for Photo{
             url: dao.get_opt("url"),
         }
     }
+    fn to_dao(&self)->Dao{
+        let mut dao = Dao::new();
+        dao.set("photo_id", &self.photo_id);
+        match self.url{
+            Some(ref _value) => dao.set("url", _value),
+            None => dao.set_null("url"),
+        };
+        dao
+    }
 }
 
 fn main(){

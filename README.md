@@ -11,7 +11,7 @@ An ORM for rust
 * Composable queries
 * Extensible to multiple database platform
 * Easy to reason out generated SQL
-* Optional model code generator
+* Optional model [code generator](https://github.com/ivanceras/codegenta)
 
 ## [Documentation](http://ivanceras.github.io/rustorm/rustorm)
 

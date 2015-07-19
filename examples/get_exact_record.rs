@@ -33,6 +33,16 @@ impl IsDao for Product{
             description: dao.get_opt("description"),
         }
     }
+    fn to_dao(&self)->Dao{
+        let mut dao = Dao::new();
+        dao.set("product_id", &self.product_id);
+        dao.set("name", &self.name);
+        match self.description{
+            Some(ref _value) => dao.set("description", _value),
+            None => dao.set_null("description"),
+        };
+        dao
+    }
 }
 
 

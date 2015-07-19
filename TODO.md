@@ -48,4 +48,9 @@ https://github.com/jgallagher/rusqlite
 ## July 17, 2015
 * Add support for from_hashmap for DAO
 * Add support for to_json for decoding the representation of the object when used as a primary object or an extension object
-* Extension object doesn't involve the both foreign and primary key values, null values etc.
+    * Extension object doesn't involve the both foreign and primary key values, null values etc.
+    * Conver the object to hashmap, then remove the undesired column, then serialize fn serialize_compact()->String, fn concize_serialize()
+    fn compact_hashmap()->HashMap;
+    fn compact_json()->Json;
+    to dao then serialize the json
+
