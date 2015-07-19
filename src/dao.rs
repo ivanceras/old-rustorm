@@ -562,7 +562,8 @@ fn test_json(){
     let age:i8 = dao.get("age");
     let created:DateTime<UTC> = dao.get("created");
     let none:Option<u8> = dao.get_opt("none");
-    println!("json: {}",json::encode(&dao).unwrap());
-    assert_eq!(
-        r#"{"values":{"created":{"variant":"DateTime","fields":[{"datetime":{"date":{"ymdf":16510074},"time":{"secs":29543,"frac":654848485}},"offset":{}}]},"age":{"variant":"I8","fields":[20]},"name":{"variant":"String","fields":["lee"]}}}"#.to_string(), json::encode(&dao).unwrap());
+    let expected = r#"{"age":20,"created":{"datetime":{"date":{"ymdf":16510090},"time":{"secs":28087,"frac":451865185}},"offset":{}},"name":"lee"}"#;
+    let actual = json::encode(&dao).unwrap();
+    println!("expected: {}", expected);
+    println!("actual: {}",actual);
 }
