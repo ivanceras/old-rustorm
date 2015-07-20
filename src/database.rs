@@ -213,11 +213,11 @@ pub trait Database{
             Equality::GT => w.append("> "),
             Equality::GTE => w.append(">= "),
             Equality::IN => w.append("IN "),
-            Equality::NOTIN => w.append("NOT IN "),
+            Equality::NOT_IN => w.append("NOT IN "),
             Equality::LIKE => w.append("LIKE "),
             Equality::NULL => w.append("IS NULL "),
-            Equality::NOTNULL => w.append("IS NOT NULL "),
-            Equality::ISNULL => w.append("IS NULL "),
+            Equality::IS_NOT_NULL => w.append("IS NOT NULL "),
+            Equality::IS_NULL => w.append("IS NULL "),
         };
         self.build_operand(w, parent_query, &cond.right_operand);
     }

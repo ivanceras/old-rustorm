@@ -53,4 +53,19 @@ https://github.com/jgallagher/rusqlite
     fn compact_hashmap()->HashMap;
     fn compact_json()->Json;
     to dao then serialize the json
+    
 
+## July 19, 2015
+
+```rust
+
+impl ProductAvailability{
+
+    compact_json(&self)->Json{
+        let mut dao = self.to_dao();
+        dao.remove("product_id");
+        dao.encode()
+    }
+}
+
+```

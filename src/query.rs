@@ -61,11 +61,11 @@ pub enum Equality{
     GT, //GREATER_THAN,
     GTE, //GREATER_THAN_OR_EQUAL,
     IN,
-    NOTIN,//NOT_IN,
+    NOT_IN,//NOT_IN,
     LIKE,
     NULL,
-    NOTNULL,//NOT_NULL,
-    ISNULL,//IS_NULL,
+    IS_NOT_NULL,//NOT_NULL,
+    IS_NULL,//IS_NULL,
 }
 
 /// function in a sql statement
@@ -123,6 +123,13 @@ impl Filter{
         }
     }
     
+    pub fn is_null(column:&str)->Self{
+        Filter::new(column, Equality::IS_NULL, &())
+    }
+    pub fn is_not_null(column:&str)->Self{
+        Filter::new(column, Equality::IS_NOT_NULL, &())
+    }
+    
     pub fn and(&mut self, column:&str, equality:Equality, value:&ToValue)->&mut Self{
         let mut filter = Filter::new(column, equality, value);
         filter.connector = Connector::And;
@@ -136,6 +143,7 @@ impl Filter{
         self.subfilters.push(filter);
         self
     }
+    
     
 }
 
@@ -348,6 +356,12 @@ impl ToTableName for Table{
     }
 }
 
+/// Query Error
+pub enum Error{
+    NoTableSpecified(String),
+    NoColumnSpecified(String),
+    SqlError(String),
+}
 
 #[derive(Debug)]
 #[derive(Clone)]
@@ -956,6 +970,7 @@ impl Query{
     }
     
     /// execute the query then collect only 1 record
+    /// TODO: use Result<T,Error> instead of Option<T>
     pub fn collect_one<T: IsDao+IsTable>(&mut self, db: &Database)->Option<T>{
         let result = self.execute_with_return(db);
         result.cast_one()
