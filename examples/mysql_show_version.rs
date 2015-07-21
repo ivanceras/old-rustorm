@@ -16,7 +16,7 @@ use rustorm::database::Database;
  
 
 fn main(){
-    let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v6";
+    let url = "mysql://test:test@localhost/test";
     let mut pool = ManagedPool::init(&url, 1);
     let mut db = pool.connect().unwrap();
     let version = db.as_ref_mut().version();

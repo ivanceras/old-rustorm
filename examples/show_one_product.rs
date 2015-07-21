@@ -63,12 +63,12 @@ impl IsTable for Product{
 fn main(){
     let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v6";
     let mut pool = ManagedPool::init(&url, 1);
-    let db = pool.connect().unwrap();
+    let mut db = pool.connect().unwrap();
     
     let prod: Product = Query::select_all()
             .from_table("bazaar.product")
             .filter("name", Equality::EQ, &"GTX660 Ti videocard")
-            .collect_one(db.as_ref()).unwrap();
+            .collect_one(db.as_ref_mut()).unwrap();
 
     println!("{}  {}  {:?}", prod.product_id, prod.name.unwrap(), prod.description);
 }

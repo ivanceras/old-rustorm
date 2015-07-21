@@ -11,18 +11,18 @@ use query::Equality;
 /// A higher level API for manipulating objects in the database
 /// This serves as a helper function for the query api
 pub struct EntityManager<'a>{
-    pub db:&'a Database,
+    pub db:&'a mut Database,
 }
 
 impl <'a>EntityManager<'a>{
 
     /// Create an entity manager with the database connection provided
-    pub fn new(db:&'a Database)->Self{
+    pub fn new(db:&'a mut Database)->Self{
         EntityManager{db:db}
     }
 
     /// delete records of this table
-    pub fn delete(&self, table:&Table, filters:Vec<Filter>)->usize{
+    pub fn delete(&mut self, table:&Table, filters:Vec<Filter>)->usize{
         let mut query = Query::delete();
         query.from(table);
         for filter in filters{
@@ -35,7 +35,7 @@ impl <'a>EntityManager<'a>{
     }
 
     /// get all the records of this table
-    pub fn get_all<T>(&self)->Vec<T> where T : IsTable + IsDao{
+    pub fn get_all<T>(&mut self)->Vec<T> where T : IsTable + IsDao{
         let table = T::table();
         let mut q = Query::select_all();
         q.from_table(&table.complete_name());
@@ -43,7 +43,7 @@ impl <'a>EntityManager<'a>{
     }
 
     /// get all the records of this table, but return only the columns mentioned
-    pub fn get_all_only_columns<T>(&self, columns:Vec<&str>)->Vec<T> 
+    pub fn get_all_only_columns<T>(&mut self, columns:Vec<&str>)->Vec<T> 
         where T : IsTable + IsDao{
         let table = T::table();
         let mut q = Query::select();
@@ -53,7 +53,7 @@ impl <'a>EntityManager<'a>{
     }
     
     /// get all the records of this table, ignoring the columns listed, mentioned the other else
-    pub fn get_all_ignore_columns<T>(&self, ignore_columns:Vec<&str>)->Vec<T> 
+    pub fn get_all_ignore_columns<T>(&mut self, ignore_columns:Vec<&str>)->Vec<T> 
         where T : IsTable + IsDao{
         let table = T::table();
         let mut q = Query::select();
@@ -67,7 +67,7 @@ impl <'a>EntityManager<'a>{
 
 
     /// get all the distinct records of this table
-    pub fn get_all_distinct<T>(&self)->Vec<T>
+    pub fn get_all_distinct<T>(&mut self)->Vec<T>
         where T : IsTable + IsDao{
         let table = T::table();
         let mut q = Query::select_all();
@@ -78,7 +78,7 @@ impl <'a>EntityManager<'a>{
 
     /// get all the records on this table which passed thru the filters
     /// any query that specified more than the parameters should use the query api
-    pub fn get_all_with_filter<T>(&self, filters:Vec<Filter>)->Vec<T> 
+    pub fn get_all_with_filter<T>(&mut self, filters:Vec<Filter>)->Vec<T> 
         where T : IsTable + IsDao{
         let table = T::table();
         let mut q = Query::select_all();
@@ -90,7 +90,7 @@ impl <'a>EntityManager<'a>{
     }
 
     /// get the first records of this table that passed thru the filters
-    pub fn get_one<T>(&self, filter:Filter)->Vec<T> 
+    pub fn get_one<T>(&mut self, filter:Filter)->Vec<T> 
         where T : IsTable + IsDao{
         let table = T::table();
         let mut q = Query::select_all();
@@ -101,7 +101,7 @@ impl <'a>EntityManager<'a>{
 /// 
 /// get an exact match, the value is filter against the primary key of the table
 /// 
-    pub fn get_exact<T>(&self, id: &ToValue)->Option<T> 
+    pub fn get_exact<T>(&mut self, id: &ToValue)->Option<T> 
         where T : IsTable + IsDao{
         let table = T::table();
         let primary = table.primary_columns();
@@ -114,7 +114,7 @@ impl <'a>EntityManager<'a>{
             .collect_one(self.db)
     }
 
-    pub fn insert<T>(&self, dao:Dao)->Option<T>
+    pub fn insert<T>(&mut self, dao:Dao)->Option<T>
         where T : IsTable + IsDao{
         let table = T::table();
         let mut q = Query::insert();
@@ -138,7 +138,7 @@ impl <'a>EntityManager<'a>{
     /// insert this record on the database, ignoring some columns
     /// which are set by the database default
     /// columns that are ignored are set by the database automatically
-    pub fn insert_with_ignore_columns<T>(&self, dao:Dao, ignore_columns:Vec<&str>)->Option<T>
+    pub fn insert_with_ignore_columns<T>(&mut self, dao:Dao, ignore_columns:Vec<&str>)->Option<T>
         where T: IsTable + IsDao {
         let table = T::table();
         let mut q = Query::insert();

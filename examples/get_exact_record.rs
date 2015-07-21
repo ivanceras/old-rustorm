@@ -94,8 +94,8 @@ impl IsTable for Product{
 fn main(){
     let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v6";
     let mut pool = ManagedPool::init(&url, 1);
-    let db = pool.connect().unwrap();
-    let em = EntityManager::new(db.as_ref());
+    let mut db = pool.connect().unwrap();
+    let mut em = EntityManager::new(db.as_ref_mut());
     
     let pid = Uuid::parse_str("6db712e6-cc50-4c3a-8269-451c98ace5ad").unwrap();
     let prod: Product = em.get_exact(&pid).unwrap();

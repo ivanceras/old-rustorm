@@ -40,60 +40,60 @@ pub trait Database{
 
     /// return the version of the database
     /// lower version of database has fewer supported features
-    fn version(&self)->String;
+    fn version(&mut self)->String;
     
     /// begin database transaction
-    fn begin(&self);
+    fn begin(&mut self);
 
     /// commit database transaction
-    fn commit(&self);
+    fn commit(&mut self);
 
     /// rollback data changes executed prior to calling the begin method
-    fn rollback(&self);
+    fn rollback(&mut self);
 
     /// determine if this transaction has been committed or rolledback
-    fn is_transacted(&self)->bool;
+    fn is_transacted(&mut self)->bool;
 
     /// determine if the database connection closed
-    fn is_closed(&self)->bool;
+    fn is_closed(&mut self)->bool;
 
     /// check if the database is still connected
-    fn is_connected(&self)->bool;
+    fn is_connected(&mut self)->bool;
 
     /// close the database connection
-    fn close(&self);
+    fn close(&mut self);
 
     /// determine if the database connection is still valid
-    fn is_valid(&self)->bool;
+    fn is_valid(&mut self)->bool;
 
     /// reset the database connection
-    fn reset(&self);
+    fn reset(&mut self);
 
     /// select
     /// returns an array to the qualified records
-    fn select(&self, query:&Query)->DaoResult{
+    fn select(&mut self, query:&Query)->DaoResult{
         self.execute_with_return(query)
     }
 
     /// insert
     /// insert an object, returns the inserted Dao value
     /// including the value generated via the defaults
-    fn insert(&self, query:&Query)->Dao{
+    fn insert(&mut self, query:&Query)->Dao{
         let sql_frag = self.build_insert(query);
         self.execute_sql_with_one_return(&sql_frag.sql, &sql_frag.params)
     }
 
     /// update
     /// returns the updated Dao
-    fn update(&self,query:&Query)->Dao;
+    fn update(&mut self,query:&Query)->Dao;
 
     /// delete records
     /// returns the number of deleted records
-    fn delete(&self, query:&Query)->Result<usize, String>;
+    fn delete(&mut self, query:&Query)->Result<usize, String>;
 
     /// execute query with return dao,
     /// use the enumerated column for data extraction when db doesn't support returning the records column names
-    fn execute_with_return(&self, query:&Query)->DaoResult{
+    fn execute_with_return(&mut self, query:&Query)->DaoResult{
         let sql_frag = self.build_query(query);
         let result = if self.sql_options().contains(&SqlOption::ReturnMetaColumns){
             self.execute_sql_with_return(&sql_frag.sql, &sql_frag.params)
@@ -115,37 +115,37 @@ pub trait Database{
     }
 
     /// execute query with 1 return dao
-    fn execute_with_one_return(&self, query:&Query)->Dao{
+    fn execute_with_one_return(&mut self, query:&Query)->Dao{
         let sql_frag = self.build_query(query);
         self.execute_sql_with_one_return(&sql_frag.sql, &sql_frag.params)
     }
     
     /// execute query with no return dao
-    fn execute(&self, query:&Query)->Result<usize, String>{
+    fn execute(&mut self, query:&Query)->Result<usize, String>{
         let sql_frag = self.build_query(query);
         self.execute_sql(&sql_frag.sql, &sql_frag.params)
     }
 
     /// execute insert with returning clause, update with returning clause
-    fn execute_sql_with_return(&self, sql:&str, params:&Vec<Value>)->Vec<Dao>;
+    fn execute_sql_with_return(&mut self, sql:&str, params:&Vec<Value>)->Vec<Dao>;
     
     /// specify which return columns to get, ie. sqlite doesn't support getting the meta data of the return
-    fn execute_sql_with_return_columns(&self, sql:&str, params:&Vec<Value>, return_columns:Vec<&str>)->Vec<Dao>;
+    fn execute_sql_with_return_columns(&mut self, sql:&str, params:&Vec<Value>, return_columns:Vec<&str>)->Vec<Dao>;
 
-    fn execute_sql_with_one_return(&self, sql:&str, params:&Vec<Value>)->Dao{
+    fn execute_sql_with_one_return(&mut self, sql:&str, params:&Vec<Value>)->Dao{
         let dao = self.execute_sql_with_return(sql, params);
         assert!(dao.len() == 1, "There should be 1 and only 1 record return here");
         dao[0].clone()
     }
     
     /// everything else, no required return other than error or affected number of records
-    fn execute_sql(&self, sql:&str, param:&Vec<Value>)->Result<usize, String>;
+    fn execute_sql(&mut self, sql:&str, param:&Vec<Value>)->Result<usize, String>;
 
     /// build a query, return the sql string and the parameters.
     /// use by select to build the select query
     /// build all types of query
     /// TODO: need to supply the number of parameters where to start the numbering of the number parameters
-    fn build_query(&self, query:&Query)->SqlFrag{
+    fn build_query(&mut self, query:&Query)->SqlFrag{
         match query.sql_type{
             SqlType::SELECT => self.build_select(query),
             SqlType::INSERT => self.build_insert(query),
@@ -155,7 +155,7 @@ pub trait Database{
     }
     
     /// build operand, i.e: columns, query, function, values
-    fn build_operand(&self, w: &mut SqlFrag, parent_query:&Query, operand:&Operand){
+    fn build_operand(&mut self, w: &mut SqlFrag, parent_query:&Query, operand:&Operand){
         match operand{
             &Operand::ColumnName(ref column_name) => {
                 if parent_query.joins.is_empty(){
@@ -202,7 +202,7 @@ pub trait Database{
         };
     }
     
-    fn build_condition(&self, w: &mut SqlFrag, parent_query:&Query, cond:&Condition){
+    fn build_condition(&mut self, w: &mut SqlFrag, parent_query:&Query, cond:&Condition){
         self.build_operand(w, parent_query, &cond.left_operand);
         w.append(" ");
         match cond.equality{
@@ -222,7 +222,7 @@ pub trait Database{
         self.build_operand(w, parent_query, &cond.right_operand);
     }
     
-    fn build_field(&self, w: &mut SqlFrag, parent_query:&Query, field:&Field){
+    fn build_field(&mut self, w: &mut SqlFrag, parent_query:&Query, field:&Field){
         self.build_operand(w, parent_query, &field.operand);
         match field.name{
             Some(ref name) => {
@@ -234,7 +234,7 @@ pub trait Database{
     }
     
     
-    fn build_filter(&self, w: &mut SqlFrag, parent_query:&Query, filter:&Filter){
+    fn build_filter(&mut self, w: &mut SqlFrag, parent_query:&Query, filter:&Filter){
         if !filter.subfilters.is_empty(){
             w.append("( ");
         }
@@ -257,7 +257,7 @@ pub trait Database{
     
     /// build the filter clause or the where clause of the query
     /// TODO: add the sub filters
-    fn build_filters(&self, w: &mut SqlFrag, parent_query:&Query, filters: &Vec<Filter>){
+    fn build_filters(&mut self, w: &mut SqlFrag, parent_query:&Query, filters: &Vec<Filter>){
         let mut do_and = false;
         for filter in filters{
             if do_and{
@@ -271,7 +271,7 @@ pub trait Database{
     }
 
     /// build the enumerated, distinct, *, columns
-    fn build_enumerated_fields(&self, w: &mut SqlFrag, parent_query:&Query, enumerated_fields: &Vec<Field>){
+    fn build_enumerated_fields(&mut self, w: &mut SqlFrag, parent_query:&Query, enumerated_fields: &Vec<Field>){
         let mut do_comma = false;
         let mut cnt = 0;
         for field in enumerated_fields{
@@ -284,8 +284,8 @@ pub trait Database{
         }
     }
 
-    /// TODO include filters, joins, groups, paging
-    fn build_select(&self, query: &Query)->SqlFrag{
+    /// build the select statment from the query object
+    fn build_select(&mut self, query: &Query)->SqlFrag{
         let mut w = SqlFrag::new(self.sql_options());
         w.append("SELECT ");
         self.build_enumerated_fields(&mut w, query, &query.enumerated_fields); //TODO: add support for column_sql, fields, functions
@@ -407,7 +407,7 @@ pub trait Database{
     }
     
     /// TODO complete this
-    fn build_insert(&self, query: &Query)->SqlFrag{
+    fn build_insert(&mut self, query: &Query)->SqlFrag{
         let mut w = SqlFrag::new(self.sql_options());
         w.append("INSERT INTO ");
         let into_table = query.get_from_table();
@@ -450,7 +450,7 @@ pub trait Database{
     }
 
     
-    fn build_update(&self, query: &Query)->SqlFrag{
+    fn build_update(&mut self, query: &Query)->SqlFrag{
         let mut w = SqlFrag::new(self.sql_options());
         w.append("UPDATE ");
         let from_table = query.get_from_table();
@@ -497,7 +497,7 @@ pub trait Database{
         w
     }
 
-    fn build_delete(&self, query: &Query)->SqlFrag{
+    fn build_delete(&mut self, query: &Query)->SqlFrag{
         let mut w = SqlFrag::new(self.sql_options());
         w.append("DELETE FROM ");
         let from_table = query.get_from_table();
@@ -513,7 +513,7 @@ pub trait Database{
         w
     }
 
-    fn sql_options(&self)->Vec<SqlOption>;
+    fn sql_options(&mut self)->Vec<SqlOption>;
 
 }
 
@@ -527,28 +527,28 @@ pub trait DatabaseDDL{
     ////////////////////////////////////////
 
     /// create a database schema
-    fn create_schema(&self, schema:&str);
+    fn create_schema(&mut self, schema:&str);
 
     /// drop the database schema
-    fn drop_schema(&self, schema:&str);
+    fn drop_schema(&mut self, schema:&str);
 
     /// create a database table based on the Model Definition
-    fn create_table(&self, model:&Table);
+    fn create_table(&mut self, model:&Table);
     
     /// build sql for create table
-    fn build_create_table(&self, table:&Table)->SqlFrag;
+    fn build_create_table(&mut self, table:&Table)->SqlFrag;
 
     /// rename table, in the same schema
-    fn rename_table(&self, table:&Table, new_tablename:String);
+    fn rename_table(&mut self, table:&Table, new_tablename:String);
 
     /// drop table
-    fn drop_table(&self, table:&Table);
+    fn drop_table(&mut self, table:&Table);
 
     /// set the foreign key constraint of a table
-    fn set_foreign_constraint(&self, model:&Table);
+    fn set_foreign_constraint(&mut self, model:&Table);
 
     /// set the primary key constraint of a table
-    fn set_primary_constraint(&self, model:&Table);
+    fn set_primary_constraint(&mut self, model:&Table);
 }
 
 
@@ -561,24 +561,24 @@ pub trait DatabaseDev{
 ////////////////////////////////////////////
 
     /// applicable to later version of postgresql where there is inheritance
-    fn get_table_sub_class(&self, schema:&str, table:&str)->Vec<String>;
+    fn get_table_sub_class(&mut self, schema:&str, table:&str)->Vec<String>;
 
-    fn get_parent_table(&self, schema:&str, table:&str)->Option<String>;
+    fn get_parent_table(&mut self, schema:&str, table:&str)->Option<String>;
 
     ////
     /// Build the Table object based on the extracted meta data info from database
     /// This is queries directly from the database, so this will be costly. Only used this on initialization processes
     ///
-    fn get_table_metadata(&self, schema:&str, table:&str)->Table;
+    fn get_table_metadata(&mut self, schema:&str, table:&str)->Table;
 
     /// get all the tables in this database
-    fn get_all_tables(&self)->Vec<(String, String)>;
+    fn get_all_tables(&mut self)->Vec<(String, String)>;
 
     /// get the comment of this table
-    fn get_table_comment(&self, schema:&str, table:&str)->Option<String>;
+    fn get_table_comment(&mut self, schema:&str, table:&str)->Option<String>;
 
     /// get the inherited columns of this table
-    fn get_inherited_columns(&self, schema:&str, table:&str)->Vec<String>;
+    fn get_inherited_columns(&mut self, schema:&str, table:&str)->Vec<String>;
 
     ///get the equivalent postgresql database data type to rust data type
     /// returns (module, type)

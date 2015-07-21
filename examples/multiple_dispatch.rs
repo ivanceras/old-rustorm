@@ -77,10 +77,10 @@ fn main(){
     let mut pool = Arc::new(Mutex::new(ManagedPool::init(url, 5)));
     for i in 0..3000{
     	let pool = pool.clone();
-        let db: Platform = pool.lock().unwrap().connect().unwrap();//important to obtain a connection before opening a thread
+        let mut db: Platform = pool.lock().unwrap().connect().unwrap();//important to obtain a connection before opening a thread
         thread::spawn(move || {
                 println!("spawning thread {}", i);
-                show_product(db.as_ref());//borrow a database
+                show_product(db.as_ref_mut());//borrow a database
         });
     }
      thread::sleep_ms(5000);
@@ -88,7 +88,7 @@ fn main(){
 
 
 /// a dispatched controller with an accesss to a database reference
-fn show_product(db: &Database){
+fn show_product(db: &mut Database){
     let prod: Product = Query::select_all()
         .from_table("bazaar.product")
         .filter("name", Equality::EQ, &"GTX660 Ti videocard")

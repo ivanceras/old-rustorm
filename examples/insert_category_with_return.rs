@@ -106,12 +106,12 @@ impl IsTable for Category{
 fn main(){
     let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v6";
     let mut pool = ManagedPool::init(&url, 1);
-    let db = pool.connect().unwrap();
+    let mut db = pool.connect().unwrap();
         
     let category: Category = Query::insert()
             .set("name", &"Test Category12121")
         .into_table(&"bazaar.category")
             .return_all()
-            .collect_one(db.as_ref()).unwrap();
+            .collect_one(db.as_ref_mut()).unwrap();
     println!("category: {}", category.name.unwrap());
 }

@@ -55,7 +55,7 @@ impl IsTable for Photo{
 fn main(){
     let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v6";
     let mut pool = ManagedPool::init(url, 1);
-    let db = pool.connect().unwrap();
+    let mut db = pool.connect().unwrap();
     
     let photo: Photo = Query::select_all()
                         .column("photo.url")
@@ -65,7 +65,7 @@ fn main(){
                         .left_join_table("bazaar.photo",
                             "product_photo.photo_id", "photo.photo_id")
                         .filter("product.name", Equality::EQ, &"GTX660 Ti videocard")
-                        .collect_one(db.as_ref()).unwrap();
+                        .collect_one(db.as_ref_mut()).unwrap();
                         
     println!("photo: {} {}",photo.photo_id, photo.url.unwrap());
 }

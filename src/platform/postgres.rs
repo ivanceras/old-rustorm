@@ -136,7 +136,7 @@ impl Postgres{
     ///
     /// http://stackoverflow.com/questions/109325/postgresql-describe-table
     ///
-    fn get_table_columns(&self, schema:&str, table:&str)->Vec<Column>{
+    fn get_table_columns(&mut self, schema:&str, table:&str)->Vec<Column>{
         let sql = "
             SELECT
                 pg_attribute.attnum AS number,
@@ -305,21 +305,21 @@ impl Postgres{
 
 impl Database for Postgres{
     
-    fn version(&self)->String{
+    fn version(&mut self)->String{
         let sql = "SHOW server_version";
         let dao = self.execute_sql_with_one_return(sql, &vec![]);
         let version = dao.get("server_version");
         version
     }
-    fn begin(&self){}
-    fn commit(&self){}
-    fn rollback(&self){}
-    fn is_transacted(&self)->bool{false}
-    fn is_closed(&self)->bool{false}
-    fn is_connected(&self)->bool{false}
-    fn close(&self){}
-    fn is_valid(&self)->bool{false}
-    fn reset(&self){}
+    fn begin(&mut self){}
+    fn commit(&mut self){}
+    fn rollback(&mut self){}
+    fn is_transacted(&mut self)->bool{false}
+    fn is_closed(&mut self)->bool{false}
+    fn is_connected(&mut self)->bool{false}
+    fn close(&mut self){}
+    fn is_valid(&mut self)->bool{false}
+    fn reset(&mut self){}
     
     /// return this list of options, supported features in the database
     /// TODO: make this features version specific
@@ -329,7 +329,7 @@ impl Database for Postgres{
     /// JSON >= 9.2
     /// JSONB >= 9.4
     /// Returning >= 8.2
-    fn sql_options(&self)->Vec<SqlOption>{
+    fn sql_options(&mut self)->Vec<SqlOption>{
         vec![
             SqlOption::UsesNumberedParam,  // uses numbered parameters
             SqlOption::SupportsReturningClause, // supports returning clause, feature
@@ -341,10 +341,10 @@ impl Database for Postgres{
     }
     
     
-    fn update(&self, query:&Query)->Dao{panic!("not yet")}
-    fn delete(&self, query:&Query)->Result<usize, String>{panic!("not yet");}
+    fn update(&mut self, query:&Query)->Dao{panic!("not yet")}
+    fn delete(&mut self, query:&Query)->Result<usize, String>{panic!("not yet");}
 
-    fn execute_sql_with_return(&self, sql:&str, params:&Vec<Value>)->Vec<Dao>{
+    fn execute_sql_with_return(&mut self, sql:&str, params:&Vec<Value>)->Vec<Dao>{
         println!("SQL: \n{}", sql);
         println!("param: {:?}", params);
         let conn = self.get_connection();
@@ -366,7 +366,7 @@ impl Database for Postgres{
         }
         daos
     }
-    fn execute_sql_with_return_columns(&self, sql:&str, params:&Vec<Value>, return_columns:Vec<&str>)->Vec<Dao>{
+    fn execute_sql_with_return_columns(&mut self, sql:&str, params:&Vec<Value>, return_columns:Vec<&str>)->Vec<Dao>{
         panic!("not yet.. but postgresql can support this")
     }
     
@@ -374,7 +374,7 @@ impl Database for Postgres{
     /// generic execute sql which returns not much information,
     /// returns only the number of affected records or errors
     /// can be used with DDL operations (CREATE, DELETE, ALTER, DROP)
-    fn execute_sql(&self, sql:&str, params:&Vec<Value>)->Result<usize, String>{
+    fn execute_sql(&mut self, sql:&str, params:&Vec<Value>)->Result<usize, String>{
         println!("SQL: \n{}", sql);
         println!("param: {:?}", params);
         let to_sql_types = self.from_rust_type_tosql(params);
@@ -393,21 +393,21 @@ impl Database for Postgres{
 
 impl DatabaseDDL for Postgres{
 
-    fn create_schema(&self, schema:&str){}
-    fn drop_schema(&self, schema:&str){}
-    fn create_table(&self, model:&Table){}
-    fn build_create_table(&self, table:&Table)->SqlFrag{panic!("not yet")}
-    fn rename_table(&self, table:&Table, new_tablename:String){}
-    fn drop_table(&self, table:&Table){}
-    fn set_foreign_constraint(&self, model:&Table){}
-    fn set_primary_constraint(&self, model:&Table){}
+    fn create_schema(&mut self, schema:&str){}
+    fn drop_schema(&mut self, schema:&str){}
+    fn create_table(&mut self, model:&Table){}
+    fn build_create_table(&mut self, table:&Table)->SqlFrag{panic!("not yet")}
+    fn rename_table(&mut self, table:&Table, new_tablename:String){}
+    fn drop_table(&mut self, table:&Table){}
+    fn set_foreign_constraint(&mut self, model:&Table){}
+    fn set_primary_constraint(&mut self, model:&Table){}
 
 }
 
 /// this can be condensed with using just extracting the table definition
 impl DatabaseDev for Postgres{
 
-    fn get_parent_table(&self, schema:&str, table:&str)->Option<String>{
+    fn get_parent_table(&mut self, schema:&str, table:&str)->Option<String>{
         let sql ="
             SELECT
                 relname as table,
@@ -433,7 +433,7 @@ impl DatabaseDev for Postgres{
         None
     }
 
-    fn get_table_sub_class(&self, schema:&str, table:&str)->Vec<String>{
+    fn get_table_sub_class(&mut self, schema:&str, table:&str)->Vec<String>{
         let sql ="
             SELECT
                 relname AS base_table,
@@ -461,7 +461,7 @@ impl DatabaseDev for Postgres{
 
 
 
-    fn get_table_metadata(&self, schema:&str, table:&str)->Table{
+    fn get_table_metadata(&mut self, schema:&str, table:&str)->Table{
 
         let mut columns = self.get_table_columns(schema, table);
         let comment = self.get_table_comment(schema, table);
@@ -490,7 +490,7 @@ impl DatabaseDev for Postgres{
         }
     }
 
-    fn get_all_tables(&self)->Vec<(String, String)>{
+    fn get_all_tables(&mut self)->Vec<(String, String)>{
         let sql ="
                 SELECT
                     pg_class.relname AS table,
@@ -516,7 +516,7 @@ impl DatabaseDev for Postgres{
         tables
     }
 
-    fn get_table_comment(&self, schema:&str, table:&str)->Option<String>{
+    fn get_table_comment(&mut self, schema:&str, table:&str)->Option<String>{
         let sql ="
                 SELECT
                     pg_class.relname AS table,
@@ -543,7 +543,7 @@ impl DatabaseDev for Postgres{
         None
     }
 
-    fn get_inherited_columns(&self, schema:&str, table:&str)->Vec<String>{
+    fn get_inherited_columns(&mut self, schema:&str, table:&str)->Vec<String>{
         let sql = "
                 SELECT nmsp_parent.nspname    AS parent_schema,
                     parent.relname         AS parent_table,

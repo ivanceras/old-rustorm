@@ -40,7 +40,7 @@ impl IsDao for Photo{
 fn main(){
     let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v6";
     let mut pool = ManagedPool::init(&url, 1);
-    let db = pool.connect().unwrap();
+    let mut db = pool.connect().unwrap();
     
     let mut query = Query::select();
     query.columns(vec!["product.product_id", "product.name", "category.product_id", "category.name", "photo.url"]);
@@ -60,7 +60,7 @@ fn main(){
         .asc("product.name")
         .desc("product.created")
         ;
-    let frag = query.build(db.as_ref());
+    let frag = query.build(db.as_ref_mut());
     
     let expected = "
 SELECT product.product_id AS product_product_id, product.name AS product_name, category.product_id AS category_product_id, 

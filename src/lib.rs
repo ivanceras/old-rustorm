@@ -77,6 +77,7 @@
 
 extern crate postgres;
 extern crate rusqlite;
+extern crate mysql;
 extern crate rustc_serialize;
 extern crate uuid;
 extern crate chrono;

@@ -63,11 +63,11 @@ impl IsTable for Product{
 fn main(){
     let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v6";
     let mut pool = ManagedPool::init(&url, 1);
-    let db = pool.connect().unwrap();
+    let mut db = pool.connect().unwrap();
     
     let products: Vec<Product> = Query::select_all()
             .from_table("bazaar.product")
-            .collect(db.as_ref());
+            .collect(db.as_ref_mut());
     
     for prod in products{
         let name = prod.name.unwrap();

@@ -5,12 +5,14 @@ use rustorm::query::{Filter,Equality};
 use rustorm::pool::ManagedPool;
 
 fn main(){
-    let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v6";
+    let url = "mysql://root:r00t@localhost/bazaar_v6";
     let mut pool = ManagedPool::init(&url, 1);
     let mut db = pool.connect().unwrap();
         
-        Query::insert()
-            .set("name", &"Test Category112")
-        .into_table(&"bazaar.category")
-            .execute(db.as_ref_mut());
+    let dao = Query::select()
+        .columns(vec!["name"])
+        .from_table(&"product")
+        .execute_with_return(db.as_ref_mut());
+    
+    println!("dao: {:#?}", dao);
 }

@@ -7,58 +7,40 @@ use database::{Database};
 use writer::SqlFrag;
 use database::SqlOption;
 use config::DbConfig;
-use rusqlite::SqliteConnection;
-use rusqlite::types::ToSql;
-use rusqlite::SqliteRow;
+
+use mysql::conn::{MyOpts, MyConn};
+use mysql::conn::pool::MyPool;
+use mysql::value::from_value;
+use mysql::value::Value as MyValue;
+use mysql::error::MyResult;
+use mysql::conn::Stmt;
+
+use std::default::Default;
 use std::path::Path;
 use table::Table;
 use database::DatabaseDDL;
 
-pub struct Sqlite {
-    pub conn: Option<SqliteConnection>,
+pub struct Mysql {
+    conn: Option<MyConn>,
 }
 
-
-impl Sqlite{
+const PORT:u16 = 3306;
+impl Mysql{
     
     pub fn new()->Self{
-        Sqlite{conn:None}
+        Mysql{ conn: None }
     }
     
-    pub fn connect_with_url(url:&str)->Result<Self, String>{
-        let config = DbConfig::from_url(url);
-        let database:&str = &config.database;
-        let conn = match database{
-             ":memory:" => {
-                println!("using in memory database");
-                SqliteConnection::open_in_memory()
-            },
-             _ => {
-                 let path = Path::new(database);
-                 println!("Using file path {:?}", path);
-                 println!("config{:?}", config);
-                 SqliteConnection::open(&path)
-             }
-        };
-        match conn{
-            Ok(conn) => {
-                let pg = Sqlite{conn: Some(conn)};
-                Ok(pg)
-            },
-            Err(e) => {
-                let error = format!("Unable to connect to database due to {}", e.message);
-                println!("{:?}",e);
-                Err(error)
-            }
-        }
+    pub fn with_connection(conn: MyConn)->Self{
+        Mysql{conn:Some(conn)}
     }
     
-    fn from_rust_type_tosql<'a>(&self, types: &'a Vec<Value>)->Vec<&'a ToSql>{
-        let mut params:Vec<&ToSql> = vec![];
+    fn from_rust_type_tosql(types: &Vec<Value>)->Vec< MyValue>{
+        let mut params:Vec<MyValue> = vec![];
         for t in types{
             match t {
                 &Value::String(ref x) => {
-                    params.push(x);
+                    params.push(MyValue::Bytes(x.as_bytes().to_owned()));
                 },
                 _ => panic!("not yet here {:?}", t),
             };
@@ -67,11 +49,11 @@ impl Sqlite{
     }
     
         /// convert a record of a row into rust type
-    fn from_sql_to_rust_type(&self, row: &SqliteRow, index:usize)->Value{
-        let value = row.get_opt(index as i32);
+    fn from_sql_to_rust_type(row: &Vec<MyValue>, index:usize)->Value{
+        let value = row.get(index);
          match value{
-            Ok(value) => Value::String(value),
-            Err(_) => Value::Null,
+            Some(value) => Value::String(value.into_str()),
+            None => Value::Null,
         }
     }
     
@@ -116,7 +98,7 @@ impl Sqlite{
                 "text".to_string()
             },
             "Uuid" => {
-                "text".to_string()
+                "varchar(36)".to_string()
             },
             "NaiveDateTime" => {
                 "numeric".to_string()
@@ -138,12 +120,20 @@ impl Sqlite{
         rust_type
 
     }
-    
+   
+    fn get_prepared_statement<'a>(&'a mut self, sql: &'a str) -> MyResult<Stmt<'a>> { 
+
+        self.conn.as_mut().unwrap().prepare(sql)
+    }
 }
 
-impl Database for Sqlite{
+impl Database for Mysql{
     fn version(&mut self)->String{
-       panic!("not yet")
+       let sql = "select version()";
+       let dao = self.execute_sql_with_return_columns(sql, &vec![], vec!["version"]);
+       assert!(dao.len() == 1);
+       let version = dao[0].get("version");
+       version
     }
     fn begin(&mut self){}
     fn commit(&mut self){}
@@ -158,15 +148,14 @@ impl Database for Sqlite{
     /// return this list of options, supported features in the database
     fn sql_options(&mut self)->Vec<SqlOption>{
         vec![
-            SqlOption::UsesNumberedParam,  // uses numbered parameters
-            SqlOption::SupportsCTE,
+            SqlOption::UsesQuestionMark,//mysql uses question mark instead of the numbered params
         ]
     }
     
-    fn insert(&mut self, query:&Query)->Dao{
-        let sql_frag = self.build_insert(query);
-        self.execute_sql_with_one_return(&sql_frag.sql, &sql_frag.params)
-    }
+//    fn insert(&mut self, query:&Query)->Dao{
+//        let sql_frag = self.build_insert(query);
+//        self.execute_sql_with_one_return(&sql_frag.sql, &sql_frag.params)
+//    }
     fn update(&mut self, query:&Query)->Dao{panic!("not yet")}
     fn delete(&mut self, query:&Query)->Result<usize, String>{panic!("not yet");}
     
@@ -177,10 +166,15 @@ impl Database for Sqlite{
         println!("SQL: \n{}", sql);
         println!("param: {:?}", params);
         assert!(self.conn.is_some());
-        let mut stmt = self.conn.as_ref().unwrap().prepare(sql).unwrap();
+        //let mut stmt = self.conn.as_ref().unwrap().prepare(sql).unwrap();
+        //let mut conn = self.conn.as_mut().unwrap();
+        //let mut stmt = conn.prepare(sql).unwrap();
+        //let mut stmt = self.conn.as_mut().unwrap().prepare(sql).unwrap();
+        let mut stmt = self.get_prepared_statement(sql).unwrap();
+
         let mut daos = vec![];
-        let param = self.from_rust_type_tosql(params);
-        let rows = stmt.query(&param);
+        let param = Mysql::from_rust_type_tosql(params);
+        let rows = stmt.execute(&param);
         match rows{
             Ok(rows) => 
             for row in rows {
@@ -189,7 +183,7 @@ impl Database for Sqlite{
                         let mut index = 0;
                         let mut dao = Dao::new();
                         for rc in &return_columns{
-                            let rtype = self.from_sql_to_rust_type(&row, index);
+                            let rtype = Mysql::from_sql_to_rust_type(&row, index);
                             dao.set_value(rc, rtype);
                             index += 1;
                         }
@@ -217,11 +211,11 @@ impl Database for Sqlite{
     fn execute_sql(&mut self, sql:&str, params:&Vec<Value>)->Result<usize, String>{
         println!("SQL: \n{}", sql);
         println!("param: {:?}", params);
-        let to_sql_types = self.from_rust_type_tosql(params);
+        let to_sql_types = Mysql::from_rust_type_tosql(params);
         assert!(self.conn.is_some());
-        let result = self.conn.as_ref().unwrap().execute(sql, &to_sql_types);
+        let result = self.conn.as_mut().unwrap().prep_exec(sql, &to_sql_types);
         let result = match result{
-            Ok(x) => { Ok(x as usize)},
+            Ok(x) => { Ok(x.affected_rows() as usize)},
             Err(e) => {
                 Err(format!("Something is wrong {:?}" ,e)) 
             }
@@ -231,7 +225,7 @@ impl Database for Sqlite{
 
 }
 
-impl DatabaseDDL for Sqlite{
+impl DatabaseDDL for Mysql{
     fn create_schema(&mut self, schema:&str){
         panic!("sqlite does not support schema")
     }
