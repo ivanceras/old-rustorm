@@ -93,9 +93,9 @@ pub enum Operand{
 #[derive(Debug)]
 #[derive(Clone)]
 pub struct Condition{
-    pub left_operand:Operand,
+    pub left:Operand,
     pub equality:Equality,
-    pub right_operand:Operand,
+    pub right:Operand,
 }
 
 /// TODO: support for functions on columns
@@ -110,18 +110,31 @@ pub struct Filter{
 }
 
 impl Filter{
-
+    
+    /// user friendly, commonly use API
     pub fn new(column:&str, equality:Equality, value:&ToValue)->Self{
-        let right_operand = Operand::Value(value.to_db_type());
+        let right = Operand::Value(value.to_db_type());
         Filter{
             connector:Connector::And,
-            condition: Condition{left_operand:
-                        Operand::ColumnName(ColumnName::from_str(column)),
+            condition: Condition{left: Operand::ColumnName(ColumnName::from_str(column)),
                         equality:equality,
-                        right_operand:right_operand},
+                        right:right},
             subfilters:vec![],
         }
     }
+    
+    
+    /// not very commonly used, offers enough flexibility
+    pub fn bare_new(left: Operand, equality: Equality, right: Operand)->Self{
+        Filter{
+            connector:Connector::And,
+            condition: Condition{left:left,
+                        equality:equality,
+                        right:right},
+            subfilters:vec![],
+        }
+    }
+    
     
     pub fn is_null(column:&str)->Self{
         Filter::new(column, Equality::IS_NULL, &())
@@ -144,7 +157,18 @@ impl Filter{
         self
     }
     
-    
+    pub fn or_filter(&mut self, filter: Filter)->&mut Self{
+        let mut filter = filter.clone();
+        filter.connector = Connector::Or;
+        self.subfilters.push(filter);
+        self
+    }
+    pub fn and_filter(&mut self, filter: Filter)->&mut Self{
+        let mut filter = filter.clone();
+        filter.connector = Connector::And;
+        self.subfilters.push(filter);
+        self
+    }
 }
 
 /// Could have been SqlAction
@@ -194,7 +218,7 @@ impl Field{
 
 impl ColumnName{
 
-    fn from_str(column:&str)->Self{
+    pub fn from_str(column:&str)->Self{
         if column.contains("."){
             let splinters = column.split(".").collect::<Vec<&str>>();
             assert!(splinters.len() == 2, "There should only be 2 splinters");
@@ -529,11 +553,11 @@ impl Query{
     
     pub fn having(&mut self, column:&str, equality: Equality, value :&ToValue)->&mut Self{
         let column_name = ColumnName::from_str(column);
-        let left_operand = Operand::ColumnName(column_name);
+        let left = Operand::ColumnName(column_name);
         let cond = Condition{
-            left_operand: left_operand,
+            left: left,
             equality: equality,
-            right_operand: Operand::Value(value.to_db_type())
+            right: Operand::Value(value.to_db_type())
         };
         self.having.push(cond);
         self

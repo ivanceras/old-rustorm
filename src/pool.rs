@@ -60,6 +60,12 @@ impl Platform{
             _ => panic!("others not yet..")
         }
     }
+    pub fn as_dev_mut(&mut self)->&mut DatabaseDev{
+        match *self{
+            Platform::Postgres(ref mut pg) => pg,
+            _ => panic!("others not yet..")
+        }
+    }
 }
 
 pub enum ManagedPool{

@@ -69,3 +69,6 @@ impl ProductAvailability{
 }
 
 ```
+
+## July 21, 2015
+* Make compilation of underlying supported platform optional. Using the "feature" in Cargo.toml

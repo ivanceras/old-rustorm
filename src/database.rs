@@ -203,7 +203,7 @@ pub trait Database{
     }
     
     fn build_condition(&mut self, w: &mut SqlFrag, parent_query:&Query, cond:&Condition){
-        self.build_operand(w, parent_query, &cond.left_operand);
+        self.build_operand(w, parent_query, &cond.left);
         w.append(" ");
         match cond.equality{
             Equality::EQ => w.append("= "),
@@ -219,7 +219,7 @@ pub trait Database{
             Equality::IS_NOT_NULL => w.append("IS NOT NULL "),
             Equality::IS_NULL => w.append("IS NULL "),
         };
-        self.build_operand(w, parent_query, &cond.right_operand);
+        self.build_operand(w, parent_query, &cond.right);
     }
     
     fn build_field(&mut self, w: &mut SqlFrag, parent_query:&Query, field:&Field){
