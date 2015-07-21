@@ -278,3 +278,7 @@ impl DatabaseDDL for Mysql{
         panic!("not yet");
     }
 }
+
+
+// TODO: need to implement trait DatabaseDev for Mysql
+// Mysql can be used as development database
