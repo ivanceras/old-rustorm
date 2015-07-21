@@ -250,7 +250,7 @@ SELECT *
 ## Supported Database
  - [x] PostgreSQL
  - [x] Sqlite
- - [ ] ~~MySQL~~ MariaDB
+ - [x] MySQL/MariaDB
  - [ ] Oracle
  
 
