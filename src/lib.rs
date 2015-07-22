@@ -65,7 +65,7 @@
 //!     let prod: Product = Query::select_all()
 //!             .from_table("bazaar.product")
 //!             .filter("name", Equality::EQ, &"GTX660 Ti videocard")
-//!             .collect_one(db.as_ref()).unwrap();
+//!             .collect_one(db.as_mut()).unwrap();
 //!     println!("{}  {}  {:?}", prod.product_id, prod.name.unwrap(), prod.description);
 //! }
 
