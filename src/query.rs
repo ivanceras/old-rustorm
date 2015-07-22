@@ -962,7 +962,7 @@ impl Query{
     }
     
     /// build the query only, not executed, useful when debugging
-    pub fn build(&mut self, db: &mut Database)->SqlFrag{
+    pub fn build(&mut self, db: &Database)->SqlFrag{
         self.finalize();
         db.build_query(self)
     }

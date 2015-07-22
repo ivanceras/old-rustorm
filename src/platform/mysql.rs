@@ -146,7 +146,7 @@ impl Database for Mysql{
     fn reset(&mut self){}
     
     /// return this list of options, supported features in the database
-    fn sql_options(&mut self)->Vec<SqlOption>{
+    fn sql_options(&self)->Vec<SqlOption>{
         vec![
             SqlOption::UsesQuestionMark,//mysql uses question mark instead of the numbered params
         ]
@@ -234,7 +234,7 @@ impl DatabaseDDL for Mysql{
         panic!("sqlite does not support schema")
     }
     
-    fn build_create_table(&mut self, table:&Table)->SqlFrag{
+    fn build_create_table(&self, table:&Table)->SqlFrag{
         let mut w = SqlFrag::new(self.sql_options());
         w.append("CREATE TABLE ");
         w.append(&table.name);

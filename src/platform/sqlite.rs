@@ -144,7 +144,7 @@ impl Database for Sqlite{
     fn reset(&mut self){}
     
     /// return this list of options, supported features in the database
-    fn sql_options(&mut self)->Vec<SqlOption>{
+    fn sql_options(&self)->Vec<SqlOption>{
         vec![
             SqlOption::UsesNumberedParam,  // uses numbered parameters
             SqlOption::SupportsCTE,
@@ -230,7 +230,7 @@ impl DatabaseDDL for Sqlite{
         panic!("sqlite does not support schema")
     }
     
-    fn build_create_table(&mut self, table:&Table)->SqlFrag{
+    fn build_create_table(&self, table:&Table)->SqlFrag{
         let mut w = SqlFrag::new(self.sql_options());
         w.append("CREATE TABLE ");
         w.append(&table.name);

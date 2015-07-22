@@ -329,7 +329,7 @@ impl Database for Postgres{
     /// JSON >= 9.2
     /// JSONB >= 9.4
     /// Returning >= 8.2
-    fn sql_options(&mut self)->Vec<SqlOption>{
+    fn sql_options(&self)->Vec<SqlOption>{
         vec![
             SqlOption::UsesNumberedParam,  // uses numbered parameters
             SqlOption::SupportsReturningClause, // supports returning clause, feature
@@ -396,7 +396,7 @@ impl DatabaseDDL for Postgres{
     fn create_schema(&mut self, schema:&str){}
     fn drop_schema(&mut self, schema:&str){}
     fn create_table(&mut self, model:&Table){}
-    fn build_create_table(&mut self, table:&Table)->SqlFrag{panic!("not yet")}
+    fn build_create_table(&self, table:&Table)->SqlFrag{panic!("not yet")}
     fn rename_table(&mut self, table:&Table, new_tablename:String){}
     fn drop_table(&mut self, table:&Table){}
     fn set_foreign_constraint(&mut self, model:&Table){}

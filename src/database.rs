@@ -145,7 +145,7 @@ pub trait Database{
     /// use by select to build the select query
     /// build all types of query
     /// TODO: need to supply the number of parameters where to start the numbering of the number parameters
-    fn build_query(&mut self, query:&Query)->SqlFrag{
+    fn build_query(&self, query:&Query)->SqlFrag{
         match query.sql_type{
             SqlType::SELECT => self.build_select(query),
             SqlType::INSERT => self.build_insert(query),
@@ -155,7 +155,7 @@ pub trait Database{
     }
     
     /// build operand, i.e: columns, query, function, values
-    fn build_operand(&mut self, w: &mut SqlFrag, parent_query:&Query, operand:&Operand){
+    fn build_operand(&self, w: &mut SqlFrag, parent_query:&Query, operand:&Operand){
         match operand{
             &Operand::ColumnName(ref column_name) => {
                 if parent_query.joins.is_empty(){
@@ -202,7 +202,7 @@ pub trait Database{
         };
     }
     
-    fn build_condition(&mut self, w: &mut SqlFrag, parent_query:&Query, cond:&Condition){
+    fn build_condition(&self, w: &mut SqlFrag, parent_query:&Query, cond:&Condition){
         self.build_operand(w, parent_query, &cond.left);
         w.append(" ");
         match cond.equality{
@@ -222,7 +222,7 @@ pub trait Database{
         self.build_operand(w, parent_query, &cond.right);
     }
     
-    fn build_field(&mut self, w: &mut SqlFrag, parent_query:&Query, field:&Field){
+    fn build_field(&self, w: &mut SqlFrag, parent_query:&Query, field:&Field){
         self.build_operand(w, parent_query, &field.operand);
         match field.name{
             Some(ref name) => {
@@ -234,7 +234,7 @@ pub trait Database{
     }
     
     
-    fn build_filter(&mut self, w: &mut SqlFrag, parent_query:&Query, filter:&Filter){
+    fn build_filter(&self, w: &mut SqlFrag, parent_query:&Query, filter:&Filter){
         if !filter.subfilters.is_empty(){
             w.append("( ");
         }
@@ -257,7 +257,7 @@ pub trait Database{
     
     /// build the filter clause or the where clause of the query
     /// TODO: add the sub filters
-    fn build_filters(&mut self, w: &mut SqlFrag, parent_query:&Query, filters: &Vec<Filter>){
+    fn build_filters(&self, w: &mut SqlFrag, parent_query:&Query, filters: &Vec<Filter>){
         let mut do_and = false;
         for filter in filters{
             if do_and{
@@ -271,7 +271,7 @@ pub trait Database{
     }
 
     /// build the enumerated, distinct, *, columns
-    fn build_enumerated_fields(&mut self, w: &mut SqlFrag, parent_query:&Query, enumerated_fields: &Vec<Field>){
+    fn build_enumerated_fields(&self, w: &mut SqlFrag, parent_query:&Query, enumerated_fields: &Vec<Field>){
         let mut do_comma = false;
         let mut cnt = 0;
         for field in enumerated_fields{
@@ -285,7 +285,7 @@ pub trait Database{
     }
 
     /// build the select statment from the query object
-    fn build_select(&mut self, query: &Query)->SqlFrag{
+    fn build_select(&self, query: &Query)->SqlFrag{
         let mut w = SqlFrag::new(self.sql_options());
         w.append("SELECT ");
         self.build_enumerated_fields(&mut w, query, &query.enumerated_fields); //TODO: add support for column_sql, fields, functions
@@ -407,7 +407,7 @@ pub trait Database{
     }
     
     /// TODO complete this
-    fn build_insert(&mut self, query: &Query)->SqlFrag{
+    fn build_insert(&self, query: &Query)->SqlFrag{
         let mut w = SqlFrag::new(self.sql_options());
         w.append("INSERT INTO ");
         let into_table = query.get_from_table();
@@ -450,7 +450,7 @@ pub trait Database{
     }
 
     
-    fn build_update(&mut self, query: &Query)->SqlFrag{
+    fn build_update(&self, query: &Query)->SqlFrag{
         let mut w = SqlFrag::new(self.sql_options());
         w.append("UPDATE ");
         let from_table = query.get_from_table();
@@ -497,7 +497,7 @@ pub trait Database{
         w
     }
 
-    fn build_delete(&mut self, query: &Query)->SqlFrag{
+    fn build_delete(&self, query: &Query)->SqlFrag{
         let mut w = SqlFrag::new(self.sql_options());
         w.append("DELETE FROM ");
         let from_table = query.get_from_table();
@@ -513,7 +513,7 @@ pub trait Database{
         w
     }
 
-    fn sql_options(&mut self)->Vec<SqlOption>;
+    fn sql_options(&self)->Vec<SqlOption>;
 
 }
 
@@ -536,7 +536,7 @@ pub trait DatabaseDDL{
     fn create_table(&mut self, model:&Table);
     
     /// build sql for create table
-    fn build_create_table(&mut self, table:&Table)->SqlFrag;
+    fn build_create_table(&self, table:&Table)->SqlFrag;
 
     /// rename table, in the same schema
     fn rename_table(&mut self, table:&Table, new_tablename:String);
