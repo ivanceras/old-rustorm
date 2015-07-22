@@ -226,3 +226,9 @@ select version();
 * 32 characters (hex digit)
 * 36 when including hyphens
 * 22 character when encododed to base64
+
+gotcha: need to put & to borrow immutable from mutable
+```
+fn execute_with_return(&mut self, query:&Query)->DaoResult{
+        let sql_frag = &self.build_query(query);
+```

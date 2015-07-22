@@ -8,6 +8,7 @@ use dao::Dao;
 use table::IsTable;
 use writer::SqlFrag;
 use std::fmt;
+use database::DbError;
 
 #[derive(Debug)]
 #[derive(Clone)]
@@ -55,7 +56,7 @@ pub enum Connector{
 #[derive(Clone)]
 pub enum Equality{
     EQ, //EQUAL,
-    NE, //NOT_EQUAL,
+    NEQ, //NOT_EQUAL,
     LT, //LESS_THAN,
     LTE, //LESS_THAN_OR_EQUAL,
     GT, //GREATER_THAN,
@@ -63,9 +64,29 @@ pub enum Equality{
     IN,
     NOT_IN,//NOT_IN,
     LIKE,
-    NULL,
     IS_NOT_NULL,//NOT_NULL,
     IS_NULL,//IS_NULL,
+}
+
+impl Equality{
+    
+    /// provides an alternative way of parsing string expressions
+    pub fn from_str(str:&str)->Equality{
+        match str{
+            "="  | "eq" => Equality::EQ,
+            "!=" | "neq" => Equality::NEQ,
+            "<"  | "lt" => Equality::LT,
+            "<=" | "lt=" => Equality::LTE,
+            ">"  | "gt"  => Equality::GT,
+            ">=" | "gte" => Equality::GTE,
+            "in" => Equality::IN,
+            "not in" => Equality::NOT_IN,
+            "like" => Equality::LIKE,
+            "is not null" => Equality::IS_NOT_NULL,
+            "is null" => Equality::IS_NULL,
+            _ => panic!("unrecognized equality sign"),
+        }
+    }
 }
 
 /// function in a sql statement
@@ -968,7 +989,7 @@ impl Query{
     }
     
     /// expects a return, such as select, insert/update with returning clause
-    pub fn execute_with_return(&mut self, db: &mut Database)->DaoResult{
+    pub fn execute_with_return(&mut self, db: &mut Database)->Result<DaoResult, DbError>{
         self.finalize();
         db.execute_with_return(self)
     }
@@ -976,27 +997,33 @@ impl Query{
     /// expects a return, such as select, insert/update with returning clause
     /// no casting of data to structs is done
     /// This is used when retrieving multiple models in 1 query, then casting the records to its equivalent structs
-    pub fn execute_with_one_return(&mut self, db: &mut Database)->Dao{
+    pub fn execute_with_one_return(&mut self, db: &mut Database)->Result<Dao, DbError>{
         self.finalize();
         db.execute_with_one_return(self)
     }
     
     /// delete, update without caring for the return
-    pub fn execute(&mut self, db: &mut Database)->Result<usize, String>{
+    pub fn execute(&mut self, db: &mut Database)->Result<usize, DbError>{
         self.finalize();
         db.execute(self)
     }
     
     /// execute the query, then convert the result
-    pub fn collect<T: IsDao+IsTable>(&mut self, db: &mut Database)->Vec<T>{
+    pub fn collect<T: IsDao+IsTable>(&mut self, db: &mut Database)->Result<Vec<T>, DbError>{
         let result = self.execute_with_return(db);
-        result.cast()
+        match result{
+            Ok(result) => Ok(result.cast()),
+            Err(e) => Err(DbError::new("Error in the query"))
+        }
     }
     
     /// execute the query then collect only 1 record
     /// TODO: use Result<T,Error> instead of Option<T>
-    pub fn collect_one<T: IsDao+IsTable>(&mut self, db: &mut Database)->Option<T>{
+    pub fn collect_one<T: IsDao+IsTable>(&mut self, db: &mut Database)->Result<T, DbError>{
         let result = self.execute_with_return(db);
-        result.cast_one()
+        match result{
+            Ok(result) => Ok(result.cast_one().unwrap()),
+            Err(e) => Err(DbError::new("Error in the query"))
+        }
     }
 }

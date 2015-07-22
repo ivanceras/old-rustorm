@@ -2,29 +2,23 @@ use query::Query;
 use dao::Dao;
 
 use dao::Value;
-use query::SqlType;
 use database::{Database};
 use writer::SqlFrag;
 use database::SqlOption;
-use config::DbConfig;
 
-use mysql::conn::{MyOpts, MyConn};
-use mysql::conn::pool::MyPool;
-use mysql::value::from_value;
+use mysql::conn::{MyConn};
 use mysql::value::Value as MyValue;
 use mysql::error::MyResult;
 use mysql::conn::Stmt;
 
-use std::default::Default;
-use std::path::Path;
 use table::Table;
 use database::DatabaseDDL;
+use database::DbError;
 
 pub struct Mysql {
     conn: Option<MyConn>,
 }
 
-const PORT:u16 = 3306;
 impl Mysql{
     
     pub fn new()->Self{
@@ -131,9 +125,16 @@ impl Database for Mysql{
     fn version(&mut self)->String{
        let sql = "select version()";
        let dao = self.execute_sql_with_return_columns(sql, &vec![], vec!["version"]);
-       assert!(dao.len() == 1);
-       let version = dao[0].get("version");
-       version
+       match dao{
+           Ok(dao) => {
+               if dao.len() == 1{
+                   dao[0].get("version")
+               }else{
+                   panic!("More than 1 rows returned")
+               }
+           },
+           Err(_) => panic!("unable to get database version")
+       }
     }
     fn begin(&mut self){}
     fn commit(&mut self){}
@@ -152,17 +153,13 @@ impl Database for Mysql{
         ]
     }
     
-//    fn insert(&mut self, query:&Query)->Dao{
-//        let sql_frag = self.build_insert(query);
-//        self.execute_sql_with_one_return(&sql_frag.sql, &sql_frag.params)
-//    }
     fn update(&mut self, query:&Query)->Dao{panic!("not yet")}
     fn delete(&mut self, query:&Query)->Result<usize, String>{panic!("not yet");}
     
-    fn execute_sql_with_return(&mut self, sql:&str, params:&Vec<Value>)->Vec<Dao>{
+    fn execute_sql_with_return(&mut self, sql:&str, params:&Vec<Value>)->Result<Vec<Dao>, DbError>{
         panic!("unsupported!");
     }
-    fn execute_sql_with_return_columns(&mut self, sql:&str, params:&Vec<Value>, return_columns:Vec<&str>)->Vec<Dao>{
+    fn execute_sql_with_return_columns(&mut self, sql:&str, params:&Vec<Value>, return_columns:Vec<&str>)->Result<Vec<Dao>, DbError>{
         println!("SQL: \n{}", sql);
         println!("param: {:?}", params);
         assert!(self.conn.is_some());
@@ -196,31 +193,38 @@ impl Database for Mysql{
             },
             Err(e) => println!("Something is wrong")
         }
-        daos
+        Ok(daos)
     }
     
-    fn execute_sql_with_one_return(&mut self, sql:&str, params:&Vec<Value>)->Dao{
+    fn execute_sql_with_one_return(&mut self, sql:&str, params:&Vec<Value>)->Result<Dao, DbError>{
         let dao = self.execute_sql_with_return(sql, params);
-        assert!(dao.len() == 1, "There should be 1 and only 1 record return here");
-        dao[0].clone()
+        match dao{
+            Ok(dao) => {
+                if dao.len() == 1{
+                    Ok(dao[0].clone())
+                }else{
+                    Err(DbError::new("There should be 1 and only 1 record return here"))
+                }
+            },
+            Err(_) =>  Err(DbError::new("Error in the query"))
+        }
     }
     
     /// generic execute sql which returns not much information,
     /// returns only the number of affected records or errors
     /// can be used with DDL operations (CREATE, DELETE, ALTER, DROP)
-    fn execute_sql(&mut self, sql:&str, params:&Vec<Value>)->Result<usize, String>{
+    fn execute_sql(&mut self, sql:&str, params:&Vec<Value>)->Result<usize, DbError>{
         println!("SQL: \n{}", sql);
         println!("param: {:?}", params);
         let to_sql_types = Mysql::from_rust_type_tosql(params);
         assert!(self.conn.is_some());
         let result = self.conn.as_mut().unwrap().prep_exec(sql, &to_sql_types);
-        let result = match result{
+        match result{
             Ok(x) => { Ok(x.affected_rows() as usize)},
             Err(e) => {
-                Err(format!("Something is wrong {:?}" ,e)) 
+                Err(DbError::new("Something is wrong")) 
             }
-        };
-        result
+        }
     }
 
 }

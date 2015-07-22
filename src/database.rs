@@ -6,6 +6,8 @@ use query::{Connector, Equality, Operand, Field};
 use query::{Direction, Modifier, JoinType};
 use query::{Filter, Condition};
 use query::SqlType;
+use std::error::Error;
+use std::fmt;
 
 
 /// SqlOption, contains the info about the features and quirks of underlying database
@@ -26,6 +28,37 @@ pub enum SqlOption{
     /// wheter the returned rows in a query included Meta columns for easy extraction of records
     /// (postgres returns this), sqlite does not return meta columns, so you have to extract it by index yourself.
     ReturnMetaColumns,
+}
+
+#[derive(Debug)]
+pub struct DbError{
+    description: String,
+    cause: Option<String>,
+}
+
+/// rough implementation of Database errors
+impl DbError{
+    
+    pub fn new(description: &str)->Self{
+        DbError{description: description.to_string(), cause: None}
+    }
+}
+
+impl Error for DbError{
+    
+     fn description(&self) -> &str{
+         &self.description
+     }
+
+    fn cause(&self) -> Option<&Error> { 
+        None
+    }
+}
+
+impl fmt::Display for DbError {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        panic!("not yet");
+    }
 }
 
 /// Generic Database interface
@@ -71,14 +104,14 @@ pub trait Database{
 
     /// select
     /// returns an array to the qualified records
-    fn select(&mut self, query:&Query)->DaoResult{
+    fn select(&mut self, query:&Query)->Result<DaoResult, DbError>{
         self.execute_with_return(query)
     }
 
     /// insert
     /// insert an object, returns the inserted Dao value
     /// including the value generated via the defaults
-    fn insert(&mut self, query:&Query)->Dao{
+    fn insert(&mut self, query:&Query)->Result<Dao, DbError>{
         let sql_frag = self.build_insert(query);
         self.execute_sql_with_one_return(&sql_frag.sql, &sql_frag.params)
     }
@@ -93,8 +126,8 @@ pub trait Database{
 
     /// execute query with return dao,
     /// use the enumerated column for data extraction when db doesn't support returning the records column names
-    fn execute_with_return(&mut self, query:&Query)->DaoResult{
-        let sql_frag = self.build_query(query);
+    fn execute_with_return(&mut self, query:&Query)->Result<DaoResult, DbError>{
+        let sql_frag = &self.build_query(query);
         let result = if self.sql_options().contains(&SqlOption::ReturnMetaColumns){
             self.execute_sql_with_return(&sql_frag.sql, &sql_frag.params)
         }else{
@@ -104,42 +137,57 @@ pub trait Database{
             }
             self.execute_sql_with_return_columns(&sql_frag.sql, &sql_frag.params, columns)
         };
-        
-        DaoResult{
-            dao: result,
-            renamed_columns:query.get_renamed_columns(),
-            total:None,
-            page:None,
-            page_size:None,
+        match result{
+            Ok(result) => {
+                let dao_result = DaoResult{
+                    dao: result,
+                    renamed_columns:query.get_renamed_columns(),
+                    total:None,
+                    page:None,
+                    page_size:None,
+                };
+                Ok(dao_result)
+            },
+            Err(e) => Err(DbError::new("Error in the query"))
         }
+        
     }
 
     /// execute query with 1 return dao
-    fn execute_with_one_return(&mut self, query:&Query)->Dao{
-        let sql_frag = self.build_query(query);
+    fn execute_with_one_return(&mut self, query:&Query)->Result<Dao, DbError>{
+        let sql_frag = &self.build_query(query);
         self.execute_sql_with_one_return(&sql_frag.sql, &sql_frag.params)
     }
     
     /// execute query with no return dao
-    fn execute(&mut self, query:&Query)->Result<usize, String>{
-        let sql_frag = self.build_query(query);
+    fn execute(&mut self, query:&Query)->Result<usize, DbError>{
+        let sql_frag = &self.build_query(query);
         self.execute_sql(&sql_frag.sql, &sql_frag.params)
     }
 
     /// execute insert with returning clause, update with returning clause
-    fn execute_sql_with_return(&mut self, sql:&str, params:&Vec<Value>)->Vec<Dao>;
+    fn execute_sql_with_return(&mut self, sql:&str, params:&Vec<Value>)->Result<Vec<Dao>, DbError>;
     
     /// specify which return columns to get, ie. sqlite doesn't support getting the meta data of the return
-    fn execute_sql_with_return_columns(&mut self, sql:&str, params:&Vec<Value>, return_columns:Vec<&str>)->Vec<Dao>;
+    fn execute_sql_with_return_columns(&mut self, sql:&str, params:&Vec<Value>, return_columns:Vec<&str>)->Result<Vec<Dao>, DbError>;
 
-    fn execute_sql_with_one_return(&mut self, sql:&str, params:&Vec<Value>)->Dao{
+    fn execute_sql_with_one_return(&mut self, sql:&str, params:&Vec<Value>)->Result<Dao, DbError>{
         let dao = self.execute_sql_with_return(sql, params);
-        assert!(dao.len() == 1, "There should be 1 and only 1 record return here");
-        dao[0].clone()
+        match dao{
+            Ok(dao) => {
+                if dao.len() == 1{
+                    Ok(dao[0].clone())
+                }
+                else{
+                    Err(DbError::new("There should be 1 and only 1 record return here"))
+                }
+            },
+            Err(e) => Err(DbError::new("Error in the query"))
+        }
     }
     
     /// everything else, no required return other than error or affected number of records
-    fn execute_sql(&mut self, sql:&str, param:&Vec<Value>)->Result<usize, String>;
+    fn execute_sql(&mut self, sql:&str, param:&Vec<Value>)->Result<usize, DbError>;
 
     /// build a query, return the sql string and the parameters.
     /// use by select to build the select query
@@ -181,8 +229,9 @@ pub trait Database{
                     w.append(")");
                 },
             &Operand::Query(ref q) => {
-                let sql_frag = self.build_query(q);
-                w.append(&sql_frag.sql);
+                panic!("TODO: causes error Attributes 'readnone and readonly' are incompatible! LLVM ERROR: Broken function found, compilation aborted!")
+                //let sql_frag = &self.build_query(&q);
+                //w.append(&sql_frag.sql);
             },
             &Operand::Value(ref value) => {
                 w.parameter(value.clone());
@@ -206,20 +255,50 @@ pub trait Database{
         self.build_operand(w, parent_query, &cond.left);
         w.append(" ");
         match cond.equality{
-            Equality::EQ => w.append("= "),
-            Equality::NE => w.append("!= "),
-            Equality::LT => w.append("< "),
-            Equality::LTE => w.append("<= "),
-            Equality::GT => w.append("> "),
-            Equality::GTE => w.append(">= "),
-            Equality::IN => w.append("IN "),
-            Equality::NOT_IN => w.append("NOT IN "),
-            Equality::LIKE => w.append("LIKE "),
-            Equality::NULL => w.append("IS NULL "),
-            Equality::IS_NOT_NULL => w.append("IS NOT NULL "),
-            Equality::IS_NULL => w.append("IS NULL "),
+            Equality::EQ => {
+                    w.append("= ");
+                    self.build_operand(w, parent_query, &cond.right);
+                },
+            Equality::NEQ => {
+                    w.append("!= ");
+                    self.build_operand(w, parent_query, &cond.right);
+                },
+            Equality::LT => {
+                    w.append("< ");
+                    self.build_operand(w, parent_query, &cond.right);
+                },
+            Equality::LTE => {
+                    w.append("<= ");
+                    self.build_operand(w, parent_query, &cond.right);
+                },
+            Equality::GT => {
+                    w.append("> ");
+                    self.build_operand(w, parent_query, &cond.right);
+                },
+            Equality::GTE => {
+                    w.append(">= ");
+                    self.build_operand(w, parent_query, &cond.right);
+                },
+            Equality::IN => {
+                    w.append("IN ");
+                    self.build_operand(w, parent_query, &cond.right);
+                },
+            Equality::NOT_IN => {
+                    w.append("NOT IN ");
+                    self.build_operand(w, parent_query, &cond.right);
+                },
+            Equality::LIKE => {
+                    w.append("LIKE ");
+                    self.build_operand(w, parent_query, &cond.right);
+                },
+            Equality::IS_NOT_NULL => {
+                    w.append("IS NOT NULL");
+                },
+            
+            Equality::IS_NULL => {
+                w.append("IS NULL");
+            },
         };
-        self.build_operand(w, parent_query, &cond.right);
     }
     
     fn build_field(&self, w: &mut SqlFrag, parent_query:&Query, field:&Field){

@@ -10,6 +10,7 @@ use rusqlite::types::ToSql;
 use rusqlite::SqliteRow;
 use table::Table;
 use database::DatabaseDDL;
+use database::DbError;
 use r2d2::PooledConnection;
 use r2d2_sqlite::SqliteConnectionManager;
 
@@ -129,9 +130,17 @@ impl Database for Sqlite{
     fn version(&mut self)->String{
        let sql = "select sqlite_version() as version";
        let dao = self.execute_sql_with_return_columns(sql, &vec![], vec!["version"]);
-       assert!(dao.len() == 1);
-       let version = dao[0].get("version");
-       version
+       match dao{
+            Ok(dao) => {
+                if dao.len() == 1{
+                    return dao[0].get("version")
+                }
+                else{
+                    return "unknown".to_string()
+                }
+            },
+            Err(_) => panic!("unable to get database version")
+        }
     }
     fn begin(&mut self){}
     fn commit(&mut self){}
@@ -151,7 +160,7 @@ impl Database for Sqlite{
         ]
     }
     
-    fn insert(&mut self, query:&Query)->Dao{
+    fn insert(&mut self, query:&Query)->Result<Dao, DbError>{
         let sql_frag = self.build_insert(query);
         self.execute_sql_with_one_return(&sql_frag.sql, &sql_frag.params)
     }
@@ -160,18 +169,17 @@ impl Database for Sqlite{
     
     /// sqlite does not return the columns mentioned in the query,
     /// you have to specify it yourself
-    fn execute_sql_with_return(&mut self, sql:&str, params:&Vec<Value>)->Vec<Dao>{
+    fn execute_sql_with_return(&mut self, sql:&str, params:&Vec<Value>)->Result<Vec<Dao>, DbError>{
         panic!("unsupported!");
     }
-    fn execute_sql_with_return_columns(&mut self, sql:&str, params:&Vec<Value>, return_columns:Vec<&str>)->Vec<Dao>{
+    fn execute_sql_with_return_columns(&mut self, sql:&str, params:&Vec<Value>, return_columns:Vec<&str>)->Result<Vec<Dao>, DbError>{
         println!("SQL: \n{}", sql);
         println!("param: {:?}", params);
         let conn = self.get_connection();
         let mut stmt = conn.prepare(sql).unwrap();
         let mut daos = vec![];
         let param = self.from_rust_type_tosql(params);
-        let rows = stmt.query(&param);
-        match rows{
+        match stmt.query(&param){
             Ok(rows) => 
             for row in rows {
                 match row{
@@ -192,31 +200,39 @@ impl Database for Sqlite{
             },
             Err(e) => println!("Something is wrong")
         }
-        daos
+        Ok(daos)
     }
     
-    fn execute_sql_with_one_return(&mut self, sql:&str, params:&Vec<Value>)->Dao{
+    fn execute_sql_with_one_return(&mut self, sql:&str, params:&Vec<Value>)->Result<Dao, DbError>{
         let dao = self.execute_sql_with_return(sql, params);
-        assert!(dao.len() == 1, "There should be 1 and only 1 record return here");
-        dao[0].clone()
+        match dao{
+            Ok(dao) => {
+                if dao.len() == 1{
+                    return Ok(dao[0].clone())
+                }
+                else{
+                    return Err(DbError::new("There should be 1 and only 1 record return here"))
+                }
+            },
+            Err(e) => Err(DbError::new("Error in the query"))
+        }
     }
     
     /// generic execute sql which returns not much information,
     /// returns only the number of affected records or errors
     /// can be used with DDL operations (CREATE, DELETE, ALTER, DROP)
-    fn execute_sql(&mut self, sql:&str, params:&Vec<Value>)->Result<usize, String>{
+    fn execute_sql(&mut self, sql:&str, params:&Vec<Value>)->Result<usize, DbError>{
         println!("SQL: \n{}", sql);
         println!("param: {:?}", params);
         let to_sql_types = self.from_rust_type_tosql(params);
         let conn = self.get_connection();
         let result = conn.execute(sql, &to_sql_types);
-        let result = match result{
-            Ok(x) => { Ok(x as usize)},
+        match result{
+            Ok(result) => { Ok(result as usize)},
             Err(e) => {
-                Err(format!("Something is wrong {:?}" ,e)) 
+                Err(DbError::new("Something is wrong")) 
             }
-        };
-        result
+        }
     }
 
 }

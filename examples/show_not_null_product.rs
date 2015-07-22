@@ -67,6 +67,7 @@ fn main(){
     
     let products: Vec<Product> = Query::select_all()
             .from_table("bazaar.product")
+            .filter("name", Equality::IS_NOT_NULL, &())
             .collect(db.as_mut()).unwrap();
     
     for prod in products{

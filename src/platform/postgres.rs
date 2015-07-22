@@ -5,7 +5,7 @@ use dao::Dao;
 use postgres::Connection;
 use regex::Regex;
 use dao::Value;
-use database::{Database, DatabaseDev, DatabaseDDL};
+use database::{Database, DatabaseDev, DatabaseDDL, DbError};
 use postgres::types::Type as PgType;
 use postgres::types::ToSql;
 use writer::SqlFrag;
@@ -308,8 +308,13 @@ impl Database for Postgres{
     fn version(&mut self)->String{
         let sql = "SHOW server_version";
         let dao = self.execute_sql_with_one_return(sql, &vec![]);
-        let version = dao.get("server_version");
-        version
+        match dao{
+            Ok(dao) => {
+                dao.get("server_version")
+            },
+            Err(_) => panic!("unable to get database version")
+        }
+        
     }
     fn begin(&mut self){}
     fn commit(&mut self){}
@@ -344,29 +349,40 @@ impl Database for Postgres{
     fn update(&mut self, query:&Query)->Dao{panic!("not yet")}
     fn delete(&mut self, query:&Query)->Result<usize, String>{panic!("not yet");}
 
-    fn execute_sql_with_return(&mut self, sql:&str, params:&Vec<Value>)->Vec<Dao>{
+    fn execute_sql_with_return(&mut self, sql:&str, params:&Vec<Value>)->Result<Vec<Dao>, DbError>{
         println!("SQL: \n{}", sql);
         println!("param: {:?}", params);
         let conn = self.get_connection();
-        let stmt = conn.prepare(sql).unwrap();
+        let stmt = match conn.prepare(sql){
+            Ok(stmt) => stmt,
+            Err(e) => panic!("Something is wrong, when preparing statements: {:?}",e),
+        };
         let mut daos = vec![];
         let param = self.from_rust_type_tosql(params);
-        for row in stmt.query(&param).unwrap() {
-            let columns = row.columns();
-            let mut index = 0;
-            let mut dao = Dao::new();
-            for c in columns{
-                let column_name = c.name();
-                let dtype = c.type_();
-                let rtype = self.from_sql_to_rust_type(&dtype, &row, index);
-                dao.set_value(column_name, rtype);
-                index += 1;
+        match stmt.query(&param){
+            Ok(rows) =>{
+                for row in rows {
+                    let columns = row.columns();
+                    let mut index = 0;
+                    let mut dao = Dao::new();
+                    for c in columns{
+                        let column_name = c.name();
+                        let dtype = c.type_();
+                        let rtype = self.from_sql_to_rust_type(&dtype, &row, index);
+                        dao.set_value(column_name, rtype);
+                        index += 1;
+                    }
+                    daos.push(dao);
+                }
+                Ok(daos)
+            },
+            Err(e) => {
+                panic!("Something is wrong {:?}", e);
             }
-            daos.push(dao);
         }
-        daos
+        
     }
-    fn execute_sql_with_return_columns(&mut self, sql:&str, params:&Vec<Value>, return_columns:Vec<&str>)->Vec<Dao>{
+    fn execute_sql_with_return_columns(&mut self, sql:&str, params:&Vec<Value>, return_columns:Vec<&str>)->Result<Vec<Dao>, DbError>{
         panic!("not yet.. but postgresql can support this")
     }
     
@@ -374,19 +390,18 @@ impl Database for Postgres{
     /// generic execute sql which returns not much information,
     /// returns only the number of affected records or errors
     /// can be used with DDL operations (CREATE, DELETE, ALTER, DROP)
-    fn execute_sql(&mut self, sql:&str, params:&Vec<Value>)->Result<usize, String>{
+    fn execute_sql(&mut self, sql:&str, params:&Vec<Value>)->Result<usize, DbError>{
         println!("SQL: \n{}", sql);
         println!("param: {:?}", params);
         let to_sql_types = self.from_rust_type_tosql(params);
         let conn = self.get_connection();
         let result = conn.execute(sql, &to_sql_types);
-        let result = match result{
-            Ok(x) => { Ok(x as usize)},
+        match result{
+            Ok(result) => { Ok(result as usize)},
             Err(e) => {
-                Err(format!("Something is wrong {:?}" ,e)) 
+                Err(DbError::new("Something is wrong")) 
             }
-        };
-        result
+        }
     }
 
 }
