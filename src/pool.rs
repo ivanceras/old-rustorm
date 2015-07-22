@@ -7,8 +7,10 @@ use database::{Database, DatabaseDDL, DatabaseDev};
 use platform::Postgres;
 use platform::Sqlite;
 use platform::Mysql;
-use mysql::conn::pool::{MyPool, MyPooledConn};
+use mysql::conn::pool::{MyPool};
 use mysql::conn::MyOpts;
+
+use r2d2_sqlite::SqliteConnectionManager;
 
 
 /// the sql builder for each of the database platform
@@ -29,7 +31,7 @@ impl Platform{
             _ => panic!("others not yet..")
         }
     }
-    pub fn as_ref_mut(&mut self)->&mut Database{
+    pub fn as_mut(&mut self)->&mut Database{
         match *self{
             Platform::Postgres(ref mut pg) => pg,
             Platform::Sqlite(ref mut lite) => lite,
@@ -68,9 +70,11 @@ impl Platform{
     }
 }
 
+/// Postgres, Sqlite uses r2d2 connection manager,
+/// Mysql has its own connection pooling
 pub enum ManagedPool{
     Postgres(Pool<PostgresConnectionManager>),
-    Sqlite,
+    Sqlite(Pool<SqliteConnectionManager>),
     Oracle,
     Mysql(MyPool),
 }
@@ -90,7 +94,10 @@ impl ManagedPool{
                 ManagedPool::Postgres(pool)
             }
             "sqlite" => {
-                panic!("sqlite soon!");
+                let manager = SqliteConnectionManager::new(&config.database).unwrap();
+                let config = Config::builder().pool_size(pool_size as u32).build();
+                let pool = Pool::new(config, manager).unwrap();
+                ManagedPool::Sqlite(pool)
             }
             "mysql" => {
                 let config = DbConfig::from_url(url);
@@ -124,8 +131,17 @@ impl ManagedPool{
                     }
                 }
             },
-            ManagedPool::Sqlite => {
-                Err("Sqlite is not supported yet".to_string())
+            ManagedPool::Sqlite(ref pool) => {
+                let conn = pool.get();//the connection is created here
+                match conn{
+                    Ok(conn) => {
+                        let lite = Sqlite::with_pooled_connection(conn);
+                        Ok(Platform::Sqlite(lite))
+                    },
+                    Err(e) => {
+                        Err(format!("Unable to connect {}", e))
+                    }
+                }
             },
             ManagedPool::Mysql(ref pool) => {
                 let conn = pool.get_conn();//the connection is created here

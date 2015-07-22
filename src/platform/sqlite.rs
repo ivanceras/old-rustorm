@@ -2,55 +2,30 @@ use query::Query;
 use dao::Dao;
 
 use dao::Value;
-use query::SqlType;
 use database::{Database};
 use writer::SqlFrag;
 use database::SqlOption;
-use config::DbConfig;
 use rusqlite::SqliteConnection;
 use rusqlite::types::ToSql;
 use rusqlite::SqliteRow;
-use std::path::Path;
 use table::Table;
 use database::DatabaseDDL;
+use r2d2::PooledConnection;
+use r2d2_sqlite::SqliteConnectionManager;
 
 pub struct Sqlite {
-    pub conn: Option<SqliteConnection>,
+    pool: Option<PooledConnection<SqliteConnectionManager>>,
 }
 
 
 impl Sqlite{
     
     pub fn new()->Self{
-        Sqlite{conn:None}
+        Sqlite{pool: None}
     }
     
-    pub fn connect_with_url(url:&str)->Result<Self, String>{
-        let config = DbConfig::from_url(url);
-        let database:&str = &config.database;
-        let conn = match database{
-             ":memory:" => {
-                println!("using in memory database");
-                SqliteConnection::open_in_memory()
-            },
-             _ => {
-                 let path = Path::new(database);
-                 println!("Using file path {:?}", path);
-                 println!("config{:?}", config);
-                 SqliteConnection::open(&path)
-             }
-        };
-        match conn{
-            Ok(conn) => {
-                let pg = Sqlite{conn: Some(conn)};
-                Ok(pg)
-            },
-            Err(e) => {
-                let error = format!("Unable to connect to database due to {}", e.message);
-                println!("{:?}",e);
-                Err(error)
-            }
-        }
+    pub fn with_pooled_connection(pool: PooledConnection<SqliteConnectionManager>)->Self{
+       Sqlite{pool: Some(pool)}
     }
     
     fn from_rust_type_tosql<'a>(&self, types: &'a Vec<Value>)->Vec<&'a ToSql>{
@@ -64,6 +39,15 @@ impl Sqlite{
             };
         }
         params
+    }
+    
+    pub fn get_connection(&self)->&SqliteConnection{
+       if self.pool.is_some(){
+            &self.pool.as_ref().unwrap()
+        }
+        else{
+            panic!("No connection for this database")
+        }
     }
     
         /// convert a record of a row into rust type
@@ -170,14 +154,16 @@ impl Database for Sqlite{
     fn update(&mut self, query:&Query)->Dao{panic!("not yet")}
     fn delete(&mut self, query:&Query)->Result<usize, String>{panic!("not yet");}
     
+    /// sqlite does not return the columns mentioned in the query,
+    /// you have to specify it yourself
     fn execute_sql_with_return(&mut self, sql:&str, params:&Vec<Value>)->Vec<Dao>{
         panic!("unsupported!");
     }
     fn execute_sql_with_return_columns(&mut self, sql:&str, params:&Vec<Value>, return_columns:Vec<&str>)->Vec<Dao>{
         println!("SQL: \n{}", sql);
         println!("param: {:?}", params);
-        assert!(self.conn.is_some());
-        let mut stmt = self.conn.as_ref().unwrap().prepare(sql).unwrap();
+        let conn = self.get_connection();
+        let mut stmt = conn.prepare(sql).unwrap();
         let mut daos = vec![];
         let param = self.from_rust_type_tosql(params);
         let rows = stmt.query(&param);
@@ -218,8 +204,8 @@ impl Database for Sqlite{
         println!("SQL: \n{}", sql);
         println!("param: {:?}", params);
         let to_sql_types = self.from_rust_type_tosql(params);
-        assert!(self.conn.is_some());
-        let result = self.conn.as_ref().unwrap().execute(sql, &to_sql_types);
+        let conn = self.get_connection();
+        let result = conn.execute(sql, &to_sql_types);
         let result = match result{
             Ok(x) => { Ok(x as usize)},
             Err(e) => {

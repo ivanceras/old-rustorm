@@ -85,6 +85,7 @@ extern crate regex;
 extern crate url;
 extern crate r2d2;
 extern crate r2d2_postgres;
+extern crate r2d2_sqlite;
 
 
 pub mod em;
