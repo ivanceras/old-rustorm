@@ -127,7 +127,11 @@ impl Sqlite{
 
 impl Database for Sqlite{
     fn version(&mut self)->String{
-       panic!("not yet")
+       let sql = "select sqlite_version() as version";
+       let dao = self.execute_sql_with_return_columns(sql, &vec![], vec!["version"]);
+       assert!(dao.len() == 1);
+       let version = dao[0].get("version");
+       version
     }
     fn begin(&mut self){}
     fn commit(&mut self){}
