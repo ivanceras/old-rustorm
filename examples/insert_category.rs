@@ -12,5 +12,5 @@ fn main(){
         Query::insert()
             .set("name", &"Test Category112")
         .into_table(&"bazaar.category")
-            .execute(db.as_ref_mut());
+            .execute(db.as_mut());
 }

@@ -65,7 +65,7 @@ fn main(){
                         .left_join_table("bazaar.photo",
                             "product_photo.photo_id", "photo.photo_id")
                         .filter("product.name", Equality::EQ, &"GTX660 Ti videocard")
-                        .collect_one(db.as_ref_mut()).unwrap();
+                        .collect_one(db.as_mut()).unwrap();
                         
     println!("photo: {} {}",photo.photo_id, photo.url.unwrap());
 }

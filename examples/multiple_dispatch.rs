@@ -80,7 +80,7 @@ fn main(){
         let mut db: Platform = pool.lock().unwrap().connect().unwrap();//important to obtain a connection before opening a thread
         thread::spawn(move || {
                 println!("spawning thread {}", i);
-                show_product(db.as_ref_mut());//borrow a database
+                show_product(db.as_mut());//borrow a database
         });
     }
      thread::sleep_ms(5000);

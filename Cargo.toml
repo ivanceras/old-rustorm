@@ -20,6 +20,11 @@ features = ["rustc-serialize"]
 version = "*"
 features = ["time", "uuid", "chrono"]
 
+
+[dependencies.r2d2_sqlite]
+path = "../r2d2-sqlite"
+
+
 [dependencies]
 rustc-serialize = "*"
 uuid = "*"
@@ -27,8 +32,8 @@ log = "*"
 env_logger = "*"
 regex = "*"
 url = "*"
-rusqlite = "*"
 time = "*"
 r2d2 = "*"
 r2d2_postgres = "*"
+rusqlite = "*"
 mysql = "*"

@@ -19,6 +19,6 @@ fn main(){
     let url = "mysql://test:test@localhost/test";
     let mut pool = ManagedPool::init(&url, 1);
     let mut db = pool.connect().unwrap();
-    let version = db.as_ref_mut().version();
+    let version = db.as_mut().version();
     println!("version: {}", version);
 }

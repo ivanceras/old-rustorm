@@ -67,7 +67,7 @@ fn main(){
     
     let products: Vec<Product> = Query::select_all()
             .from_table("bazaar.product")
-            .collect(db.as_ref_mut());
+            .collect(db.as_mut());
     
     for prod in products{
         let name = prod.name.unwrap();

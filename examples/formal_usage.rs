@@ -70,7 +70,7 @@ fn main(){
     
     match db{
             Ok(mut db) => {
-            show_product(db.as_ref_mut());//borrow a database
+            show_product(db.as_mut());//borrow a database
          }
         Err(e) => {
             println!("Unable to connect to database {}", e);

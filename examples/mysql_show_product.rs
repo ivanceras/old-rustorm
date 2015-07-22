@@ -12,7 +12,7 @@ fn main(){
     let dao = Query::select()
         .columns(vec!["name"])
         .from_table(&"product")
-        .execute_with_return(db.as_ref_mut());
+        .execute_with_return(db.as_mut());
     
     println!("dao: {:#?}", dao);
 }

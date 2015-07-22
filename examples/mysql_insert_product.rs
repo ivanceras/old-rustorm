@@ -12,5 +12,5 @@ fn main(){
         Query::insert()
             .set("name", &"Test Product")
         .into_table(&"product")
-            .execute(db.as_ref_mut());
+            .execute(db.as_mut());
 }

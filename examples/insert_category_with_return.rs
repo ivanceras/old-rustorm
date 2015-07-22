@@ -112,6 +112,6 @@ fn main(){
             .set("name", &"Test Category12121")
         .into_table(&"bazaar.category")
             .return_all()
-            .collect_one(db.as_ref_mut()).unwrap();
+            .collect_one(db.as_mut()).unwrap();
     println!("category: {}", category.name.unwrap());
 }

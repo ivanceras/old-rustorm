@@ -17,7 +17,7 @@ fn main(){
     match Query::delete()
         .from_table("bazaar.category")
             .filter("name", Equality::LIKE, &"Test%")
-        .execute(db.as_ref_mut()){
+        .execute(db.as_mut()){
             
         Ok(x) => println!("deleted {}", x),
         Err(e) => println!("Error {}", e)

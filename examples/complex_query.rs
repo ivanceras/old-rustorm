@@ -60,7 +60,7 @@ fn main(){
         .asc("product.name")
         .desc("product.created")
         ;
-    let frag = query.build(db.as_ref_mut());
+    let frag = query.build(db.as_mut());
     
     let expected = "
 SELECT *
