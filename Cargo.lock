@@ -9,7 +9,7 @@ dependencies = [
  "postgres 0.9.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "r2d2 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "r2d2_postgres 0.9.2 (registry+https://github.com/rust-lang/crates.io-index)",
- "r2d2_sqlite 0.0.1",
+ "r2d2_sqlite 0.0.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "regex 0.1.41 (registry+https://github.com/rust-lang/crates.io-index)",
  "rusqlite 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "rustc-serialize 0.3.15 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -261,6 +261,7 @@ dependencies = [
 [[package]]
 name = "r2d2_sqlite"
 version = "0.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "r2d2 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "rusqlite 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
