@@ -127,7 +127,7 @@ impl Sqlite{
 }
 
 impl Database for Sqlite{
-    fn version(&mut self)->String{
+    fn version(&self)->String{
        let sql = "select sqlite_version() as version";
        let dao = self.execute_sql_with_return_columns(sql, &vec![], vec!["version"]);
        match dao{
@@ -142,15 +142,15 @@ impl Database for Sqlite{
             Err(_) => panic!("unable to get database version")
         }
     }
-    fn begin(&mut self){}
-    fn commit(&mut self){}
-    fn rollback(&mut self){}
-    fn is_transacted(&mut self)->bool{false}
-    fn is_closed(&mut self)->bool{false}
-    fn is_connected(&mut self)->bool{false}
-    fn close(&mut self){}
-    fn is_valid(&mut self)->bool{false}
-    fn reset(&mut self){}
+    fn begin(&self){}
+    fn commit(&self){}
+    fn rollback(&self){}
+    fn is_transacted(&self)->bool{false}
+    fn is_closed(&self)->bool{false}
+    fn is_connected(&self)->bool{false}
+    fn close(&self){}
+    fn is_valid(&self)->bool{false}
+    fn reset(&self){}
     
     /// return this list of options, supported features in the database
     fn sql_options(&self)->Vec<SqlOption>{
@@ -160,19 +160,19 @@ impl Database for Sqlite{
         ]
     }
     
-    fn insert(&mut self, query:&Query)->Result<Dao, DbError>{
+    fn insert(&self, query:&Query)->Result<Dao, DbError>{
         let sql_frag = self.build_insert(query);
         self.execute_sql_with_one_return(&sql_frag.sql, &sql_frag.params)
     }
-    fn update(&mut self, query:&Query)->Dao{panic!("not yet")}
-    fn delete(&mut self, query:&Query)->Result<usize, String>{panic!("not yet");}
+    fn update(&self, query:&Query)->Dao{panic!("not yet")}
+    fn delete(&self, query:&Query)->Result<usize, String>{panic!("not yet");}
     
     /// sqlite does not return the columns mentioned in the query,
     /// you have to specify it yourself
-    fn execute_sql_with_return(&mut self, sql:&str, params:&Vec<Value>)->Result<Vec<Dao>, DbError>{
+    fn execute_sql_with_return(&self, sql:&str, params:&Vec<Value>)->Result<Vec<Dao>, DbError>{
         panic!("unsupported!");
     }
-    fn execute_sql_with_return_columns(&mut self, sql:&str, params:&Vec<Value>, return_columns:Vec<&str>)->Result<Vec<Dao>, DbError>{
+    fn execute_sql_with_return_columns(&self, sql:&str, params:&Vec<Value>, return_columns:Vec<&str>)->Result<Vec<Dao>, DbError>{
         println!("SQL: \n{}", sql);
         println!("param: {:?}", params);
         let conn = self.get_connection();
@@ -203,7 +203,7 @@ impl Database for Sqlite{
         Ok(daos)
     }
     
-    fn execute_sql_with_one_return(&mut self, sql:&str, params:&Vec<Value>)->Result<Dao, DbError>{
+    fn execute_sql_with_one_return(&self, sql:&str, params:&Vec<Value>)->Result<Dao, DbError>{
         let dao = self.execute_sql_with_return(sql, params);
         match dao{
             Ok(dao) => {
@@ -221,7 +221,7 @@ impl Database for Sqlite{
     /// generic execute sql which returns not much information,
     /// returns only the number of affected records or errors
     /// can be used with DDL operations (CREATE, DELETE, ALTER, DROP)
-    fn execute_sql(&mut self, sql:&str, params:&Vec<Value>)->Result<usize, DbError>{
+    fn execute_sql(&self, sql:&str, params:&Vec<Value>)->Result<usize, DbError>{
         println!("SQL: \n{}", sql);
         println!("param: {:?}", params);
         let to_sql_types = self.from_rust_type_tosql(params);
@@ -238,11 +238,11 @@ impl Database for Sqlite{
 }
 
 impl DatabaseDDL for Sqlite{
-    fn create_schema(&mut self, schema:&str){
+    fn create_schema(&self, schema:&str){
         panic!("sqlite does not support schema")
     }
 
-    fn drop_schema(&mut self, schema:&str){
+    fn drop_schema(&self, schema:&str){
         panic!("sqlite does not support schema")
     }
     
@@ -266,7 +266,7 @@ impl DatabaseDDL for Sqlite{
         w.append(")");
         w
     }
-    fn create_table(&mut self, table:&Table){
+    fn create_table(&self, table:&Table){
          let frag = self.build_create_table(table);
          match self.execute_sql(&frag.sql, &vec![]){
             Ok(x) => println!("created table.."),
@@ -274,19 +274,19 @@ impl DatabaseDDL for Sqlite{
          }
     }
 
-    fn rename_table(&mut self, table:&Table, new_tablename:String){
+    fn rename_table(&self, table:&Table, new_tablename:String){
         
     }
 
-    fn drop_table(&mut self, table:&Table){
+    fn drop_table(&self, table:&Table){
         panic!("not yet");
     }
 
-    fn set_foreign_constraint(&mut self, model:&Table){
+    fn set_foreign_constraint(&self, model:&Table){
         panic!("not yet");
     }
 
-    fn set_primary_constraint(&mut self, model:&Table){
+    fn set_primary_constraint(&self, model:&Table){
         panic!("not yet");
     }
 }

@@ -24,8 +24,8 @@ use rustorm::table::Foreign;
 fn main(){
     let url = "mysql://root:r00t@localhost/bazaar_v6";
     let mut pool = ManagedPool::init(&url, 1);
-    let mut db = pool.connect().unwrap();
-    db.as_ddl_mut().create_table(&Product::table());
+    let db = pool.connect().unwrap();
+    db.as_ddl().create_table(&Product::table());
 }
 
 

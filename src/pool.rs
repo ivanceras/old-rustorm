@@ -28,9 +28,11 @@ impl Platform{
         match *self{
             Platform::Postgres(ref pg) => pg,
             Platform::Sqlite(ref lite) => lite,
+             Platform::Mysql(ref my) => my,
             _ => panic!("others not yet..")
         }
     }
+    /*
     pub fn as_mut(&mut self)->&mut Database{
         match *self{
             Platform::Postgres(ref mut pg) => pg,
@@ -39,6 +41,7 @@ impl Platform{
             _ => panic!("others not yet..")
         }
     }
+    */
     pub fn as_ddl(&self)->&DatabaseDDL{
         match *self{
             Platform::Postgres(ref pg) => pg,
@@ -47,6 +50,7 @@ impl Platform{
             _ => panic!("others not yet..")
         }
     }
+    /*
     pub fn as_ddl_mut(&mut self)->&mut DatabaseDDL{
         match *self{
             Platform::Postgres(ref mut pg) => pg,
@@ -55,6 +59,7 @@ impl Platform{
             _ => panic!("others not yet..")
         }
     }
+    */
     
     pub fn as_dev(&self)->&DatabaseDev{
         match *self{
@@ -62,12 +67,14 @@ impl Platform{
             _ => panic!("others not yet..")
         }
     }
+    /*
     pub fn as_dev_mut(&mut self)->&mut DatabaseDev{
         match *self{
             Platform::Postgres(ref mut pg) => pg,
             _ => panic!("others not yet..")
         }
     }
+    */
 }
 
 /// Postgres, Sqlite uses r2d2 connection manager,
@@ -76,7 +83,7 @@ pub enum ManagedPool{
     Postgres(Pool<PostgresConnectionManager>),
     Sqlite(Pool<SqliteConnectionManager>),
     Oracle,
-    Mysql(MyPool),
+    Mysql(Option<MyPool>),
 }
 
 impl ManagedPool{
@@ -110,7 +117,7 @@ impl ManagedPool{
                     ..Default::default()
                 };
                 let pool = MyPool::new_manual(0, pool_size, opts).unwrap();
-                ManagedPool::Mysql(pool)
+                ManagedPool::Mysql(Some(pool))
             }
             _ => panic!("not yet")
         }
@@ -144,16 +151,8 @@ impl ManagedPool{
                 }
             },
             ManagedPool::Mysql(ref pool) => {
-                let conn = pool.get_conn();//the connection is created here
-                match conn{
-                    Ok(conn) => {
-                        let my = Mysql::with_connection(conn.unwrap());
-                        Ok(Platform::Mysql(my))
-                    },
-                    Err(e) => {
-                        Err(format!("Unable to connect {}", e))
-                    }
-                }
+                let my = Mysql::with_pooled_connection(pool.clone().unwrap());// I hope cloning doesn't really clone the pool, just the Arc
+                Ok(Platform::Mysql(my))
             },
             _ => Err("Any other database is not yet supported".to_string())
         }

@@ -6,27 +6,27 @@ use database::{Database};
 use writer::SqlFrag;
 use database::SqlOption;
 
-use mysql::conn::{MyConn};
 use mysql::value::Value as MyValue;
 use mysql::error::MyResult;
 use mysql::conn::Stmt;
+use mysql::conn::pool::{MyPool};
 
 use table::Table;
 use database::DatabaseDDL;
 use database::DbError;
 
 pub struct Mysql {
-    conn: Option<MyConn>,
+    pool: Option<MyPool>,
 }
 
 impl Mysql{
     
     pub fn new()->Self{
-        Mysql{ conn: None }
+        Mysql{ pool: None }
     }
     
-    pub fn with_connection(conn: MyConn)->Self{
-        Mysql{conn:Some(conn)}
+    pub fn with_pooled_connection(pool: MyPool)->Self{
+        Mysql{pool: Some(pool)}
     }
     
     fn from_rust_type_tosql(types: &Vec<Value>)->Vec< MyValue>{
@@ -115,14 +115,13 @@ impl Mysql{
 
     }
    
-    fn get_prepared_statement<'a>(&'a mut self, sql: &'a str) -> MyResult<Stmt<'a>> { 
-
-        self.conn.as_mut().unwrap().prepare(sql)
+    fn get_prepared_statement<'a>(&'a self, sql: &'a str) -> MyResult<Stmt> { 
+        self.pool.as_ref().unwrap().prepare(sql)
     }
 }
 
 impl Database for Mysql{
-    fn version(&mut self)->String{
+    fn version(&self)->String{
        let sql = "select version()";
        let dao = self.execute_sql_with_return_columns(sql, &vec![], vec!["version"]);
        match dao{
@@ -136,15 +135,15 @@ impl Database for Mysql{
            Err(_) => panic!("unable to get database version")
        }
     }
-    fn begin(&mut self){}
-    fn commit(&mut self){}
-    fn rollback(&mut self){}
-    fn is_transacted(&mut self)->bool{false}
-    fn is_closed(&mut self)->bool{false}
-    fn is_connected(&mut self)->bool{false}
-    fn close(&mut self){}
-    fn is_valid(&mut self)->bool{false}
-    fn reset(&mut self){}
+    fn begin(&self){}
+    fn commit(&self){}
+    fn rollback(&self){}
+    fn is_transacted(&self)->bool{false}
+    fn is_closed(&self)->bool{false}
+    fn is_connected(&self)->bool{false}
+    fn close(&self){}
+    fn is_valid(&self)->bool{false}
+    fn reset(&self){}
     
     /// return this list of options, supported features in the database
     fn sql_options(&self)->Vec<SqlOption>{
@@ -153,20 +152,16 @@ impl Database for Mysql{
         ]
     }
     
-    fn update(&mut self, query:&Query)->Dao{panic!("not yet")}
-    fn delete(&mut self, query:&Query)->Result<usize, String>{panic!("not yet");}
+    fn update(&self, query:&Query)->Dao{panic!("not yet")}
+    fn delete(&self, query:&Query)->Result<usize, String>{panic!("not yet");}
     
-    fn execute_sql_with_return(&mut self, sql:&str, params:&Vec<Value>)->Result<Vec<Dao>, DbError>{
+    fn execute_sql_with_return(&self, sql:&str, params:&Vec<Value>)->Result<Vec<Dao>, DbError>{
         panic!("unsupported!");
     }
-    fn execute_sql_with_return_columns(&mut self, sql:&str, params:&Vec<Value>, return_columns:Vec<&str>)->Result<Vec<Dao>, DbError>{
+    fn execute_sql_with_return_columns(&self, sql:&str, params:&Vec<Value>, return_columns:Vec<&str>)->Result<Vec<Dao>, DbError>{
         println!("SQL: \n{}", sql);
         println!("param: {:?}", params);
-        assert!(self.conn.is_some());
-        //let mut stmt = self.conn.as_ref().unwrap().prepare(sql).unwrap();
-        //let mut conn = self.conn.as_mut().unwrap();
-        //let mut stmt = conn.prepare(sql).unwrap();
-        //let mut stmt = self.conn.as_mut().unwrap().prepare(sql).unwrap();
+        assert!(self.pool.is_some());
         let mut stmt = self.get_prepared_statement(sql).unwrap();
 
         let mut daos = vec![];
@@ -196,7 +191,7 @@ impl Database for Mysql{
         Ok(daos)
     }
     
-    fn execute_sql_with_one_return(&mut self, sql:&str, params:&Vec<Value>)->Result<Dao, DbError>{
+    fn execute_sql_with_one_return(&self, sql:&str, params:&Vec<Value>)->Result<Dao, DbError>{
         let dao = self.execute_sql_with_return(sql, params);
         match dao{
             Ok(dao) => {
@@ -213,12 +208,12 @@ impl Database for Mysql{
     /// generic execute sql which returns not much information,
     /// returns only the number of affected records or errors
     /// can be used with DDL operations (CREATE, DELETE, ALTER, DROP)
-    fn execute_sql(&mut self, sql:&str, params:&Vec<Value>)->Result<usize, DbError>{
+    fn execute_sql(&self, sql:&str, params:&Vec<Value>)->Result<usize, DbError>{
         println!("SQL: \n{}", sql);
         println!("param: {:?}", params);
         let to_sql_types = Mysql::from_rust_type_tosql(params);
-        assert!(self.conn.is_some());
-        let result = self.conn.as_mut().unwrap().prep_exec(sql, &to_sql_types);
+        assert!(self.pool.is_some());
+        let result = self.pool.as_ref().unwrap().prep_exec(sql, &to_sql_types);
         match result{
             Ok(x) => { Ok(x.affected_rows() as usize)},
             Err(e) => {
@@ -230,11 +225,11 @@ impl Database for Mysql{
 }
 
 impl DatabaseDDL for Mysql{
-    fn create_schema(&mut self, schema:&str){
+    fn create_schema(&self, schema:&str){
         panic!("sqlite does not support schema")
     }
 
-    fn drop_schema(&mut self, schema:&str){
+    fn drop_schema(&self, schema:&str){
         panic!("sqlite does not support schema")
     }
     
@@ -258,7 +253,7 @@ impl DatabaseDDL for Mysql{
         w.append(")");
         w
     }
-    fn create_table(&mut self, table:&Table){
+    fn create_table(&self, table:&Table){
          let frag = self.build_create_table(table);
          match self.execute_sql(&frag.sql, &vec![]){
             Ok(x) => println!("created table.."),
@@ -266,19 +261,19 @@ impl DatabaseDDL for Mysql{
          }
     }
 
-    fn rename_table(&mut self, table:&Table, new_tablename:String){
+    fn rename_table(&self, table:&Table, new_tablename:String){
         
     }
 
-    fn drop_table(&mut self, table:&Table){
+    fn drop_table(&self, table:&Table){
         panic!("not yet");
     }
 
-    fn set_foreign_constraint(&mut self, model:&Table){
+    fn set_foreign_constraint(&self, model:&Table){
         panic!("not yet");
     }
 
-    fn set_primary_constraint(&mut self, model:&Table){
+    fn set_primary_constraint(&self, model:&Table){
         panic!("not yet");
     }
 }

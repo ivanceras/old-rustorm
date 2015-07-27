@@ -18,7 +18,7 @@ use rustorm::database::Database;
 fn main(){
     let url = "sqlite:///:memory:";
     let mut pool = ManagedPool::init(&url, 1);
-    let mut db = pool.connect().unwrap();
-    let version = db.as_mut().version();
+    let db = pool.connect().unwrap();
+    let version = db.as_ref().version();
     println!("version: {}", version);
 }

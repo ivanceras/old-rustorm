@@ -7,10 +7,10 @@ use rustorm::pool::ManagedPool;
 fn main(){
     let url = "sqlite:///file.db";
     let mut pool = ManagedPool::init(&url, 1);
-    let mut db = pool.connect().unwrap();
+    let db = pool.connect().unwrap();
         
         Query::insert()
             .set("name", &"Test Product")
         .into_table(&"product")
-            .execute(db.as_mut());
+            .execute(db.as_ref());
 }

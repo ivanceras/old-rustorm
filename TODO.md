@@ -72,3 +72,10 @@ impl ProductAvailability{
 
 ## July 21, 2015
 * Make compilation of underlying supported platform optional. Using the "feature" in Cargo.toml
+
+## July 27, 2015
+
+* Use const,
+* add column module, list of all columns
+* add table module list of all tables
+* add schema modile list of all schema

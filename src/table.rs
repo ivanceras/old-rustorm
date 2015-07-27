@@ -427,13 +427,13 @@ impl Table{
     pub fn get_all_applicable_reference<'a>(&'a self, all_tables:&'a Vec<Table>)->Vec<RefTable>{
         let mut applicable_ref = vec![];
         if self.is_linker_table(){
-            println!("Skipping reference listing for table {}, Linker table should not contain objects", self);
+            //println!("Skipping reference listing for table {}, Linker table should not contain objects", self);
             return vec![];
         }
         let all_ref = self.get_all_referenced_table(all_tables);
         for ref_table in all_ref{
             if self.is_extension_of(ref_table.table, all_tables){
-                 println!("skipping master table {} since {} is just an extension to it ",ref_table.table, self);
+                 //println!("skipping master table {} since {} is just an extension to it ",ref_table.table, self);
             }
             else{
                 applicable_ref.push(ref_table)

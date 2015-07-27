@@ -73,60 +73,60 @@ pub trait Database{
 
     /// return the version of the database
     /// lower version of database has fewer supported features
-    fn version(&mut self)->String;
+    fn version(&self)->String;
     
     /// begin database transaction
-    fn begin(&mut self);
+    fn begin(&self);
 
     /// commit database transaction
-    fn commit(&mut self);
+    fn commit(&self);
 
     /// rollback data changes executed prior to calling the begin method
-    fn rollback(&mut self);
+    fn rollback(&self);
 
     /// determine if this transaction has been committed or rolledback
-    fn is_transacted(&mut self)->bool;
+    fn is_transacted(&self)->bool;
 
     /// determine if the database connection closed
-    fn is_closed(&mut self)->bool;
+    fn is_closed(&self)->bool;
 
     /// check if the database is still connected
-    fn is_connected(&mut self)->bool;
+    fn is_connected(&self)->bool;
 
     /// close the database connection
-    fn close(&mut self);
+    fn close(&self);
 
     /// determine if the database connection is still valid
-    fn is_valid(&mut self)->bool;
+    fn is_valid(&self)->bool;
 
     /// reset the database connection
-    fn reset(&mut self);
+    fn reset(&self);
 
     /// select
     /// returns an array to the qualified records
-    fn select(&mut self, query:&Query)->Result<DaoResult, DbError>{
+    fn select(&self, query:&Query)->Result<DaoResult, DbError>{
         self.execute_with_return(query)
     }
 
     /// insert
     /// insert an object, returns the inserted Dao value
     /// including the value generated via the defaults
-    fn insert(&mut self, query:&Query)->Result<Dao, DbError>{
+    fn insert(&self, query:&Query)->Result<Dao, DbError>{
         let sql_frag = self.build_insert(query);
         self.execute_sql_with_one_return(&sql_frag.sql, &sql_frag.params)
     }
 
     /// update
     /// returns the updated Dao
-    fn update(&mut self,query:&Query)->Dao;
+    fn update(&self,query:&Query)->Dao;
 
     /// delete records
     /// returns the number of deleted records
-    fn delete(&mut self, query:&Query)->Result<usize, String>;
+    fn delete(&self, query:&Query)->Result<usize, String>;
 
     /// execute query with return dao,
     /// use the enumerated column for data extraction when db doesn't support returning the records column names
-    fn execute_with_return(&mut self, query:&Query)->Result<DaoResult, DbError>{
+    fn execute_with_return(&self, query:&Query)->Result<DaoResult, DbError>{
         let sql_frag = &self.build_query(query);
         let result = if self.sql_options().contains(&SqlOption::ReturnMetaColumns){
             self.execute_sql_with_return(&sql_frag.sql, &sql_frag.params)
@@ -154,24 +154,24 @@ pub trait Database{
     }
 
     /// execute query with 1 return dao
-    fn execute_with_one_return(&mut self, query:&Query)->Result<Dao, DbError>{
+    fn execute_with_one_return(&self, query:&Query)->Result<Dao, DbError>{
         let sql_frag = &self.build_query(query);
         self.execute_sql_with_one_return(&sql_frag.sql, &sql_frag.params)
     }
     
     /// execute query with no return dao
-    fn execute(&mut self, query:&Query)->Result<usize, DbError>{
+    fn execute(&self, query:&Query)->Result<usize, DbError>{
         let sql_frag = &self.build_query(query);
         self.execute_sql(&sql_frag.sql, &sql_frag.params)
     }
 
     /// execute insert with returning clause, update with returning clause
-    fn execute_sql_with_return(&mut self, sql:&str, params:&Vec<Value>)->Result<Vec<Dao>, DbError>;
+    fn execute_sql_with_return(&self, sql:&str, params:&Vec<Value>)->Result<Vec<Dao>, DbError>;
     
     /// specify which return columns to get, ie. sqlite doesn't support getting the meta data of the return
-    fn execute_sql_with_return_columns(&mut self, sql:&str, params:&Vec<Value>, return_columns:Vec<&str>)->Result<Vec<Dao>, DbError>;
+    fn execute_sql_with_return_columns(&self, sql:&str, params:&Vec<Value>, return_columns:Vec<&str>)->Result<Vec<Dao>, DbError>;
 
-    fn execute_sql_with_one_return(&mut self, sql:&str, params:&Vec<Value>)->Result<Dao, DbError>{
+    fn execute_sql_with_one_return(&self, sql:&str, params:&Vec<Value>)->Result<Dao, DbError>{
         let dao = self.execute_sql_with_return(sql, params);
         match dao{
             Ok(dao) => {
@@ -187,7 +187,7 @@ pub trait Database{
     }
     
     /// everything else, no required return other than error or affected number of records
-    fn execute_sql(&mut self, sql:&str, param:&Vec<Value>)->Result<usize, DbError>;
+    fn execute_sql(&self, sql:&str, param:&Vec<Value>)->Result<usize, DbError>;
 
     /// build a query, return the sql string and the parameters.
     /// use by select to build the select query
@@ -606,28 +606,28 @@ pub trait DatabaseDDL{
     ////////////////////////////////////////
 
     /// create a database schema
-    fn create_schema(&mut self, schema:&str);
+    fn create_schema(&self, schema:&str);
 
     /// drop the database schema
-    fn drop_schema(&mut self, schema:&str);
+    fn drop_schema(&self, schema:&str);
 
     /// create a database table based on the Model Definition
-    fn create_table(&mut self, model:&Table);
+    fn create_table(&self, model:&Table);
     
     /// build sql for create table
     fn build_create_table(&self, table:&Table)->SqlFrag;
 
     /// rename table, in the same schema
-    fn rename_table(&mut self, table:&Table, new_tablename:String);
+    fn rename_table(&self, table:&Table, new_tablename:String);
 
     /// drop table
-    fn drop_table(&mut self, table:&Table);
+    fn drop_table(&self, table:&Table);
 
     /// set the foreign key constraint of a table
-    fn set_foreign_constraint(&mut self, model:&Table);
+    fn set_foreign_constraint(&self, model:&Table);
 
     /// set the primary key constraint of a table
-    fn set_primary_constraint(&mut self, model:&Table);
+    fn set_primary_constraint(&self, model:&Table);
 }
 
 
@@ -640,24 +640,24 @@ pub trait DatabaseDev{
 ////////////////////////////////////////////
 
     /// applicable to later version of postgresql where there is inheritance
-    fn get_table_sub_class(&mut self, schema:&str, table:&str)->Vec<String>;
+    fn get_table_sub_class(&self, schema:&str, table:&str)->Vec<String>;
 
-    fn get_parent_table(&mut self, schema:&str, table:&str)->Option<String>;
+    fn get_parent_table(&self, schema:&str, table:&str)->Option<String>;
 
     ////
     /// Build the Table object based on the extracted meta data info from database
     /// This is queries directly from the database, so this will be costly. Only used this on initialization processes
     ///
-    fn get_table_metadata(&mut self, schema:&str, table:&str)->Table;
+    fn get_table_metadata(&self, schema:&str, table:&str)->Table;
 
     /// get all the tables in this database
-    fn get_all_tables(&mut self)->Vec<(String, String)>;
+    fn get_all_tables(&self)->Vec<(String, String)>;
 
     /// get the comment of this table
-    fn get_table_comment(&mut self, schema:&str, table:&str)->Option<String>;
+    fn get_table_comment(&self, schema:&str, table:&str)->Option<String>;
 
     /// get the inherited columns of this table
-    fn get_inherited_columns(&mut self, schema:&str, table:&str)->Vec<String>;
+    fn get_inherited_columns(&self, schema:&str, table:&str)->Vec<String>;
 
     ///get the equivalent postgresql database data type to rust data type
     /// returns (module, type)

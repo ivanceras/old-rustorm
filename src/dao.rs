@@ -30,7 +30,8 @@ pub enum Value{
     F64(f64),
     String(String),
     VecU8(Vec<u8>),
-    Map(HashMap<String, Option<String>>),
+    Object(BTreeMap<String, Value>),
+    Json(Json),
     Uuid(Uuid),
     DateTime(DateTime<UTC>),
     NaiveDate(NaiveDate),
@@ -64,8 +65,9 @@ impl Encodable for Value{
             Value::NaiveDate(ref x) => x.encode(s),
             Value::NaiveTime(ref x) => x.encode(s),
             Value::NaiveDateTime(ref x) => x.encode(s),
+            Value::Object(ref x) => x.encode(s),
+            Value::Json(ref x) => x.encode(s),
             Value::Null => s.emit_nil(),
-             _ => panic!("unsupported/unexpected type! {:?}", self),
         }
     }
 }
@@ -92,6 +94,8 @@ impl ToJson for Value{
 //            Value::NaiveDate(ref x) => x.to_json(),
 //            Value::NaiveTime(ref x) => x.to_json(),
 //            Value::NaiveDateTime(ref x) => x.to_json(),
+            Value::Object(ref x) => x.to_json(),
+            Value::Json(ref x) => x.clone(),
             Value::Null => Json::Null,
              _ => panic!("unsupported/unexpected type! {:?}", self),
         }
@@ -119,6 +123,8 @@ impl fmt::Display for Value{
             Value::NaiveDate(ref x) => write!(f, "'{}'", x),
             Value::NaiveTime(ref x) => write!(f, "'{}'", x),
             Value::NaiveDateTime(ref x) => write!(f, "'{}'", x),
+            Value::Object(ref x) => write!(f, "'{:?}'", x),
+            Value::Json(ref x) => write!(f, "'{:?}'", x),
             Value::Null => write!(f, "'nil'"),
             _ => panic!("unsupported/unexpected type! {:?}", self),
         }
@@ -137,6 +143,12 @@ pub trait IsDao{
     /// convert from an instance of the struct to a dao representation
     /// to be saved into the database
     fn to_dao(&self)->Dao;
+}
+
+/// Ignore Column are columns that are redundant when displaying as API results
+pub trait HasIgnoreColumn{
+    
+    fn ignored_column(&self)->Vec<&str>;
 }
 
 /// meta result of a query useful when doing complex query, and also with paging
@@ -307,6 +319,10 @@ impl Dao{
         true
     }
     
+    
+    pub fn as_map(&self)->&BTreeMap<String, Value>{
+        &self.values
+    }
 }
 
 

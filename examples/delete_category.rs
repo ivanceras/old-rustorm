@@ -13,11 +13,11 @@ use rustorm::pool::ManagedPool;
 fn main(){
     let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v6";
     let mut pool = ManagedPool::init(&url, 1);
-    let mut db = pool.connect().unwrap();
+    let db = pool.connect().unwrap();
     match Query::delete()
         .from_table("bazaar.category")
             .filter("name", Equality::LIKE, &"Test%")
-        .execute(db.as_mut()){
+        .execute(db.as_ref()){
             
         Ok(x) => println!("deleted {}", x),
         Err(e) => println!("Error {}", e)

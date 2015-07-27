@@ -68,27 +68,6 @@ pub enum Equality{
     IS_NULL,//IS_NULL,
 }
 
-impl Equality{
-    
-    /// provides an alternative way of parsing string expressions
-    pub fn from_str(str:&str)->Equality{
-        match str{
-            "="  | "eq" => Equality::EQ,
-            "!=" | "neq" => Equality::NEQ,
-            "<"  | "lt" => Equality::LT,
-            "<=" | "lt=" => Equality::LTE,
-            ">"  | "gt"  => Equality::GT,
-            ">=" | "gte" => Equality::GTE,
-            "in" => Equality::IN,
-            "not in" => Equality::NOT_IN,
-            "like" => Equality::LIKE,
-            "is not null" => Equality::IS_NOT_NULL,
-            "is null" => Equality::IS_NULL,
-            _ => panic!("unrecognized equality sign"),
-        }
-    }
-}
-
 /// function in a sql statement
 #[derive(Debug)]
 #[derive(Clone)]
@@ -437,6 +416,8 @@ pub struct Query{
     pub joins:Vec<Join>,
     
     /// ordering of the records via the columns specified
+    /// TODO: ordering should be more flexible than this
+    /// needs to support expressions
     pub order_by:Vec<(String, Direction)>,
     
     /// grouping columns to create an aggregate
@@ -943,6 +924,13 @@ impl Query{
         self
     }
     
+    pub fn add_filters(&mut self, filters:Vec<Filter>)->&mut Self{
+        for f in filters{
+            self.add_filter(f);
+        }
+        self
+    }
+    
     pub fn filter(&mut self, column:&str, equality:Equality, value:&ToValue)->&mut Self{
         self.add_filter(Filter::new(column, equality, value))
     }
@@ -989,7 +977,7 @@ impl Query{
     }
     
     /// expects a return, such as select, insert/update with returning clause
-    pub fn execute_with_return(&mut self, db: &mut Database)->Result<DaoResult, DbError>{
+    pub fn execute_with_return(&mut self, db: &Database)->Result<DaoResult, DbError>{
         self.finalize();
         db.execute_with_return(self)
     }
@@ -997,19 +985,19 @@ impl Query{
     /// expects a return, such as select, insert/update with returning clause
     /// no casting of data to structs is done
     /// This is used when retrieving multiple models in 1 query, then casting the records to its equivalent structs
-    pub fn execute_with_one_return(&mut self, db: &mut Database)->Result<Dao, DbError>{
+    pub fn execute_with_one_return(&mut self, db: &Database)->Result<Dao, DbError>{
         self.finalize();
         db.execute_with_one_return(self)
     }
     
     /// delete, update without caring for the return
-    pub fn execute(&mut self, db: &mut Database)->Result<usize, DbError>{
+    pub fn execute(&mut self, db: &Database)->Result<usize, DbError>{
         self.finalize();
         db.execute(self)
     }
     
     /// execute the query, then convert the result
-    pub fn collect<T: IsDao+IsTable>(&mut self, db: &mut Database)->Result<Vec<T>, DbError>{
+    pub fn collect<T: IsDao+IsTable>(&mut self, db: &Database)->Result<Vec<T>, DbError>{
         let result = self.execute_with_return(db);
         match result{
             Ok(result) => Ok(result.cast()),
@@ -1019,7 +1007,7 @@ impl Query{
     
     /// execute the query then collect only 1 record
     /// TODO: use Result<T,Error> instead of Option<T>
-    pub fn collect_one<T: IsDao+IsTable>(&mut self, db: &mut Database)->Result<T, DbError>{
+    pub fn collect_one<T: IsDao+IsTable>(&mut self, db: &Database)->Result<T, DbError>{
         let result = self.execute_with_return(db);
         match result{
             Ok(result) => Ok(result.cast_one().unwrap()),
