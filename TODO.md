@@ -79,3 +79,16 @@ impl ProductAvailability{
 * add column module, list of all columns
 * add table module list of all tables
 * add schema modile list of all schema
+
+## July 28, 2015
+
+* Support for views
+http://dba.stackexchange.com/questions/23836/how-to-list-all-views-in-sql-in-postgresql
+
+```sql
+
+select schemaname, viewname from pg_catalog.pg_views
+where schemaname NOT IN ('pg_catalog', 'information_schema')
+order by schemaname, viewname;
+
+```

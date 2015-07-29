@@ -185,6 +185,9 @@ pub struct Table{
 
     ///columns of this table
     pub columns:Vec<Column>,
+    
+    /// views can also be generated
+    pub is_view: bool,
 
 }
 impl fmt::Display for Table {

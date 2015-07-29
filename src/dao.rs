@@ -146,9 +146,19 @@ pub trait IsDao{
 }
 
 /// Ignore Column are columns that are redundant when displaying as API results
-pub trait HasIgnoreColumn{
+pub trait ToCompact{
     
-    fn ignored_column(&self)->Vec<&str>;
+    /// list of redundant fields that will be removed when doing a compact serialization
+    fn redundant_fields(&self)->Vec<&str>;
+    
+    /// compact BTreeMap represetation
+    fn compact_map(&self)->BTreeMap<String, Value>;
+    
+    /// compact dao representation
+    fn compact_dao(&self)->Dao;
+    
+    /// compact dao representation
+    fn compact_json(&self)->Json;
 }
 
 /// meta result of a query useful when doing complex query, and also with paging
@@ -214,7 +224,6 @@ impl DaoResult{
 /// TODO: optimization, used enum types for the key values
 /// This will save allocation of string to enum keys which is a few bytes, int 
 pub struct Dao{
-    //pub values:HashMap<String, Value>,
     pub values:BTreeMap<String, Value>,
 }
 
@@ -241,7 +250,6 @@ impl ToJson for Dao{
 impl Dao{
 
     pub fn new()->Self{
-        //Dao{values:HashMap::new()}
         Dao{values:BTreeMap::new()}
     }
     
@@ -564,7 +572,6 @@ impl FromValue for Uuid{
     fn from_type(ty:Value)->Self{
         match ty{
             Value::Uuid(x) => x,
-            Value::Null => panic!("No value!"),
             _ => panic!("error!"),
         }
     }

@@ -197,7 +197,7 @@ impl Postgres{
                 LEFT JOIN pg_description
                     ON pg_description.objoid = pg_class.oid
                     AND pg_description.objsubid = pg_attribute.attnum
-            WHERE pg_class.relkind = 'r'::char
+            WHERE pg_class.relkind IN ('r','v')
                 AND pg_namespace.nspname = $1
                 AND pg_class.relname = $2
                 AND pg_attribute.attnum > 0
@@ -490,7 +490,7 @@ impl DatabaseDev for Postgres{
 
 
 
-    fn get_table_metadata(&self, schema:&str, table:&str)->Table{
+    fn get_table_metadata(&self, schema:&str, table:&str, is_view: bool)->Table{
 
         let mut columns = self.get_table_columns(schema, table);
         let comment = self.get_table_comment(schema, table);
@@ -516,31 +516,37 @@ impl DatabaseDev for Postgres{
             sub_table:subclass,
             comment:comment,
             columns:columns,
+            is_view: is_view
         }
     }
 
-    fn get_all_tables(&self)->Vec<(String, String)>{
+    fn get_all_tables(&self)->Vec<(String, String, bool)>{
         let sql ="
                 SELECT
                     pg_class.relname AS table,
                     pg_namespace.nspname AS schema,
-                    obj_description(pg_class.oid) AS comment
+                    obj_description(pg_class.oid) AS comment,
+                    CASE 
+                        WHEN pg_class.relkind = 'r' THEN false
+                        WHEN pg_class.relkind = 'v' THEN true
+                    END AS is_view
                 FROM pg_class
                     LEFT JOIN pg_namespace
                         ON pg_namespace.oid = pg_class.relnamespace
                 WHERE
-                    pg_class.relkind = 'r'
+                    pg_class.relkind IN ('r','v')
                     AND pg_namespace.nspname NOT IN ('information_schema', 'pg_catalog', 'pg_toast')
                 ORDER BY relname, nspname
 
                 ";
         let conn = self.get_connection();
         let stmt = conn.prepare(&sql).unwrap();
-        let mut tables:Vec<(String, String)> = Vec::new();
+        let mut tables:Vec<(String, String, bool)> = Vec::new();
         for row in stmt.query(&[]).unwrap() {
             let table:String = row.get("table");
             let schema:String = row.get("schema");
-            tables.push((schema, table));
+            let is_view:bool = row.get("is_view");
+            tables.push((schema, table, is_view));
         }
         tables
     }
@@ -555,7 +561,7 @@ impl DatabaseDev for Postgres{
                     LEFT JOIN pg_namespace
                         ON pg_namespace.oid = pg_class.relnamespace
                 WHERE
-                    pg_class.relkind = 'r'
+                    pg_class.relkind IN ('r','v')
                     AND pg_namespace.nspname NOT IN ('information_schema', 'pg_catalog', 'pg_toast')
                     AND nspname = $1
                     AND relname = $2

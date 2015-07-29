@@ -232,3 +232,60 @@ gotcha: need to put & to borrow immutable from mutable
 fn execute_with_return(&mut self, query:&Query)->DaoResult{
         let sql_frag = &self.build_query(query);
 ```
+
+
+
+### Get view columns
+```sql
+
+SELECT
+                pg_attribute.attnum AS number,
+                pg_attribute.attname AS name,
+                pg_attribute.attnotnull AS notnull,
+                pg_catalog.format_type(pg_attribute.atttypid, pg_attribute.atttypmod) AS data_type,
+                CASE
+                WHEN pg_constraint.contype = 'p' THEN true
+                ELSE false
+                END AS is_primary,
+                CASE
+                WHEN pg_constraint.contype = 'u' THEN true
+                ELSE false
+                END AS is_unique,
+                CASE
+                WHEN pg_constraint.contype = 'f' THEN g.relname
+                END AS foreign_table,
+                CASE
+                WHEN pg_attribute.atthasdef = true THEN pg_attrdef.adsrc
+                END as default
+                ,pg_description.description as comment
+                ,(SELECT nspname FROM pg_namespace WHERE oid=g.relnamespace) AS foreign_schema
+                ,(SELECT pg_attribute.attname FROM pg_attribute
+                WHERE pg_attribute.attrelid = pg_constraint.confrelid
+                AND pg_attribute.attnum = pg_constraint.confkey[1]
+                AND pg_attribute.attisdropped = false) AS foreign_column
+                ,pg_constraint.conname
+
+            FROM pg_attribute
+                JOIN pg_class
+                    ON pg_class.oid = pg_attribute.attrelid
+                JOIN pg_type
+                    ON pg_type.oid = pg_attribute.atttypid
+                LEFT JOIN pg_attrdef
+                    ON pg_attrdef.adrelid = pg_class.oid
+                    AND pg_attrdef.adnum = pg_attribute.attnum
+                LEFT JOIN pg_namespace
+                    ON pg_namespace.oid = pg_class.relnamespace
+                LEFT JOIN pg_constraint
+                    ON pg_constraint.conrelid = pg_class.oid
+                    AND pg_attribute.attnum = ANY (pg_constraint.conkey)
+                LEFT JOIN pg_class AS g
+                    ON pg_constraint.confrelid = g.oid
+                LEFT JOIN pg_description
+                    ON pg_description.objoid = pg_class.oid
+                    AND pg_description.objsubid = pg_attribute.attnum
+            WHERE pg_class.relkind = 'v'::char
+                AND pg_namespace.nspname = 'views'
+                AND pg_class.relname = 'vw_device_ssh'
+                AND pg_attribute.attnum > 0
+                ORDER BY number
+```

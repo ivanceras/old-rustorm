@@ -648,10 +648,10 @@ pub trait DatabaseDev{
     /// Build the Table object based on the extracted meta data info from database
     /// This is queries directly from the database, so this will be costly. Only used this on initialization processes
     ///
-    fn get_table_metadata(&self, schema:&str, table:&str)->Table;
+    fn get_table_metadata(&self, schema:&str, table:&str, is_view: bool)->Table;
 
     /// get all the tables in this database
-    fn get_all_tables(&self)->Vec<(String, String)>;
+    fn get_all_tables(&self)->Vec<(String, String, bool)>;
 
     /// get the comment of this table
     fn get_table_comment(&self, schema:&str, table:&str)->Option<String>;
