@@ -935,6 +935,28 @@ impl Query{
         self.add_filter(Filter::new(column, equality, value))
     }
     
+    /// column = value
+    pub fn filter_eq(&mut self, column:&str, value:&ToValue)->&mut Self{
+        self.add_filter(Filter::new(column, Equality::EQ, value))
+    }
+    /// column < value
+    pub fn filter_lt(&mut self, column:&str, value:&ToValue)->&mut Self{
+        self.add_filter(Filter::new(column, Equality::LT, value))
+    }
+    /// column <= value
+    pub fn filter_lte(&mut self, column:&str, value:&ToValue)->&mut Self{
+        self.add_filter(Filter::new(column, Equality::LTE, value))
+    }
+    
+    /// column > value
+    pub fn filter_gt(&mut self, column:&str, value:&ToValue)->&mut Self{
+        self.add_filter(Filter::new(column, Equality::GT, value))
+    }
+    /// column <= value
+    pub fn filter_gte(&mut self, column:&str, value:&ToValue)->&mut Self{
+        self.add_filter(Filter::new(column, Equality::GTE, value))
+    }
+    
     pub fn add_value(&mut self, value:Operand)->&mut Self{
         self.values.push(value);
         self
