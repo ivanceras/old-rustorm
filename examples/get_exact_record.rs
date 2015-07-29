@@ -47,7 +47,7 @@ impl IsDao for Product{
 
 
 impl IsTable for Product{
-
+    
     fn table()->Table{
     
         Table{

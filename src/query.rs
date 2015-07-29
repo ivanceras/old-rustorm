@@ -29,7 +29,7 @@ pub enum Modifier{
 #[derive(Clone)]
 pub struct Join{
     pub modifier:Option<Modifier>,
-    pub join_type:JoinType,
+    pub join_type:Option<JoinType>,
     pub table_name:TableName,
     pub column1:Vec<String>,
     pub column2:Vec<String>
@@ -358,6 +358,12 @@ impl <'a>ToTableName for &'a str{
     }
 }
 
+impl ToTableName for str{
+    
+    fn to_table_name(&self)->TableName{
+        TableName::from_str(self)
+    }
+}
 
 impl ToTableName for Table{
     
@@ -686,7 +692,7 @@ impl Query{
     pub fn left_join(&mut self, table:&ToTableName, column1:&str, column2:&str)->&mut Self{
         let join = Join{
             modifier:Some(Modifier::LEFT),
-            join_type:JoinType::OUTER,
+            join_type:None,
             table_name: table.to_table_name(),
             column1:vec![column1.to_string()],
             column2:vec![column2.to_string()]
@@ -699,7 +705,7 @@ impl Query{
     pub fn right_join(&mut self, table:&ToTableName, column1:&str, column2:&str)->&mut Self{
         let join = Join{
             modifier:Some(Modifier::RIGHT),
-            join_type:JoinType::OUTER,
+            join_type:None,
             table_name: table.to_table_name(),
             column1:vec![column1.to_string()],
             column2:vec![column2.to_string()]
@@ -712,7 +718,7 @@ impl Query{
     pub fn full_join(&mut self, table:&ToTableName, column1:&str, column2:&str)->&mut Self{
         let join = Join{
             modifier:Some(Modifier::FULL),
-            join_type:JoinType::OUTER,
+            join_type:None,
             table_name: table.to_table_name(),
             column1:vec![column1.to_string()],
             column2:vec![column2.to_string()]
@@ -726,7 +732,7 @@ impl Query{
     pub fn inner_join(&mut self, table:&ToTableName, column1:&str, column2:&str)->&mut Self{
         let join  = Join{
             modifier:None,
-            join_type:JoinType::INNER,
+            join_type:Some(JoinType::INNER),
             table_name: table.to_table_name(),
             column1:vec![column1.to_string()],
             column2:vec![column2.to_string()]

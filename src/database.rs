@@ -204,22 +204,22 @@ pub trait Database{
     
     /// build operand, i.e: columns, query, function, values
     fn build_operand(&self, w: &mut SqlFrag, parent_query:&Query, operand:&Operand){
-        match operand{
-            &Operand::ColumnName(ref column_name) => {
+        match *operand{
+            Operand::ColumnName(ref column_name) => {
                 if parent_query.joins.is_empty(){
                     w.append(&column_name.column);
                 }else{
                     w.append(&column_name.complete_name());
                 }
             }, 
-            &Operand::TableName(ref table_name) => {
+            Operand::TableName(ref table_name) => {
                 if self.sql_options().contains(&SqlOption::UsesSchema){
                     w.append(&table_name.complete_name());
                 }else{
                     w.append(&table_name.name);
                 }
             },
-            &Operand::Function(ref function)=>{
+            Operand::Function(ref function)=>{
                     w.append("(");
                     let mut do_comma = false;
                     for param in &function.params{
@@ -228,15 +228,15 @@ pub trait Database{
                     }
                     w.append(")");
                 },
-            &Operand::Query(ref q) => {
+            Operand::Query(ref q) => {
                 panic!("TODO: causes error Attributes 'readnone and readonly' are incompatible! LLVM ERROR: Broken function found, compilation aborted!")
                 //let sql_frag = &self.build_query(&q);
                 //w.append(&sql_frag.sql);
             },
-            &Operand::Value(ref value) => {
+            Operand::Value(ref value) => {
                 w.parameter(value.clone());
             },
-            &Operand::Vec(ref operands) => {
+            Operand::Vec(ref operands) => {
                 let mut do_comma = false;
                 if !operands.is_empty(){
                     w.append("(");
@@ -381,20 +381,24 @@ pub trait Database{
             for join in &query.joins{
                 match join.modifier{
                     Some(ref modifier) => {
-                            match modifier{
-                                &Modifier::LEFT => w.right_river("LEFT "),
-                                &Modifier::RIGHT => w.right_river("RIGHT "),
-                                &Modifier::FULL => w.right_river("FULL "),
+                            match *modifier{
+                                Modifier::LEFT => w.right_river("LEFT "),
+                                Modifier::RIGHT => w.right_river("RIGHT "),
+                                Modifier::FULL => w.right_river("FULL "),
                             };
                         },
                     None => ()
                 };
-                
                 match join.join_type{
-                    JoinType::CROSS => w.append("CROSS "),
-                    JoinType::INNER => w.append("INNER "),
-                    JoinType::OUTER => w.append("OUTER "),
-                };
+                    Some(ref join_type) => {
+                        match *join_type{
+                            JoinType::CROSS => w.append("CROSS "),
+                            JoinType::INNER => w.append("INNER "),
+                            JoinType::OUTER => w.append("OUTER "),
+                        };
+                    },
+                    None => ()
+                }
                 w.append("JOIN ");
                 w.append(&join.table_name.complete_name());
                 w.append(" ");
@@ -418,7 +422,7 @@ pub trait Database{
         }
         
         if !query.filters.is_empty() {
-            w.left_river("WHERE");
+            w.left_river("WHERE ");
             self.build_filters(&mut w, query, &query.filters);
         }
         
@@ -433,7 +437,7 @@ pub trait Database{
         };
         
         if !query.having.is_empty() {
-            w.left_river("  HAVING ");
+            w.left_river("HAVING ");
             let mut do_comma = false;
             for hav in &query.having{
                 if do_comma { w.commasp(); }else{ do_comma=true; }
@@ -447,16 +451,16 @@ pub trait Database{
             for &(ref column, ref direction) in &query.order_by{
                 if do_comma { w.commasp();} else { do_comma = true;}
                 w.append(&column);
-                match direction{
-                    &Direction::ASC => w.append(" ASC"),
-                    &Direction::DESC => w.append(" DESC")
+                match *direction{
+                    Direction::ASC => w.append(" ASC"),
+                    Direction::DESC => w.append(" DESC")
                 };
             }
         };
         
         match query.page_size{
             Some(page_size) => {
-                w.left_river("   LIMIT ");
+                w.left_river("LIMIT ");
                 w.append(&format!("{}",page_size));
             },
             None => (),
@@ -464,7 +468,7 @@ pub trait Database{
         
         match query.page{
             Some(page) =>{
-                w.left_river("  OFFSET ");
+                w.left_river("OFFSET ");
                 assert!(query.page_size.is_some(), "Page size should be specified when paging");
                 let page_size = query.page_size.unwrap();
                 let offset = page * page_size;
@@ -533,7 +537,7 @@ pub trait Database{
         let enumerated_columns = query.get_enumerated_columns();
         let mut do_comma = false;
         if !enumerated_columns.is_empty(){
-            w.left_river("SET");
+            w.left_river("SET ");
         }
         let mut column_index = 0;
         for ec in &enumerated_columns{

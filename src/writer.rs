@@ -82,7 +82,7 @@ impl SqlFrag{
         }
         self
     }
-    /// river is the line in the SQL statment which makes it mor readable
+    /// river is the line in the SQL statment which makes it more readable
     /// * http://www.sqlstyle.guide/
     /// river size is 9, `RETURNING`
     
@@ -97,11 +97,13 @@ impl SqlFrag{
         self.append(trim);
         self.sp()
     }
+    /// write the string, aligning to the left side of the middle space (river)
     #[inline]
     pub fn left_river(&mut self, str: &str)->&mut Self{
         self.ln();
         self.river(str)
     }
+    /// write the string, aligning to the right side of the middle space (river), leaving the left with empty string
     #[inline]
     pub fn right_river(&mut self, str: &str)->&mut Self{
         self.ln();
