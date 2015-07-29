@@ -356,7 +356,7 @@ pub trait Database{
             if do_comma{w.commasp();}else{do_comma=true;}
             cnt += 1;
             if cnt % 4 == 0{//break at every 4 columns to encourage sql tuning/revising
-                w.ln_tab();
+                w.left_river("");
             }
             self.build_field(w, parent_query, field);
         }
@@ -530,11 +530,10 @@ pub trait Database{
         if from_table.is_some(){
             w.append(&from_table.unwrap().complete_name());
         }
-        w.ln();
         let enumerated_columns = query.get_enumerated_columns();
         let mut do_comma = false;
         if !enumerated_columns.is_empty(){
-            w.append("SET ");
+            w.left_river("SET");
         }
         let mut column_index = 0;
         for ec in &enumerated_columns{
