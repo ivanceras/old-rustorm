@@ -55,7 +55,8 @@ impl IsTable for Product{
             parent_table:None,
             sub_table:vec![],
             comment:None,
-            columns:vec![]
+            columns:vec![],
+            is_view: false,
         }
     }
 }

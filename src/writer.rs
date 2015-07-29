@@ -76,6 +76,40 @@ impl SqlFrag{
         self.append(" ")
     }
     #[inline]
+    pub fn spaces(&mut self, n: i32)->&mut Self{
+        for _ in 0..n{
+            self.sp();
+        }
+        self
+    }
+    /// river is the line in the SQL statment which makes it mor readable
+    /// * http://www.sqlstyle.guide/
+    /// river size is 9, `RETURNING`
+    
+    #[inline]
+    fn river(&mut self, str: &str)->&mut Self{
+        let river_size:i32 = 9;
+        let trim = str.trim();
+        let diff:i32 = river_size - trim.len() as i32;
+        if diff > 0 {
+            self.spaces(diff);
+        }
+        self.append(trim);
+        self.sp()
+    }
+    #[inline]
+    pub fn left_river(&mut self, str: &str)->&mut Self{
+        self.ln();
+        self.river(str)
+    }
+    #[inline]
+    pub fn right_river(&mut self, str: &str)->&mut Self{
+        self.ln();
+        self.river("");
+        self.append(str)
+    }
+
+    #[inline]
     pub fn commasp(&mut self)->&mut Self{
         self.comma().sp()
     }

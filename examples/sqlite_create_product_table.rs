@@ -492,6 +492,7 @@ impl IsTable for Product{
                         }),
                 },
             ],
+            is_view: false
         }
     }
 }

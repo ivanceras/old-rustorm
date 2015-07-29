@@ -99,6 +99,7 @@ impl IsTable for Category{
             sub_table:vec![],
             comment:None,
             columns:vec![],
+            is_view: false
         }
     }
 }

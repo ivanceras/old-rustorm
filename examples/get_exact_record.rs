@@ -86,6 +86,7 @@ impl IsTable for Product{
                     foreign:None,
                 },
             ],
+            is_view: false
         }
     }
 }

@@ -340,8 +340,7 @@ pub trait Database{
         let mut do_and = false;
         for filter in filters{
             if do_and{
-                w.ln_tabs(2);
-                w.append("AND ");
+                w.left_river("AND ");
             }else{
                 do_and = true;
             }
@@ -366,10 +365,9 @@ pub trait Database{
     /// build the select statment from the query object
     fn build_select(&self, query: &Query)->SqlFrag{
         let mut w = SqlFrag::new(self.sql_options());
-        w.append("SELECT ");
+        w.left_river("SELECT");
         self.build_enumerated_fields(&mut w, query, &query.enumerated_fields); //TODO: add support for column_sql, fields, functions
-        w.ln();
-        w.append(" FROM ");
+        w.left_river("FROM");
         
         assert!(query.from.is_some(), "There should be table, query, function to select from");
         
@@ -381,13 +379,12 @@ pub trait Database{
         };
         if !query.joins.is_empty(){
             for join in &query.joins{
-                w.ln_tab();
                 match join.modifier{
                     Some(ref modifier) => {
                             match modifier{
-                                &Modifier::LEFT => w.append("LEFT "),
-                                &Modifier::RIGHT => w.append("RIGHT "),
-                                &Modifier::FULL => w.append("FULL "),
+                                &Modifier::LEFT => w.right_river("LEFT "),
+                                &Modifier::RIGHT => w.right_river("RIGHT "),
+                                &Modifier::FULL => w.right_river("FULL "),
                             };
                         },
                     None => ()
@@ -405,11 +402,10 @@ pub trait Database{
                 let mut cnt = 0;
                 let mut do_and = false;
                 for jc in &join.column1{
-                    w.ln_tabs(2);
                     if do_and {
-                        w.append("AND ");
+                        w.right_river("AND ");
                     }else{
-                        w.append("ON ");
+                        w.right_river("ON ");
                         do_and = true;
                     }
                     w.append(jc);
@@ -422,14 +418,12 @@ pub trait Database{
         }
         
         if !query.filters.is_empty() {
-            w.ln_tab();
-            w.append("WHERE ");
+            w.left_river("WHERE");
             self.build_filters(&mut w, query, &query.filters);
         }
         
         if !query.group_by.is_empty() {
-            w.ln_tab();
-            w.append("GROUP BY ");
+            w.left_river("GROUP BY ");
             let mut do_comma = false;
             for operand in &query.group_by{
                 if do_comma{ w.comma(); }else{ do_comma = true;}
@@ -439,8 +433,7 @@ pub trait Database{
         };
         
         if !query.having.is_empty() {
-            w.ln_tab();
-            w.append("HAVING ");
+            w.left_river("  HAVING ");
             let mut do_comma = false;
             for hav in &query.having{
                 if do_comma { w.commasp(); }else{ do_comma=true; }
@@ -449,8 +442,7 @@ pub trait Database{
         }
         
         if !query.order_by.is_empty(){
-            w.ln_tab();
-            w.append("ORDER BY ");
+            w.left_river("ORDER BY ");
             let mut do_comma = false;
             for &(ref column, ref direction) in &query.order_by{
                 if do_comma { w.commasp();} else { do_comma = true;}
@@ -464,8 +456,7 @@ pub trait Database{
         
         match query.page_size{
             Some(page_size) => {
-                w.ln_tab();
-                w.append("LIMIT ");
+                w.left_river("   LIMIT ");
                 w.append(&format!("{}",page_size));
             },
             None => (),
@@ -473,8 +464,7 @@ pub trait Database{
         
         match query.page{
             Some(page) =>{
-                w.ln_tab();
-                w.append("OFFSET ");
+                w.left_river("  OFFSET ");
                 assert!(query.page_size.is_some(), "Page size should be specified when paging");
                 let page_size = query.page_size.unwrap();
                 let offset = page * page_size;
@@ -487,8 +477,10 @@ pub trait Database{
     
     /// TODO complete this
     fn build_insert(&self, query: &Query)->SqlFrag{
+        println!("building insert query");
         let mut w = SqlFrag::new(self.sql_options());
-        w.append("INSERT INTO ");
+        w.left_river("INSERT");
+        w.append("INTO ");
         let into_table = query.get_from_table();
         assert!(into_table.is_some(), "There should be table to insert to");
         if into_table.is_some(){
@@ -501,12 +493,13 @@ pub trait Database{
         }
         
         
-        w.append("(");
+        w.append("( ");
         self.build_enumerated_fields(&mut w, query, &query.enumerated_fields); //TODO: add support for column_sql, fields, functions
-        w.append(") ");
+        w.append(" ) ");
         assert!(!query.values.is_empty(), "values should not be empty, when inserting records");
         if !query.values.is_empty(){
-            w.append("VALUES( ");
+            w.left_river("VALUES");
+            w.append("(");
             let mut do_comma = false;
             for vo in &query.values{
                 if do_comma{ w.commasp(); } else{do_comma=true;}
@@ -516,7 +509,7 @@ pub trait Database{
         }
         if !query.enumerated_returns.is_empty() {
             if self.sql_options().contains(&SqlOption::SupportsReturningClause) {
-                w.append("RETURNING ");
+                w.left_river("RETURNING");
                 let mut do_comma = false;
                 for field in &query.enumerated_returns{
                     if do_comma{ w.commasp(); }else {do_comma = true;}
@@ -531,7 +524,7 @@ pub trait Database{
     
     fn build_update(&self, query: &Query)->SqlFrag{
         let mut w = SqlFrag::new(self.sql_options());
-        w.append("UPDATE ");
+        w.left_river("UPDATE ");
         let from_table = query.get_from_table();
         assert!(from_table.is_some(), "There should be table to update from");
         if from_table.is_some(){
@@ -559,13 +552,12 @@ pub trait Database{
         }
        
         if !query.filters.is_empty() {
-            w.ln_tab();
-            w.append("WHERE ");
+            w.left_river("WHERE ");
             self.build_filters(&mut w, query, &query.filters);
         }
         if !query.enumerated_returns.is_empty() {
             if self.sql_options().contains(&SqlOption::SupportsReturningClause) {
-                w.append("RETURNING ");
+                w.left_river("RETURNING ");
                 let mut do_comma = false;
                 for field in &query.enumerated_returns{
                     if do_comma{ w.commasp(); }else {do_comma = true;}
@@ -578,15 +570,14 @@ pub trait Database{
 
     fn build_delete(&self, query: &Query)->SqlFrag{
         let mut w = SqlFrag::new(self.sql_options());
-        w.append("DELETE FROM ");
+        w.left_river("DELETE FROM ");
         let from_table = query.get_from_table();
         assert!(from_table.is_some(), "There should be table to delete from");
         if from_table.is_some(){
             w.append(&from_table.unwrap().complete_name());
         }
         if !query.filters.is_empty() {
-            w.ln_tab();
-            w.append("WHERE ");
+            w.left_river("WHERE ");
             self.build_filters(&mut w, query, &query.filters);
         }
         w
