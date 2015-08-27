@@ -226,11 +226,11 @@ impl Database for Mysql{
 
 impl DatabaseDDL for Mysql{
     fn create_schema(&self, schema:&str){
-        panic!("sqlite does not support schema")
+        panic!("mysql does not support schema")
     }
 
     fn drop_schema(&self, schema:&str){
-        panic!("sqlite does not support schema")
+        panic!("mysql does not support schema")
     }
     
     fn build_create_table(&self, table:&Table)->SqlFrag{

@@ -392,7 +392,7 @@ impl Table{
 
     /// get all the tables that is referred by this table
     /// get has_one
-    fn referred_tables<'a>(&'a self, tables:&'a Vec<Table>)->Vec<(&'a Column, &'a Table)>{
+    pub fn referred_tables<'a>(&'a self, tables:&'a Vec<Table>)->Vec<(&'a Column, &'a Table)>{
         let mut referred_tables = Vec::new();
         for c in &self.columns{
             if c.foreign.is_some(){
@@ -408,7 +408,7 @@ impl Table{
     /// get all other tables that is refering to this table
     /// when any column of a table refers to this table
     /// get_has_many
-    fn referring_tables<'a>(&self, tables: &'a Vec<Table>)->Vec<(&'a Table, &'a Column)>{
+    pub fn referring_tables<'a>(&self, tables: &'a Vec<Table>)->Vec<(&'a Table, &'a Column)>{
         let mut referring = Vec::new();
         for t in tables{
             for c in &t.columns{
@@ -536,7 +536,7 @@ impl Table{
     /// which doesn't make sense to be a stand alone window on its own
     /// characteristic: if it has only 1 has_one which is its owning parent table
     /// and no other direct or indirect referring table
-    fn is_owned(&self, tables: &Vec<Table>)->bool{
+    pub fn is_owned(&self, tables: &Vec<Table>)->bool{
         let has_one = self.referred_tables(tables);
         let has_many = self.referring_tables(tables);
         has_one.len() == 1 && has_many.len() == 0
@@ -553,7 +553,7 @@ impl Table{
     ///         and 1 of which refer to the primary column of this table
     ///     * then the other table that is refered is the indirect referring table
     /// returns the table that is indirectly referring to this table and its linker table
-    fn indirect_referring_tables<'a>(&self, tables: &'a Vec<Table>)->Vec<(&'a Table, &'a Table)>{
+    pub fn indirect_referring_tables<'a>(&self, tables: &'a Vec<Table>)->Vec<(&'a Table, &'a Table)>{
         let mut indirect_referring_tables = Vec::new();
         for (rt, column) in self.referring_tables(tables){
             let rt_pk = rt.primary_columns();
@@ -597,7 +597,7 @@ impl Table{
     /// it is just an extension table
     /// [FIXED]~~FIXME:~~ 2 primary 1 foreign should not be included as extension table
     /// case for photo_sizes
-    fn extension_tables<'a>(&self, tables: &'a Vec<Table>)->Vec<&'a Table>{
+    pub fn extension_tables<'a>(&self, tables: &'a Vec<Table>)->Vec<&'a Table>{
         let mut extension_tables = Vec::new();
         for (rt, _) in self.referring_tables(tables){
             let pkfk = rt.primary_and_foreign_columns();

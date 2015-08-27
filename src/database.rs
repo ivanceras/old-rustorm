@@ -57,7 +57,7 @@ impl Error for DbError{
 
 impl fmt::Display for DbError {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
-        panic!("not yet");
+        write!(fmt, "{}", self.description())
     }
 }
 

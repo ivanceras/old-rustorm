@@ -184,6 +184,7 @@ pub enum SqlType{
 
 #[derive(Clone)]
 #[derive(Debug)]
+#[derive(RustcEncodable, RustcDecodable)]
 pub struct ColumnName{
     pub column:String,
     pub table:Option<String>,
@@ -1005,7 +1006,7 @@ impl Query{
     }
     
     /// expects a return, such as select, insert/update with returning clause
-    pub fn execute_with_return(&mut self, db: &Database)->Result<DaoResult, DbError>{
+    pub fn retrieve(&mut self, db: &Database)->Result<DaoResult, DbError>{
         self.finalize();
         db.execute_with_return(self)
     }
@@ -1013,7 +1014,7 @@ impl Query{
     /// expects a return, such as select, insert/update with returning clause
     /// no casting of data to structs is done
     /// This is used when retrieving multiple models in 1 query, then casting the records to its equivalent structs
-    pub fn execute_with_one_return(&mut self, db: &Database)->Result<Dao, DbError>{
+    pub fn retrieve_one(&mut self, db: &Database)->Result<Dao, DbError>{
         self.finalize();
         db.execute_with_one_return(self)
     }
@@ -1026,7 +1027,7 @@ impl Query{
     
     /// execute the query, then convert the result
     pub fn collect<T: IsDao+IsTable>(&mut self, db: &Database)->Result<Vec<T>, DbError>{
-        let result = self.execute_with_return(db);
+        let result = self.retrieve(db);
         match result{
             Ok(result) => Ok(result.cast()),
             Err(e) => Err(DbError::new("Error in the query"))
@@ -1036,7 +1037,7 @@ impl Query{
     /// execute the query then collect only 1 record
     /// TODO: use Result<T,Error> instead of Option<T>
     pub fn collect_one<T: IsDao+IsTable>(&mut self, db: &Database)->Result<T, DbError>{
-        let result = self.execute_with_return(db);
+        let result = self.retrieve(db);
         match result{
             Ok(result) => Ok(result.cast_one().unwrap()),
             Err(e) => Err(DbError::new("Error in the query"))

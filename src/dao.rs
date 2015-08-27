@@ -9,8 +9,37 @@ use chrono::offset::utc::UTC;
 use std::fmt;
 use query::ColumnName;
 use table::IsTable;
-use rustc_serialize::{Decodable, Encodable,Encoder};
+use rustc_serialize::{Decodable, Encodable,Encoder,Decoder};
 use rustc_serialize::json::{self, ToJson, Json};
+
+
+#[derive(Debug)]
+#[derive(Clone)]
+#[derive(PartialEq)]
+///supported generic datatypes for an ORM
+pub enum Type{
+    Bool,
+    I8,
+    I16,
+    I32,
+    I64,
+    U8,
+    U16,
+    U32,
+    U64,
+    F32,
+    F64,
+    String,
+    VecU8,
+    Object,
+    Json,
+    Uuid,
+    DateTime,
+    NaiveDate,
+    NaiveTime,
+    NaiveDateTime,
+}
+
 
 #[derive(Debug)]
 #[derive(Clone)]
@@ -61,7 +90,10 @@ impl Encodable for Value{
             Value::String(ref x) => x.encode(s),
             Value::VecU8(ref x) => x.encode(s),
             Value::Uuid(ref x) => x.encode(s),
-            Value::DateTime(ref x) => x.encode(s),
+            Value::DateTime(ref x) => {
+                println!("encoding date time: {}", x.to_rfc3339());
+                x.to_rfc3339().encode(s)
+            },
             Value::NaiveDate(ref x) => x.encode(s),
             Value::NaiveTime(ref x) => x.encode(s),
             Value::NaiveDateTime(ref x) => x.encode(s),
@@ -71,7 +103,6 @@ impl Encodable for Value{
         }
     }
 }
-
 impl ToJson for Value{
     
     fn to_json(&self) -> Json{
@@ -178,6 +209,33 @@ pub struct DaoResult{
     pub page_size: Option<usize>,
 }
 
+/// a serializable array of dao to be serialized to json request
+#[derive(RustcEncodable)]
+pub struct SerDaoResult{
+    pub dao: Vec<Dao>,
+    pub total:Option<usize>,
+    pub page: Option<usize>,
+    pub page_size: Option<usize>,
+}
+
+impl SerDaoResult{
+    
+    pub fn from_dao_result(daoresult: DaoResult)->Self{
+        SerDaoResult{
+            dao: daoresult.dao,
+            total: daoresult.total,
+            page: daoresult.page,
+            page_size: daoresult.page_size
+        }
+    }
+}
+
+impl Encodable for DaoResult{
+    fn encode<S: Encoder>(&self, s: &mut S) -> Result<(), S::Error>{
+        self.dao.encode(s)
+    }
+}
+
 impl DaoResult{
     /// get the list of renamed column name in matching table name
     fn get_renamed_columns(&self, table:&str)->Vec< (String, String) >{
@@ -235,6 +293,12 @@ impl Encodable for Dao{
     }
 }
 
+//impl Decodable for Dao{
+//    
+//    fn decode<D: Decoder>(d: &mut D) -> Result<Self, D::Error>{
+//        d.read_map()
+//    }
+//}
 impl ToJson for Dao{
     
     fn to_json(&self) -> Json{
