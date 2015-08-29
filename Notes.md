@@ -289,3 +289,7 @@ SELECT
                 AND pg_attribute.attnum > 0
                 ORDER BY number
 ```
+
+
+## August 29, 2015
+* Made sqlite an optional dependency package

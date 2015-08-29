@@ -76,6 +76,7 @@
 //!
 
 extern crate postgres;
+#[cfg(feature = "sqlite")]
 extern crate rusqlite;
 extern crate mysql;
 extern crate rustc_serialize;
@@ -85,6 +86,7 @@ extern crate regex;
 extern crate url;
 extern crate r2d2;
 extern crate r2d2_postgres;
+#[cfg(feature = "sqlite")]
 extern crate r2d2_sqlite;
 
 

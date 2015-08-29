@@ -1,6 +1,6 @@
 [package]
 name = "rustorm"
-version = "0.1.1"
+version = "0.1.2"
 authors = [ "Jovansonlee Cesar <ivanceras@gmail.com>" ]
 license = "MIT"
 description = "An ORM for rust"
@@ -31,6 +31,6 @@ url = "*"
 time = "*"
 r2d2 = "*"
 r2d2_postgres = "*"
-rusqlite = "*"
-r2d2_sqlite = "*"
+rusqlite = { version = "*", optional = true }
+r2d2_sqlite = { version = "*", optional = true }
 mysql = "*"

@@ -5,17 +5,20 @@ use postgres::SslMode;
 use config::DbConfig;
 use database::{Database, DatabaseDDL, DatabaseDev};
 use platform::Postgres;
+#[cfg(feature = "sqlite")]
 use platform::Sqlite;
 use platform::Mysql;
 use mysql::conn::pool::{MyPool};
 use mysql::conn::MyOpts;
 
+#[cfg(feature = "sqlite")]
 use r2d2_sqlite::SqliteConnectionManager;
 
 
 /// the sql builder for each of the database platform
 pub enum Platform{
     Postgres(Postgres),
+    #[cfg(feature = "sqlite")]
     Sqlite(Sqlite),
     Oracle,
     Mysql(Mysql),
@@ -27,6 +30,7 @@ impl Platform{
     pub fn as_ref(&self)->&Database{
         match *self{
             Platform::Postgres(ref pg) => pg,
+            #[cfg(feature = "sqlite")]
             Platform::Sqlite(ref lite) => lite,
              Platform::Mysql(ref my) => my,
             _ => panic!("others not yet..")
@@ -45,6 +49,7 @@ impl Platform{
     pub fn as_ddl(&self)->&DatabaseDDL{
         match *self{
             Platform::Postgres(ref pg) => pg,
+            #[cfg(feature = "sqlite")]
             Platform::Sqlite(ref lite) => lite,
             Platform::Mysql(ref my) => my,
             _ => panic!("others not yet..")
@@ -81,6 +86,7 @@ impl Platform{
 /// Mysql has its own connection pooling
 pub enum ManagedPool{
     Postgres(Pool<PostgresConnectionManager>),
+    #[cfg(feature = "sqlite")]
     Sqlite(Pool<SqliteConnectionManager>),
     Oracle,
     Mysql(Option<MyPool>),
@@ -100,6 +106,7 @@ impl ManagedPool{
                 let pool = Pool::new(config, manager).unwrap();
                 ManagedPool::Postgres(pool)
             }
+            #[cfg(feature = "sqlite")]
             "sqlite" => {
                 let manager = SqliteConnectionManager::new(&config.database).unwrap();
                 let config = Config::builder().pool_size(pool_size as u32).build();
@@ -138,6 +145,7 @@ impl ManagedPool{
                     }
                 }
             },
+            #[cfg(feature = "sqlite")]
             ManagedPool::Sqlite(ref pool) => {
                 let conn = pool.get();//the connection is created here
                 match conn{
