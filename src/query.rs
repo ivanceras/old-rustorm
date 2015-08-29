@@ -299,7 +299,7 @@ pub struct TableName{
 
 impl TableName{
     
-    fn from_str(str: &str)->Self{
+    pub fn from_str(str: &str)->Self{
         if str.contains("."){
             let splinters = str.split(".").collect::<Vec<&str>>();
             assert!(splinters.len() == 2, "There should only be 2 splinters");
