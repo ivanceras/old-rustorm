@@ -94,7 +94,7 @@ impl IsTable for Product{
 
 fn main(){
     let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v6";
-    let mut pool = ManagedPool::init(&url, 1);
+    let mut pool = ManagedPool::init(&url, 1).unwrap();
     let db = pool.connect().unwrap();
     let mut em = EntityManager::new(db.as_ref());
     

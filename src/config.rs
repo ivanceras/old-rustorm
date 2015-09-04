@@ -22,7 +22,7 @@ impl DbConfig{
     
     /// TODO: get rid of the hacky way parsing database url
     /// https://github.com/servo/rust-url/issues/40
-    pub fn from_url(url: &str)->Self{
+    pub fn from_url(url: &str)->Option<Self>{
         let parsed = Url::parse(url);
         match parsed {
             Ok(parsed) => {
@@ -53,14 +53,14 @@ impl DbConfig{
                     Err(e) => {
                         match url{
                             "sqlite:///:memory:" => {//special case for sqlite
-                            return DbConfig{
+                            return Some(DbConfig{
                                     platform: scheme.to_string(),
                                     username: None,
                                     password: None,
                                     host: None,
                                     port: None,
                                     database: ":memory:".to_string()
-                                    }    
+                                    })    
                                 },
                             _ =>panic!("error parsing https url:{}",e)
                         }
@@ -70,7 +70,7 @@ impl DbConfig{
                
             match scheme{
                 "sqlite" => { // handle sqlite parsing such as the memory and the host be the database
-                    DbConfig{
+                    Some(DbConfig{
                         platform: scheme.to_string(),
                         username: None,
                         password: None,
@@ -82,10 +82,10 @@ impl DbConfig{
                                 _ => panic!("only domains are handled"),
                             }
                         }    
-                    }
+                    })
                 },
                 _ =>
-                    DbConfig{
+                    Some(DbConfig{
                         platform: scheme.to_string(),
                         username: Some(reparse_relative.username.clone()),
                         password: reparse_relative.password.clone(),
@@ -94,13 +94,13 @@ impl DbConfig{
                         database: {
                             assert!(reparse_relative.path.len() == 1, "There should only be 1 path");
                             reparse_relative.path[0].to_string()
-                        }    
-                    }
+                        }
+                    })
                 }
             }
             Err(e) => {
-                println!("Error parsing url: {}", url);
-                panic!("{}", e);
+                println!("Error parsing url: -[{}]-", url);
+                None
             }
         }
         
@@ -151,7 +151,7 @@ fn test_config_url(){
 #[test]
 fn test_config_from_url(){
     let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v6";
-    let config = DbConfig::from_url(url);
+    let config = DbConfig::from_url(url).unwrap();
     assert_eq!(config.get_url(), url.to_string());
 }
 
@@ -174,7 +174,7 @@ fn test_config_url_with_port(){
 #[test]
 fn test_config_sqlite_url_with_port(){
     let url = "sqlite:///bazaar_v6.db";
-    let parsed_config = DbConfig::from_url(url);
+    let parsed_config = DbConfig::from_url(url).unwrap();
     let expected_config = DbConfig{
         platform: "sqlite".to_string(),
         username: None,
@@ -190,7 +190,7 @@ fn test_config_sqlite_url_with_port(){
 #[test]
 fn sqlite_in_memory(){
     let url = "sqlite:///:memory:";
-    let parsed_config = DbConfig::from_url(url);
+    let parsed_config = DbConfig::from_url(url).unwrap();
     let expected_config = DbConfig{
         platform: "sqlite".to_string(),
         username: None,

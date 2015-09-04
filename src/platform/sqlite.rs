@@ -2,13 +2,13 @@ use query::Query;
 use dao::Dao;
 
 use dao::Value;
-use database::{Database};
+use database::{Database,DatabaseDev};
 use writer::SqlFrag;
 use database::SqlOption;
 use rusqlite::SqliteConnection;
 use rusqlite::types::ToSql;
 use rusqlite::SqliteRow;
-use table::Table;
+use table::{Table, Foreign};
 use database::DatabaseDDL;
 use database::DbError;
 use r2d2::PooledConnection;
@@ -124,6 +124,39 @@ impl Sqlite{
 
     }
     
+    /// get the foreign keys of table
+    fn get_foreign_keys(&self, schema:&str, table:&str)->Vec<Foreign>{
+        println!("Extracting foreign keys...");
+        let sql = format!("PRAGMA foreign_key_list({});", table);
+        let result = self.execute_sql_with_return_columns(&sql, &vec![], vec!["id", "seq", "table", "from", "to", "on_update", "on_delete", "match"]);
+        println!("result: {:#?}", result);
+        match result{
+            Ok(result) => {
+                let mut foreigns = vec![];
+                for r in result{
+                    let table: String = r.get("table");
+                    let from: String = r.get("from");
+                    let to: String = r.get("to");
+                    println!("table: {}", table);
+                    println!("from: {}", from);
+                    println!("to: {}", to);
+                    
+                    let foreign = Foreign{
+                        schema: "".to_string(),
+                        table: table.to_string(),
+                        column: to.to_string(),
+                    };
+                    foreigns.push(foreign);
+                }
+                foreigns
+            },
+            Err(e) => {
+                println!("Something is wrong {}", e);
+                vec![]
+            }
+        }
+    }
+    
 }
 
 impl Database for Sqlite{
@@ -188,6 +221,7 @@ impl Database for Sqlite{
                         let mut dao = Dao::new();
                         for rc in &return_columns{
                             let rtype = self.from_sql_to_rust_type(&row, index);
+                            println!("{:?}",rtype);
                             dao.set_value(rc, rtype);
                             index += 1;
                         }
@@ -230,7 +264,7 @@ impl Database for Sqlite{
         match result{
             Ok(result) => { Ok(result as usize)},
             Err(e) => {
-                Err(DbError::new("Something is wrong")) 
+                Err(DbError::new(&format!("Something is wrong, {}", e))) 
             }
         }
     }
@@ -247,6 +281,25 @@ impl DatabaseDDL for Sqlite{
     }
     
     fn build_create_table(&self, table:&Table)->SqlFrag{
+        
+        fn build_foreign_key_stmt(table: &Table)->SqlFrag{
+            let mut w = SqlFrag::new(vec![]);
+            let mut do_comma = true;//there has been columns mentioned
+            for c in &table.columns{
+                if c.foreign.is_some(){
+                    if do_comma {w.commasp();}else {do_comma=true;}
+                    let foreign = c.foreign.as_ref().unwrap();
+                    w.ln_tab();
+                    w.append("FOREIGN KEY");
+                    w.append(&format!("({})",c.name));
+                    w.append(" REFERENCES ");
+                    w.append(&format!("{}", foreign.table));
+                    w.append(&format!("({})",foreign.column));
+                }
+            }
+            w
+        }
+        
         let mut w = SqlFrag::new(self.sql_options());
         w.append("CREATE TABLE ");
         w.append(&table.name);
@@ -254,7 +307,7 @@ impl DatabaseDDL for Sqlite{
         w.ln_tab();
         let mut do_comma = false;
         for c in &table.columns{
-            if do_comma {w.commasp();}else {do_comma=true;}
+            if do_comma {w.commasp();w.ln_tab();}else {do_comma=true;}
             w.append(&c.name);
             w.append(" ");
             let dt = self.rust_type_to_dbtype(&c.data_type);
@@ -263,6 +316,9 @@ impl DatabaseDDL for Sqlite{
                 w.append(" PRIMARY KEY ");
             }
         }
+        let fsql = build_foreign_key_stmt(table);
+        w.append(&fsql.sql);
+        w.ln();
         w.append(")");
         w
     }
@@ -289,4 +345,54 @@ impl DatabaseDDL for Sqlite{
     fn set_primary_constraint(&self, model:&Table){
         panic!("not yet");
     }
+}
+
+impl DatabaseDev for Sqlite{
+    fn get_table_sub_class(&self, schema:&str, table:&str)->Vec<String>{panic!("not yet")}
+
+    fn get_parent_table(&self, schema:&str, table:&str)->Option<String>{panic!("not yet")}
+    
+    fn get_table_metadata(&self, schema:&str, table:&str, is_view: bool)->Table{
+        println!("extracting table meta data in sqlite");
+        let sql = format!("PRAGMA table_info({});", table);
+        let result = self.execute_sql_with_return_columns(&sql, &vec![], vec!["cid", "name", "type", "notnull", "dflt_value", "pk"]);
+        println!("result: {:#?}", result);
+        match result{
+            Ok(result) => {
+                for r in result{
+                    let column: String = r.get("name");
+                    let data_type: String = r.get("type");
+                    let default_value: String = r.get("dflt_value");
+                    let not_null: String = r.get("notnull");
+                    let pk: String = r.get("pk");
+                    println!("column: {}", column);
+                    println!("data_type: {}", data_type);
+                    println!("not null: {}", not_null);
+                    println!("pk: {}", pk);
+                    println!("default_value: {}", default_value);
+                }
+                let foreign = self.get_foreign_keys(schema, table);
+                println!("Foreign: {:?}", foreign);
+            },
+            Err(e) => {
+                println!("Something is wrong {}", e);
+            }
+        }
+        
+        panic!("not yet");
+        
+    }
+
+    fn get_all_tables(&self)->Vec<(String, String, bool)>{
+        let sql = "SELECT type, name, tbl_name, sql FROM sqlite_master WHERE type = 'table'";
+        panic!("not yet");
+    }
+
+    fn get_table_comment(&self, schema:&str, table:&str)->Option<String>{panic!("not yet")}
+
+    fn get_inherited_columns(&self, schema:&str, table:&str)->Vec<String>{panic!("not yet")}
+
+    fn dbtype_to_rust_type(&self, db_type: &str)->(Vec<String>, String){panic!("not yet")}
+    
+    fn rust_type_to_dbtype(&self, rust_type: &str)->String{panic!("not yet")}
 }

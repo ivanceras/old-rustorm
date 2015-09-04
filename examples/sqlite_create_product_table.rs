@@ -22,8 +22,8 @@ use rustorm::table::Foreign;
  
 
 fn main(){
-    let url = "sqlite:///file.db";
-    let mut pool = ManagedPool::init(&url, 1);
+    let url = "sqlite:///file1.db";
+    let mut pool = ManagedPool::init(&url, 1).unwrap();
     let db = pool.connect().unwrap();
     db.as_ddl().create_table(&Product::table());
 }

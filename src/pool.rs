@@ -10,6 +10,7 @@ use platform::Sqlite;
 use platform::Mysql;
 use mysql::conn::pool::{MyPool};
 use mysql::conn::MyOpts;
+use database::DbError;
 
 #[cfg(feature = "sqlite")]
 use r2d2_sqlite::SqliteConnectionManager;
@@ -36,16 +37,6 @@ impl Platform{
             _ => panic!("others not yet..")
         }
     }
-    /*
-    pub fn as_mut(&mut self)->&mut Database{
-        match *self{
-            Platform::Postgres(ref mut pg) => pg,
-            Platform::Sqlite(ref mut lite) => lite,
-            Platform::Mysql(ref mut my) => my,
-            _ => panic!("others not yet..")
-        }
-    }
-    */
     pub fn as_ddl(&self)->&DatabaseDDL{
         match *self{
             Platform::Postgres(ref pg) => pg,
@@ -55,31 +46,15 @@ impl Platform{
             _ => panic!("others not yet..")
         }
     }
-    /*
-    pub fn as_ddl_mut(&mut self)->&mut DatabaseDDL{
-        match *self{
-            Platform::Postgres(ref mut pg) => pg,
-            Platform::Sqlite(ref mut lite) => lite,
-            Platform::Mysql(ref mut my) => my,
-            _ => panic!("others not yet..")
-        }
-    }
-    */
     
     pub fn as_dev(&self)->&DatabaseDev{
         match *self{
             Platform::Postgres(ref pg) => pg,
+            #[cfg(feature = "sqlite")]
+            Platform::Sqlite(ref lite) => lite,
             _ => panic!("others not yet..")
         }
     }
-    /*
-    pub fn as_dev_mut(&mut self)->&mut DatabaseDev{
-        match *self{
-            Platform::Postgres(ref mut pg) => pg,
-            _ => panic!("others not yet..")
-        }
-    }
-    */
 }
 
 /// Postgres, Sqlite uses r2d2 connection manager,
@@ -95,39 +70,54 @@ pub enum ManagedPool{
 impl ManagedPool{
     
     /// initialize the pool
-    /// TODO: return result instead of unwrap
-    pub fn init(url: &str, pool_size: usize)->Self{
+    pub fn init(url: &str, pool_size: usize)->Result<Self, DbError>{
         let config = DbConfig::from_url(url);
-        let platform:&str = &config.platform;
-        match platform{
-            "postgres" => {
-                let manager = PostgresConnectionManager::new(url, SslMode::None).unwrap();
-                let config = Config::builder().pool_size(pool_size as u32).build();
-                let pool = Pool::new(config, manager).unwrap();
-                ManagedPool::Postgres(pool)
+        match config{
+            Some(config) => {
+                let platform:&str = &config.platform;
+                match platform{
+                    "postgres" => {
+                        let manager = PostgresConnectionManager::new(url, SslMode::None).unwrap();
+                        println!("Creating a connection with a pool size of {}", pool_size);
+                        let config = Config::builder().pool_size(pool_size as u32).build();
+                        let pool = Pool::new(config, manager);
+                        match pool{
+                            Ok(pool) => Ok(ManagedPool::Postgres(pool)),
+                            Err(e) => {
+                                println!("Unable to create a pool");
+                                Err(DbError::new(&format!("{}",e)))
+                            }
+                        }
+                        
+                    }
+                    #[cfg(feature = "sqlite")]
+                    "sqlite" => {
+                        let manager = SqliteConnectionManager::new(&config.database).unwrap();
+                        let config = Config::builder().pool_size(pool_size as u32).build();
+                        let pool = Pool::new(config, manager).unwrap(); //TODO: properly code this
+                        ManagedPool::Sqlite(pool)
+                    }
+                    "mysql" => {
+                        let opts = MyOpts {
+                            user: config.username,
+                            pass: config.password,
+                            db_name: Some(config.database),
+                            tcp_addr: Some(config.host.unwrap().to_string()),
+                            tcp_port: config.port.unwrap_or(3306),
+                            ..Default::default()
+                        };
+                        let pool = MyPool::new_manual(0, pool_size, opts).unwrap();
+                        Ok(ManagedPool::Mysql(Some(pool)))
+                    }
+                    _ => panic!("not yet")
+                }
+            },
+            None => {
+                println!("Unable to parse url");
+                Err(DbError::new("Error parsing url"))
             }
-            #[cfg(feature = "sqlite")]
-            "sqlite" => {
-                let manager = SqliteConnectionManager::new(&config.database).unwrap();
-                let config = Config::builder().pool_size(pool_size as u32).build();
-                let pool = Pool::new(config, manager).unwrap();
-                ManagedPool::Sqlite(pool)
-            }
-            "mysql" => {
-                let config = DbConfig::from_url(url);
-                let opts = MyOpts {
-                    user: config.username,
-                    pass: config.password,
-                    db_name: Some(config.database),
-                    tcp_addr: Some(config.host.unwrap().to_string()),
-                    tcp_port: config.port.unwrap_or(3306),
-                    ..Default::default()
-                };
-                let pool = MyPool::new_manual(0, pool_size, opts).unwrap();
-                ManagedPool::Mysql(Some(pool))
-            }
-            _ => panic!("not yet")
         }
+        
     }
     
     /// a conection is created here

@@ -92,14 +92,14 @@ impl Postgres{
                     Err(_) => Value::Null,
                 }
             },
-            Type::Varchar | Type::Text => {
+            Type::Varchar | Type::Text | Type::Bpchar => {
                 let value = row.get_opt(index);
                  match value{
                     Ok(value) => Value::String(value),
                     Err(_) => Value::Null,
                 }
             },
-            Type::TimestampTZ => {
+            Type::TimestampTZ | Type::Timestamp => {
                 let value = row.get_opt(index);
                  match value{
                     Ok(value) => Value::DateTime(value),
@@ -138,6 +138,13 @@ impl Postgres{
                 let value = row.get_opt(index);
                  match value{
                     Ok(value) => Value::DateTime(value),
+                    Err(_) => Value::Null,
+                }
+            },
+             Type::Bytea => {
+                let value = row.get_opt(index);
+                 match value{
+                    Ok(value) => Value::VecU8(value),
                     Err(_) => Value::Null,
                 }
             },
@@ -640,7 +647,7 @@ impl DatabaseDev for Postgres{
             "double precision" | "numeric" => {
                 (vec![], "f64".to_string() )
             },
-            "name" | "character" | "character varying" | "text" | "citext" =>{
+            "name" | "character" | "character varying" | "text" | "citext" | "bpchar" =>{
                 ( vec![], "String".to_string() )
             },
             "bytea" =>{
@@ -677,6 +684,9 @@ impl DatabaseDev for Postgres{
             },
             "hstore" => {
                 (vec!["std::collections::HashMap".to_string()], "HashMap<String, Option<String>>".to_string())
+            },
+            "interval" => {
+                (vec![], "u32".to_string() )
             },
             _ => panic!("Unable to get the equivalent data type for {}", db_type),
         };

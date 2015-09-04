@@ -6,7 +6,7 @@ use rustorm::pool::ManagedPool;
 
 fn main(){
     let url = "sqlite:///file.db";
-    let mut pool = ManagedPool::init(&url, 1);
+    let mut pool = ManagedPool::init(&url, 1).unwrap();
     let db = pool.connect().unwrap();
         
     let dao = Query::select()

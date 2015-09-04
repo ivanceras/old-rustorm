@@ -17,7 +17,7 @@ use rustorm::database::Database;
 
 fn main(){
     let url = "mysql://test:test@localhost/test";
-    let mut pool = ManagedPool::init(&url, 1);
+    let mut pool = ManagedPool::init(&url, 1).unwrap();
     let db = pool.connect().unwrap();
     let version = db.as_ref().version();
     println!("version: {}", version);

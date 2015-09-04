@@ -12,6 +12,9 @@ keywords = ["orm", "database", "sql"]
 [lib]
 name = "rustorm"
 
+[features]
+sqlite = ["rusqlite","r2d2_sqlite"]
+
 [dependencies.chrono]
 version = "*"
 features = ["rustc-serialize"]

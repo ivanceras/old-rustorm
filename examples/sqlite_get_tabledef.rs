@@ -3,14 +3,14 @@ extern crate rustorm;
 use rustorm::query::Query;
 use rustorm::query::{Filter,Equality};
 use rustorm::pool::ManagedPool;
+use rustorm::database::Database;
 
 fn main(){
-    let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v6";
+    let url = "sqlite:///file1.db";
     let mut pool = ManagedPool::init(&url, 1).unwrap();
     let db = pool.connect().unwrap();
-        
-        Query::insert()
-            .set("name", &"Test Category112")
-        .into_table(&"bazaar.category")
-            .execute(db.as_ref());
+    
+    let table = db.as_dev().get_table_metadata("","product", false);
+    
+    println!("table: {:#?}", table);
 }

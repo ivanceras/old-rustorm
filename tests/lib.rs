@@ -64,8 +64,8 @@ impl IsTable for Product{
 
 #[test]
 fn test_simple_query(){
-    let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v6";
-    let mut pool = ManagedPool::init(&url, 1);
+    let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v7";
+    let mut pool = ManagedPool::init(&url, 1).unwrap();
     let db = pool.connect().unwrap();
     
     let prod: Product = Query::select_all()

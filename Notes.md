@@ -290,6 +290,32 @@ SELECT
                 ORDER BY number
 ```
 
+## Sqlite meta data extractions
+https://www.sqlite.org/pragma.html#pragma_foreign_key_list
 
-## August 29, 2015
-* Made sqlite an optional dependency package
+### extract table columns
+PRAGMA database.table_info(table-name);
+PRAGMA table_info(product);
+
+### foreign keys
+PRAGMA foreign_key_list(table-name);
+PRAGMA foreign_key_list(product_availability);
+
+## indexes
+PRAGMA index_list(table-name);
+
+
+CREATE TABLE product_availability (
+    product_id uuid NOT NULL,
+    available boolean,
+    always_available boolean,
+    stocks numeric DEFAULT 1,
+    available_from timestamp with time zone,
+    available_until timestamp with time zone,
+    available_day json,
+    open_time time with time zone,
+    close_time time with time zone,
+    FOREIGN KEY(product_id) REFERENCES product(product_id)
+)
+
+

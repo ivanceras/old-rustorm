@@ -81,7 +81,8 @@ impl IsTable for Product{
             parent_table:None,
             sub_table:vec![],
             comment:None,
-            columns:vec![]
+            columns:vec![],
+            is_view: false
         }
     }
 }
@@ -89,12 +90,12 @@ impl IsTable for Product{
 
 fn main(){
     let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v6";
-    let mut pool = ManagedPool::init(&url, 1);
+    let mut pool = ManagedPool::init(&url, 1).unwrap();
     let db = pool.connect().unwrap();
     
     let products: Vec<Product> = Query::select_all()
             .from_table("bazaar.product")
-            .collect(db.as_mut());
+            .collect(db.as_ref()).unwrap();
     
     for prod in products{
         let name = prod.name.unwrap();
@@ -105,12 +106,29 @@ fn main(){
         println!("{}  {}  {:?}", prod.product_id, name, desc);
     }
 }
+
 ```
 
 
 * [Get one photo of a product](https://github.com/ivanceras/rustorm/blob/master/examples/get_one_product_photo.rs)
 
 ```rust
+
+extern crate rustorm;
+extern crate uuid;
+extern crate chrono;
+extern crate rustc_serialize;
+
+use uuid::Uuid;
+use chrono::datetime::DateTime;
+use chrono::offset::utc::UTC;
+use rustc_serialize::json;
+
+use rustorm::query::Query;
+use rustorm::query::{Filter,Equality};
+use rustorm::dao::{Dao,IsDao};
+use rustorm::pool::ManagedPool;
+use rustorm::table::{IsTable,Table};
 
 #[derive(Debug, Clone)]
 pub struct Photo {
@@ -145,14 +163,15 @@ impl IsTable for Photo{
             parent_table:None,
             sub_table:vec![],
             comment:None,
-            columns:vec![]
+            columns:vec![],
+            is_view: false
         }
     }
 }
 
 fn main(){
     let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v6";
-    let mut pool = ManagedPool::init(url, 1);
+    let mut pool = ManagedPool::init(url, 1).unwrap();
     let db = pool.connect().unwrap();
     
     let photo: Photo = Query::select_all()
@@ -173,6 +192,7 @@ fn main(){
 * [One complex query](https://github.com/ivanceras/rustorm/blob/master/examples/complex_query.rs)
 
 ```rust
+
 extern crate rustorm;
 extern crate uuid;
 extern crate chrono;
@@ -214,7 +234,7 @@ impl IsDao for Photo{
 
 fn main(){
     let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v6";
-    let mut pool = ManagedPool::init(&url, 1);
+    let mut pool = ManagedPool::init(&url, 1).unwrap();
     let db = pool.connect().unwrap();
     
     let mut query = Query::select_all();
@@ -240,13 +260,13 @@ fn main(){
     let expected = "
    SELECT *
      FROM bazaar.product
-          LEFT OUTER JOIN bazaar.product_category 
+          LEFT JOIN bazaar.product_category 
           ON product_category.product_id = product.product_id 
-          LEFT OUTER JOIN bazaar.category 
+          LEFT JOIN bazaar.category 
           ON category.category_id = product_category.category_id 
-          LEFT OUTER JOIN product_photo 
+          LEFT JOIN product_photo 
           ON product.product_id = product_photo.product_id 
-          LEFT OUTER JOIN bazaar.photo 
+          LEFT JOIN bazaar.photo 
           ON product_photo.photo_id = photo.photo_id 
     WHERE product.name = $1 
       AND category.name = $2 

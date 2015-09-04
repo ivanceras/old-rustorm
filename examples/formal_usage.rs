@@ -67,16 +67,22 @@ impl IsTable for Product{
 fn main(){
     let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v6";
     let mut pool = ManagedPool::init(url, 1);
-    let db = pool.connect();
-    
-    match db{
-            Ok(db) => {
-            show_product(db.as_ref());//borrow a database
-         }
-        Err(e) => {
-            println!("Unable to connect to database {}", e);
-        }
+    match pool{
+        Ok(pool) => {
+            let db = pool.connect();
+            
+            match db{
+                    Ok(db) => {
+                    show_product(db.as_ref());//borrow a database
+                 }
+                Err(e) => {
+                    println!("Unable to connect to database {}", e);
+                }
+            }
+        },
+        Err(e) => {panic!("Unable to connect to database")}
     }
+    
 }
 
 /// a dispatched controller with an accesss to a database reference
