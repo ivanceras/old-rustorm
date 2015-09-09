@@ -8,11 +8,13 @@ use database::SqlOption;
 use rusqlite::SqliteConnection;
 use rusqlite::types::ToSql;
 use rusqlite::SqliteRow;
-use table::{Table, Foreign};
+use table::{Table, Column, Foreign};
 use database::DatabaseDDL;
 use database::DbError;
 use r2d2::PooledConnection;
 use r2d2_sqlite::SqliteConnectionManager;
+use regex::Regex;
+use std::collections::BTreeMap;
 
 pub struct Sqlite {
     pool: Option<PooledConnection<SqliteConnectionManager>>,
@@ -157,6 +159,136 @@ impl Sqlite{
         }
     }
     
+    pub fn extract_comments(create_sql: &str)->
+                    Result<(Option<String>, BTreeMap<String, Option<String>>),DbError>{
+        let re = match Regex::new(r".*CREATE\s+TABLE\s+(\S+)\s*\((?s)(.*)\).*") {
+            Ok(re) => re,
+            Err(err) => panic!("{}", err),
+        };
+        println!("create_sql: {:?}", create_sql);
+        if re.is_match(&create_sql){
+            println!("matched...");
+            let cap = re.captures(&create_sql).unwrap();
+            let all_columns = cap.at(2).unwrap();
+            
+            let line_comma_re = match Regex::new(r"[,\n]") {
+                Ok(re) => re,
+                Err(err) => panic!("{}", err),
+            };
+            println!("All columns.. {}", all_columns);
+            let splinters:Vec<&str> = line_comma_re.split(all_columns).collect();
+            println!("splinters: {:#?}", splinters);
+            let splinters:Vec<&str>  = splinters.into_iter()
+                .map(|i|i.trim())
+                .filter(|&i|i !="").collect();
+            println!("filtered: {:#?}",splinters);
+            let mut columns: Vec<String> = vec![];
+            let mut comments: Vec<Option<String>> = vec![];
+            let mut index = 0;
+            for splinter in splinters{
+                if splinter.starts_with("--"){
+                    if comments.len() < index {
+                        for i in comments.len()..index{
+                            comments.push(None);
+                        }
+                    }
+                    comments.push(Some(splinter.to_string()));
+                }
+                else if splinter.starts_with("FOREIGN"){
+                
+                }
+                else if splinter.starts_with("CHECK"){
+                
+                }
+                else{
+                    let line: Vec<&str> = splinter.split_whitespace().collect();
+                    let column = line[0];
+                    println!("column: {}", column);
+                    columns.push(column.to_string());
+                    index += 1
+                }
+            }
+            println!("columns: {:#?}",columns);
+            println!("comments: {:#?}", comments);
+            let table_comment = if comments.len() > 0{
+                 comments[0].clone() //first comment is the table comment
+            }else{None};
+            let mut column_comments = BTreeMap::new();
+            let mut index = 0;
+            for column in columns{
+                let comment = if comments.len() > 0 {comments[index + 1].clone()}else{None};
+                column_comments.insert(column, comment);
+                index += 1;
+            }
+            Ok((table_comment, column_comments))
+        }
+        else{
+            Err(DbError::new("Unable to parse sql statement"))
+        }
+    }
+    /// extract the comment of the table
+    /// Don't support multi-line comment
+    fn get_table_comment(&self, schema:&str, table:&str)->Option<String>{   
+        let sql = format!("SELECT sql FROM sqlite_master WHERE type = 'table' AND tbl_name = '{}'",table);
+        let result = self.execute_sql_with_return_columns(&sql, &vec![], vec!["sql"]);
+        match result{
+            Ok(result) => {
+                assert_eq!(result.len(), 1);
+                let ref dao = result[0];
+                let create_sql:String = dao.get("sql");
+                match Sqlite::extract_comments(&create_sql){
+                    Ok((table_comment, column_comments)) => {
+                        println!("table_comment: {:?}", table_comment);
+                        table_comment
+                    },
+                    Err(e) => {
+                        None
+                    }
+                }
+            },
+            Err(e) => None
+        }
+    }
+    /// extract the comments for each column
+    /// Don't support multi-line comment
+    fn get_column_comments(&self, schema:&str, table:&str)->BTreeMap<String, Option<String>>{   
+        let sql = format!("SELECT sql FROM sqlite_master WHERE type = 'table' AND tbl_name = '{}'",table);
+        let result = self.execute_sql_with_return_columns(&sql, &vec![], vec!["sql"]);
+        match result{
+            Ok(result) => {
+                assert_eq!(result.len(), 1);
+                let ref dao = result[0];
+                let create_sql:String = dao.get("sql");
+                match Sqlite::extract_comments(&create_sql){
+                    Ok((table_comment, column_comments)) => {
+                        println!("column_comments: {:?}", column_comments);
+                        column_comments
+                    },
+                    Err(e) => {
+                        BTreeMap::new()
+                    }
+                }
+            },
+            Err(e) => BTreeMap::new()
+        }
+    }
+    
+    fn get_column_comment(&self, column_comments: &BTreeMap<String, Option<String>>, column: &str)->Option<String>{
+        match column_comments.get(column){
+            Some(comment) => comment.clone(),
+            None => None
+        }
+    
+    }
+    fn get_column_foreign(&self, all_foreign: &Vec<Foreign>, column: &str)->Option<Foreign>{
+        println!("foreign: {:#?} ", all_foreign);
+        for foreign in all_foreign{
+            if foreign.column == column{
+                return Some(foreign.clone())
+            }
+        }
+        None
+    }
 }
 
 impl Database for Sqlite{
@@ -284,7 +416,7 @@ impl DatabaseDDL for Sqlite{
         
         fn build_foreign_key_stmt(table: &Table)->SqlFrag{
             let mut w = SqlFrag::new(vec![]);
-            let mut do_comma = true;//there has been columns mentioned
+            let mut do_comma = true;//there has been colcommentsumns mentioned
             for c in &table.columns{
                 if c.foreign.is_some(){
                     if do_comma {w.commasp();}else {do_comma=true;}
@@ -359,6 +491,11 @@ impl DatabaseDev for Sqlite{
         println!("result: {:#?}", result);
         match result{
             Ok(result) => {
+                let foreign = self.get_foreign_keys(schema, table);
+                let table_comment = self.get_table_comment(schema, table);
+                let column_comments = self.get_column_comments(schema, table);
+                
+                let mut columns = vec![];
                 for r in result{
                     let column: String = r.get("name");
                     let data_type: String = r.get("type");
@@ -370,17 +507,37 @@ impl DatabaseDev for Sqlite{
                     println!("not null: {}", not_null);
                     println!("pk: {}", pk);
                     println!("default_value: {}", default_value);
+                    
+                    let column_comment = self.get_column_comment(&column_comments, &column);
+                    let column_foreign = self.get_column_foreign(&foreign, &column);
+                    let column = Column{
+                            name: column,
+                            data_type: data_type.to_string(),
+                            db_data_type: data_type.to_string(),
+                            is_primary: pk != "0",
+                            is_unique: false,
+                            default: Some(default_value),
+                            comment: column_comment,
+                            not_null : not_null != "0",
+                            is_inherited: false,
+                            foreign: column_foreign,
+                        };
+                    columns.push(column);
                 }
-                let foreign = self.get_foreign_keys(schema, table);
-                println!("Foreign: {:?}", foreign);
+                Table{
+                    schema: "".to_string(),
+                    name: table.to_string(),
+                    parent_table: None,
+                    sub_table: vec![],
+                    comment: table_comment,
+                    columns: columns,
+                    is_view: false,
+                }
             },
             Err(e) => {
-                println!("Something is wrong {}", e);
+                panic!("No matching table found {}", e);
             }
         }
-        
-        panic!("not yet");
-        
     }
 
     fn get_all_tables(&self)->Vec<(String, String, bool)>{
@@ -388,11 +545,30 @@ impl DatabaseDev for Sqlite{
         panic!("not yet");
     }
 
-    fn get_table_comment(&self, schema:&str, table:&str)->Option<String>{panic!("not yet")}
-
     fn get_inherited_columns(&self, schema:&str, table:&str)->Vec<String>{panic!("not yet")}
 
     fn dbtype_to_rust_type(&self, db_type: &str)->(Vec<String>, String){panic!("not yet")}
     
     fn rust_type_to_dbtype(&self, rust_type: &str)->String{panic!("not yet")}
+}
+
+
+#[test]
+fn test_comment_extract(){
+    let create_sql = r"
+CREATE TABLE product_availability ( 
+   --Each product has its own product availability which determines when can it be available for purchase
+    product_id uuid NOT NULL , --this is the id of the product
+    available boolean,
+    always_available boolean, 
+    stocks numeric DEFAULT 1, 
+    available_from timestamp with time zone,
+    available_until timestamp with time zone,
+    available_day json, 
+    open_time time with time zone, 
+    close_time time with time zone, --closing time
+    FOREIGN KEY(product_id) REFERENCES product(product_id)
+)    
+    ";
+    Sqlite::extract_comments(create_sql);
 }

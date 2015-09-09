@@ -16,6 +16,7 @@ pub struct DbConfig{
     /// 5432
     pub port: Option<u16>,
     pub database: String,
+    pub ssl: bool
 }
 
 impl DbConfig{
@@ -59,7 +60,8 @@ impl DbConfig{
                                     password: None,
                                     host: None,
                                     port: None,
-                                    database: ":memory:".to_string()
+                                    database: ":memory:".to_string(),
+                                    ssl: false,
                                     })    
                                 },
                             _ =>panic!("error parsing https url:{}",e)
@@ -81,7 +83,8 @@ impl DbConfig{
                                 Host::Domain(ref db) => db.to_string(),
                                 _ => panic!("only domains are handled"),
                             }
-                        }    
+                        },
+                        ssl: false,    
                     })
                 },
                 _ =>
@@ -94,7 +97,8 @@ impl DbConfig{
                         database: {
                             assert!(reparse_relative.path.len() == 1, "There should only be 1 path");
                             reparse_relative.path[0].to_string()
-                        }
+                        },
+                        ssl: false,
                     })
                 }
             }
@@ -142,6 +146,7 @@ fn test_config_url(){
         password: Some("p0stgr3s".to_string()), 
         host: Some(Host::Domain("localhost".to_string())),
         port: None,
+        ssl: false,
         database: "bazaar_v6".to_string(),
     };
     
@@ -166,6 +171,7 @@ fn test_config_url_with_port(){
         host: Some(Host::Domain("localhost".to_string())),
         port: Some(5432),
         database: "bazaar_v6".to_string(),
+        ssl: false,
     };
     
     assert_eq!(config.get_url(), url.to_string());
@@ -181,7 +187,8 @@ fn test_config_sqlite_url_with_port(){
         password: None, 
         host: None,
         port: None,
-        database: "bazaar_v6.db".to_string()
+        database: "bazaar_v6.db".to_string(),
+        ssl: false,
     };
     println!("{:?}",parsed_config);
     assert_eq!(parsed_config, expected_config);
@@ -198,6 +205,7 @@ fn sqlite_in_memory(){
         host: None,
         port: None,
         database: ":memory:".to_string(),
+        ssl: false,
     };
     println!("{:?}",parsed_config);
     assert_eq!(parsed_config, expected_config);

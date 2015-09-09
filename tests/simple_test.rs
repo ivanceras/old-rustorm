@@ -17,6 +17,7 @@ use rustorm::pool::ManagedPool;
 use rustorm::table::{IsTable,Table};
 
 
+
 #[derive(Debug, Clone)]
 pub struct Product {
     pub product_id:Uuid,
