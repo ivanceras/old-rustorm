@@ -647,9 +647,6 @@ pub trait DatabaseDev{
     /// get all the tables in this database
     fn get_all_tables(&self)->Vec<(String, String, bool)>;
 
-    /// get the comment of this table
-    fn get_table_comment(&self, schema:&str, table:&str)->Option<String>;
-
     /// get the inherited columns of this table
     fn get_inherited_columns(&self, schema:&str, table:&str)->Vec<String>;
 

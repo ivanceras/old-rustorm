@@ -8,4 +8,4 @@ addons:
 before_script:
 - "./scripts/setup.sh"
 script:
-- cargo test
+- cargo test --features sqlite

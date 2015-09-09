@@ -318,4 +318,5 @@ CREATE TABLE product_availability (
     FOREIGN KEY(product_id) REFERENCES product(product_id)
 )
 
-
+## extract columns in sqlite, 
+http://stackoverflow.com/questions/2785702/use-javascript-regex-to-extract-column-names-from-sqlite-create-table-sql

@@ -94,8 +94,14 @@ impl ManagedPool{
                     "sqlite" => {
                         let manager = SqliteConnectionManager::new(&config.database).unwrap();
                         let config = Config::builder().pool_size(pool_size as u32).build();
-                        let pool = Pool::new(config, manager).unwrap(); //TODO: properly code this
-                        ManagedPool::Sqlite(pool)
+                        match Pool::new(config, manager){
+                            Ok(pool) => Ok(ManagedPool::Sqlite(pool)),
+                            Err(e) => {
+                                println!("Unable to create a pool");
+                                Err(DbError::new(&format!("{}",e)))
+                            }
+                        }
+                        
                     }
                     "mysql" => {
                         let opts = MyOpts {
@@ -106,8 +112,14 @@ impl ManagedPool{
                             tcp_port: config.port.unwrap_or(3306),
                             ..Default::default()
                         };
-                        let pool = MyPool::new_manual(0, pool_size, opts).unwrap();
-                        Ok(ManagedPool::Mysql(Some(pool)))
+                        match MyPool::new_manual(0, pool_size, opts){
+                            Ok(pool) => Ok(ManagedPool::Mysql(Some(pool))),
+                            Err(e) => {
+                                println!("Unable to create a pool");
+                                Err(DbError::new(&format!("{}",e)))
+                            }
+                        }
+                        
                     }
                     _ => panic!("not yet")
                 }
@@ -121,30 +133,28 @@ impl ManagedPool{
     }
     
     /// a conection is created here
-    pub fn connect(&self)->Result<Platform, String>{
+    pub fn connect(&self)->Result<Platform, DbError>{
         match *self{
             ManagedPool::Postgres(ref pool) => {
-                let conn = pool.get();//the connection is created here
-                match conn{
+                match pool.get(){
                     Ok(conn) => {
                         let pg = Postgres::with_pooled_connection(conn);
                         Ok(Platform::Postgres(pg))
                     },
                     Err(e) => {
-                        Err(format!("Unable to connect {}", e))
+                        Err(DbError::new(&format!("Unable to connect due to {}", e)))
                     }
                 }
             },
             #[cfg(feature = "sqlite")]
             ManagedPool::Sqlite(ref pool) => {
-                let conn = pool.get();//the connection is created here
-                match conn{
+                match pool.get(){
                     Ok(conn) => {
                         let lite = Sqlite::with_pooled_connection(conn);
                         Ok(Platform::Sqlite(lite))
                     },
                     Err(e) => {
-                        Err(format!("Unable to connect {}", e))
+                        Err(DbError::new(&format!("Unable to connect due to {}", e)))
                     }
                 }
             },
@@ -152,7 +162,7 @@ impl ManagedPool{
                 let my = Mysql::with_pooled_connection(pool.clone().unwrap());// I hope cloning doesn't really clone the pool, just the Arc
                 Ok(Platform::Mysql(my))
             },
-            _ => Err("Any other database is not yet supported".to_string())
+            _ => Err(DbError::new("Any other database is not yet supported"))
         }
     }
 }

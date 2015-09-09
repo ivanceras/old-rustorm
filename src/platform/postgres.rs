@@ -290,6 +290,33 @@ impl Postgres{
         // both primary and foreign columns
         self.unify_primary_and_foreign_column(&columns)
     }
+    
+    fn get_table_comment(&self, schema:&str, table:&str)->Option<String>{
+        let sql ="
+                SELECT
+                    pg_class.relname AS table,
+                    pg_namespace.nspname AS schema,
+                    obj_description(pg_class.oid) AS comment
+                FROM pg_class
+                    LEFT JOIN pg_namespace
+                        ON pg_namespace.oid = pg_class.relnamespace
+                WHERE
+                    pg_class.relkind IN ('r','v')
+                    AND pg_namespace.nspname NOT IN ('information_schema', 'pg_catalog', 'pg_toast')
+                    AND nspname = $1
+                    AND relname = $2
+                ";
+        let conn = self.get_connection();
+        let stmt = conn.prepare(&sql).unwrap();
+        for row in stmt.query(&[&schema, &table]).unwrap() {
+            let comment:Option<String> = match row.get_opt("comment"){
+                    Ok(x) => Some(x),
+                    Err(_) => None
+                };
+            return comment;
+        }
+        None
+    }
 
     /// column that is both primary and foreign should be unified
     fn unify_primary_and_foreign_column(&self, columns:&Vec<Column>)->Vec<Column>{
@@ -558,32 +585,7 @@ impl DatabaseDev for Postgres{
         tables
     }
 
-    fn get_table_comment(&self, schema:&str, table:&str)->Option<String>{
-        let sql ="
-                SELECT
-                    pg_class.relname AS table,
-                    pg_namespace.nspname AS schema,
-                    obj_description(pg_class.oid) AS comment
-                FROM pg_class
-                    LEFT JOIN pg_namespace
-                        ON pg_namespace.oid = pg_class.relnamespace
-                WHERE
-                    pg_class.relkind IN ('r','v')
-                    AND pg_namespace.nspname NOT IN ('information_schema', 'pg_catalog', 'pg_toast')
-                    AND nspname = $1
-                    AND relname = $2
-                ";
-        let conn = self.get_connection();
-        let stmt = conn.prepare(&sql).unwrap();
-        for row in stmt.query(&[&schema, &table]).unwrap() {
-            let comment:Option<String> = match row.get_opt("comment"){
-                    Ok(x) => Some(x),
-                    Err(_) => None
-                };
-            return comment;
-        }
-        None
-    }
+
 
     fn get_inherited_columns(&self, schema:&str, table:&str)->Vec<String>{
         let sql = "

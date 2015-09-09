@@ -92,3 +92,6 @@ where schemaname NOT IN ('pg_catalog', 'information_schema')
 order by schemaname, viewname;
 
 ```
+
+## September 9, 2015
+* Replace rustc_serialize with serde-rs
