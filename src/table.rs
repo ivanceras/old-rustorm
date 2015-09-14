@@ -290,6 +290,17 @@ impl Table{
         }
         false
     }
+    
+     /// return the column of this table with the name
+    pub fn get_column(&self, column:&str)->Option<Column>{
+        let column_name = column.to_string();
+        for c in &self.columns{
+            if c.name == column_name{
+                return Some(c.clone());
+            }
+        }
+        None
+    }
 
     /// return all the primary columns of this table
     pub fn primary_columns(&self)->Vec<&Column>{
@@ -648,6 +659,18 @@ impl Table{
             }
         }
         false
+    }
+    
+    /// returns the columns of these table that is a foreign columns to the foreign table
+    pub fn get_foreign_columns_to_table(&self, foreign_table:&Table)->Vec<&Column>{
+        let mut qualified = vec![];
+        let foreign_columns = self.foreign_columns();
+        for fc in foreign_columns{
+            if foreign_table.is_foreign_column_refer_to_primary_of_this_table(fc){
+                qualified.push(fc)
+            }
+        }
+        qualified
     }
         
     fn are_these_foreign_column_refer_to_primary_of_this_table(&self, rt_fk:&Vec<&Column>)->bool{

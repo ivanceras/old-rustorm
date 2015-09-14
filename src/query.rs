@@ -123,6 +123,18 @@ impl Filter{
         }
     }
     
+    /// user friendly, commonly use API
+    pub fn with_value(column:&str, equality:Equality, value: Value)->Self{
+        let right = Operand::Value(value);
+        Filter{
+            connector:Connector::And,
+            condition: Condition{left: Operand::ColumnName(ColumnName::from_str(column)),
+                        equality:equality,
+                        right:right},
+            subfilters:vec![],
+        }
+    }
+    
     
     /// not very commonly used, offers enough flexibility
     pub fn bare_new(left: Operand, equality: Equality, right: Operand)->Self{
@@ -619,8 +631,14 @@ impl Query{
         let field = Field{ operand:operand, name: None};
         self.from_field(field)
     }
-    
-     pub fn from_table(&mut self, table:&str)->&mut Self{
+    /// enumerate only the columns that is coming from this table
+    /// this will invalidate enumerate_all
+    pub fn only_from(&mut self, table: &ToTableName)->&mut Self{
+        self.enumerate_all = false;
+        self.enumerate_from_table(&table.to_table_name());
+        self.from(table)
+    }
+    pub fn from_table(&mut self, table:&str)->&mut Self{
         self.from(&table)
     }
     /// `into` is used in rust, os settled with `into_`
@@ -829,6 +847,12 @@ impl Query{
             for c in &m.columns{
                 self.enumerate(c.clone());
             }
+        }
+    }
+    
+    fn enumerate_from_table(&mut self, table:&TableName){
+        for c in &table.columns{
+            self.enumerate(c.clone());
         }
     }
     
