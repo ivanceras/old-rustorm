@@ -130,7 +130,7 @@ impl Sqlite{
     fn get_foreign_keys(&self, schema:&str, table:&str)->Vec<Foreign>{
         println!("Extracting foreign keys...");
         let sql = format!("PRAGMA foreign_key_list({});", table);
-        let result = self.execute_sql_with_return_columns(&sql, &vec![], vec!["id", "seq", "table", "from", "to", "on_update", "on_delete", "match"]);
+        let result = self.execute_sql_with_return(&sql, &vec![]);
         println!("result: {:#?}", result);
         match result{
             Ok(result) => {
@@ -230,7 +230,7 @@ impl Sqlite{
     /// Don't support multi-line comment
     fn get_table_comment(&self, schema:&str, table:&str)->Option<String>{   
         let sql = format!("SELECT sql FROM sqlite_master WHERE type = 'table' AND tbl_name = '{}'",table);
-        let result = self.execute_sql_with_return_columns(&sql, &vec![], vec!["sql"]);
+        let result = self.execute_sql_with_return(&sql, &vec![]);
         match result{
             Ok(result) => {
                 assert_eq!(result.len(), 1);
@@ -253,7 +253,7 @@ impl Sqlite{
     /// Don't support multi-line comment
     fn get_column_comments(&self, schema:&str, table:&str)->BTreeMap<String, Option<String>>{   
         let sql = format!("SELECT sql FROM sqlite_master WHERE type = 'table' AND tbl_name = '{}'",table);
-        let result = self.execute_sql_with_return_columns(&sql, &vec![], vec!["sql"]);
+        let result = self.execute_sql_with_return(&sql, &vec![]);
         match result{
             Ok(result) => {
                 assert_eq!(result.len(), 1);
@@ -294,7 +294,7 @@ impl Sqlite{
 impl Database for Sqlite{
     fn version(&self)->String{
        let sql = "select sqlite_version() as version";
-       let dao = self.execute_sql_with_return_columns(sql, &vec![], vec!["version"]);
+       let dao = self.execute_sql_with_return(sql, &vec![]);
        match dao{
             Ok(dao) => {
                 if dao.len() == 1{
@@ -334,16 +334,20 @@ impl Database for Sqlite{
     
     /// sqlite does not return the columns mentioned in the query,
     /// you have to specify it yourself
+    /// TODO: found this 
+    /// http://jgallagher.github.io/rusqlite/rusqlite/struct.SqliteStatement.html#method.column_names
     fn execute_sql_with_return(&self, sql:&str, params:&Vec<Value>)->Result<Vec<Dao>, DbError>{
-        panic!("unsupported!");
-    }
-    fn execute_sql_with_return_columns(&self, sql:&str, params:&Vec<Value>, return_columns:Vec<&str>)->Result<Vec<Dao>, DbError>{
         println!("SQL: \n{}", sql);
         println!("param: {:?}", params);
         let conn = self.get_connection();
         let mut stmt = conn.prepare(sql).unwrap();
         let mut daos = vec![];
         let param = self.from_rust_type_tosql(params);
+        let mut columns = vec![];
+        for c in stmt.column_names(){
+            columns.push(c.to_string());
+        }
+        println!("columns : {:?}", columns);
         match stmt.query(&param){
             Ok(rows) => 
             for row in rows {
@@ -351,10 +355,10 @@ impl Database for Sqlite{
                     Ok(row) => {
                         let mut index = 0;
                         let mut dao = Dao::new();
-                        for rc in &return_columns{
+                        for col in &columns{
                             let rtype = self.from_sql_to_rust_type(&row, index);
                             println!("{:?}",rtype);
-                            dao.set_value(rc, rtype);
+                            dao.set_value(col, rtype);
                             index += 1;
                         }
                         daos.push(dao);
@@ -368,6 +372,7 @@ impl Database for Sqlite{
         }
         Ok(daos)
     }
+
     
     fn execute_sql_with_one_return(&self, sql:&str, params:&Vec<Value>)->Result<Dao, DbError>{
         let dao = self.execute_sql_with_return(sql, params);
@@ -487,7 +492,7 @@ impl DatabaseDev for Sqlite{
     fn get_table_metadata(&self, schema:&str, table:&str, is_view: bool)->Table{
         println!("extracting table meta data in sqlite");
         let sql = format!("PRAGMA table_info({});", table);
-        let result = self.execute_sql_with_return_columns(&sql, &vec![], vec!["cid", "name", "type", "notnull", "dflt_value", "pk"]);
+        let result = self.execute_sql_with_return(&sql, &vec![]);
         println!("result: {:#?}", result);
         match result{
             Ok(result) => {
@@ -542,10 +547,29 @@ impl DatabaseDev for Sqlite{
 
     fn get_all_tables(&self)->Vec<(String, String, bool)>{
         let sql = "SELECT type, name, tbl_name, sql FROM sqlite_master WHERE type = 'table'";
-        panic!("not yet");
+        let result = self.execute_sql_with_return(&sql, &vec![]);
+        match result{
+            Ok(result) => {
+                println!("result: {:#?}", result);
+                let mut tables:Vec<(String, String, bool)> = Vec::new();
+                for r in result{
+                    let schema = "".to_string();
+                    let table: String = r.get("tbl_name");
+                    let is_view = false;
+                    tables.push((schema, table, is_view))
+                }
+                println!("got tables: {:?}", tables);
+                tables 
+            },
+            Err(e) => {
+                panic!("Unable to get tables due to {}", e)
+            }
+        }
     }
 
-    fn get_inherited_columns(&self, schema:&str, table:&str)->Vec<String>{panic!("not yet")}
+    fn get_inherited_columns(&self, schema:&str, table:&str)->Vec<String>{
+        vec![]
+    }
 
     fn dbtype_to_rust_type(&self, db_type: &str)->(Vec<String>, String){panic!("not yet")}
     

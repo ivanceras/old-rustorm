@@ -128,15 +128,7 @@ pub trait Database{
     /// use the enumerated column for data extraction when db doesn't support returning the records column names
     fn execute_with_return(&self, query:&Query)->Result<DaoResult, DbError>{
         let sql_frag = &self.build_query(query);
-        let result = if self.sql_options().contains(&SqlOption::ReturnMetaColumns){
-            self.execute_sql_with_return(&sql_frag.sql, &sql_frag.params)
-        }else{
-            let mut columns:Vec<&str> = vec![];
-            for c in query.get_enumerated_columns(){
-                columns.push(&c.column);//TODO deal with the renames, and functions, fields
-            }
-            self.execute_sql_with_return_columns(&sql_frag.sql, &sql_frag.params, columns)
-        };
+        let result = self.execute_sql_with_return(&sql_frag.sql, &sql_frag.params);
         match result{
             Ok(result) => {
                 let dao_result = DaoResult{
@@ -168,9 +160,6 @@ pub trait Database{
     /// execute insert with returning clause, update with returning clause
     fn execute_sql_with_return(&self, sql:&str, params:&Vec<Value>)->Result<Vec<Dao>, DbError>;
     
-    /// specify which return columns to get, ie. sqlite doesn't support getting the meta data of the return
-    fn execute_sql_with_return_columns(&self, sql:&str, params:&Vec<Value>, return_columns:Vec<&str>)->Result<Vec<Dao>, DbError>;
-
     fn execute_sql_with_one_return(&self, sql:&str, params:&Vec<Value>)->Result<Dao, DbError>{
         let dao = self.execute_sql_with_return(sql, params);
         match dao{
@@ -644,7 +633,7 @@ pub trait DatabaseDev{
     ///
     fn get_table_metadata(&self, schema:&str, table:&str, is_view: bool)->Table;
 
-    /// get all the tables in this database
+    /// get all the tables in this database (schema, table, is_view)
     fn get_all_tables(&self)->Vec<(String, String, bool)>;
 
     /// get the inherited columns of this table

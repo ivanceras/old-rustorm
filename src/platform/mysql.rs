@@ -123,7 +123,7 @@ impl Mysql{
 impl Database for Mysql{
     fn version(&self)->String{
        let sql = "select version()";
-       let dao = self.execute_sql_with_return_columns(sql, &vec![], vec!["version"]);
+       let dao = self.execute_sql_with_return(sql, &vec![]);
        match dao{
            Ok(dao) => {
                if dao.len() == 1{
@@ -156,14 +156,15 @@ impl Database for Mysql{
     fn delete(&self, query:&Query)->Result<usize, String>{panic!("not yet");}
     
     fn execute_sql_with_return(&self, sql:&str, params:&Vec<Value>)->Result<Vec<Dao>, DbError>{
-        panic!("unsupported!");
-    }
-    fn execute_sql_with_return_columns(&self, sql:&str, params:&Vec<Value>, return_columns:Vec<&str>)->Result<Vec<Dao>, DbError>{
         println!("SQL: \n{}", sql);
         println!("param: {:?}", params);
         assert!(self.pool.is_some());
         let mut stmt = self.get_prepared_statement(sql).unwrap();
-
+        let mut columns = vec![];
+        for col in stmt.columns_ref().unwrap(){
+            let column_name = String::from_utf8(col.name.clone()).unwrap();
+            columns.push(column_name);
+        }
         let mut daos = vec![];
         let param = Mysql::from_rust_type_tosql(params);
         let rows = stmt.execute(&param);
@@ -174,9 +175,9 @@ impl Database for Mysql{
                     Ok(row) => {
                         let mut index = 0;
                         let mut dao = Dao::new();
-                        for rc in &return_columns{
+                        for col in &columns{
                             let rtype = Mysql::from_sql_to_rust_type(&row, index);
-                            dao.set_value(rc, rtype);
+                            dao.set_value(col, rtype);
                             index += 1;
                         }
                         daos.push(dao);

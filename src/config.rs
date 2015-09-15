@@ -68,8 +68,8 @@ impl DbConfig{
                         }
                     }
                 };
-                
-               
+            
+            //TODO: need to handle the complete file path for sqlite
             match scheme{
                 "sqlite" => { // handle sqlite parsing such as the memory and the host be the database
                     Some(DbConfig{

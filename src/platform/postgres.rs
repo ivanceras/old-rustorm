@@ -430,10 +430,6 @@ impl Database for Postgres{
         }
         
     }
-    fn execute_sql_with_return_columns(&self, sql:&str, params:&Vec<Value>, return_columns:Vec<&str>)->Result<Vec<Dao>, DbError>{
-        panic!("not yet.. but postgresql can support this")
-    }
-    
     
     /// generic execute sql which returns not much information,
     /// returns only the number of affected records or errors
