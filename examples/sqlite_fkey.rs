@@ -12,7 +12,7 @@ fn main(){
     
     let sql = "PRAGMA foreign_key_list(product_availability);";
      
-    let result = db.as_ref().execute_sql_with_return_columns(sql, &vec![], vec!["id", "seq", "table", "from", "to", "on_update", "on_delete", "match"]);
+    let result = db.as_ref().execute_sql_with_return(sql, &vec![]);
     
     println!("result: {:#?}", result);
 }

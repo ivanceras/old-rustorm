@@ -191,7 +191,7 @@ fn test_config_sqlite_url_with_port(){
         password: None, 
         host: None,
         port: None,
-        database: "bazaar_v6.db".to_string(),
+        database: "/bazaar_v6.db/".to_string(),
         ssl: false,
     };
     println!("{:?}",parsed_config);

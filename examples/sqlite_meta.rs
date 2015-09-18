@@ -13,7 +13,7 @@ fn main(){
     let sql = "PRAGMA table_info(product);";
     //let sql = "SELECT sql FROM sqlite_master WHERE tbl_name = 'table_name' AND type = 'table'";
      
-    let result = db.as_ref().execute_sql_with_return_columns(sql, &vec![], vec!["cid", "name", "type", "notnull", "dflt_value", "pk"]);
+    let result = db.as_ref().execute_sql_with_return(sql, &vec![]);
     
     println!("result: {:#?}", result);
 }
