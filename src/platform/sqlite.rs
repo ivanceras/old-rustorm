@@ -550,7 +550,6 @@ impl DatabaseDev for Sqlite{
         let result = self.execute_sql_with_return(&sql, &vec![]);
         match result{
             Ok(result) => {
-                println!("result: {:#?}", result);
                 let mut tables:Vec<(String, String, bool)> = Vec::new();
                 for r in result{
                     let schema = "".to_string();
@@ -558,7 +557,6 @@ impl DatabaseDev for Sqlite{
                     let is_view = false;
                     tables.push((schema, table, is_view))
                 }
-                println!("got tables: {:?}", tables);
                 tables 
             },
             Err(e) => {

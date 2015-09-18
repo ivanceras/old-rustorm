@@ -53,7 +53,7 @@ impl DbConfig{
                     },
                     Err(e) => {
                         match url{
-                            "sqlite:///:memory:" => {//special case for sqlite
+                            "sqlite://:memory:" => {//special case for sqlite, maybe only use 2 // sqlite:://:memory:
                             return Some(DbConfig{
                                     platform: scheme.to_string(),
                                     username: None,
@@ -72,22 +72,26 @@ impl DbConfig{
             //TODO: need to handle the complete file path for sqlite
             match scheme{
                 "sqlite" => { // handle sqlite parsing such as the memory and the host be the database
+                    let mut complete_path = String::new();
+                    let domain = match reparse_relative.host{
+                        Host::Domain(ref domain) => domain.to_string(),
+                        _ => panic!("ip is not allowed in sqlite")
+                    };
+                    complete_path.push_str(&format!("/{}",domain));
+                    for p in reparse_relative.path{
+                        complete_path.push_str(&format!("/{}", p));
+                    }
                     Some(DbConfig{
                         platform: scheme.to_string(),
                         username: None,
                         password: None,
                         host: None,
                         port: None,
-                        database: {
-                            match reparse_relative.host{
-                                Host::Domain(ref db) => db.to_string(),
-                                _ => panic!("only domains are handled"),
-                            }
-                        },
+                        database: complete_path,
                         ssl: false,    
                     })
                 },
-                _ =>
+                _ => // all other database url are standard
                     Some(DbConfig{
                         platform: scheme.to_string(),
                         username: Some(reparse_relative.username.clone()),
@@ -194,9 +198,28 @@ fn test_config_sqlite_url_with_port(){
     assert_eq!(parsed_config, expected_config);
 }
 
+
+#[test]
+fn test_config_sqlite_url_with_path(){
+    let url = "sqlite:///home/some/path/file.db";
+    let parsed_config = DbConfig::from_url(url).unwrap();
+    let expected_config = DbConfig{
+        platform: "sqlite".to_string(),
+        username: None,
+        password: None, 
+        host: None,
+        port: None,
+        database: "/home/some/path/file.db".to_string(),
+        ssl: false,
+    };
+    println!("{:?}",parsed_config);
+    assert_eq!(parsed_config, expected_config);
+}
+
+
 #[test]
 fn sqlite_in_memory(){
-    let url = "sqlite:///:memory:";
+    let url = "sqlite://:memory:";
     let parsed_config = DbConfig::from_url(url).unwrap();
     let expected_config = DbConfig{
         platform: "sqlite".to_string(),

@@ -106,7 +106,14 @@ impl Postgres{
                     Err(_) => Value::Null,
                 }
             },
-            Type::Numeric => {
+            Type::Float4 => {
+                let value = row.get_opt(index);
+                 match value{
+                    Ok(value) => Value::F32(value),
+                    Err(_) => Value::Null,
+                }
+            },
+            Type::Numeric | Type::Float8 => {
                 let value = row.get_opt(index);
                  match value{
                     Ok(value) => Value::F64(value),
@@ -127,6 +134,13 @@ impl Postgres{
                     Err(_) => Value::Null,
                 }
             },
+            Type::Int2 => {
+                let value = row.get_opt(index);
+                 match value{
+                    Ok(value) => Value::I16(value),
+                    Err(_) => Value::Null,
+                }
+            },
             Type::Int4 => {
                 let value = row.get_opt(index);
                  match value{
@@ -134,7 +148,21 @@ impl Postgres{
                     Err(_) => Value::Null,
                 }
             },
+            Type::Int8 => {
+                let value = row.get_opt(index);
+                 match value{
+                    Ok(value) => Value::I64(value),
+                    Err(_) => Value::Null,
+                }
+            },
             Type::Timetz => {
+                let value = row.get_opt(index);
+                 match value{
+                    Ok(value) => Value::DateTime(value),
+                    Err(_) => Value::Null,
+                }
+            },
+            Type::Date => {
                 let value = row.get_opt(index);
                  match value{
                     Ok(value) => Value::DateTime(value),
@@ -148,7 +176,20 @@ impl Postgres{
                     Err(_) => Value::Null,
                 }
             },
-             
+             Type::Inet => {
+                let value = row.get_opt(index);
+                 match value{
+                    Ok(value) => Value::String(value),
+                    Err(_) => Value::Null,
+                }
+            },
+            Type::Tsvector => {
+                let value = row.get_opt(index);
+                 match value{
+                    Ok(value) => Value::String(value),
+                    Err(_) => Value::Null,
+                }
+            },
             _ => panic!("Type {:?} is not covered!", dtype)
         }
     }
@@ -686,6 +727,12 @@ impl DatabaseDev for Postgres{
             "interval" => {
                 (vec![], "u32".to_string() )
             },
+            "inet[]" => {
+                (vec![], "String".to_string() )
+            },
+            "tsvector" | "inet" => {
+                (vec![], "String".to_string() )
+            },//or everything else should be string
             _ => panic!("Unable to get the equivalent data type for {}", db_type),
         };
         db_type
