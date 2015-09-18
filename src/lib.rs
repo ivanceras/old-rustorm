@@ -2,13 +2,13 @@
 //! 
 //! ## Example
 //! [..](https://github.com/ivanceras/rustorm/blob/master/examples/show_one_product.rs)
-
+//!
 //! ```rust
 //! extern crate rustorm;
 //! extern crate uuid;
 //! extern crate chrono;
 //! extern crate rustc_serialize;
-
+//!
 //! use uuid::Uuid;
 //! use chrono::datetime::DateTime;
 //! use chrono::offset::utc::UTC;
@@ -68,7 +68,7 @@
 //!             .collect_one(db.as_ref()).unwrap();
 //!     println!("{}  {}  {:?}", prod.product_id, prod.name.unwrap(), prod.description);
 //! }
-
+//!
 //!
 //! ```
 //!
