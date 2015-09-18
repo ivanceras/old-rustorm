@@ -23,10 +23,10 @@ features = ["rustc-serialize"]
 version = "*"
 features = ["time", "uuid", "chrono"]
 
-[dependencies.r2d2_sqlite]
-path = "../r2d2-sqlite"
-optional = true
-version = "*"
+#[dependencies.r2d2_sqlite]
+#path = "../r2d2-sqlite"
+#optional = true
+#version = "*"
 
 [dependencies]
 rustc-serialize = "*"
@@ -39,5 +39,5 @@ time = "*"
 r2d2 = "*"
 r2d2_postgres = "*"
 rusqlite = { version = "*", optional = true }
-#r2d2_sqlite = { version = "*", optional = true }
+r2d2_sqlite = { version = "*", optional = true }
 mysql = "*"
