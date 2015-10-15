@@ -7,7 +7,7 @@ use writer::SqlFrag;
 use database::SqlOption;
 
 use mysql::value::Value as MyValue;
-use mysql::error::MyResult;
+use mysql::error::{MyResult,MyError};
 use mysql::conn::Stmt;
 use mysql::conn::pool::{MyPool};
 
@@ -19,16 +19,22 @@ pub struct Mysql {
     pool: Option<MyPool>,
 }
 
+impl From<MyError> for DbError {
+    fn from(err: MyError) -> Self {
+        DbError::from_string(format!("{:?}", err))
+    }
+}
+
 impl Mysql{
-    
+
     pub fn new()->Self{
         Mysql{ pool: None }
     }
-    
+
     pub fn with_pooled_connection(pool: MyPool)->Self{
         Mysql{pool: Some(pool)}
     }
-    
+
     fn from_rust_type_tosql(types: &Vec<Value>)->Vec< MyValue>{
         let mut params:Vec<MyValue> = vec![];
         for t in types{
@@ -41,7 +47,7 @@ impl Mysql{
         }
         params
     }
-    
+
         /// convert a record of a row into rust type
     fn from_sql_to_rust_type(row: &Vec<MyValue>, index:usize)->Value{
         let value = row.get(index);
@@ -50,7 +56,7 @@ impl Mysql{
             None => Value::Null,
         }
     }
-    
+
     ///
     /// convert rust data type names to database data type names
     /// will be used in generating SQL for table creation
@@ -114,8 +120,8 @@ impl Mysql{
         rust_type
 
     }
-   
-    fn get_prepared_statement<'a>(&'a self, sql: &'a str) -> MyResult<Stmt> { 
+
+    fn get_prepared_statement<'a>(&'a self, sql: &'a str) -> MyResult<Stmt> {
         self.pool.as_ref().unwrap().prepare(sql)
     }
 }
@@ -123,16 +129,11 @@ impl Mysql{
 impl Database for Mysql{
     fn version(&self)->String{
        let sql = "select version()";
-       let dao = self.execute_sql_with_return(sql, &vec![]);
+       let dao = self.execute_sql_with_one_return(sql, &vec![]);
        match dao{
-           Ok(dao) => {
-               if dao.len() == 1{
-                   dao[0].get("version")
-               }else{
-                   panic!("More than 1 rows returned")
-               }
-           },
-           Err(_) => panic!("unable to get database version")
+           Ok(Some(dao)) => dao.get("version"),
+           Ok(None) => panic!("unable to get database version"),
+           Err(e) => panic!(format!("{:?}", e))
        }
     }
     fn begin(&self){}
@@ -144,22 +145,22 @@ impl Database for Mysql{
     fn close(&self){}
     fn is_valid(&self)->bool{false}
     fn reset(&self){}
-    
+
     /// return this list of options, supported features in the database
     fn sql_options(&self)->Vec<SqlOption>{
         vec![
             SqlOption::UsesQuestionMark,//mysql uses question mark instead of the numbered params
         ]
     }
-    
+
     fn update(&self, query:&Query)->Dao{panic!("not yet")}
     fn delete(&self, query:&Query)->Result<usize, String>{panic!("not yet");}
-    
+
     fn execute_sql_with_return(&self, sql:&str, params:&Vec<Value>)->Result<Vec<Dao>, DbError>{
         println!("SQL: \n{}", sql);
         println!("param: {:?}", params);
         assert!(self.pool.is_some());
-        let mut stmt = self.get_prepared_statement(sql).unwrap();
+        let mut stmt = try!(self.get_prepared_statement(sql));
         let mut columns = vec![];
         for col in stmt.columns_ref().unwrap(){
             let column_name = String::from_utf8(col.name.clone()).unwrap();
@@ -167,45 +168,30 @@ impl Database for Mysql{
         }
         let mut daos = vec![];
         let param = Mysql::from_rust_type_tosql(params);
-        let rows = stmt.execute(&param);
-        match rows{
-            Ok(rows) => 
-            for row in rows {
-                match row{
-                    Ok(row) => {
-                        let mut index = 0;
-                        let mut dao = Dao::new();
-                        for col in &columns{
-                            let rtype = Mysql::from_sql_to_rust_type(&row, index);
-                            dao.set_value(col, rtype);
-                            index += 1;
-                        }
-                        daos.push(dao);
-                    }
-                    Err(e) => {
-                        println!("error! {}",e) 
-                    }
-                }
-            },
-            Err(e) => println!("Something is wrong")
+        let rows = try!(stmt.execute(&param));
+        for row in rows {
+            let row = try!(row);
+            let mut index = 0;
+            let mut dao = Dao::new();
+            for col in &columns{
+                let rtype = Mysql::from_sql_to_rust_type(&row, index);
+                dao.set_value(col, rtype);
+                index += 1;
+            }
+            daos.push(dao);
         }
         Ok(daos)
     }
-    
-    fn execute_sql_with_one_return(&self, sql:&str, params:&Vec<Value>)->Result<Dao, DbError>{
-        let dao = self.execute_sql_with_return(sql, params);
-        match dao{
-            Ok(dao) => {
-                if dao.len() == 1{
-                    Ok(dao[0].clone())
-                }else{
-                    Err(DbError::new("There should be 1 and only 1 record return here"))
-                }
-            },
-            Err(_) =>  Err(DbError::new("Error in the query"))
+
+    fn execute_sql_with_one_return(&self, sql:&str, params:&Vec<Value>)->Result<Option<Dao>, DbError>{
+        let dao = try!(self.execute_sql_with_return(sql, params));
+        if dao.len() >= 1{
+            Ok(Some(dao[0].clone()))
+        } else {
+            Ok(None)
         }
     }
-    
+
     /// generic execute sql which returns not much information,
     /// returns only the number of affected records or errors
     /// can be used with DDL operations (CREATE, DELETE, ALTER, DROP)
@@ -214,13 +200,8 @@ impl Database for Mysql{
         println!("param: {:?}", params);
         let to_sql_types = Mysql::from_rust_type_tosql(params);
         assert!(self.pool.is_some());
-        let result = self.pool.as_ref().unwrap().prep_exec(sql, &to_sql_types);
-        match result{
-            Ok(x) => { Ok(x.affected_rows() as usize)},
-            Err(e) => {
-                Err(DbError::new("Something is wrong")) 
-            }
-        }
+        let result = try!(self.pool.as_ref().unwrap().prep_exec(sql, &to_sql_types));
+        Ok(result.affected_rows() as usize)
     }
 
 }
@@ -233,7 +214,7 @@ impl DatabaseDDL for Mysql{
     fn drop_schema(&self, schema:&str){
         panic!("mysql does not support schema")
     }
-    
+
     fn build_create_table(&self, table:&Table)->SqlFrag{
         let mut w = SqlFrag::new(self.sql_options());
         w.append("CREATE TABLE ");
@@ -263,7 +244,7 @@ impl DatabaseDDL for Mysql{
     }
 
     fn rename_table(&self, table:&Table, new_tablename:String){
-        
+
     }
 
     fn drop_table(&self, table:&Table){
