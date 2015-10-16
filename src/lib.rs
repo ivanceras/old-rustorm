@@ -1,5 +1,5 @@
 //! Rustorm is a simple ORM implemented in rust.
-//! 
+//!
 //! ## Example
 //! [..](https://github.com/ivanceras/rustorm/blob/master/examples/show_one_product.rs)
 //!
