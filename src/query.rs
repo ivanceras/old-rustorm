@@ -1059,6 +1059,9 @@ impl Query{
     /// TODO: use Result<T,Error> instead of Option<T>
     pub fn collect_one<T: IsDao+IsTable>(&mut self, db: &Database)->Result<T, DbError>{
         let result = try!(self.retrieve(db));
-        Ok(result.cast_one().unwrap())
+        match result.cast_one() {
+            Some(res) => Ok(res),
+            None => Err(DbError::new("No entry to collect found."))
+        }
     }
 }
