@@ -38,19 +38,21 @@ pub struct DbError{
 
 /// rough implementation of Database errors
 impl DbError{
-    
-    pub fn new(description: &str)->Self{
+    pub fn new(description: &str) -> Self{
         DbError{description: description.to_string(), cause: None}
+    }
+
+    pub fn from_string(description: String) -> Self{
+        DbError{description: description, cause: None}
     }
 }
 
 impl Error for DbError{
-    
-     fn description(&self) -> &str{
-         &self.description
-     }
+    fn description(&self) -> &str{
+        &self.description
+    }
 
-    fn cause(&self) -> Option<&Error> { 
+    fn cause(&self) -> Option<&Error> {
         None
     }
 }
@@ -65,7 +67,7 @@ impl fmt::Display for DbError {
 /// This is the database interface which will should be implemented to you the specifics of each database platform
 /// At least all methods on this trait should be implemented for target deployment database
 /// A lower level API for manipulating objects in the database
-/// 
+///
 /// TODO: acquire only a connection until a query is about to be executed.
 /// generating query don't really need database connection just yet.
 
@@ -74,7 +76,7 @@ pub trait Database{
     /// return the version of the database
     /// lower version of database has fewer supported features
     fn version(&self)->String;
-    
+
     /// begin database transaction
     fn begin(&self);
 
@@ -113,7 +115,11 @@ pub trait Database{
     /// including the value generated via the defaults
     fn insert(&self, query:&Query)->Result<Dao, DbError>{
         let sql_frag = self.build_insert(query);
-        self.execute_sql_with_one_return(&sql_frag.sql, &sql_frag.params)
+        match self.execute_sql_with_one_return(&sql_frag.sql, &sql_frag.params) {
+            Ok(Some(result)) => Ok(result),
+            Ok(None) => Err(DbError::new("No result from insert")),
+            Err(e) => Err(e)
+        }
     }
 
     /// update
@@ -128,29 +134,23 @@ pub trait Database{
     /// use the enumerated column for data extraction when db doesn't support returning the records column names
     fn execute_with_return(&self, query:&Query)->Result<DaoResult, DbError>{
         let sql_frag = &self.build_query(query);
-        let result = self.execute_sql_with_return(&sql_frag.sql, &sql_frag.params);
-        match result{
-            Ok(result) => {
-                let dao_result = DaoResult{
-                    dao: result,
-                    renamed_columns:query.get_renamed_columns(),
-                    total:None,
-                    page:None,
-                    page_size:None,
-                };
-                Ok(dao_result)
-            },
-            Err(e) => Err(DbError::new("Error in the query"))
-        }
-        
+        let result = try!(self.execute_sql_with_return(&sql_frag.sql, &sql_frag.params));
+        let dao_result = DaoResult{
+            dao: result,
+            renamed_columns:query.get_renamed_columns(),
+            total:None,
+            page:None,
+            page_size:None,
+        };
+        Ok(dao_result)
     }
 
     /// execute query with 1 return dao
-    fn execute_with_one_return(&self, query:&Query)->Result<Dao, DbError>{
+    fn execute_with_one_return(&self, query:&Query)->Result<Option<Dao>, DbError>{
         let sql_frag = &self.build_query(query);
         self.execute_sql_with_one_return(&sql_frag.sql, &sql_frag.params)
     }
-    
+
     /// execute query with no return dao
     fn execute(&self, query:&Query)->Result<usize, DbError>{
         let sql_frag = &self.build_query(query);
@@ -159,22 +159,16 @@ pub trait Database{
 
     /// execute insert with returning clause, update with returning clause
     fn execute_sql_with_return(&self, sql:&str, params:&Vec<Value>)->Result<Vec<Dao>, DbError>;
-    
-    fn execute_sql_with_one_return(&self, sql:&str, params:&Vec<Value>)->Result<Dao, DbError>{
-        let dao = self.execute_sql_with_return(sql, params);
-        match dao{
-            Ok(dao) => {
-                if dao.len() == 1{
-                    Ok(dao[0].clone())
-                }
-                else{
-                    Err(DbError::new("There should be 1 and only 1 record return here"))
-                }
-            },
-            Err(e) => Err(DbError::new("Error in the query"))
+
+    fn execute_sql_with_one_return(&self, sql:&str, params:&Vec<Value>)->Result<Option<Dao>, DbError>{
+        let dao = try!(self.execute_sql_with_return(sql, params));
+        if dao.len() >= 1{
+            Ok(Some(dao[0].clone()))
+        } else {
+            Ok(None)
         }
     }
-    
+
     /// everything else, no required return other than error or affected number of records
     fn execute_sql(&self, sql:&str, param:&Vec<Value>)->Result<usize, DbError>;
 
@@ -190,7 +184,7 @@ pub trait Database{
             SqlType::DELETE => self.build_delete(query),
         }
     }
-    
+
     /// build operand, i.e: columns, query, function, values
     fn build_operand(&self, w: &mut SqlFrag, parent_query:&Query, operand:&Operand){
         match *operand{
@@ -200,7 +194,7 @@ pub trait Database{
                 }else{
                     w.append(&column_name.complete_name());
                 }
-            }, 
+            },
             Operand::TableName(ref table_name) => {
                 if self.sql_options().contains(&SqlOption::UsesSchema){
                     w.append(&table_name.complete_name());
@@ -239,7 +233,7 @@ pub trait Database{
             },
         };
     }
-    
+
     fn build_condition(&self, w: &mut SqlFrag, parent_query:&Query, cond:&Condition){
         self.build_operand(w, parent_query, &cond.left);
         w.append(" ");
@@ -283,13 +277,13 @@ pub trait Database{
             Equality::IS_NOT_NULL => {
                     w.append("IS NOT NULL");
                 },
-            
+
             Equality::IS_NULL => {
                 w.append("IS NULL");
             },
         };
     }
-    
+
     fn build_field(&self, w: &mut SqlFrag, parent_query:&Query, field:&Field){
         self.build_operand(w, parent_query, &field.operand);
         match field.name{
@@ -300,8 +294,8 @@ pub trait Database{
             None => (),
         };
     }
-    
-    
+
+
     fn build_filter(&self, w: &mut SqlFrag, parent_query:&Query, filter:&Filter){
         if !filter.subfilters.is_empty(){
             w.append("( ");
@@ -322,7 +316,7 @@ pub trait Database{
             w.append(" )");
         }
     }
-    
+
     /// build the filter clause or the where clause of the query
     /// TODO: add the sub filters
     fn build_filters(&self, w: &mut SqlFrag, parent_query:&Query, filters: &Vec<Filter>){
@@ -357,9 +351,9 @@ pub trait Database{
         w.left_river("SELECT");
         self.build_enumerated_fields(&mut w, query, &query.enumerated_fields); //TODO: add support for column_sql, fields, functions
         w.left_river("FROM");
-        
+
         assert!(query.from.is_some(), "There should be table, query, function to select from");
-        
+
         match query.from{
             Some(ref field) => {
                 self.build_field(&mut w, query, field);
@@ -409,12 +403,12 @@ pub trait Database{
                 }
             }
         }
-        
+
         if !query.filters.is_empty() {
             w.left_river("WHERE ");
             self.build_filters(&mut w, query, &query.filters);
         }
-        
+
         if !query.group_by.is_empty() {
             w.left_river("GROUP BY ");
             let mut do_comma = false;
@@ -424,7 +418,7 @@ pub trait Database{
                 w.append(" ");
             }
         };
-        
+
         if !query.having.is_empty() {
             w.left_river("HAVING ");
             let mut do_comma = false;
@@ -433,7 +427,7 @@ pub trait Database{
                 self.build_condition(&mut w, query, hav);
             }
         }
-        
+
         if !query.order_by.is_empty(){
             w.left_river("ORDER BY ");
             let mut do_comma = false;
@@ -446,7 +440,7 @@ pub trait Database{
                 };
             }
         };
-        
+
         match query.page_size{
             Some(page_size) => {
                 w.left_river("LIMIT ");
@@ -454,7 +448,7 @@ pub trait Database{
             },
             None => (),
         };
-        
+
         match query.page{
             Some(page) =>{
                 w.left_river("OFFSET ");
@@ -467,7 +461,7 @@ pub trait Database{
         };
         w
     }
-    
+
     /// TODO complete this
     fn build_insert(&self, query: &Query)->SqlFrag{
         println!("building insert query");
@@ -484,8 +478,8 @@ pub trait Database{
                 w.append(&table_name.name);
             }
         }
-        
-        
+
+
         w.append("( ");
         self.build_enumerated_fields(&mut w, query, &query.enumerated_fields); //TODO: add support for column_sql, fields, functions
         w.append(" ) ");
@@ -514,7 +508,7 @@ pub trait Database{
         w
     }
 
-    
+
     fn build_update(&self, query: &Query)->SqlFrag{
         let mut w = SqlFrag::new(self.sql_options());
         w.left_river("UPDATE ");
@@ -542,7 +536,7 @@ pub trait Database{
             }
             column_index += 1;
         }
-       
+
         if !query.filters.is_empty() {
             w.left_river("WHERE ");
             self.build_filters(&mut w, query, &query.filters);
@@ -596,7 +590,7 @@ pub trait DatabaseDDL{
 
     /// create a database table based on the Model Definition
     fn create_table(&self, model:&Table);
-    
+
     /// build sql for create table
     fn build_create_table(&self, table:&Table)->SqlFrag;
 
@@ -642,7 +636,7 @@ pub trait DatabaseDev{
     ///get the equivalent postgresql database data type to rust data type
     /// returns (module, type)
     fn dbtype_to_rust_type(&self, db_type: &str)->(Vec<String>, String);
-    
+
     fn rust_type_to_dbtype(&self, rust_type: &str)->String;
 
 }

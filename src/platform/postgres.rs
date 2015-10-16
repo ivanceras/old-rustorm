@@ -6,6 +6,7 @@ use postgres::Connection;
 use regex::Regex;
 use dao::Value;
 use database::{Database, DatabaseDev, DatabaseDDL, DbError};
+use postgres::error::Error as PgError;
 use postgres::types::Type;
 use postgres::types::ToSql;
 use writer::SqlFrag;
@@ -19,26 +20,32 @@ pub struct Postgres{
     pub pool: Option<PooledConnection<PostgresConnectionManager>>,
 }
 
+impl From<PgError> for DbError {
+    fn from(err: PgError) -> Self {
+        DbError::from_string(format!("{:?}", err))
+    }
+}
+
 /// Build the Query into a SQL statements that is a valid
 /// PostgreSQL sql query,
 /// TODO: support version SqlOptions/specific syntax
 
 impl Postgres{
-    
+
     /// create an instance, but without a connection yet,
     /// useful when just building sql queries specific to this platform
     /// inexpensive operation, so can have multiple instances
     pub fn new()->Self{
         Postgres{pool: None}
     }
-    
-    
+
+
     pub fn with_pooled_connection(pool: PooledConnection<PostgresConnectionManager>)->Self{
        Postgres{pool: Some(pool)}
     }
-    
-    
-    
+
+
+
     pub fn get_connection(&self)->&Connection{
        if self.pool.is_some(){
             &self.pool.as_ref().unwrap()
@@ -81,7 +88,7 @@ impl Postgres{
         }
         params
     }
-    
+
     /// convert a record of a row into rust type
     fn from_sql_to_rust_type(&self, dtype:&Type, row: &Row, index:usize)->Value{
         match *dtype{
@@ -193,7 +200,7 @@ impl Postgres{
             _ => panic!("Type {:?} is not covered!", dtype)
         }
     }
-    
+
 
     ///
     /// http://stackoverflow.com/questions/109325/postgresql-describe-table
@@ -331,7 +338,7 @@ impl Postgres{
         // both primary and foreign columns
         self.unify_primary_and_foreign_column(&columns)
     }
-    
+
     fn get_table_comment(&self, schema:&str, table:&str)->Option<String>{
         let sql ="
                 SELECT
@@ -393,17 +400,15 @@ impl Postgres{
 
 
 impl Database for Postgres{
-    
+
     fn version(&self)->String{
         let sql = "SHOW server_version";
         let dao = self.execute_sql_with_one_return(sql, &vec![]);
         match dao{
-            Ok(dao) => {
-                dao.get("server_version")
-            },
-            Err(_) => panic!("unable to get database version")
+            Ok(Some(dao)) => dao.get("server_version"),
+            Ok(None) => panic!("unable to get database version"),
+            Err(e) => panic!(format!("{:?}", e))
         }
-        
     }
     fn begin(&self){}
     fn commit(&self){}
@@ -414,7 +419,7 @@ impl Database for Postgres{
     fn close(&self){}
     fn is_valid(&self)->bool{false}
     fn reset(&self){}
-    
+
     /// return this list of options, supported features in the database
     /// TODO: make this features version specific
     /// http://www.postgresql.org/about/featurematrix/
@@ -433,8 +438,8 @@ impl Database for Postgres{
             SqlOption::ReturnMetaColumns,// whether to use the column names returned in a statement
         ]
     }
-    
-    
+
+
     fn update(&self, query:&Query)->Dao{panic!("not yet")}
     fn delete(&self, query:&Query)->Result<usize, String>{panic!("not yet");}
 
@@ -442,36 +447,26 @@ impl Database for Postgres{
         println!("SQL: \n{}", sql);
         println!("param: {:?}", params);
         let conn = self.get_connection();
-        let stmt = match conn.prepare(sql){
-            Ok(stmt) => stmt,
-            Err(e) => panic!("Something is wrong, when preparing statements: {:?}",e),
-        };
+        let stmt = try!(conn.prepare(sql));
         let mut daos = vec![];
         let param = self.from_rust_type_tosql(params);
-        match stmt.query(&param){
-            Ok(rows) =>{
-                for row in rows {
-                    let columns = row.columns();
-                    let mut index = 0;
-                    let mut dao = Dao::new();
-                    for c in columns{
-                        let column_name = c.name();
-                        let dtype = c.type_();
-                        let rtype = self.from_sql_to_rust_type(&dtype, &row, index);
-                        dao.set_value(column_name, rtype);
-                        index += 1;
-                    }
-                    daos.push(dao);
-                }
-                Ok(daos)
-            },
-            Err(e) => {
-                panic!("Something is wrong {:?}", e);
+        let rows = try!(stmt.query(&param));
+        for row in rows {
+            let columns = row.columns();
+            let mut index = 0;
+            let mut dao = Dao::new();
+            for c in columns{
+                let column_name = c.name();
+                let dtype = c.type_();
+                let rtype = self.from_sql_to_rust_type(&dtype, &row, index);
+                dao.set_value(column_name, rtype);
+                index += 1;
             }
+            daos.push(dao);
         }
-        
+        Ok(daos)
     }
-    
+
     /// generic execute sql which returns not much information,
     /// returns only the number of affected records or errors
     /// can be used with DDL operations (CREATE, DELETE, ALTER, DROP)
@@ -480,13 +475,8 @@ impl Database for Postgres{
         println!("param: {:?}", params);
         let to_sql_types = self.from_rust_type_tosql(params);
         let conn = self.get_connection();
-        let result = conn.execute(sql, &to_sql_types);
-        match result{
-            Ok(result) => { Ok(result as usize)},
-            Err(e) => {
-                Err(DbError::new("Something is wrong")) 
-            }
-        }
+        let result = try!(conn.execute(sql, &to_sql_types));
+        Ok(result as usize)
     }
 
 }
@@ -597,7 +587,7 @@ impl DatabaseDev for Postgres{
                     pg_class.relname AS table,
                     pg_namespace.nspname AS schema,
                     obj_description(pg_class.oid) AS comment,
-                    CASE 
+                    CASE
                         WHEN pg_class.relkind = 'r' THEN false
                         WHEN pg_class.relkind = 'v' THEN true
                     END AS is_view

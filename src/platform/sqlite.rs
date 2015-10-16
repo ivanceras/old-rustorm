@@ -8,29 +8,42 @@ use database::SqlOption;
 use rusqlite::SqliteConnection;
 use rusqlite::types::ToSql;
 use rusqlite::SqliteRow;
+use rusqlite::SqliteError;
 use table::{Table, Column, Foreign};
 use database::DatabaseDDL;
 use database::DbError;
 use r2d2::PooledConnection;
 use r2d2_sqlite::SqliteConnectionManager;
 use regex::Regex;
+use regex::Error as RegexError;
 use std::collections::BTreeMap;
 
 pub struct Sqlite {
     pool: Option<PooledConnection<SqliteConnectionManager>>,
 }
 
+impl From<SqliteError> for DbError {
+    fn from(err: SqliteError) -> Self {
+        DbError::from_string(format!("{:?}", err))
+    }
+}
+
+impl From<RegexError> for DbError {
+    fn from(err: RegexError) -> Self {
+        DbError::from_string(format!("{:?}", err))
+    }
+}
 
 impl Sqlite{
-    
+
     pub fn new()->Self{
         Sqlite{pool: None}
     }
-    
+
     pub fn with_pooled_connection(pool: PooledConnection<SqliteConnectionManager>)->Self{
        Sqlite{pool: Some(pool)}
     }
-    
+
     fn from_rust_type_tosql<'a>(&self, types: &'a Vec<Value>)->Vec<&'a ToSql>{
         let mut params:Vec<&ToSql> = vec![];
         for t in types{
@@ -43,7 +56,7 @@ impl Sqlite{
         }
         params
     }
-    
+
     pub fn get_connection(&self)->&SqliteConnection{
        if self.pool.is_some(){
             &self.pool.as_ref().unwrap()
@@ -52,7 +65,7 @@ impl Sqlite{
             panic!("No connection for this database")
         }
     }
-    
+
         /// convert a record of a row into rust type
     fn from_sql_to_rust_type(&self, row: &SqliteRow, index:usize)->Value{
         let value = row.get_opt(index as i32);
@@ -61,7 +74,7 @@ impl Sqlite{
             Err(_) => Value::Null,
         }
     }
-    
+
     ///
     /// convert rust data type names to database data type names
     /// will be used in generating SQL for table creation
@@ -125,56 +138,42 @@ impl Sqlite{
         rust_type
 
     }
-    
+
     /// get the foreign keys of table
     fn get_foreign_keys(&self, schema:&str, table:&str)->Vec<Foreign>{
         println!("Extracting foreign keys...");
         let sql = format!("PRAGMA foreign_key_list({});", table);
-        let result = self.execute_sql_with_return(&sql, &vec![]);
+        let result = self.execute_sql_with_return(&sql, &vec![]).unwrap();
         println!("result: {:#?}", result);
-        match result{
-            Ok(result) => {
-                let mut foreigns = vec![];
-                for r in result{
-                    let table: String = r.get("table");
-                    let from: String = r.get("from");
-                    let to: String = r.get("to");
-                    println!("table: {}", table);
-                    println!("from: {}", from);
-                    println!("to: {}", to);
-                    
-                    let foreign = Foreign{
-                        schema: "".to_string(),
-                        table: table.to_string(),
-                        column: to.to_string(),
-                    };
-                    foreigns.push(foreign);
-                }
-                foreigns
-            },
-            Err(e) => {
-                println!("Something is wrong {}", e);
-                vec![]
-            }
+        let mut foreigns = vec![];
+        for r in result{
+            let table: String = r.get("table");
+            let from: String = r.get("from");
+            let to: String = r.get("to");
+            println!("table: {}", table);
+            println!("from: {}", from);
+            println!("to: {}", to);
+
+            let foreign = Foreign{
+                schema: "".to_string(),
+                table: table.to_string(),
+                column: to.to_string(),
+            };
+            foreigns.push(foreign);
         }
+        foreigns
     }
-    
+
     pub fn extract_comments(create_sql: &str)->
                     Result<(Option<String>, BTreeMap<String, Option<String>>),DbError>{
-        let re = match Regex::new(r".*CREATE\s+TABLE\s+(\S+)\s*\((?s)(.*)\).*") {
-            Ok(re) => re,
-            Err(err) => panic!("{}", err),
-        };
+        let re = try!(Regex::new(r".*CREATE\s+TABLE\s+(\S+)\s*\((?s)(.*)\).*"));
         println!("create_sql: {:?}", create_sql);
         if re.is_match(&create_sql){
             println!("matched...");
             let cap = re.captures(&create_sql).unwrap();
             let all_columns = cap.at(2).unwrap();
-            
-            let line_comma_re = match Regex::new(r"[,\n]") {
-                Ok(re) => re,
-                Err(err) => panic!("{}", err),
-            };
+
+            let line_comma_re = try!(Regex::new(r"[,\n]"));
             println!("All columns.. {}", all_columns);
             let splinters:Vec<&str> = line_comma_re.split(all_columns).collect();
             println!("splinters: {:#?}", splinters);
@@ -195,10 +194,10 @@ impl Sqlite{
                     comments.push(Some(splinter.to_string()));
                 }
                 else if splinter.starts_with("FOREIGN"){
-                
+
                 }
                 else if splinter.starts_with("CHECK"){
-                
+
                 }
                 else{
                     let line: Vec<&str> = splinter.split_whitespace().collect();
@@ -228,57 +227,47 @@ impl Sqlite{
     }
     /// extract the comment of the table
     /// Don't support multi-line comment
-    fn get_table_comment(&self, schema:&str, table:&str)->Option<String>{   
+    fn get_table_comment(&self, schema:&str, table:&str)->Option<String>{
         let sql = format!("SELECT sql FROM sqlite_master WHERE type = 'table' AND tbl_name = '{}'",table);
-        let result = self.execute_sql_with_return(&sql, &vec![]);
-        match result{
-            Ok(result) => {
-                assert_eq!(result.len(), 1);
-                let ref dao = result[0];
-                let create_sql:String = dao.get("sql");
-                match Sqlite::extract_comments(&create_sql){
-                    Ok((table_comment, column_comments)) => {
-                        println!("table_comment: {:?}", table_comment);
-                        table_comment
-                    },
-                    Err(e) => {
-                        None
-                    }
-                }
+        let result = self.execute_sql_with_return(&sql, &vec![]).unwrap();
+        assert_eq!(result.len(), 1);
+        let ref dao = result[0];
+        let create_sql:String = dao.get("sql");
+        match Sqlite::extract_comments(&create_sql){
+            Ok((table_comment, column_comments)) => {
+                println!("table_comment: {:?}", table_comment);
+                table_comment
             },
-            Err(e) => None
+            Err(e) => {
+                None
+            }
         }
     }
     /// extract the comments for each column
     /// Don't support multi-line comment
-    fn get_column_comments(&self, schema:&str, table:&str)->BTreeMap<String, Option<String>>{   
+    fn get_column_comments(&self, schema:&str, table:&str)->BTreeMap<String, Option<String>>{
         let sql = format!("SELECT sql FROM sqlite_master WHERE type = 'table' AND tbl_name = '{}'",table);
-        let result = self.execute_sql_with_return(&sql, &vec![]);
-        match result{
-            Ok(result) => {
-                assert_eq!(result.len(), 1);
-                let ref dao = result[0];
-                let create_sql:String = dao.get("sql");
-                match Sqlite::extract_comments(&create_sql){
-                    Ok((table_comment, column_comments)) => {
-                        println!("column_comments: {:?}", column_comments);
-                        column_comments
-                    },
-                    Err(e) => {
-                        BTreeMap::new()
-                    }
-                }
+        let result = self.execute_sql_with_return(&sql, &vec![]).unwrap();
+        assert_eq!(result.len(), 1);
+        let ref dao = result[0];
+        let create_sql:String = dao.get("sql");
+        match Sqlite::extract_comments(&create_sql){
+            Ok((table_comment, column_comments)) => {
+                println!("column_comments: {:?}", column_comments);
+                column_comments
             },
-            Err(e) => BTreeMap::new()
+            Err(e) => {
+                BTreeMap::new()
+            }
         }
     }
-    
+
     fn get_column_comment(&self, column_comments: &BTreeMap<String, Option<String>>, column: &str)->Option<String>{
         match column_comments.get(column){
             Some(comment) => comment.clone(),
             None => None
         }
-    
+
     }
     fn get_column_foreign(&self, all_foreign: &Vec<Foreign>, column: &str)->Option<Foreign>{
         println!("foreign: {:#?} ", all_foreign);
@@ -294,18 +283,12 @@ impl Sqlite{
 impl Database for Sqlite{
     fn version(&self)->String{
        let sql = "select sqlite_version() as version";
-       let dao = self.execute_sql_with_return(sql, &vec![]);
+       let dao = self.execute_sql_with_one_return(sql, &vec![]);
        match dao{
-            Ok(dao) => {
-                if dao.len() == 1{
-                    return dao[0].get("version")
-                }
-                else{
-                    return "unknown".to_string()
-                }
-            },
-            Err(_) => panic!("unable to get database version")
-        }
+           Ok(Some(dao)) => dao.get("version"),
+           Ok(None) => panic!("unable to get database version"),
+           Err(e) => panic!(format!("{:?}", e))
+       }
     }
     fn begin(&self){}
     fn commit(&self){}
@@ -316,7 +299,7 @@ impl Database for Sqlite{
     fn close(&self){}
     fn is_valid(&self)->bool{false}
     fn reset(&self){}
-    
+
     /// return this list of options, supported features in the database
     fn sql_options(&self)->Vec<SqlOption>{
         vec![
@@ -324,17 +307,21 @@ impl Database for Sqlite{
             SqlOption::SupportsCTE,
         ]
     }
-    
+
     fn insert(&self, query:&Query)->Result<Dao, DbError>{
         let sql_frag = self.build_insert(query);
-        self.execute_sql_with_one_return(&sql_frag.sql, &sql_frag.params)
+        match self.execute_sql_with_one_return(&sql_frag.sql, &sql_frag.params) {
+            Ok(Some(result)) => Ok(result),
+            Ok(None) => Err(DbError::new("No result from insert")),
+            Err(e) => Err(e)
+        }
     }
     fn update(&self, query:&Query)->Dao{panic!("not yet")}
     fn delete(&self, query:&Query)->Result<usize, String>{panic!("not yet");}
-    
+
     /// sqlite does not return the columns mentioned in the query,
     /// you have to specify it yourself
-    /// TODO: found this 
+    /// TODO: found this
     /// http://jgallagher.github.io/rusqlite/rusqlite/struct.SqliteStatement.html#method.column_names
     fn execute_sql_with_return(&self, sql:&str, params:&Vec<Value>)->Result<Vec<Dao>, DbError>{
         println!("SQL: \n{}", sql);
@@ -348,47 +335,33 @@ impl Database for Sqlite{
             columns.push(c.to_string());
         }
         println!("columns : {:?}", columns);
-        match stmt.query(&param){
-            Ok(rows) => 
-            for row in rows {
-                match row{
-                    Ok(row) => {
-                        let mut index = 0;
-                        let mut dao = Dao::new();
-                        for col in &columns{
-                            let rtype = self.from_sql_to_rust_type(&row, index);
-                            println!("{:?}",rtype);
-                            dao.set_value(col, rtype);
-                            index += 1;
-                        }
-                        daos.push(dao);
-                    }
-                    Err(e) => {
-                        println!("error! {}",e) 
-                    }
-                }
-            },
-            Err(e) => println!("Something is wrong")
+        let rows = try!(stmt.query(&param));
+        for row in rows {
+            let row = try!(row);
+            let mut index = 0;
+            let mut dao = Dao::new();
+            for col in &columns{
+                let rtype = self.from_sql_to_rust_type(&row, index);
+                println!("{:?}",rtype);
+                dao.set_value(col, rtype);
+                index += 1;
+            }
+            daos.push(dao);
         }
         Ok(daos)
     }
 
-    
-    fn execute_sql_with_one_return(&self, sql:&str, params:&Vec<Value>)->Result<Dao, DbError>{
-        let dao = self.execute_sql_with_return(sql, params);
-        match dao{
-            Ok(dao) => {
-                if dao.len() == 1{
-                    return Ok(dao[0].clone())
-                }
-                else{
-                    return Err(DbError::new("There should be 1 and only 1 record return here"))
-                }
-            },
-            Err(e) => Err(DbError::new("Error in the query"))
+
+    fn execute_sql_with_one_return(&self, sql:&str, params:&Vec<Value>)->Result<Option<Dao>, DbError>{
+        let dao = try!(self.execute_sql_with_return(sql, params));
+        if dao.len() >= 1{
+            return Ok(Some(dao[0].clone()))
+        }
+        else{
+            return Ok(None)
         }
     }
-    
+
     /// generic execute sql which returns not much information,
     /// returns only the number of affected records or errors
     /// can be used with DDL operations (CREATE, DELETE, ALTER, DROP)
@@ -401,7 +374,7 @@ impl Database for Sqlite{
         match result{
             Ok(result) => { Ok(result as usize)},
             Err(e) => {
-                Err(DbError::new(&format!("Something is wrong, {}", e))) 
+                Err(DbError::new(&format!("Something is wrong, {}", e)))
             }
         }
     }
@@ -416,9 +389,9 @@ impl DatabaseDDL for Sqlite{
     fn drop_schema(&self, schema:&str){
         panic!("sqlite does not support schema")
     }
-    
+
     fn build_create_table(&self, table:&Table)->SqlFrag{
-        
+
         fn build_foreign_key_stmt(table: &Table)->SqlFrag{
             let mut w = SqlFrag::new(vec![]);
             let mut do_comma = true;//there has been colcommentsumns mentioned
@@ -436,7 +409,7 @@ impl DatabaseDDL for Sqlite{
             }
             w
         }
-        
+
         let mut w = SqlFrag::new(self.sql_options());
         w.append("CREATE TABLE ");
         w.append(&table.name);
@@ -468,7 +441,7 @@ impl DatabaseDDL for Sqlite{
     }
 
     fn rename_table(&self, table:&Table, new_tablename:String){
-        
+
     }
 
     fn drop_table(&self, table:&Table){
@@ -488,7 +461,7 @@ impl DatabaseDev for Sqlite{
     fn get_table_sub_class(&self, schema:&str, table:&str)->Vec<String>{panic!("not yet")}
 
     fn get_parent_table(&self, schema:&str, table:&str)->Option<String>{panic!("not yet")}
-    
+
     fn get_table_metadata(&self, schema:&str, table:&str, is_view: bool)->Table{
         println!("extracting table meta data in sqlite");
         let sql = format!("PRAGMA table_info({});", table);
@@ -499,7 +472,7 @@ impl DatabaseDev for Sqlite{
                 let foreign = self.get_foreign_keys(schema, table);
                 let table_comment = self.get_table_comment(schema, table);
                 let column_comments = self.get_column_comments(schema, table);
-                
+
                 let mut columns = vec![];
                 for r in result{
                     let column: String = r.get("name");
@@ -512,7 +485,7 @@ impl DatabaseDev for Sqlite{
                     println!("not null: {}", not_null);
                     println!("pk: {}", pk);
                     println!("default_value: {}", default_value);
-                    
+
                     let column_comment = self.get_column_comment(&column_comments, &column);
                     let column_foreign = self.get_column_foreign(&foreign, &column);
                     let column = Column{
@@ -557,7 +530,7 @@ impl DatabaseDev for Sqlite{
                     let is_view = false;
                     tables.push((schema, table, is_view))
                 }
-                tables 
+                tables
             },
             Err(e) => {
                 panic!("Unable to get tables due to {}", e)
@@ -570,7 +543,7 @@ impl DatabaseDev for Sqlite{
     }
 
     fn dbtype_to_rust_type(&self, db_type: &str)->(Vec<String>, String){panic!("not yet")}
-    
+
     fn rust_type_to_dbtype(&self, rust_type: &str)->String{panic!("not yet")}
 }
 
@@ -578,19 +551,19 @@ impl DatabaseDev for Sqlite{
 #[test]
 fn test_comment_extract(){
     let create_sql = r"
-CREATE TABLE product_availability ( 
+CREATE TABLE product_availability (
    --Each product has its own product availability which determines when can it be available for purchase
     product_id uuid NOT NULL , --this is the id of the product
     available boolean,
-    always_available boolean, 
-    stocks numeric DEFAULT 1, 
+    always_available boolean,
+    stocks numeric DEFAULT 1,
     available_from timestamp with time zone,
     available_until timestamp with time zone,
-    available_day json, 
-    open_time time with time zone, 
+    available_day json,
+    open_time time with time zone,
     close_time time with time zone, --closing time
     FOREIGN KEY(product_id) REFERENCES product(product_id)
-)    
+)
     ";
     Sqlite::extract_comments(create_sql);
 }
