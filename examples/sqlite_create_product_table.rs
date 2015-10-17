@@ -9,8 +9,8 @@ use chrono::offset::utc::UTC;
 use rustc_serialize::json;
 
 use rustorm::query::Query;
-use rustorm::query::{Filter,Equality};
-use rustorm::dao::{Dao,IsDao};
+use rustorm::query::{Filter, Equality};
+use rustorm::dao::{Dao, IsDao};
 use rustorm::pool::ManagedPool;
 use rustorm::database::Database;
 use rustorm::table::IsTable;
@@ -19,9 +19,9 @@ use rustorm::table::Table;
 use rustorm::table::Foreign;
 
 
- 
 
-fn main(){
+
+fn main() {
     let url = "sqlite:///file1.db";
     let mut pool = ManagedPool::init(&url, 1).unwrap();
     let db = pool.connect().unwrap();
@@ -38,7 +38,7 @@ fn main(){
 pub struct Product {
     /// primary
     /// default: uuid_generate_v4()
-    /// not nullable 
+    /// not nullable
     /// db data type: uuid
     pub product_id: Uuid,
     /// barcode if scanning the product, conflict can happen, expect to return matching list of products using the barcode
@@ -80,52 +80,52 @@ pub struct Product {
     pub use_parent_price: Option<bool>,
     /// @Active
     /// default: true
-    /// not nullable 
-    /// --inherited-- 
+    /// not nullable
+    /// --inherited--
     /// db data type: boolean
     pub active: bool,
     /// @Value(users.client_id) The client_id of the user creating this records
-    /// --inherited-- 
+    /// --inherited--
     /// db data type: uuid
     pub client_id: Option<Uuid>,
     /// default: now()
-    /// not nullable 
-    /// --inherited-- 
+    /// not nullable
+    /// --inherited--
     /// db data type: timestamp with time zone
     pub created: DateTime<UTC>,
     /// @Value(users.user_id)
-    /// --inherited-- 
+    /// --inherited--
     /// db data type: uuid
     pub created_by: Option<Uuid>,
     /// @DisplayLength(100) When building a UI for this field
     /// @MaxLength(200) Do not go over 200 character on this one
-    /// --inherited-- 
+    /// --inherited--
     /// db data type: character varying
     pub description: Option<String>,
-    /// --inherited-- 
+    /// --inherited--
     /// db data type: text
     pub help: Option<String>,
     /// This is @Required it has @DisplayLength(50) - 50 character in display length a @MinLength(1) and @MaxLength(100) - Do not go over 100 characters or else the system will throw a ValueTooLong exception
     /// can also be express with @Length(1-100)
-    /// --inherited-- 
+    /// --inherited--
     /// db data type: character varying
     pub name: Option<String>,
     /// @Value(users.user_id) , which means the value will be set with the users.user_id value
-    /// 
+    ///
     /// @Where(users.active=true)
-    /// --inherited-- 
+    /// --inherited--
     /// db data type: uuid
     pub organization_id: Option<Uuid>,
-    /// --inherited-- 
+    /// --inherited--
     /// db data type: numeric
     pub priority: Option<f64>,
     /// default: now()
-    /// not nullable 
-    /// --inherited-- 
+    /// not nullable
+    /// --inherited--
     /// db data type: timestamp with time zone
     pub updated: DateTime<UTC>,
     /// @Value(users.user_id)
-    /// --inherited-- 
+    /// --inherited--
     /// db data type: uuid
     pub updated_by: Option<Uuid>,
 
@@ -134,8 +134,8 @@ pub struct Product {
 
 
 impl IsDao for Product{
-    fn from_dao(dao:&Dao)->Self{
-        Product{
+    fn from_dao(dao: &Dao) -> Self {
+        Product {
             organization_id: dao.get_opt("organization_id"),
             client_id: dao.get_opt("client_id"),
             created: dao.get("created"),
@@ -163,91 +163,91 @@ impl IsDao for Product{
         }
     }
 
-    fn to_dao(&self)->Dao{
+    fn to_dao(&self) -> Dao {
         let mut dao = Dao::new();
-        match self.organization_id{
+        match self.organization_id {
             Some(ref _value) => dao.set("organization_id", _value),
-            None => dao.set_null("organization_id")
+            None => dao.set_null("organization_id"),
         }
-        match self.client_id{
+        match self.client_id {
             Some(ref _value) => dao.set("client_id", _value),
-            None => dao.set_null("client_id")
+            None => dao.set_null("client_id"),
         }
         dao.set("created", &self.created);
-        match self.created_by{
+        match self.created_by {
             Some(ref _value) => dao.set("created_by", _value),
-            None => dao.set_null("created_by")
+            None => dao.set_null("created_by"),
         }
         dao.set("updated", &self.updated);
-        match self.updated_by{
+        match self.updated_by {
             Some(ref _value) => dao.set("updated_by", _value),
-            None => dao.set_null("updated_by")
+            None => dao.set_null("updated_by"),
         }
-        match self.priority{
+        match self.priority {
             Some(ref _value) => dao.set("priority", _value),
-            None => dao.set_null("priority")
+            None => dao.set_null("priority"),
         }
-        match self.name{
+        match self.name {
             Some(ref _value) => dao.set("name", _value),
-            None => dao.set_null("name")
+            None => dao.set_null("name"),
         }
-        match self.description{
+        match self.description {
             Some(ref _value) => dao.set("description", _value),
-            None => dao.set_null("description")
+            None => dao.set_null("description"),
         }
-        match self.help{
+        match self.help {
             Some(ref _value) => dao.set("help", _value),
-            None => dao.set_null("help")
+            None => dao.set_null("help"),
         }
         dao.set("active", &self.active);
         dao.set("product_id", &self.product_id);
-        match self.parent_product_id{
+        match self.parent_product_id {
             Some(ref _value) => dao.set("parent_product_id", _value),
-            None => dao.set_null("parent_product_id")
+            None => dao.set_null("parent_product_id"),
         }
-        match self.is_service{
+        match self.is_service {
             Some(ref _value) => dao.set("is_service", _value),
-            None => dao.set_null("is_service")
+            None => dao.set_null("is_service"),
         }
-        match self.price{
+        match self.price {
             Some(ref _value) => dao.set("price", _value),
-            None => dao.set_null("price")
+            None => dao.set_null("price"),
         }
-        match self.use_parent_price{
+        match self.use_parent_price {
             Some(ref _value) => dao.set("use_parent_price", _value),
-            None => dao.set_null("use_parent_price")
+            None => dao.set_null("use_parent_price"),
         }
-        match self.unit{
+        match self.unit {
             Some(ref _value) => dao.set("unit", _value),
-            None => dao.set_null("unit")
+            None => dao.set_null("unit"),
         }
-        match self.tags{
+        match self.tags {
             Some(ref _value) => dao.set("tags", _value),
-            None => dao.set_null("tags")
+            None => dao.set_null("tags"),
         }
-        match self.info{
+        match self.info {
             Some(ref _value) => dao.set("info", _value),
-            None => dao.set_null("info")
+            None => dao.set_null("info"),
         }
-        match self.seq_no{
+        match self.seq_no {
             Some(ref _value) => dao.set("seq_no", _value),
-            None => dao.set_null("seq_no")
+            None => dao.set_null("seq_no"),
         }
-        match self.upfront_fee{
+        match self.upfront_fee {
             Some(ref _value) => dao.set("upfront_fee", _value),
-            None => dao.set_null("upfront_fee")
+            None => dao.set_null("upfront_fee"),
         }
-        match self.barcode{
+        match self.barcode {
             Some(ref _value) => dao.set("barcode", _value),
-            None => dao.set_null("barcode")
+            None => dao.set_null("barcode"),
         }
-        match self.owner_id{
+        match self.owner_id {
             Some(ref _value) => dao.set("owner_id", _value),
-            None => dao.set_null("owner_id")
+            None => dao.set_null("owner_id"),
         }
-        match self.currency_id{
+        match self.currency_id {
             Some(ref _value) => dao.set("currency_id", _value),
-            None => dao.set_null("currency_id")
+            None => dao.set_null("currency_id"),
         }
         dao
     }
@@ -255,8 +255,8 @@ impl IsDao for Product{
 
 impl IsTable for Product{
 
-    fn table()->Table{
-    
+    fn table() -> Table {
+
         Table{
             schema:"bazaar".to_string(),
             name:"product".to_string(),
@@ -269,7 +269,7 @@ impl IsTable for Product{
                     name:"organization_id".to_string(),
                     data_type:"Uuid".to_string(),
                     db_data_type:"uuid".to_string(),
-                    is_primary:false, is_unique:false, not_null:false, is_inherited:true, 
+                    is_primary:false, is_unique:false, not_null:false, is_inherited:true,
                     default:None,
                     comment:Some("@Value(users.user_id) , which means the value will be set with the users.user_id value\n\n@Where(users.active=true)".to_string()),
                     foreign:None,
@@ -278,7 +278,7 @@ impl IsTable for Product{
                     name:"client_id".to_string(),
                     data_type:"Uuid".to_string(),
                     db_data_type:"uuid".to_string(),
-                    is_primary:false, is_unique:false, not_null:false, is_inherited:true, 
+                    is_primary:false, is_unique:false, not_null:false, is_inherited:true,
                     default:None,
                     comment:Some("@Value(users.client_id) The client_id of the user creating this records".to_string()),
                     foreign:None,
@@ -287,7 +287,7 @@ impl IsTable for Product{
                     name:"created".to_string(),
                     data_type:"DateTime<UTC>".to_string(),
                     db_data_type:"timestamp with time zone".to_string(),
-                    is_primary:false, is_unique:false, not_null:true, is_inherited:true, 
+                    is_primary:false, is_unique:false, not_null:true, is_inherited:true,
                     default:Some("now()".to_string()),
                     comment:None,
                     foreign:None,
@@ -296,7 +296,7 @@ impl IsTable for Product{
                     name:"created_by".to_string(),
                     data_type:"Uuid".to_string(),
                     db_data_type:"uuid".to_string(),
-                    is_primary:false, is_unique:false, not_null:false, is_inherited:true, 
+                    is_primary:false, is_unique:false, not_null:false, is_inherited:true,
                     default:None,
                     comment:Some("@Value(users.user_id)".to_string()),
                     foreign:None,
@@ -305,7 +305,7 @@ impl IsTable for Product{
                     name:"updated".to_string(),
                     data_type:"DateTime<UTC>".to_string(),
                     db_data_type:"timestamp with time zone".to_string(),
-                    is_primary:false, is_unique:false, not_null:true, is_inherited:true, 
+                    is_primary:false, is_unique:false, not_null:true, is_inherited:true,
                     default:Some("now()".to_string()),
                     comment:None,
                     foreign:None,
@@ -314,7 +314,7 @@ impl IsTable for Product{
                     name:"updated_by".to_string(),
                     data_type:"Uuid".to_string(),
                     db_data_type:"uuid".to_string(),
-                    is_primary:false, is_unique:false, not_null:false, is_inherited:true, 
+                    is_primary:false, is_unique:false, not_null:false, is_inherited:true,
                     default:None,
                     comment:Some("@Value(users.user_id)".to_string()),
                     foreign:None,
@@ -323,7 +323,7 @@ impl IsTable for Product{
                     name:"priority".to_string(),
                     data_type:"f64".to_string(),
                     db_data_type:"numeric".to_string(),
-                    is_primary:false, is_unique:false, not_null:false, is_inherited:true, 
+                    is_primary:false, is_unique:false, not_null:false, is_inherited:true,
                     default:None,
                     comment:None,
                     foreign:None,
@@ -332,7 +332,7 @@ impl IsTable for Product{
                     name:"name".to_string(),
                     data_type:"String".to_string(),
                     db_data_type:"character varying".to_string(),
-                    is_primary:false, is_unique:false, not_null:false, is_inherited:true, 
+                    is_primary:false, is_unique:false, not_null:false, is_inherited:true,
                     default:None,
                     comment:Some("This is @Required it has @DisplayLength(50) - 50 character in display length a @MinLength(1) and @MaxLength(100) - Do not go over 100 characters or else the system will throw a ValueTooLong exception\ncan also be express with @Length(1-100)".to_string()),
                     foreign:None,
@@ -341,7 +341,7 @@ impl IsTable for Product{
                     name:"description".to_string(),
                     data_type:"String".to_string(),
                     db_data_type:"character varying".to_string(),
-                    is_primary:false, is_unique:false, not_null:false, is_inherited:true, 
+                    is_primary:false, is_unique:false, not_null:false, is_inherited:true,
                     default:None,
                     comment:Some("@DisplayLength(100) When building a UI for this field\n@MaxLength(200) Do not go over 200 character on this one".to_string()),
                     foreign:None,
@@ -350,7 +350,7 @@ impl IsTable for Product{
                     name:"help".to_string(),
                     data_type:"String".to_string(),
                     db_data_type:"text".to_string(),
-                    is_primary:false, is_unique:false, not_null:false, is_inherited:true, 
+                    is_primary:false, is_unique:false, not_null:false, is_inherited:true,
                     default:None,
                     comment:None,
                     foreign:None,
@@ -359,7 +359,7 @@ impl IsTable for Product{
                     name:"active".to_string(),
                     data_type:"bool".to_string(),
                     db_data_type:"boolean".to_string(),
-                    is_primary:false, is_unique:false, not_null:true, is_inherited:true, 
+                    is_primary:false, is_unique:false, not_null:true, is_inherited:true,
                     default:Some("true".to_string()),
                     comment:Some("@Active".to_string()),
                     foreign:None,
@@ -368,7 +368,7 @@ impl IsTable for Product{
                     name:"product_id".to_string(),
                     data_type:"Uuid".to_string(),
                     db_data_type:"uuid".to_string(),
-                    is_primary:true, is_unique:false, not_null:true, is_inherited:false, 
+                    is_primary:true, is_unique:false, not_null:true, is_inherited:false,
                     default:Some("uuid_generate_v4()".to_string()),
                     comment:None,
                     foreign:None,
@@ -377,7 +377,7 @@ impl IsTable for Product{
                     name:"parent_product_id".to_string(),
                     data_type:"Uuid".to_string(),
                     db_data_type:"uuid".to_string(),
-                    is_primary:false, is_unique:false, not_null:false, is_inherited:false, 
+                    is_primary:false, is_unique:false, not_null:false, is_inherited:false,
                     default:None,
                     comment:None,
                     foreign:None,
@@ -386,7 +386,7 @@ impl IsTable for Product{
                     name:"is_service".to_string(),
                     data_type:"bool".to_string(),
                     db_data_type:"boolean".to_string(),
-                    is_primary:false, is_unique:false, not_null:false, is_inherited:false, 
+                    is_primary:false, is_unique:false, not_null:false, is_inherited:false,
                     default:Some("false".to_string()),
                     comment:None,
                     foreign:None,
@@ -395,7 +395,7 @@ impl IsTable for Product{
                     name:"price".to_string(),
                     data_type:"f64".to_string(),
                     db_data_type:"numeric".to_string(),
-                    is_primary:false, is_unique:false, not_null:false, is_inherited:false, 
+                    is_primary:false, is_unique:false, not_null:false, is_inherited:false,
                     default:None,
                     comment:None,
                     foreign:None,
@@ -404,7 +404,7 @@ impl IsTable for Product{
                     name:"use_parent_price".to_string(),
                     data_type:"bool".to_string(),
                     db_data_type:"boolean".to_string(),
-                    is_primary:false, is_unique:false, not_null:false, is_inherited:false, 
+                    is_primary:false, is_unique:false, not_null:false, is_inherited:false,
                     default:Some("false".to_string()),
                     comment:None,
                     foreign:None,
@@ -413,7 +413,7 @@ impl IsTable for Product{
                     name:"unit".to_string(),
                     data_type:"String".to_string(),
                     db_data_type:"character varying".to_string(),
-                    is_primary:false, is_unique:false, not_null:false, is_inherited:false, 
+                    is_primary:false, is_unique:false, not_null:false, is_inherited:false,
                     default:None,
                     comment:None,
                     foreign:None,
@@ -422,7 +422,7 @@ impl IsTable for Product{
                     name:"tags".to_string(),
                     data_type:"String".to_string(),
                     db_data_type:"json".to_string(),
-                    is_primary:false, is_unique:false, not_null:false, is_inherited:false, 
+                    is_primary:false, is_unique:false, not_null:false, is_inherited:false,
                     default:None,
                     comment:None,
                     foreign:None,
@@ -431,7 +431,7 @@ impl IsTable for Product{
                     name:"info".to_string(),
                     data_type:"String".to_string(),
                     db_data_type:"json".to_string(),
-                    is_primary:false, is_unique:false, not_null:false, is_inherited:false, 
+                    is_primary:false, is_unique:false, not_null:false, is_inherited:false,
                     default:None,
                     comment:Some("{color:\"red\",\ndimension:\"10x20x30\",\ndimensionUnit:\"mm\",\nweight:\"4\",\nweightUnit:\"kg\"\n}".to_string()),
                     foreign:None,
@@ -440,7 +440,7 @@ impl IsTable for Product{
                     name:"seq_no".to_string(),
                     data_type:"i32".to_string(),
                     db_data_type:"integer".to_string(),
-                    is_primary:false, is_unique:false, not_null:false, is_inherited:false, 
+                    is_primary:false, is_unique:false, not_null:false, is_inherited:false,
                     default:None,
                     comment:Some("@Sequence can be used to do alternate ordering of the values, when alphetical or time can not be used".to_string()),
                     foreign:None,
@@ -449,7 +449,7 @@ impl IsTable for Product{
                     name:"upfront_fee".to_string(),
                     data_type:"f64".to_string(),
                     db_data_type:"numeric".to_string(),
-                    is_primary:false, is_unique:false, not_null:false, is_inherited:false, 
+                    is_primary:false, is_unique:false, not_null:false, is_inherited:false,
                     default:Some("0.00".to_string()),
                     comment:Some("Applicable to services, usually services has an upfront fee".to_string()),
                     foreign:None,
@@ -458,7 +458,7 @@ impl IsTable for Product{
                     name:"barcode".to_string(),
                     data_type:"String".to_string(),
                     db_data_type:"character varying".to_string(),
-                    is_primary:false, is_unique:false, not_null:false, is_inherited:false, 
+                    is_primary:false, is_unique:false, not_null:false, is_inherited:false,
                     default:None,
                     comment:Some("barcode if scanning the product, conflict can happen, expect to return matching list of products using the barcode".to_string()),
                     foreign:None,
@@ -467,7 +467,7 @@ impl IsTable for Product{
                     name:"owner_id".to_string(),
                     data_type:"Uuid".to_string(),
                     db_data_type:"uuid".to_string(),
-                    is_primary:false, is_unique:false, not_null:false, is_inherited:false, 
+                    is_primary:false, is_unique:false, not_null:false, is_inherited:false,
                     default:None,
                     comment:Some("Whom this product belongs, since created_by can be someone else create the product list in behalf of the owner of the product".to_string()),
                     foreign:Some(
@@ -481,7 +481,7 @@ impl IsTable for Product{
                     name:"currency_id".to_string(),
                     data_type:"Uuid".to_string(),
                     db_data_type:"uuid".to_string(),
-                    is_primary:false, is_unique:false, not_null:false, is_inherited:false, 
+                    is_primary:false, is_unique:false, not_null:false, is_inherited:false,
                     default:None,
                     comment:None,
                     foreign:Some(
@@ -496,4 +496,3 @@ impl IsTable for Product{
         }
     }
 }
-

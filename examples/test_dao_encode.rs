@@ -12,7 +12,7 @@ use chrono::naive::datetime::NaiveDateTime;
 use chrono::offset::utc::UTC;
 use rustc_serialize::json;
 
-fn main(){
+fn main() {
     let s = "lee";
     let n = 20i8;
     let date = UTC::now();
@@ -20,9 +20,9 @@ fn main(){
     dao.set("name", &s);
     dao.set("age", &n);
     dao.set("created", &date);
-    let name:String = dao.get("name");
-    let age:i8 = dao.get("age");
-    let created:DateTime<UTC> = dao.get("created");
-    let none:Option<u8> = dao.get_opt("none");
-    println!("json: {}",json::encode(&dao).unwrap());
+    let name: String = dao.get("name");
+    let age: i8 = dao.get("age");
+    let created: DateTime<UTC> = dao.get("created");
+    let none: Option<u8> = dao.get_opt("none");
+    println!("json: {}", json::encode(&dao).unwrap());
 }

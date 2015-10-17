@@ -9,13 +9,13 @@ use chrono::offset::utc::UTC;
 use rustc_serialize::json;
 
 use rustorm::query::Query;
-use rustorm::query::{Filter,Equality};
-use rustorm::dao::{Dao,IsDao};
+use rustorm::query::{Filter, Equality};
+use rustorm::dao::{Dao, IsDao};
 use rustorm::pool::ManagedPool;
 use rustorm::database::Database;
- 
 
-fn main(){
+
+fn main() {
     let url = "sqlite:///:memory:";
     let mut pool = ManagedPool::init(&url, 1).unwrap();
     let db = pool.connect().unwrap();
