@@ -9,55 +9,54 @@ use chrono::offset::utc::UTC;
 use rustc_serialize::json;
 
 use rustorm::query::Query;
-use rustorm::query::{Filter,Equality};
-use rustorm::dao::{Dao,IsDao};
+use rustorm::query::{Filter, Equality};
+use rustorm::dao::{Dao, IsDao};
 use rustorm::pool::ManagedPool;
 use rustorm::em::EntityManager;
-use rustorm::table::{Table,Column};
+use rustorm::table::{Table, Column};
 use rustorm::table::IsTable;
 
 
 
 #[derive(Debug, Clone)]
 pub struct Product {
-    pub product_id:Uuid,
-    pub name:String,
-    pub description:Option<String>,
+    pub product_id: Uuid,
+    pub name: String,
+    pub description: Option<String>,
 }
 
 impl IsDao for Product{
-    fn from_dao(dao:&Dao)->Self{
-        Product{
+    fn from_dao(dao: &Dao) -> Self {
+        Product {
             product_id: dao.get("product_id"),
             name: dao.get("name"),
             description: dao.get_opt("description"),
         }
     }
-    fn to_dao(&self)->Dao{
+    fn to_dao(&self) -> Dao {
         let mut dao = Dao::new();
         dao.set("product_id", &self.product_id);
         dao.set("name", &self.name);
-        match self.description{
+        match self.description {
             Some(ref _value) => dao.set("description", _value),
             None => dao.set_null("description"),
-        };
+        }
         dao
     }
 }
 
 
 impl IsTable for Product{
-    
-    fn table()->Table{
-    
-        Table{
-            schema:"bazaar".to_string(),
-            name:"product".to_string(),
-            parent_table:None,
-            sub_table:vec![],
-            comment:None,
-            columns:
-            vec![
+
+    fn table() -> Table {
+
+        Table {
+            schema: "bazaar".to_string(),
+            name: "product".to_string(),
+            parent_table: None,
+            sub_table: vec![],
+            comment: None,
+            columns: vec![
                 Column{
                     name:"product_id".to_string(),
                     data_type:"Uuid".to_string(),
@@ -86,21 +85,21 @@ impl IsTable for Product{
                     foreign:None,
                 },
             ],
-            is_view: false
+            is_view: false,
         }
     }
 }
 
 
-fn main(){
+fn main() {
     let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v6";
     let mut pool = ManagedPool::init(&url, 1).unwrap();
     let db = pool.connect().unwrap();
     let mut em = EntityManager::new(db.as_ref());
-    
+
     let pid = Uuid::parse_str("6db712e6-cc50-4c3a-8269-451c98ace5ad").unwrap();
     let prod: Product = em.get_exact(&pid).unwrap();
-    
+
     println!("{}  {}  {:?}", prod.product_id, prod.name, prod.description);
     //pool.release(db);
 }
