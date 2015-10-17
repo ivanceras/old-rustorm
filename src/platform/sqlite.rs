@@ -67,7 +67,7 @@ impl Sqlite{
 
     /// convert a record of a row into rust type
     fn from_sql_to_rust_type(&self, row: &SqliteRow, index: usize) -> Value {
-        let value = row.get_opt(index as i32);
+        let value = row.get_checked(index as i32);
         match value {
             Ok(value) => Value::String(value),
             Err(_) => Value::Null,
