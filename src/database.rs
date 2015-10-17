@@ -224,7 +224,7 @@ pub trait Database{
                 }
                 w.append(")");
             }
-            Operand::Query(ref q) => {
+            Operand::Query(ref _q) => {
                 panic!("TODO: causes error Attributes 'readnone and readonly' are incompatible! \
                         LLVM ERROR: Broken function found, compilation aborted!")
                 //let sql_frag = &self.build_query(&q);

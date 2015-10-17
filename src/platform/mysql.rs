@@ -138,10 +138,13 @@ impl Database for Mysql{
         }
     }
     fn begin(&self) {
+        unimplemented!()
     }
     fn commit(&self) {
+        unimplemented!()
     }
     fn rollback(&self) {
+        unimplemented!()
     }
     fn is_transacted(&self) -> bool {
         false
@@ -158,6 +161,7 @@ impl Database for Mysql{
         false
     }
     fn reset(&self) {
+        unimplemented!()
     }
 
     /// return this list of options, supported features in the database
@@ -167,11 +171,11 @@ impl Database for Mysql{
         ]
     }
 
-    fn update(&self, query: &Query) -> Dao {
-        panic!("not yet")
+    fn update(&self, _query: &Query) -> Dao {
+        unimplemented!()
     }
-    fn delete(&self, query: &Query) -> Result<usize, String> {
-        panic!("not yet");
+    fn delete(&self, _query: &Query) -> Result<usize, String> {
+        unimplemented!()
     }
 
     fn execute_sql_with_return(&self, sql: &str, params: &Vec<Value>) -> Result<Vec<Dao>, DbError> {
@@ -228,12 +232,12 @@ impl Database for Mysql{
 }
 
 impl DatabaseDDL for Mysql{
-    fn create_schema(&self, schema: &str) {
-        panic!("mysql does not support schema")
+    fn create_schema(&self, _schema: &str) {
+        unimplemented!()
     }
 
-    fn drop_schema(&self, schema: &str) {
-        panic!("mysql does not support schema")
+    fn drop_schema(&self, _schema: &str) {
+        unimplemented!()
     }
 
     fn build_create_table(&self, table: &Table) -> SqlFrag {
@@ -263,25 +267,25 @@ impl DatabaseDDL for Mysql{
     fn create_table(&self, table: &Table) {
         let frag = self.build_create_table(table);
         match self.execute_sql(&frag.sql, &vec![]) {
-            Ok(x) => println!("created table.."),
+            Ok(_) => println!("created table.."),
             Err(e) => panic!("table not created {}", e),
         }
     }
 
-    fn rename_table(&self, table: &Table, new_tablename: String) {
-
+    fn rename_table(&self, _table: &Table, _new_tablename: String) {
+        unimplemented!()
     }
 
-    fn drop_table(&self, table: &Table) {
-        panic!("not yet");
+    fn drop_table(&self, _table: &Table) {
+        unimplemented!()
     }
 
-    fn set_foreign_constraint(&self, model: &Table) {
-        panic!("not yet");
+    fn set_foreign_constraint(&self, _model: &Table) {
+        unimplemented!()
     }
 
-    fn set_primary_constraint(&self, model: &Table) {
-        panic!("not yet");
+    fn set_primary_constraint(&self, _model: &Table) {
+        unimplemented!()
     }
 }
 

@@ -107,7 +107,7 @@ impl DbConfig{
                 }
             }
             Err(e) => {
-                println!("Error parsing url: -[{}]-", url);
+                println!("Error parsing url \"{}\": {}", url, e);
                 None
             }
         }

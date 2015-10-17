@@ -68,10 +68,10 @@ impl Postgres{
                 Value::I16(ref x) => params.push(x),
                 Value::I32(ref x) => params.push(x),
                 Value::I64(ref x) => params.push(x),
-                Value::U8(ref x) => panic!("unsupported/unexpected type! {:?}", t),
-                Value::U16(ref x) => panic!("unsupported/unexpected type! {:?}", t),
+                Value::U8(_) => panic!("unsupported/unexpected type! {:?}", t),
+                Value::U16(_) => panic!("unsupported/unexpected type! {:?}", t),
                 Value::U32(ref x) => params.push(x),
-                Value::U64(ref x) => panic!("unsupported/unexpected type! {:?}", t),
+                Value::U64(_) => panic!("unsupported/unexpected type! {:?}", t),
                 Value::F32(ref x) => params.push(x),
                 Value::F64(ref x) => params.push(x),
                 Value::String(ref x) => params.push(x),
@@ -273,7 +273,8 @@ impl Postgres{
             let db_data_type = if re.is_match(&db_data_type) {
                 let cap = re.captures(&db_data_type).unwrap();
                 let data_type = cap.at(1).unwrap().to_string();
-                let size = cap.at(2).unwrap().to_string();//TODO::can be use in the later future
+                // TODO::can be use in the later future
+                // let size = cap.at(2).unwrap().to_string();
                 data_type
             } else {
                 db_data_type
@@ -449,11 +450,11 @@ impl Database for Postgres{
     }
 
 
-    fn update(&self, query: &Query) -> Dao {
-        panic!("not yet")
+    fn update(&self, _query: &Query) -> Dao {
+        unimplemented!()
     }
-    fn delete(&self, query: &Query) -> Result<usize, String> {
-        panic!("not yet");
+    fn delete(&self, _query: &Query) -> Result<usize, String> {
+        unimplemented!()
     }
 
     fn execute_sql_with_return(&self, sql: &str, params: &Vec<Value>) -> Result<Vec<Dao>, DbError> {
@@ -496,22 +497,29 @@ impl Database for Postgres{
 
 impl DatabaseDDL for Postgres{
 
-    fn create_schema(&self, schema: &str) {
+    fn create_schema(&self, _schema: &str) {
+        unimplemented!()
     }
-    fn drop_schema(&self, schema: &str) {
+    fn drop_schema(&self, _schema: &str) {
+        unimplemented!()
     }
-    fn create_table(&self, model: &Table) {
+    fn create_table(&self, _model: &Table) {
+        unimplemented!()
     }
-    fn build_create_table(&self, table: &Table) -> SqlFrag {
-        panic!("not yet")
+    fn build_create_table(&self, _table: &Table) -> SqlFrag {
+        unimplemented!()
     }
-    fn rename_table(&self, table: &Table, new_tablename: String) {
+    fn rename_table(&self, _table: &Table, _new_tablename: String) {
+        unimplemented!()
     }
-    fn drop_table(&self, table: &Table) {
+    fn drop_table(&self, _table: &Table) {
+        unimplemented!()
     }
-    fn set_foreign_constraint(&self, model: &Table) {
+    fn set_foreign_constraint(&self, _model: &Table) {
+        unimplemented!()
     }
-    fn set_primary_constraint(&self, model: &Table) {
+    fn set_primary_constraint(&self, _model: &Table) {
+        unimplemented!()
     }
 
 }
