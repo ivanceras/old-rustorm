@@ -290,13 +290,12 @@ impl Sqlite{
 }
 
 impl Database for Sqlite{
-    fn version(&self) -> String {
-        let sql = "select sqlite_version() as version";
-        let dao = self.execute_sql_with_one_return(sql, &vec![]);
+    fn version(&self) -> Result<String, DbError> {
+        let sql = "SELECT sqlite_version() AS version";
+        let dao = try!(self.execute_sql_with_one_return(sql, &vec![]));
         match dao {
-            Ok(Some(dao)) => dao.get("version"),
-            Ok(None) => panic!("unable to get database version"),
-            Err(e) => panic!(format!("{:?}", e)),
+            Some(dao) => Ok(dao.get("version")),
+            None => Err(DbError::new("Unable to get database version")),
         }
     }
     fn begin(&self) {

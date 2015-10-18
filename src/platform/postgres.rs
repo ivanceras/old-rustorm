@@ -397,16 +397,15 @@ impl Postgres{
 
 
 impl Database for Postgres{
-
-    fn version(&self) -> String {
+    fn version(&self) -> Result<String, DbError> {
         let sql = "SHOW server_version";
-        let dao = self.execute_sql_with_one_return(sql, &vec![]);
+        let dao = try!(self.execute_sql_with_one_return(sql, &vec![]));
         match dao {
-            Ok(Some(dao)) => dao.get("server_version"),
-            Ok(None) => panic!("unable to get database version"),
-            Err(e) => panic!(format!("{:?}", e)),
+            Some(dao) => Ok(dao.get("server_version")),
+            None => Err(DbError::new("Unable to get database version")),
         }
     }
+
     fn begin(&self) {
     }
     fn commit(&self) {
