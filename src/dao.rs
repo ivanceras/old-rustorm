@@ -9,6 +9,7 @@ use std::fmt;
 use query::ColumnName;
 use table::IsTable;
 use rustc_serialize::{Encodable, Encoder};
+#[allow(unused_imports)]
 use rustc_serialize::json::{self, ToJson, Json};
 
 
@@ -712,10 +713,10 @@ fn test_json() {
     dao.set("name", &s);
     dao.set("age", &n);
     dao.set("created", &date);
-    let name: String = dao.get("name");
-    let age: i8 = dao.get("age");
-    let created: DateTime<UTC> = dao.get("created");
-    let none: Option<u8> = dao.get_opt("none");
+    let _: String = dao.get("name");
+    let _: i8 = dao.get("age");
+    let _: DateTime<UTC> = dao.get("created");
+    let _: Option<u8> = dao.get_opt("none");
     let expected = r#"{"age":20,"created":{"datetime":{"date":{"ymdf":16510090},"time":{"secs":28087,"frac":451865185}},"offset":{}},"name":"lee"}"#;
     let actual = json::encode(&dao).unwrap();
     println!("expected: {}", expected);

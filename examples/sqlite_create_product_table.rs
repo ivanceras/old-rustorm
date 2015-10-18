@@ -6,12 +6,10 @@ extern crate rustc_serialize;
 use uuid::Uuid;
 use chrono::datetime::DateTime;
 use chrono::offset::utc::UTC;
-use rustc_serialize::json;
 
-use rustorm::query::Query;
-use rustorm::query::{Filter, Equality};
 use rustorm::dao::{Dao, IsDao};
 use rustorm::pool::ManagedPool;
+#[allow(unused_imports)]
 use rustorm::database::Database;
 use rustorm::table::IsTable;
 use rustorm::table::Column;
@@ -23,7 +21,7 @@ use rustorm::table::Foreign;
 
 fn main() {
     let url = "sqlite:///file1.db";
-    let mut pool = ManagedPool::init(&url, 1).unwrap();
+    let pool = ManagedPool::init(&url, 1).unwrap();
     let db = pool.connect().unwrap();
     db.as_ddl().create_table(&Product::table());
 }

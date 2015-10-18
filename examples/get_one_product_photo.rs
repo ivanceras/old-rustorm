@@ -4,12 +4,9 @@ extern crate chrono;
 extern crate rustc_serialize;
 
 use uuid::Uuid;
-use chrono::datetime::DateTime;
-use chrono::offset::utc::UTC;
-use rustc_serialize::json;
 
 use rustorm::query::Query;
-use rustorm::query::{Filter, Equality};
+use rustorm::query::Equality;
 use rustorm::dao::{Dao, IsDao};
 use rustorm::pool::ManagedPool;
 use rustorm::table::{IsTable, Table};
@@ -27,6 +24,7 @@ impl IsDao for Photo{
             url: dao.get_opt("url"),
         }
     }
+
     fn to_dao(&self) -> Dao {
         let mut dao = Dao::new();
         dao.set("photo_id", &self.photo_id);
@@ -39,7 +37,6 @@ impl IsDao for Photo{
 }
 
 impl IsTable for Photo{
-
     fn table() -> Table {
         Table {
             schema: "bazaar".to_string(),
@@ -55,7 +52,7 @@ impl IsTable for Photo{
 
 fn main() {
     let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v6";
-    let mut pool = ManagedPool::init(url, 1).unwrap();
+    let pool = ManagedPool::init(url, 1).unwrap();
     let db = pool.connect().unwrap();
 
     let photo: Photo = Query::select_all()

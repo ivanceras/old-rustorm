@@ -45,6 +45,7 @@ impl IsDao for Category{
             category_id: dao.get("category_id"),
         }
     }
+
     fn to_dao(&self) -> Dao {
         let mut dao = Dao::new();
         match self.organization_id {
@@ -87,11 +88,8 @@ impl IsDao for Category{
     }
 }
 
-
 impl IsTable for Category{
-
     fn table() -> Table {
-
         Table {
             schema: "bazaar".to_string(),
             name: "category".to_string(),
@@ -106,7 +104,7 @@ impl IsTable for Category{
 
 fn main() {
     let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v6";
-    let mut pool = ManagedPool::init(&url, 1).unwrap();
+    let pool = ManagedPool::init(&url, 1).unwrap();
     let db = pool.connect().unwrap();
 
     let category: Category = Query::insert()

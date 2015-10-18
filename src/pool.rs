@@ -25,9 +25,7 @@ pub enum Platform {
     Mysql(Mysql),
 }
 
-
 impl Platform{
-
     pub fn as_ref(&self) -> &Database {
         match *self {
             Platform::Postgres(ref pg) => pg,

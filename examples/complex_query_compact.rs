@@ -4,15 +4,11 @@ extern crate chrono;
 extern crate rustc_serialize;
 
 use uuid::Uuid;
-use chrono::datetime::DateTime;
-use chrono::offset::utc::UTC;
-use rustc_serialize::json;
 
 use rustorm::query::Query;
-use rustorm::query::{Filter, Equality};
+use rustorm::query::Equality;
 use rustorm::dao::{Dao, IsDao};
 use rustorm::pool::ManagedPool;
-use rustorm::query::ToTableName;
 
 
 #[derive(Debug, Clone)]
@@ -41,7 +37,7 @@ impl IsDao for Photo{
 
 fn main() {
     let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v6";
-    let mut pool = ManagedPool::init(&url, 1).unwrap();
+    let pool = ManagedPool::init(&url, 1).unwrap();
     let db = pool.connect().unwrap();
 
     let mut query = Query::select_all();
@@ -68,18 +64,18 @@ fn main() {
     let expected = "
    SELECT *
      FROM bazaar.product
-          LEFT JOIN bazaar.product_category 
-          ON product_category.product_id = product.product_id 
-          LEFT JOIN bazaar.category 
-          ON category.category_id = product_category.category_id 
-          LEFT JOIN product_photo 
-          ON product.product_id = product_photo.product_id 
-          LEFT JOIN bazaar.photo 
-          ON product_photo.photo_id = photo.photo_id 
-    WHERE product.name = $1 
-      AND category.name = $2 
- GROUP BY category.name 
-   HAVING count(*) > $3 
+          LEFT JOIN bazaar.product_category\x20
+          ON product_category.product_id = product.product_id\x20
+          LEFT JOIN bazaar.category\x20
+          ON category.category_id = product_category.category_id\x20
+          LEFT JOIN product_photo\x20
+          ON product.product_id = product_photo.product_id\x20
+          LEFT JOIN bazaar.photo\x20
+          ON product_photo.photo_id = photo.photo_id\x20
+    WHERE product.name = $1\x20
+      AND category.name = $2\x20
+ GROUP BY category.name\x20
+   HAVING count(*) > $3\x20
  ORDER BY product.name ASC, product.created DESC".to_string();
     println!("actual:   {{\n{}}} [{}]", frag.sql, frag.sql.len());
     println!("expected: {{{}}} [{}]", expected, expected.len());
