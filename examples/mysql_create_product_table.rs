@@ -6,12 +6,10 @@ extern crate rustc_serialize;
 use uuid::Uuid;
 use chrono::datetime::DateTime;
 use chrono::offset::utc::UTC;
-use rustc_serialize::json;
 
-use rustorm::query::Query;
-use rustorm::query::{Filter, Equality};
 use rustorm::dao::{Dao, IsDao};
 use rustorm::pool::ManagedPool;
+#[allow(unused_imports)]
 use rustorm::database::Database;
 use rustorm::table::IsTable;
 use rustorm::table::Column;
@@ -19,15 +17,12 @@ use rustorm::table::Table;
 use rustorm::table::Foreign;
 
 
-
-
 fn main() {
     let url = "mysql://root:r00t@localhost/bazaar_v6";
-    let mut pool = ManagedPool::init(&url, 1).unwrap();
+    let pool = ManagedPool::init(&url, 1).unwrap();
     let db = pool.connect().unwrap();
     db.as_ddl().create_table(&Product::table());
 }
-
 
 
 ///
@@ -130,7 +125,6 @@ pub struct Product {
     pub updated_by: Option<Uuid>,
 
 }
-
 
 
 impl IsDao for Product{
@@ -254,9 +248,7 @@ impl IsDao for Product{
 }
 
 impl IsTable for Product{
-
     fn table() -> Table {
-
         Table{
             schema:"bazaar".to_string(),
             name:"product".to_string(),

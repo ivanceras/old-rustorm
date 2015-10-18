@@ -1,9 +1,5 @@
 extern crate rustorm;
 
-use rustorm::query::Query;
-use rustorm::query::{Filter, Equality};
-use rustorm::pool::ManagedPool;
-use rustorm::database::Database;
 use rustorm::platform::Sqlite;
 
 fn main() {
@@ -21,5 +17,5 @@ CREATE TABLE product_availability (
     FOREIGN KEY(product_id) REFERENCES product(product_id)
 )
     ";
-    Sqlite::extract_comments(create_sql);
+    let _ = Sqlite::extract_comments(create_sql);
 }

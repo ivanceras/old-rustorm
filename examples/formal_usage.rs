@@ -3,11 +3,10 @@ extern crate uuid;
 extern crate chrono;
 extern crate rustc_serialize;
 
-
 use uuid::Uuid;
 
 use rustorm::query::Query;
-use rustorm::query::{Filter, Equality, Operand};
+use rustorm::query::Equality;
 
 use rustorm::pool::ManagedPool;
 use rustorm::database::Database;
@@ -30,6 +29,7 @@ impl IsDao for Product{
             description: dao.get_opt("description"),
         }
     }
+
     fn to_dao(&self) -> Dao {
         let mut dao = Dao::new();
         dao.set("product_id", &self.product_id);
@@ -46,7 +46,6 @@ impl IsDao for Product{
 }
 
 impl IsTable for Product{
-
     fn table() -> Table {
         Table {
             schema: "bazaar".to_string(),
@@ -63,10 +62,10 @@ impl IsTable for Product{
 /// on a webserver this will be the main thread, where it instantiate
 /// the connection pool in the entirety of the application
 /// when a request in made, a thread is spawned for that request
-/// with an access to the a connection pool 
+/// with an access to the a connection pool
 fn main() {
     let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v6";
-    let mut pool = ManagedPool::init(url, 1);
+    let pool = ManagedPool::init(url, 1);
     match pool {
         Ok(pool) => {
             let db = pool.connect();
@@ -80,11 +79,10 @@ fn main() {
                 }
             }
         }
-        Err(e) => {
+        Err(_) => {
             panic!("Unable to connect to database")
         }
     }
-
 }
 
 /// a dispatched controller with an accesss to a database reference

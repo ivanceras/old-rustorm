@@ -617,5 +617,5 @@ CREATE TABLE product_availability (
     FOREIGN KEY(product_id) REFERENCES product(product_id)
 )
     ";
-    Sqlite::extract_comments(create_sql);
+    let _ = Sqlite::extract_comments(create_sql);
 }

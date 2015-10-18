@@ -1,15 +1,13 @@
 extern crate rustorm;
 
-use rustorm::query::Query;
-use rustorm::query::{Filter, Equality};
 use rustorm::pool::ManagedPool;
+#[allow(unused_imports)]
 use rustorm::database::Database;
 
 // run using cargo run --release --features sqlite --example sqlite_get_tabledef
 fn main() {
     let url = "sqlite:///file.db";
-    let url = "sqlite:///home/lee/Dropbox/git-src/ivanceras/rustorm/file1.db";
-    let mut pool = ManagedPool::init(&url, 1).unwrap();
+    let pool = ManagedPool::init(&url, 1).unwrap();
     let db = pool.connect().unwrap();
 
     //let table = db.as_dev().get_table_metadata("","product_availability", false);
