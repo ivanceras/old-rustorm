@@ -14,7 +14,7 @@ pub struct EntityManager<'a> {
     pub db: &'a Database,
 }
 
-impl <'a>EntityManager<'a>{
+impl <'a>EntityManager<'a> {
 
     /// Create an entity manager with the database connection provided
     pub fn new(db: &'a Database) -> Self {

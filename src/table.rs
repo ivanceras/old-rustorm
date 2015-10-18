@@ -24,7 +24,7 @@ pub struct Column {
     pub is_inherited: bool,
 }
 
-impl Column{
+impl Column {
 
     fn is_keyword(str: &str) -> bool {
         let keyword = ["type", "yield", "macro"];
@@ -78,7 +78,7 @@ impl fmt::Display for Column {
     }
 }
 
-impl PartialEq for Column{
+impl PartialEq for Column {
     fn eq(&self, other: &Self) -> bool {
         self.name == other.name
     }
@@ -89,7 +89,7 @@ impl PartialEq for Column{
 }
 
 /// trait for table definition
-pub trait IsTable{
+pub trait IsTable {
     fn table() -> Table;
 }
 
@@ -108,7 +108,7 @@ pub struct RefTable<'a> {
 }
 
 /// FIXME need more terse and ergonomic handling of conflicting member names
-impl <'a>RefTable<'a>{
+impl <'a>RefTable<'a> {
 
     /// return the appropriate member name of this reference
     /// when used with the table in context
@@ -194,7 +194,7 @@ impl fmt::Display for Table {
     }
 }
 
-impl PartialEq for Table{
+impl PartialEq for Table {
     fn eq(&self, other: &Self) -> bool {
         self.name == other.name && self.schema == other.schema
     }
@@ -205,7 +205,7 @@ impl PartialEq for Table{
 }
 
 
-impl Table{
+impl Table {
 
     /// return the long name of the table using schema.table_name
     pub fn complete_name(&self) -> String {

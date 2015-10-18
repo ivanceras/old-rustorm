@@ -20,7 +20,6 @@ pub struct Mysql {
 }
 
 impl Mysql{
-
     pub fn new() -> Self {
         Mysql { pool: None }
     }
@@ -121,7 +120,7 @@ impl Mysql{
     }
 }
 
-impl Database for Mysql{
+impl Database for Mysql {
     fn version(&self) -> Result<String, DbError> {
         let sql = "SELECT version()";
         let dao = try!(self.execute_sql_with_one_return(sql, &vec![]));

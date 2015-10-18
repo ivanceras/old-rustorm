@@ -129,7 +129,7 @@ impl From<SqliteError> for DbError {
 /// TODO: acquire only a connection until a query is about to be executed.
 /// generating query don't really need database connection just yet.
 
-pub trait Database{
+pub trait Database {
 
     /// return the version of the database
     /// lower version of database has fewer supported features
@@ -718,7 +718,7 @@ pub trait DatabaseDDL{
 
 /// implement this for database that you use as your development platform, to extract meta data information
 /// about the tables and their relationship to each other
-pub trait DatabaseDev{
+pub trait DatabaseDev {
 
 ////////////////////////////////////////
     /// Database interface use for the development process

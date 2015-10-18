@@ -19,7 +19,7 @@ pub struct DbConfig {
     pub ssl: bool,
 }
 
-impl DbConfig{
+impl DbConfig {
 
     /// TODO: get rid of the hacky way parsing database url
     /// https://github.com/servo/rust-url/issues/40
@@ -69,7 +69,7 @@ impl DbConfig{
                     }
                 };
 
-            //TODO: need to handle the complete file path for sqlite
+                //TODO: need to handle the complete file path for sqlite
                 match scheme {
                     "sqlite" => { // handle sqlite parsing such as the memory and the host be the database
                         let mut complete_path = String::new();

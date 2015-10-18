@@ -23,7 +23,7 @@ pub struct Postgres {
 /// PostgreSQL sql query,
 /// TODO: support version SqlOptions/specific syntax
 
-impl Postgres{
+impl Postgres {
 
     /// create an instance, but without a connection yet,
     /// useful when just building sql queries specific to this platform
@@ -389,7 +389,7 @@ impl Postgres{
 }
 
 
-impl Database for Postgres{
+impl Database for Postgres {
     fn version(&self) -> Result<String, DbError> {
         let sql = "SHOW server_version";
         let dao = try!(self.execute_sql_with_one_return(sql, &vec![]));
@@ -487,7 +487,7 @@ impl Database for Postgres{
 
 }
 
-impl DatabaseDDL for Postgres{
+impl DatabaseDDL for Postgres {
 
     fn create_schema(&self, _schema: &str) {
         unimplemented!()
@@ -517,7 +517,7 @@ impl DatabaseDDL for Postgres{
 }
 
 /// this can be condensed with using just extracting the table definition
-impl DatabaseDev for Postgres{
+impl DatabaseDev for Postgres {
 
     fn get_parent_table(&self, schema: &str, table: &str) -> Option<String> {
         let sql = "

@@ -273,7 +273,7 @@ impl Sqlite {
     }
 }
 
-impl Database for Sqlite{
+impl Database for Sqlite {
     fn version(&self) -> Result<String, DbError> {
         let sql = "SELECT sqlite_version() AS version";
         let dao = try!(self.execute_sql_with_one_return(sql, &vec![]));
@@ -399,7 +399,7 @@ impl Database for Sqlite{
 
 }
 
-impl DatabaseDDL for Sqlite{
+impl DatabaseDDL for Sqlite {
     fn create_schema(&self, _schema: &str) {
         panic!("sqlite does not support schema")
     }
@@ -484,7 +484,7 @@ impl DatabaseDDL for Sqlite{
     }
 }
 
-impl DatabaseDev for Sqlite{
+impl DatabaseDev for Sqlite {
     fn get_table_sub_class(&self, _schema: &str, _table: &str) -> Vec<String> {
         unimplemented!()
     }

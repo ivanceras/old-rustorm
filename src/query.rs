@@ -110,7 +110,7 @@ pub struct Filter {
     pub subfilters: Vec<Filter>,
 }
 
-impl Filter{
+impl Filter {
 
     /// user friendly, commonly use API
     pub fn new(column: &str, equality: Equality, value: &ToValue) -> Self {
@@ -220,7 +220,7 @@ pub struct Field {
     pub name: Option<String>,
 }
 
-impl Field{
+impl Field {
 
     fn rename(&self) -> Field {
         match self.operand {
@@ -236,7 +236,7 @@ impl Field{
     }
 }
 
-impl ColumnName{
+impl ColumnName {
 
     pub fn from_str(column: &str) -> Self {
         if column.contains(".") {
@@ -291,13 +291,13 @@ impl ColumnName{
     }
 }
 
-impl fmt::Display for ColumnName{
+impl fmt::Display for ColumnName {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{}", self.complete_name())
     }
 }
 
-impl PartialEq for ColumnName{
+impl PartialEq for ColumnName {
     fn eq(&self, other: &Self) -> bool {
         self.column == other.column && self.table == other.table
     }
@@ -317,7 +317,7 @@ pub struct TableName {
     pub columns: Vec<ColumnName>,
 }
 
-impl TableName{
+impl TableName {
 
     pub fn from_str(str: &str) -> Self {
         if str.contains(".") {
@@ -349,7 +349,7 @@ impl TableName{
     }
 }
 
-impl PartialEq for TableName{
+impl PartialEq for TableName {
     fn eq(&self, other: &Self) -> bool {
         self.name == other.name && self.schema == other.schema
     }
@@ -359,34 +359,34 @@ impl PartialEq for TableName{
     }
 }
 
-impl fmt::Display for TableName{
+impl fmt::Display for TableName {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{}", self.complete_name())
     }
 }
 
 /// convert str, IsTable to TableName
-pub trait ToTableName{
+pub trait ToTableName {
 
     fn to_table_name(&self) -> TableName;
 
 }
 
-impl <'a>ToTableName for &'a str{
+impl <'a>ToTableName for &'a str {
 
     fn to_table_name(&self) -> TableName {
         TableName::from_str(self)
     }
 }
 
-impl ToTableName for str{
+impl ToTableName for str {
 
     fn to_table_name(&self) -> TableName {
         TableName::from_str(self)
     }
 }
 
-impl ToTableName for Table{
+impl ToTableName for Table {
 
     /// contain the columns for later use when renaming is necessary
     fn to_table_name(&self) -> TableName {
@@ -416,7 +416,7 @@ pub enum Error {
 
 #[derive(Debug)]
 #[derive(Clone)]
-pub struct Query{
+pub struct Query {
 
     ///sql type determine which type of query to form, some fields are not applicable to other types of query
     pub sql_type:SqlType,
@@ -477,7 +477,7 @@ pub struct Query{
     pub enumerated_returns: Vec<Field>,
 }
 
-impl Query{
+impl Query {
 
     /// the default query is select
     pub fn new() -> Self {
