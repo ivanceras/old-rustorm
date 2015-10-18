@@ -81,7 +81,7 @@ pub trait Database{
 
     /// return the version of the database
     /// lower version of database has fewer supported features
-    fn version(&self) -> String;
+    fn version(&self) -> Result<String, DbError>;
 
     /// begin database transaction
     fn begin(&self);
