@@ -46,7 +46,7 @@ pub enum DbError {
 
 impl DbError {
     pub fn new(description: &str) -> Self {
-        DbError::Error(description.to_string())
+        DbError::Error(description.to_owned())
     }
 }
 
@@ -216,11 +216,11 @@ pub trait Database {
     }
 
     /// execute insert with returning clause, update with returning clause
-    fn execute_sql_with_return(&self, sql: &str, params: &Vec<Value>) -> Result<Vec<Dao>, DbError>;
+    fn execute_sql_with_return(&self, sql: &str, params: &[Value]) -> Result<Vec<Dao>, DbError>;
 
     fn execute_sql_with_one_return(&self,
                                    sql: &str,
-                                   params: &Vec<Value>)
+                                   params: &[Value])
                                    -> Result<Option<Dao>, DbError> {
         let dao = try!(self.execute_sql_with_return(sql, params));
         if dao.len() >= 1 {
@@ -231,7 +231,7 @@ pub trait Database {
     }
 
     /// everything else, no required return other than error or affected number of records
-    fn execute_sql(&self, sql: &str, param: &Vec<Value>) -> Result<usize, DbError>;
+    fn execute_sql(&self, sql: &str, param: &[Value]) -> Result<usize, DbError>;
 
     /// build a query, return the sql string and the parameters.
     /// use by select to build the select query
@@ -389,7 +389,7 @@ pub trait Database {
 
     /// build the filter clause or the where clause of the query
     /// TODO: add the sub filters
-    fn build_filters(&self, w: &mut SqlFrag, parent_query: &Query, filters: &Vec<Filter>) {
+    fn build_filters(&self, w: &mut SqlFrag, parent_query: &Query, filters: &[Filter]) {
         let mut do_and = false;
         for filter in filters {
             if do_and {
@@ -405,7 +405,7 @@ pub trait Database {
     fn build_enumerated_fields(&self,
                                w: &mut SqlFrag,
                                parent_query: &Query,
-                               enumerated_fields: &Vec<Field>) {
+                               enumerated_fields: &[Field]) {
         let mut do_comma = false;
         let mut cnt = 0;
         for field in enumerated_fields {
@@ -562,8 +562,7 @@ pub trait Database {
         w.append("INTO ");
         let into_table = query.get_from_table();
         assert!(into_table.is_some(), "There should be table to insert to");
-        if into_table.is_some() {
-            let table_name = into_table.unwrap();
+        if let Some(table_name) = into_table {
             if self.sql_options().contains(&SqlOption::UsesSchema) {
                 w.append(&table_name.complete_name());
             } else {
@@ -615,8 +614,8 @@ pub trait Database {
         w.left_river("UPDATE ");
         let from_table = query.get_from_table();
         assert!(from_table.is_some(), "There should be table to update from");
-        if from_table.is_some() {
-            w.append(&from_table.unwrap().complete_name());
+        if let Some(ref from) = from_table {
+            w.append(&from.complete_name());
         }
         let enumerated_columns = query.get_enumerated_columns();
         let mut do_comma = false;
@@ -633,11 +632,8 @@ pub trait Database {
             w.append(&ec.column);
             w.append(" = ");
             let value = &query.values[column_index];
-            match value {
-                &Operand::Value(ref value) => {
-                    w.parameter(value.clone());
-                }
-                _ => {}
+            if let &Operand::Value(ref value) = value {
+                w.parameter(value.clone());
             }
             column_index += 1;
         }
@@ -647,18 +643,18 @@ pub trait Database {
             self.build_filters(&mut w, query, &query.filters);
         }
         if !query.enumerated_returns.is_empty() {
-            if self.sql_options().contains(&SqlOption::SupportsReturningClause) {
-                w.left_river("RETURNING ");
-                let mut do_comma = false;
-                for field in &query.enumerated_returns {
-                    if do_comma {
-                        w.commasp();
-                    } else {
-                        do_comma = true;
-                    }
-                    self.build_field(&mut w, query, field);
-                }
-            }
+           if self.sql_options().contains(&SqlOption::SupportsReturningClause) {
+               w.left_river("RETURNING ");
+               let mut do_comma = false;
+               for field in &query.enumerated_returns {
+                   if do_comma {
+                       w.commasp();
+                   } else {
+                       do_comma = true;
+                   }
+                   self.build_field(&mut w, query, field);
+               }
+           }
         }
         w
     }
@@ -668,8 +664,8 @@ pub trait Database {
         w.left_river("DELETE FROM ");
         let from_table = query.get_from_table();
         assert!(from_table.is_some(), "There should be table to delete from");
-        if from_table.is_some() {
-            w.append(&from_table.unwrap().complete_name());
+        if let Some(ref from) = from_table {
+            w.append(&from.complete_name());
         }
         if !query.filters.is_empty() {
             w.left_river("WHERE ");

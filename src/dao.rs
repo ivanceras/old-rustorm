@@ -241,8 +241,8 @@ impl DaoResult {
     fn get_renamed_columns(&self, table: &str) -> Vec<(String, String)> {
         let mut columns = vec![];
         for &(ref col, ref rename) in &self.renamed_columns {
-            if col.table.is_some() {
-                if col.table.as_ref().unwrap() == table {
+            if let Some(ref s) = col.table {
+                if s == table {
                     columns.push((col.column.to_owned(), rename.to_owned()));
                 }
             }
@@ -356,14 +356,9 @@ impl Dao {
         where T: FromValue
     {
         let value = self.values.get(column);
-        if value.is_some() {
-            let v = value.as_ref().unwrap().clone();
-            match v {
-                &Value::Null => None,
-                _ => Some(FromValue::from_type(v.clone())),
-            }
-        } else {
-            None
+        match value {
+            None | Some(&Value::Null) => None,
+            Some(v) => Some(FromValue::from_type(v.clone())),
         }
     }
 
@@ -383,15 +378,9 @@ impl Dao {
     fn all_has_values(&self, non_nulls: &Vec<String>) -> bool {
         for column in non_nulls {
             let value = self.values.get(column);
-            if value.is_none() {
-                return false;
-            }
-            if value.is_some() {
-                let v = value.as_ref().unwrap().clone();
-                match v {
-                    &Value::Null => return false,
-                    _ => (),
-                }
+            match value {
+                None | Some(&Value::Null) => return false,
+                _ => (),
             }
         }
         true
@@ -482,7 +471,7 @@ impl ToValue for f64 {
 
 impl <'a>ToValue for &'a str {
     fn to_db_type(&self) -> Value {
-        Value::String(self.to_string())
+        Value::String((*self).to_owned())
     }
 }
 

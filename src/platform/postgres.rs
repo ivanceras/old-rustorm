@@ -40,10 +40,9 @@ impl Postgres {
 
 
     pub fn get_connection(&self) -> &Connection {
-        if self.pool.is_some() {
-            &self.pool.as_ref().unwrap()
-        } else {
-            panic!("No connection for this database")
+        match self.pool {
+            Some(ref pool) => pool,
+            None => panic!("No connection for this database"),
         }
     }
 
@@ -52,7 +51,7 @@ impl Postgres {
     /// TODO: put this somewhere organized
     /// TODO: match all the other filter types
     /// TODO: need to have a container for PgType contained before being borrowed to actual postgres type
-    fn from_rust_type_tosql<'b>(&self, types: &'b Vec<Value>) -> Vec<&'b ToSql> {
+    fn from_rust_type_tosql<'b>(&self, types: &'b [Value]) -> Vec<&'b ToSql> {
         let mut params: Vec<&ToSql> = vec![];
         for t in types {
             match *t {
@@ -358,7 +357,7 @@ impl Postgres {
     }
 
     /// column that is both primary and foreign should be unified
-    fn unify_primary_and_foreign_column(&self, columns: &Vec<Column>) -> Vec<Column> {
+    fn unify_primary_and_foreign_column(&self, columns: &[Column]) -> Vec<Column> {
         let mut unified_columns = Vec::new();
         let mut primary_columns = Vec::new();
         let mut foreign_columns = Vec::new();
@@ -449,7 +448,7 @@ impl Database for Postgres {
         unimplemented!()
     }
 
-    fn execute_sql_with_return(&self, sql: &str, params: &Vec<Value>) -> Result<Vec<Dao>, DbError> {
+    fn execute_sql_with_return(&self, sql: &str, params: &[Value]) -> Result<Vec<Dao>, DbError> {
         println!("SQL: \n{}", sql);
         println!("param: {:?}", params);
         let conn = self.get_connection();
@@ -476,7 +475,7 @@ impl Database for Postgres {
     /// generic execute sql which returns not much information,
     /// returns only the number of affected records or errors
     /// can be used with DDL operations (CREATE, DELETE, ALTER, DROP)
-    fn execute_sql(&self, sql: &str, params: &Vec<Value>) -> Result<usize, DbError> {
+    fn execute_sql(&self, sql: &str, params: &[Value]) -> Result<usize, DbError> {
         println!("SQL: \n{}", sql);
         println!("param: {:?}", params);
         let to_sql_types = self.from_rust_type_tosql(params);
@@ -673,7 +672,7 @@ impl DatabaseDev for Postgres {
     /// get the rust data type names from database data type names
     /// will be used in source code generation
     fn dbtype_to_rust_type(&self, db_type: &str) -> (Vec<String>, String) {
-        let db_type = match db_type {
+        match db_type {
             "boolean" => {
                 (vec![], "bool".to_owned())
             }
@@ -754,8 +753,7 @@ impl DatabaseDev for Postgres {
                 (vec![], "String".to_owned())
             }//or everything else should be string
             _ => panic!("Unable to get the equivalent data type for {}", db_type),
-        };
-        db_type
+        }
     }
 
     ///
@@ -763,8 +761,7 @@ impl DatabaseDev for Postgres {
     /// will be used in generating SQL for table creation
     /// FIXME, need to restore the exact data type as before
     fn rust_type_to_dbtype(&self, rust_type: &str) -> String {
-
-        let rust_type = match rust_type {
+        match rust_type {
             "bool" => {
                 "boolean".to_owned()
             }
@@ -818,9 +815,7 @@ impl DatabaseDev for Postgres {
             }
             _ => panic!("Unable to get the equivalent database data type for {}",
                         rust_type),
-        };
-        rust_type
-
+        }
     }
 
 }

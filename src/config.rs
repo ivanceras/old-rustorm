@@ -118,23 +118,26 @@ impl DbConfig {
         let mut url = String::new();
         url.push_str(&self.platform.to_owned());
         url.push_str("://");
-        if self.username.is_some() {
-            url.push_str(self.username.as_ref().unwrap());
-        }
-        if self.password.is_some() {
-            url.push_str(":");
-            url.push_str(self.password.as_ref().unwrap());
+
+        if let Some(ref username) = self.username {
+            url.push_str(username);
         }
 
-        if self.host.is_some() {
+        if let Some(ref password) = self.password {
+            url.push_str(":");
+            url.push_str(password);
+        }
+
+        if let Some(ref host) = self.host {
             url.push_str("@");
-            url.push_str(&self.host.as_ref().unwrap().serialize());
+            url.push_str(&host.serialize());
         }
 
-        if self.port.is_some() {
+        if let Some(ref port) = self.port {
             url.push_str(":");
-            url.push_str(&format!("{}", self.port.as_ref().unwrap()));
+            url.push_str(&format!("{}", port));
         }
+
         url.push_str("/");
         url.push_str(&self.database);
         url

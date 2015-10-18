@@ -28,7 +28,7 @@ impl Mysql{
         Mysql { pool: Some(pool) }
     }
 
-    fn from_rust_type_tosql(types: &Vec<Value>) -> Vec<MyValue> {
+    fn from_rust_type_tosql(types: &[Value]) -> Vec<MyValue> {
         let mut params: Vec<MyValue> = vec![];
         for t in types {
             match t {
@@ -42,7 +42,7 @@ impl Mysql{
     }
 
     /// convert a record of a row into rust type
-    fn from_sql_to_rust_type(row: &Vec<MyValue>, index: usize) -> Value {
+    fn from_sql_to_rust_type(row: &[MyValue], index: usize) -> Value {
         let value = row.get(index);
         match value {
             Some(value) => Value::String(value.into_str()),
@@ -55,8 +55,7 @@ impl Mysql{
     /// will be used in generating SQL for table creation
     /// FIXME, need to restore the exact data type as before
     fn rust_type_to_dbtype(&self, rust_type: &str) -> String {
-
-        let rust_type = match rust_type {
+        match rust_type {
             "bool" => {
                 "boolean".to_owned()
             }
@@ -110,9 +109,7 @@ impl Mysql{
             }
             _ => panic!("Unable to get the equivalent database data type for {}",
                         rust_type),
-        };
-        rust_type
-
+        }
     }
 
     fn get_prepared_statement<'a>(&'a self, sql: &'a str) -> MyResult<Stmt> {
@@ -171,7 +168,7 @@ impl Database for Mysql {
         unimplemented!()
     }
 
-    fn execute_sql_with_return(&self, sql: &str, params: &Vec<Value>) -> Result<Vec<Dao>, DbError> {
+    fn execute_sql_with_return(&self, sql: &str, params: &[Value]) -> Result<Vec<Dao>, DbError> {
         println!("SQL: \n{}", sql);
         println!("param: {:?}", params);
         assert!(self.pool.is_some());
@@ -200,7 +197,7 @@ impl Database for Mysql {
 
     fn execute_sql_with_one_return(&self,
                                    sql: &str,
-                                   params: &Vec<Value>)
+                                   params: &[Value])
                                    -> Result<Option<Dao>, DbError> {
         let dao = try!(self.execute_sql_with_return(sql, params));
         if dao.len() >= 1 {
@@ -213,7 +210,7 @@ impl Database for Mysql {
     /// generic execute sql which returns not much information,
     /// returns only the number of affected records or errors
     /// can be used with DDL operations (CREATE, DELETE, ALTER, DROP)
-    fn execute_sql(&self, sql: &str, params: &Vec<Value>) -> Result<usize, DbError> {
+    fn execute_sql(&self, sql: &str, params: &[Value]) -> Result<usize, DbError> {
         println!("SQL: \n{}", sql);
         println!("param: {:?}", params);
         let to_sql_types = Mysql::from_rust_type_tosql(params);

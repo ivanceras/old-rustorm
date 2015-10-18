@@ -29,7 +29,7 @@ impl Sqlite {
         Sqlite { pool: Some(pool) }
     }
 
-    fn from_rust_type_tosql<'a>(&self, types: &'a Vec<Value>) -> Vec<&'a ToSql> {
+    fn from_rust_type_tosql<'a>(&self, types: &'a [Value]) -> Vec<&'a ToSql> {
         let mut params: Vec<&ToSql> = vec![];
         for t in types {
             match t {
@@ -262,7 +262,7 @@ impl Sqlite {
         }
 
     }
-    fn get_column_foreign(&self, all_foreign: &Vec<Foreign>, column: &str) -> Option<Foreign> {
+    fn get_column_foreign(&self, all_foreign: &[Foreign], column: &str) -> Option<Foreign> {
         println!("foreign: {:#?} ", all_foreign);
         for foreign in all_foreign {
             if foreign.column == column {
@@ -337,7 +337,7 @@ impl Database for Sqlite {
     /// you have to specify it yourself
     /// TODO: found this
     /// http://jgallagher.github.io/rusqlite/rusqlite/struct.SqliteStatement.html#method.column_names
-    fn execute_sql_with_return(&self, sql: &str, params: &Vec<Value>) -> Result<Vec<Dao>, DbError> {
+    fn execute_sql_with_return(&self, sql: &str, params: &[Value]) -> Result<Vec<Dao>, DbError> {
         println!("SQL: \n{}", sql);
         println!("param: {:?}", params);
         let conn = self.get_connection();
@@ -368,7 +368,7 @@ impl Database for Sqlite {
 
     fn execute_sql_with_one_return(&self,
                                    sql: &str,
-                                   params: &Vec<Value>)
+                                   params: &[Value])
                                    -> Result<Option<Dao>, DbError> {
         let dao = try!(self.execute_sql_with_return(sql, params));
         if dao.len() >= 1 {
@@ -381,7 +381,7 @@ impl Database for Sqlite {
     /// generic execute sql which returns not much information,
     /// returns only the number of affected records or errors
     /// can be used with DDL operations (CREATE, DELETE, ALTER, DROP)
-    fn execute_sql(&self, sql: &str, params: &Vec<Value>) -> Result<usize, DbError> {
+    fn execute_sql(&self, sql: &str, params: &[Value]) -> Result<usize, DbError> {
         println!("SQL: \n{}", sql);
         println!("param: {:?}", params);
         let to_sql_types = self.from_rust_type_tosql(params);
@@ -414,13 +414,12 @@ impl DatabaseDDL for Sqlite {
             let mut w = SqlFrag::new(vec![]);
             let mut do_comma = true;//there has been colcommentsumns mentioned
             for c in &table.columns {
-                if c.foreign.is_some() {
+                if let Some(ref foreign) = c.foreign {
                     if do_comma {
                         w.commasp();
                     } else {
                         do_comma = true;
                     }
-                    let foreign = c.foreign.as_ref().unwrap();
                     w.ln_tab();
                     w.append("FOREIGN KEY");
                     w.append(&format!("({})", c.name));

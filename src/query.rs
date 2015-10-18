@@ -259,28 +259,25 @@ impl ColumnName {
     }
 
     fn default_rename(&self) -> String {
-        if self.table.is_some() {
-            return format!("{}_{}", self.table.as_ref().unwrap(), self.column);
-        } else {
-            panic!("Unable to rename {} since table is not specified",
-                   self.column);
+        match self.table {
+            Some(ref s) => format!("{}.{}", s, self.column),
+            None => panic!("Unable to rename {} since table is not specified",
+                           self.column),
         }
     }
 
     /// table name and column name
     pub fn complete_name(&self) -> String {
-        if self.table.is_some() {
-            return format!("{}.{}", self.table.as_ref().unwrap(), self.column);
-        } else {
-            return self.column.to_owned();
+        match self.table {
+            Some(ref s) => format!("{}.{}", s, self.column),
+            None => self.column.to_owned(),
         }
     }
     /// includes the schema, table name and column name
     pub fn super_complete_name(&self) -> String {
-        if self.schema.is_some() {
-            return format!("{}.{}", self.schema.as_ref().unwrap(), self.complete_name());
-        } else {
-            return self.complete_name();
+        match self.schema {
+            Some(ref s) => format!("{}.{}", s, self.complete_name()),
+            None => self.complete_name(),
         }
     }
 
@@ -698,19 +695,13 @@ impl Query {
     }
 
     pub fn get_from_table(&self) -> Option<&TableName> {
-        match self.from {
-            Some(ref field) => {
-                match field.operand {
-                    Operand::TableName(ref table_name) => {
-                        Some(table_name)
-                    }
-                    _ => None,
-                }
+        if let Some(ref field) = self.from {
+            if let Operand::TableName(ref table_name) = field.operand {
+                return Some(table_name);
             }
-            None => None,
         }
+        None
     }
-
 
     /// join a table on this query
     ///
@@ -718,7 +709,6 @@ impl Query {
         self.joins.push(join);
         self
     }
-
 
     /// join a table on this query
     ///
@@ -792,13 +782,10 @@ impl Query {
         let mut indexes = vec![];
         let mut cnt = 0;
         for field in &self.enumerated_fields {
-            match field.operand {
-                Operand::ColumnName(ref column_name) => {
-                    if column_name.column == column {
-                        indexes.push(cnt);
-                    }
+            if let Operand::ColumnName(ref column_name) = field.operand {
+                if column_name.column == column {
+                    indexes.push(cnt);
                 }
-                _ => {}
             }
             cnt += 1;
         }
@@ -819,8 +806,8 @@ impl Query {
     pub fn get_involved_tables(&self) -> Vec<TableName> {
         let mut tables = vec![];
         let from_table = self.get_from_table();
-        if from_table.is_some() {
-            tables.push(from_table.unwrap().clone());
+        if let Some(from) = from_table {
+            tables.push(from.clone());
         }
         for j in &self.joins {
             if !tables.contains(&&j.table_name) {
@@ -887,14 +874,10 @@ impl Query {
         let mut renamed_columns = vec![];
         let renamed_fields = self.get_renamed_fields();
         for field in &renamed_fields {
-            match field.operand {
-                Operand::ColumnName(ref column_name) => {
-                    if field.name.is_some() {
-                        let rename = field.name.as_ref().unwrap().to_owned();
-                        renamed_columns.push((column_name.clone(), rename));
-                    }
+            if let Operand::ColumnName(ref column_name) = field.operand {
+                if let Some(ref rename) = field.name {
+                    renamed_columns.push((column_name.clone(), rename.to_owned()));
                 }
-                _ => (),
             }
         }
         renamed_columns
@@ -907,10 +890,8 @@ impl Query {
         let enumerated_columns = self.get_enumerated_columns();
         for c in &enumerated_columns {
             for d in &enumerated_columns {
-                if c != d {
-                    if c.is_conflicted(d) {
-                        conflicts.push(c.column.to_owned());
-                    }
+                if c != d && c.is_conflicted(d) {
+                    conflicts.push(c.column.to_owned());
                 }
             }
         }
@@ -929,13 +910,10 @@ impl Query {
     fn index_of_field(&self, column: &ColumnName) -> Option<usize> {
         let mut cnt = 0;
         for field in &self.enumerated_fields {
-            match field.operand {
-                Operand::ColumnName(ref column_name) => {
-                    if column_name == column {
-                        return Some(cnt);
-                    }
+            if let Operand::ColumnName(ref column_name) = field.operand {
+                if column_name == column {
+                    return Some(cnt);
                 }
-                _ => {}
             }
             cnt += 1;
         }
@@ -944,8 +922,8 @@ impl Query {
 
     fn remove_from_enumerated(&mut self, column_name: &ColumnName) -> &mut Self {
         let index = self.index_of_field(column_name);
-        if index.is_some() {
-            self.enumerated_fields.remove(index.unwrap());
+        if let Some(idx) = index {
+            self.enumerated_fields.remove(idx);
         }
         self
     }
@@ -955,11 +933,8 @@ impl Query {
     pub fn get_enumerated_columns(&self) -> Vec<&ColumnName> {
         let mut columns = vec![];
         for field in &self.enumerated_fields {
-            match field.operand {
-                Operand::ColumnName(ref column_name) => {
-                    columns.push(column_name);
-                }
-                _ => {}
+            if let Operand::ColumnName(ref column_name) = field.operand {
+                columns.push(column_name);
             }
         }
         columns
