@@ -55,12 +55,12 @@ impl DbConfig{
                         match url {
                             "sqlite://:memory:" => {//special case for sqlite, maybe only use 2 // sqlite:://:memory:
                                 return Some(DbConfig {
-                                    platform: scheme.to_string(),
+                                    platform: scheme.to_owned(),
                                     username: None,
                                     password: None,
                                     host: None,
                                     port: None,
-                                    database: ":memory:".to_string(),
+                                    database: ":memory:".to_owned(),
                                     ssl: false,
                                 });
                             }
@@ -74,7 +74,7 @@ impl DbConfig{
                     "sqlite" => { // handle sqlite parsing such as the memory and the host be the database
                         let mut complete_path = String::new();
                         let domain = match reparse_relative.host {
-                            Host::Domain(ref domain) => domain.to_string(),
+                            Host::Domain(ref domain) => domain.to_owned(),
                             _ => panic!("ip is not allowed in sqlite"),
                         };
                         complete_path.push_str(&format!("/{}", domain));
@@ -82,7 +82,7 @@ impl DbConfig{
                             complete_path.push_str(&format!("/{}", p));
                         }
                         Some(DbConfig {
-                            platform: scheme.to_string(),
+                            platform: scheme.to_owned(),
                             username: None,
                             password: None,
                             host: None,
@@ -92,7 +92,7 @@ impl DbConfig{
                         })
                     }
                     _ => Some(DbConfig {
-                        platform: scheme.to_string(),
+                        platform: scheme.to_owned(),
                         username: Some(reparse_relative.username.clone()),
                         password: reparse_relative.password.clone(),
                         host: Some(reparse_relative.host.clone()),
@@ -100,7 +100,7 @@ impl DbConfig{
                         database: {
                             assert!(reparse_relative.path.len() == 1,
                                     "There should only be 1 path");
-                            reparse_relative.path[0].to_string()
+                            reparse_relative.path[0].to_owned()
                         },
                         ssl: false,
                     }),
@@ -116,7 +116,7 @@ impl DbConfig{
 
     pub fn get_url(&self) -> String {
         let mut url = String::new();
-        url.push_str(&self.platform.to_string());
+        url.push_str(&self.platform.to_owned());
         url.push_str("://");
         if self.username.is_some() {
             url.push_str(self.username.as_ref().unwrap());
@@ -145,23 +145,23 @@ impl DbConfig{
 fn test_config_url() {
     let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v6";
     let config = DbConfig {
-        platform: "postgres".to_string(),
-        username: Some("postgres".to_string()),
-        password: Some("p0stgr3s".to_string()),
-        host: Some(Host::Domain("localhost".to_string())),
+        platform: "postgres".to_owned(),
+        username: Some("postgres".to_owned()),
+        password: Some("p0stgr3s".to_owned()),
+        host: Some(Host::Domain("localhost".to_owned())),
         port: None,
         ssl: false,
-        database: "bazaar_v6".to_string(),
+        database: "bazaar_v6".to_owned(),
     };
 
-    assert_eq!(config.get_url(), url.to_string());
+    assert_eq!(config.get_url(), url.to_owned());
 }
 
 #[test]
 fn test_config_from_url() {
     let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v6";
     let config = DbConfig::from_url(url).unwrap();
-    assert_eq!(config.get_url(), url.to_string());
+    assert_eq!(config.get_url(), url.to_owned());
 }
 
 
@@ -169,16 +169,16 @@ fn test_config_from_url() {
 fn test_config_url_with_port() {
     let url = "postgres://postgres:p0stgr3s@localhost:5432/bazaar_v6";
     let config = DbConfig {
-        platform: "postgres".to_string(),
-        username: Some("postgres".to_string()),
-        password: Some("p0stgr3s".to_string()),
-        host: Some(Host::Domain("localhost".to_string())),
+        platform: "postgres".to_owned(),
+        username: Some("postgres".to_owned()),
+        password: Some("p0stgr3s".to_owned()),
+        host: Some(Host::Domain("localhost".to_owned())),
         port: Some(5432),
-        database: "bazaar_v6".to_string(),
+        database: "bazaar_v6".to_owned(),
         ssl: false,
     };
 
-    assert_eq!(config.get_url(), url.to_string());
+    assert_eq!(config.get_url(), url.to_owned());
 }
 
 #[test]
@@ -186,12 +186,12 @@ fn test_config_sqlite_url_with_port() {
     let url = "sqlite:///bazaar_v6.db";
     let parsed_config = DbConfig::from_url(url).unwrap();
     let expected_config = DbConfig {
-        platform: "sqlite".to_string(),
+        platform: "sqlite".to_owned(),
         username: None,
         password: None,
         host: None,
         port: None,
-        database: "/bazaar_v6.db/".to_string(),
+        database: "/bazaar_v6.db/".to_owned(),
         ssl: false,
     };
     println!("{:?}", parsed_config);
@@ -204,12 +204,12 @@ fn test_config_sqlite_url_with_path() {
     let url = "sqlite:///home/some/path/file.db";
     let parsed_config = DbConfig::from_url(url).unwrap();
     let expected_config = DbConfig {
-        platform: "sqlite".to_string(),
+        platform: "sqlite".to_owned(),
         username: None,
         password: None,
         host: None,
         port: None,
-        database: "/home/some/path/file.db".to_string(),
+        database: "/home/some/path/file.db".to_owned(),
         ssl: false,
     };
     println!("{:?}", parsed_config);
@@ -222,12 +222,12 @@ fn sqlite_in_memory() {
     let url = "sqlite://:memory:";
     let parsed_config = DbConfig::from_url(url).unwrap();
     let expected_config = DbConfig {
-        platform: "sqlite".to_string(),
+        platform: "sqlite".to_owned(),
         username: None,
         password: None,
         host: None,
         port: None,
-        database: ":memory:".to_string(),
+        database: ":memory:".to_owned(),
         ssl: false,
     };
     println!("{:?}", parsed_config);

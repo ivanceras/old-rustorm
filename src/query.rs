@@ -242,16 +242,16 @@ impl ColumnName{
         if column.contains(".") {
             let splinters = column.split(".").collect::<Vec<&str>>();
             assert!(splinters.len() == 2, "There should only be 2 splinters");
-            let table_split = splinters[0].to_string();
-            let column_split = splinters[1].to_string();
+            let table_split = splinters[0].to_owned();
+            let column_split = splinters[1].to_owned();
             ColumnName {
-                column: column_split.to_string(),
-                table: Some(table_split.to_string()),
+                column: column_split.to_owned(),
+                table: Some(table_split.to_owned()),
                 schema: None,
             }
         } else {
             ColumnName {
-                column: column.to_string(),
+                column: column.to_owned(),
                 table: None,
                 schema: None,
             }
@@ -272,7 +272,7 @@ impl ColumnName{
         if self.table.is_some() {
             return format!("{}.{}", self.table.as_ref().unwrap(), self.column);
         } else {
-            return self.column.to_string();
+            return self.column.to_owned();
         }
     }
     /// includes the schema, table name and column name
@@ -323,8 +323,8 @@ impl TableName{
         if str.contains(".") {
             let splinters = str.split(".").collect::<Vec<&str>>();
             assert!(splinters.len() == 2, "There should only be 2 splinters");
-            let schema_split = splinters[0].to_string();
-            let table_split = splinters[1].to_string();
+            let schema_split = splinters[0].to_owned();
+            let table_split = splinters[1].to_owned();
 
             TableName {
                 schema: Some(schema_split),
@@ -335,7 +335,7 @@ impl TableName{
         } else {
             TableName {
                 schema: None,
-                name: str.to_string(),
+                name: str.to_owned(),
                 columns: vec![],
             }
         }
@@ -344,7 +344,7 @@ impl TableName{
     pub fn complete_name(&self) -> String {
         match self.schema {
             Some (ref schema) => format!("{}.{}", schema, self.name),
-            None => self.name.to_string(),
+            None => self.name.to_owned(),
         }
     }
 }
@@ -393,15 +393,15 @@ impl ToTableName for Table{
         let mut columns = vec![];
         for c in &self.columns {
             let column_name = ColumnName {
-                schema: Some(self.schema.to_string()),
-                table: Some(self.name.to_string()),
-                column: c.name.to_string(),
+                schema: Some(self.schema.to_owned()),
+                table: Some(self.name.to_owned()),
+                column: c.name.to_owned(),
             };
             columns.push(column_name);
         }
         TableName {
-            schema: Some(self.schema.to_string()),
-            name: self.name.to_string(),
+            schema: Some(self.schema.to_owned()),
+            name: self.name.to_owned(),
             columns: columns,
         }
     }
@@ -675,7 +675,7 @@ impl Query{
     /// wrapped in the from_query
     /// build a builder for this
     pub fn declare_query(&mut self, query: Query, alias: &str) -> &mut Self {
-        self.declared_query.insert(alias.to_string(), query);
+        self.declared_query.insert(alias.to_owned(), query);
         self
     }
 
@@ -687,7 +687,7 @@ impl Query{
         let operand = Operand::Query(query);
         let field = Field {
             operand: operand,
-            name: Some(alias.to_string()),
+            name: Some(alias.to_owned()),
         };
         self.from_field(field)
     }
@@ -730,8 +730,8 @@ impl Query{
             modifier: Some(Modifier::LEFT),
             join_type: None,
             table_name: table.to_table_name(),
-            column1: vec![column1.to_string()],
-            column2: vec![column2.to_string()],
+            column1: vec![column1.to_owned()],
+            column2: vec![column2.to_owned()],
         };
         self.join(join)
     }
@@ -743,8 +743,8 @@ impl Query{
             modifier: Some(Modifier::RIGHT),
             join_type: None,
             table_name: table.to_table_name(),
-            column1: vec![column1.to_string()],
-            column2: vec![column2.to_string()],
+            column1: vec![column1.to_owned()],
+            column2: vec![column2.to_owned()],
         };
         self.join(join)
     }
@@ -756,8 +756,8 @@ impl Query{
             modifier: Some(Modifier::FULL),
             join_type: None,
             table_name: table.to_table_name(),
-            column1: vec![column1.to_string()],
-            column2: vec![column2.to_string()],
+            column1: vec![column1.to_owned()],
+            column2: vec![column2.to_owned()],
         };
         self.join(join)
     }
@@ -770,20 +770,20 @@ impl Query{
             modifier: None,
             join_type: Some(JoinType::INNER),
             table_name: table.to_table_name(),
-            column1: vec![column1.to_string()],
-            column2: vec![column2.to_string()],
+            column1: vec![column1.to_owned()],
+            column2: vec![column2.to_owned()],
         };
         self.join(join)
     }
 
     ///ascending orderby of this column
     pub fn asc(&mut self, column: &str) -> &mut Self {
-        self.order_by.push((column.to_string(), Direction::ASC));
+        self.order_by.push((column.to_owned(), Direction::ASC));
         self
     }
     ///ascending orderby of this column
     pub fn desc(&mut self, column: &str) -> &mut Self {
-        self.order_by.push((column.to_string(), Direction::DESC));
+        self.order_by.push((column.to_owned(), Direction::DESC));
         self
     }
 
@@ -890,7 +890,7 @@ impl Query{
             match field.operand {
                 Operand::ColumnName(ref column_name) => {
                     if field.name.is_some() {
-                        let rename = field.name.as_ref().unwrap().to_string();
+                        let rename = field.name.as_ref().unwrap().to_owned();
                         renamed_columns.push((column_name.clone(), rename));
                     }
                 }
@@ -909,7 +909,7 @@ impl Query{
             for d in &enumerated_columns {
                 if c != d {
                     if c.is_conflicted(d) {
-                        conflicts.push(c.column.to_string());
+                        conflicts.push(c.column.to_owned());
                     }
                 }
             }

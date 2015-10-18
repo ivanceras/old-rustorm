@@ -49,8 +49,8 @@
 //! impl IsTable for Product{
 //!     fn table()->Table{
 //!         Table{
-//!             schema:"bazaar".to_string(),
-//!             name:"product".to_string(),
+//!             schema:"bazaar".to_owned(),
+//!             name:"product".to_owned(),
 //!             parent_table:None,
 //!             sub_table:vec![],
 //!             comment:None,

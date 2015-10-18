@@ -59,55 +59,55 @@ impl Mysql{
 
         let rust_type = match rust_type {
             "bool" => {
-                "boolean".to_string()
+                "boolean".to_owned()
             }
             "i8" => {
-                "integer".to_string()
+                "integer".to_owned()
             }
             "i16" => {
-                "integer".to_string()
+                "integer".to_owned()
             }
             "i32" => {
-                "integer".to_string()
+                "integer".to_owned()
             }
             "u32" => {
-                "integer".to_string()
+                "integer".to_owned()
             }
             "i64" => {
-                "integer".to_string()
+                "integer".to_owned()
             }
             "f32" => {
-                "real".to_string()
+                "real".to_owned()
             }
             "f64" => {
-                "real".to_string()
+                "real".to_owned()
             }
             "String" => {
-                "text".to_string()
+                "text".to_owned()
             }
             "Vec<u8>" => {
-                "blob".to_string()
+                "blob".to_owned()
             }
             "Json" => {
-                "text".to_string()
+                "text".to_owned()
             }
             "Uuid" => {
-                "varchar(36)".to_string()
+                "varchar(36)".to_owned()
             }
             "NaiveDateTime" => {
-                "numeric".to_string()
+                "numeric".to_owned()
             }
             "DateTime<UTC>" => {
-                "numeric".to_string()
+                "numeric".to_owned()
             }
             "NaiveDate" => {
-                "numeric".to_string()
+                "numeric".to_owned()
             }
             "NaiveTime" => {
-                "numeric".to_string()
+                "numeric".to_owned()
             }
             "HashMap<String, Option<String>>" => {
-                "text".to_string()
+                "text".to_owned()
             }
             _ => panic!("Unable to get the equivalent database data type for {}",
                         rust_type),

@@ -265,9 +265,9 @@ impl Postgres{
 
             let db_data_type = if re.is_match(&db_data_type) {
                 let cap = re.captures(&db_data_type).unwrap();
-                let data_type = cap.at(1).unwrap().to_string();
+                let data_type = cap.at(1).unwrap().to_owned();
                 // TODO::can be use in the later future
-                // let size = cap.at(2).unwrap().to_string();
+                // let size = cap.at(2).unwrap().to_owned();
                 data_type
             } else {
                 db_data_type
@@ -593,8 +593,8 @@ impl DatabaseDev for Postgres{
         }
 
         Table {
-            schema: schema.to_string(),
-            name: table.to_string(),
+            schema: schema.to_owned(),
+            name: table.to_owned(),
             parent_table: parent,
             sub_table: subclass,
             comment: comment,
@@ -675,83 +675,83 @@ impl DatabaseDev for Postgres{
     fn dbtype_to_rust_type(&self, db_type: &str) -> (Vec<String>, String) {
         let db_type = match db_type {
             "boolean" => {
-                (vec![], "bool".to_string())
+                (vec![], "bool".to_owned())
             }
             "char" => {
-                (vec![], "i8".to_string())
+                (vec![], "i8".to_owned())
             }
             "smallint" | "smallserial" => {
-                (vec![], "i16".to_string())
+                (vec![], "i16".to_owned())
             }
             "integer" | "int" | "serial" => {
-                (vec![], "i32".to_string())
+                (vec![], "i32".to_owned())
             }
             "oid" => {
-                (vec![], "u32".to_string())
+                (vec![], "u32".to_owned())
             }
             "bigint" | "bigserial" => {
-                (vec![], "i64".to_string())
+                (vec![], "i64".to_owned())
             }
             "real" => {
-                (vec![], "f32".to_string())
+                (vec![], "f32".to_owned())
             }
             "double precision" | "numeric" => {
-                (vec![], "f64".to_string())
+                (vec![], "f64".to_owned())
             }
             "name" | "character" | "character varying" | "text" | "citext" | "bpchar" => {
-                (vec![], "String".to_string())
+                (vec![], "String".to_owned())
             }
             "bytea" => {
-                (vec![], "Vec<u8>".to_string())
+                (vec![], "Vec<u8>".to_owned())
             }
             // "json" | "jsonb" => {
-            // ((Some(vec!["rustc_serialize::json::Json".to_string()]),
-            // "Json".to_string()))
+            // ((Some(vec!["rustc_serialize::json::Json".to_owned()]),
+            // "Json".to_owned()))
             // },
             "json" | "jsonb" => {//FIXME :String for now, since Json itself is not encodable
-                ((vec![], "String".to_string()))
+                ((vec![], "String".to_owned()))
             }
             "uuid" => {
-                (vec!["uuid::Uuid".to_string()], "Uuid".to_string())
+                (vec!["uuid::Uuid".to_owned()], "Uuid".to_owned())
             }
             "timestamp" => {
-                (vec!["chrono::naive::datetime::NaiveDateTime".to_string()],
-                 "NaiveDateTime".to_string())
+                (vec!["chrono::naive::datetime::NaiveDateTime".to_owned()],
+                 "NaiveDateTime".to_owned())
             }
             "timestamp without time zone" => {
-                (vec!["chrono::naive::datetime::NaiveDateTime".to_string()],
-                 "NaiveDateTime".to_string())
+                (vec!["chrono::naive::datetime::NaiveDateTime".to_owned()],
+                 "NaiveDateTime".to_owned())
             }
             "timestamp with time zone" => {
-                (vec!["chrono::datetime::DateTime".to_string(),
-                      "chrono::offset::utc::UTC".to_string()],
-                 "DateTime<UTC>".to_string())
+                (vec!["chrono::datetime::DateTime".to_owned(),
+                      "chrono::offset::utc::UTC".to_owned()],
+                 "DateTime<UTC>".to_owned())
             }
             "time with time zone" => {
-                (vec!["chrono::naive::time::NaiveTime".to_string(),
-                      "chrono::offset::utc::UTC".to_string()],
-                 "NaiveTime".to_string())
+                (vec!["chrono::naive::time::NaiveTime".to_owned(),
+                      "chrono::offset::utc::UTC".to_owned()],
+                 "NaiveTime".to_owned())
             }
             "date" => {
-                (vec!["chrono::naive::date::NaiveDate".to_string()],
-                 "NaiveDate".to_string())
+                (vec!["chrono::naive::date::NaiveDate".to_owned()],
+                 "NaiveDate".to_owned())
             }
             "time" => {
-                (vec!["chrono::naive::time::NaiveTime".to_string()],
-                 "NaiveTime".to_string())
+                (vec!["chrono::naive::time::NaiveTime".to_owned()],
+                 "NaiveTime".to_owned())
             }
             "hstore" => {
-                (vec!["std::collections::HashMap".to_string()],
-                 "HashMap<String, Option<String>>".to_string())
+                (vec!["std::collections::HashMap".to_owned()],
+                 "HashMap<String, Option<String>>".to_owned())
             }
             "interval" => {
-                (vec![], "u32".to_string())
+                (vec![], "u32".to_owned())
             }
             "inet[]" => {
-                (vec![], "String".to_string())
+                (vec![], "String".to_owned())
             }
             "tsvector" | "inet" => {
-                (vec![], "String".to_string())
+                (vec![], "String".to_owned())
             }//or everything else should be string
             _ => panic!("Unable to get the equivalent data type for {}", db_type),
         };
@@ -766,55 +766,55 @@ impl DatabaseDev for Postgres{
 
         let rust_type = match rust_type {
             "bool" => {
-                "boolean".to_string()
+                "boolean".to_owned()
             }
             "i8" => {
-                "char".to_string()
+                "char".to_owned()
             }
             "i16" => {
-                "smallint".to_string()
+                "smallint".to_owned()
             }
             "i32" => {
-                "integer".to_string()
+                "integer".to_owned()
             }
             "u32" => {
-                "oid".to_string()
+                "oid".to_owned()
             }
             "i64" => {
-                "bigint".to_string()
+                "bigint".to_owned()
             }
             "f32" => {
-                "real".to_string()
+                "real".to_owned()
             }
             "f64" => {
-                "numeric".to_string()
+                "numeric".to_owned()
             }
             "String" => {
-                "character varying".to_string()
+                "character varying".to_owned()
             }
             "Vec<u8>" => {
-                "bytea".to_string()
+                "bytea".to_owned()
             }
             "Json" => {
-                "json".to_string()
+                "json".to_owned()
             }
             "Uuid" => {
-                "uuid".to_string()
+                "uuid".to_owned()
             }
             "NaiveDateTime" => {
-                "timestamp".to_string()
+                "timestamp".to_owned()
             }
             "DateTime<UTC>" => {
-                "timestamp with time zone".to_string()
+                "timestamp with time zone".to_owned()
             }
             "NaiveDate" => {
-                "date".to_string()
+                "date".to_owned()
             }
             "NaiveTime" => {
-                "time".to_string()
+                "time".to_owned()
             }
             "HashMap<String, Option<String>>" => {
-                "hstore".to_string()
+                "hstore".to_owned()
             }
             _ => panic!("Unable to get the equivalent database data type for {}",
                         rust_type),

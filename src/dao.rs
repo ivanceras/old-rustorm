@@ -243,7 +243,7 @@ impl DaoResult{
         for &(ref col, ref rename) in &self.renamed_columns {
             if col.table.is_some() {
                 if col.table.as_ref().unwrap() == table {
-                    columns.push((col.column.to_string(), rename.to_string()));
+                    columns.push((col.column.to_owned(), rename.to_owned()));
                 }
             }
         }
@@ -304,7 +304,7 @@ impl ToJson for Dao{
     fn to_json(&self) -> Json {
         let mut btree = BTreeMap::new();
         for (key, value) in &self.values {
-            btree.insert(key.to_string(), value.to_json());
+            btree.insert(key.to_owned(), value.to_json());
         }
         Json::Object(btree)
     }
@@ -318,7 +318,7 @@ impl Dao{
     }
 
     pub fn set(&mut self, column: &str, value: &ToValue) {
-        self.values.insert(column.to_string(), value.to_db_type());
+        self.values.insert(column.to_owned(), value.to_db_type());
     }
 
     /// set to null the value of this column
@@ -327,7 +327,7 @@ impl Dao{
     }
 
     pub fn set_value(&mut self, column: &str, value: Value) {
-        self.values.insert(column.to_string(), value);
+        self.values.insert(column.to_owned(), value);
     }
     pub fn get_value(&self, column: &str) -> Value {
         let value = self.values.get(column);

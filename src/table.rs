@@ -38,7 +38,7 @@ impl Column{
             println!("Warning: {} is rust reserved keyword", self.name);
             return format!("{}_", self.name);
         }
-        self.name.to_string()
+        self.name.to_owned()
     }
 
     pub fn displayname(&self) -> String {
@@ -49,9 +49,9 @@ impl Column{
     /// presentable display names, such as removing the ids if it ends with one
     fn clean_name(&self) -> String {
         if self.name.ends_with("_id") {
-            return self.name.trim_right_matches("_id").to_string();
+            return self.name.trim_right_matches("_id").to_owned();
         }
-        self.name.to_string()
+        self.name.to_owned()
     }
 
     /// shorten, compress the name based on the table it points to
@@ -63,7 +63,7 @@ impl Column{
             if clean_name.len() > foreign.table.len() {
                 return clean_name.trim_right_matches(&foreign.table)
                                  .trim_right_matches("_")
-                                 .to_string();
+                                 .to_owned();
             }
         }
         clean_name
@@ -143,7 +143,7 @@ impl <'a>RefTable<'a>{
                 let suffix = "_1m";
                 return format!("{}{}", self.table.name, suffix);
             } else {
-                return self.table.name.to_string();
+                return self.table.name.to_owned();
             }
 
         }
@@ -152,7 +152,7 @@ impl <'a>RefTable<'a>{
                 let suffix = "_mm";
                 return format!("{}{}", self.table.name, suffix);
             } else {
-                return self.table.name.to_string();
+                return self.table.name.to_owned();
             }
         }
         unreachable!();
@@ -229,7 +229,7 @@ impl Table{
             display_name.push_str(&capitalize(i));
             display_name.push_str(" ");
         }
-        display_name.trim().to_string()
+        display_name.trim().to_owned()
     }
 
     /// get a shorter display name of a certain table
@@ -245,7 +245,7 @@ impl Table{
                     concise_name.push_str(" ");
                 }
             }
-            return concise_name.trim().to_string();
+            return concise_name.trim().to_owned();
         } else {
             return self.displayname();
         }
@@ -254,12 +254,12 @@ impl Table{
     /// remove plural names such as users to user
     fn clean_name(&self) -> String {
         if self.name.ends_with("s") {
-            return self.name.trim_right_matches("s").to_string();
+            return self.name.trim_right_matches("s").to_owned();
         }
         if self.name.ends_with("ies") {
-            return self.name.trim_right_matches("y").to_string();
+            return self.name.trim_right_matches("y").to_owned();
         }
-        self.name.to_string()
+        self.name.to_owned()
     }
 
     /// get a condensed name of this table when used in contex with another table
@@ -273,9 +273,9 @@ impl Table{
                     concise_name.push_str("_");
                 }
             }
-            return concise_name.trim_right_matches("_").to_string();
+            return concise_name.trim_right_matches("_").to_owned();
         } else {
-            return self.name.to_string();
+            return self.name.to_owned();
         }
     }
 
@@ -291,7 +291,7 @@ impl Table{
 
     /// return the column of this table with the name
     pub fn get_column(&self, column: &str) -> Option<Column> {
-        let column_name = column.to_string();
+        let column_name = column.to_owned();
         for c in &self.columns {
             if c.name == column_name {
                 return Some(c.clone());
@@ -316,7 +316,7 @@ impl Table{
         let mut non_nulls = vec![];
         for c in &self.columns {
             if c.not_null {
-                non_nulls.push(c.name.to_string());
+                non_nulls.push(c.name.to_owned());
             }
         }
         non_nulls
@@ -694,5 +694,5 @@ fn capitalize(str: &str) -> String {
 
 #[test]
 fn test_capitalize() {
-    assert_eq!(capitalize("hello"), "Hello".to_string());
+    assert_eq!(capitalize("hello"), "Hello".to_owned());
 }

@@ -66,55 +66,55 @@ impl Sqlite {
 
         let rust_type = match rust_type {
             "bool" => {
-                "boolean".to_string()
+                "boolean".to_owned()
             }
             "i8" => {
-                "integer".to_string()
+                "integer".to_owned()
             }
             "i16" => {
-                "integer".to_string()
+                "integer".to_owned()
             }
             "i32" => {
-                "integer".to_string()
+                "integer".to_owned()
             }
             "u32" => {
-                "integer".to_string()
+                "integer".to_owned()
             }
             "i64" => {
-                "integer".to_string()
+                "integer".to_owned()
             }
             "f32" => {
-                "real".to_string()
+                "real".to_owned()
             }
             "f64" => {
-                "real".to_string()
+                "real".to_owned()
             }
             "String" => {
-                "text".to_string()
+                "text".to_owned()
             }
             "Vec<u8>" => {
-                "blob".to_string()
+                "blob".to_owned()
             }
             "Json" => {
-                "text".to_string()
+                "text".to_owned()
             }
             "Uuid" => {
-                "text".to_string()
+                "text".to_owned()
             }
             "NaiveDateTime" => {
-                "numeric".to_string()
+                "numeric".to_owned()
             }
             "DateTime<UTC>" => {
-                "numeric".to_string()
+                "numeric".to_owned()
             }
             "NaiveDate" => {
-                "numeric".to_string()
+                "numeric".to_owned()
             }
             "NaiveTime" => {
-                "numeric".to_string()
+                "numeric".to_owned()
             }
             "HashMap<String, Option<String>>" => {
-                "text".to_string()
+                "text".to_owned()
             }
             _ => panic!("Unable to get the equivalent database data type for {}",
                         rust_type),
@@ -139,9 +139,9 @@ impl Sqlite {
             println!("to: {}", to);
 
             let foreign = Foreign {
-                schema: "".to_string(),
-                table: table.to_string(),
-                column: to.to_string(),
+                schema: "".to_owned(),
+                table: table.to_owned(),
+                column: to.to_owned(),
             };
             foreigns.push(foreign);
         }
@@ -177,7 +177,7 @@ impl Sqlite {
                             comments.push(None);
                         }
                     }
-                    comments.push(Some(splinter.to_string()));
+                    comments.push(Some(splinter.to_owned()));
                 } else if splinter.starts_with("FOREIGN") {
 
                 } else if splinter.starts_with("CHECK") {
@@ -186,7 +186,7 @@ impl Sqlite {
                     let line: Vec<&str> = splinter.split_whitespace().collect();
                     let column = line[0];
                     println!("column: {}", column);
-                    columns.push(column.to_string());
+                    columns.push(column.to_owned());
                     index += 1
                 }
             }
@@ -346,7 +346,7 @@ impl Database for Sqlite{
         let param = self.from_rust_type_tosql(params);
         let mut columns = vec![];
         for c in stmt.column_names() {
-            columns.push(c.to_string());
+            columns.push(c.to_owned());
         }
         println!("columns : {:?}", columns);
         let rows = try!(stmt.query(&param));
@@ -521,8 +521,8 @@ impl DatabaseDev for Sqlite{
                     let column_foreign = self.get_column_foreign(&foreign, &column);
                     let column = Column {
                         name: column,
-                        data_type: data_type.to_string(),
-                        db_data_type: data_type.to_string(),
+                        data_type: data_type.to_owned(),
+                        db_data_type: data_type.to_owned(),
                         is_primary: pk != "0",
                         is_unique: false,
                         default: Some(default_value),
@@ -534,8 +534,8 @@ impl DatabaseDev for Sqlite{
                     columns.push(column);
                 }
                 Table {
-                    schema: "".to_string(),
-                    name: table.to_string(),
+                    schema: "".to_owned(),
+                    name: table.to_owned(),
                     parent_table: None,
                     sub_table: vec![],
                     comment: table_comment,
@@ -556,7 +556,7 @@ impl DatabaseDev for Sqlite{
             Ok(result) => {
                 let mut tables: Vec<(String, String, bool)> = Vec::new();
                 for r in result {
-                    let schema = "".to_string();
+                    let schema = "".to_owned();
                     let table: String = r.get("tbl_name");
                     let is_view = false;
                     tables.push((schema, table, is_view))
