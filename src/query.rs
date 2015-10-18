@@ -54,6 +54,7 @@ pub enum Connector {
 
 #[derive(Debug)]
 #[derive(Clone)]
+#[allow(non_camel_case_types)]
 pub enum Equality {
     EQ, // EQUAL,
     NEQ, // NOT_EQUAL,
@@ -230,7 +231,7 @@ impl Field{
                     name: Some(rename),
                 }
             }
-            _ => panic!("not yet"),
+            _ => unimplemented!(),
         }
     }
 }

@@ -140,7 +140,7 @@ impl Sqlite{
     }
 
     /// get the foreign keys of table
-    fn get_foreign_keys(&self, schema: &str, table: &str) -> Vec<Foreign> {
+    fn get_foreign_keys(&self, _schema: &str, table: &str) -> Vec<Foreign> {
         println!("Extracting foreign keys...");
         let sql = format!("PRAGMA foreign_key_list({});", table);
         let result = self.execute_sql_with_return(&sql, &vec![]).unwrap();
@@ -189,7 +189,7 @@ impl Sqlite{
             for splinter in splinters {
                 if splinter.starts_with("--") {
                     if comments.len() < index {
-                        for i in comments.len()..index {
+                        for _ in comments.len()..index {
                             comments.push(None);
                         }
                     }
@@ -231,7 +231,7 @@ impl Sqlite{
     }
     /// extract the comment of the table
     /// Don't support multi-line comment
-    fn get_table_comment(&self, schema: &str, table: &str) -> Option<String> {
+    fn get_table_comment(&self, _schema: &str, table: &str) -> Option<String> {
         let sql = format!("SELECT sql FROM sqlite_master WHERE type = 'table' AND tbl_name = '{}'",
                           table);
         let result = self.execute_sql_with_return(&sql, &vec![]).unwrap();
@@ -239,18 +239,18 @@ impl Sqlite{
         let ref dao = result[0];
         let create_sql: String = dao.get("sql");
         match Sqlite::extract_comments(&create_sql) {
-            Ok((table_comment, column_comments)) => {
+            Ok((table_comment, _column_comments)) => {
                 println!("table_comment: {:?}", table_comment);
                 table_comment
             }
-            Err(e) => {
+            Err(_) => {
                 None
             }
         }
     }
     /// extract the comments for each column
     /// Don't support multi-line comment
-    fn get_column_comments(&self, schema: &str, table: &str) -> BTreeMap<String, Option<String>> {
+    fn get_column_comments(&self, _schema: &str, table: &str) -> BTreeMap<String, Option<String>> {
         let sql = format!("SELECT sql FROM sqlite_master WHERE type = 'table' AND tbl_name = '{}'",
                           table);
         let result = self.execute_sql_with_return(&sql, &vec![]).unwrap();
@@ -258,11 +258,11 @@ impl Sqlite{
         let ref dao = result[0];
         let create_sql: String = dao.get("sql");
         match Sqlite::extract_comments(&create_sql) {
-            Ok((table_comment, column_comments)) => {
+            Ok((_table_comment, column_comments)) => {
                 println!("column_comments: {:?}", column_comments);
                 column_comments
             }
-            Err(e) => {
+            Err(_) => {
                 BTreeMap::new()
             }
         }
@@ -300,10 +300,13 @@ impl Database for Sqlite{
         }
     }
     fn begin(&self) {
+        unimplemented!()
     }
     fn commit(&self) {
+        unimplemented!()
     }
     fn rollback(&self) {
+        unimplemented!()
     }
     fn is_transacted(&self) -> bool {
         false
@@ -315,11 +318,13 @@ impl Database for Sqlite{
         false
     }
     fn close(&self) {
+        unimplemented!()
     }
     fn is_valid(&self) -> bool {
         false
     }
     fn reset(&self) {
+        unimplemented!()
     }
 
     /// return this list of options, supported features in the database
@@ -338,11 +343,11 @@ impl Database for Sqlite{
             Err(e) => Err(e),
         }
     }
-    fn update(&self, query: &Query) -> Dao {
-        panic!("not yet")
+    fn update(&self, _query: &Query) -> Dao {
+        unimplemented!()
     }
-    fn delete(&self, query: &Query) -> Result<usize, String> {
-        panic!("not yet");
+    fn delete(&self, _query: &Query) -> Result<usize, String> {
+        unimplemented!()
     }
 
     /// sqlite does not return the columns mentioned in the query,
@@ -412,11 +417,11 @@ impl Database for Sqlite{
 }
 
 impl DatabaseDDL for Sqlite{
-    fn create_schema(&self, schema: &str) {
+    fn create_schema(&self, _schema: &str) {
         panic!("sqlite does not support schema")
     }
 
-    fn drop_schema(&self, schema: &str) {
+    fn drop_schema(&self, _schema: &str) {
         panic!("sqlite does not support schema")
     }
 
@@ -474,38 +479,38 @@ impl DatabaseDDL for Sqlite{
     fn create_table(&self, table: &Table) {
         let frag = self.build_create_table(table);
         match self.execute_sql(&frag.sql, &vec![]) {
-            Ok(x) => println!("created table.."),
+            Ok(_) => println!("created table.."),
             Err(e) => panic!("table not created {}", e),
         }
     }
 
-    fn rename_table(&self, table: &Table, new_tablename: String) {
-
+    fn rename_table(&self, _table: &Table, _new_tablename: String) {
+        unimplemented!()
     }
 
-    fn drop_table(&self, table: &Table) {
-        panic!("not yet");
+    fn drop_table(&self, _table: &Table) {
+        unimplemented!()
     }
 
-    fn set_foreign_constraint(&self, model: &Table) {
-        panic!("not yet");
+    fn set_foreign_constraint(&self, _model: &Table) {
+        unimplemented!()
     }
 
-    fn set_primary_constraint(&self, model: &Table) {
-        panic!("not yet");
+    fn set_primary_constraint(&self, _model: &Table) {
+        unimplemented!()
     }
 }
 
 impl DatabaseDev for Sqlite{
-    fn get_table_sub_class(&self, schema: &str, table: &str) -> Vec<String> {
-        panic!("not yet")
+    fn get_table_sub_class(&self, _schema: &str, _table: &str) -> Vec<String> {
+        unimplemented!()
     }
 
-    fn get_parent_table(&self, schema: &str, table: &str) -> Option<String> {
-        panic!("not yet")
+    fn get_parent_table(&self, _schema: &str, _table: &str) -> Option<String> {
+        unimplemented!()
     }
 
-    fn get_table_metadata(&self, schema: &str, table: &str, is_view: bool) -> Table {
+    fn get_table_metadata(&self, schema: &str, table: &str, _is_view: bool) -> Table {
         println!("extracting table meta data in sqlite");
         let sql = format!("PRAGMA table_info({});", table);
         let result = self.execute_sql_with_return(&sql, &vec![]);
@@ -581,16 +586,16 @@ impl DatabaseDev for Sqlite{
         }
     }
 
-    fn get_inherited_columns(&self, schema: &str, table: &str) -> Vec<String> {
+    fn get_inherited_columns(&self, _schema: &str, _table: &str) -> Vec<String> {
         vec![]
     }
 
-    fn dbtype_to_rust_type(&self, db_type: &str) -> (Vec<String>, String) {
-        panic!("not yet")
+    fn dbtype_to_rust_type(&self, _db_type: &str) -> (Vec<String>, String) {
+        unimplemented!()
     }
 
-    fn rust_type_to_dbtype(&self, rust_type: &str) -> String {
-        panic!("not yet")
+    fn rust_type_to_dbtype(&self, _rust_type: &str) -> String {
+        unimplemented!()
     }
 }
 

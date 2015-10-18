@@ -12,16 +12,16 @@ pub struct SqlFrag {
 
 impl fmt::Display for SqlFrag{
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}", self.sql);
+        try!(write!(f, "{}", self.sql));
         let mut do_comma = false;
-        write!(f, "[");
+        try!(write!(f, "["));
         for param in &self.params {
             if do_comma {
-                write!(f, ", ");
+                try!(write!(f, ", "));
             } else {
                 do_comma = true;
             }
-            write!(f, "{}", param);
+            try!(write!(f, "{}", param));
         }
         write!(f, "]")
     }

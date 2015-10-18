@@ -1,4 +1,3 @@
-use std::collections::HashMap;
 use std::collections::BTreeMap;
 use uuid::Uuid;
 use chrono::datetime::DateTime;
@@ -9,7 +8,7 @@ use chrono::offset::utc::UTC;
 use std::fmt;
 use query::ColumnName;
 use table::IsTable;
-use rustc_serialize::{Decodable, Encodable, Encoder, Decoder};
+use rustc_serialize::{Encodable, Encoder};
 use rustc_serialize::json::{self, ToJson, Json};
 
 
@@ -280,7 +279,7 @@ impl DaoResult{
 
 #[derive(Debug, Clone)]
 /// TODO: optimization, used enum types for the key values
-/// This will save allocation of string to enum keys which is a few bytes, int 
+/// This will save allocation of string to enum keys which is a few bytes, int
 pub struct Dao {
     pub values: BTreeMap<String, Value>,
 }
@@ -336,7 +335,7 @@ impl Dao{
             None => panic!("No such value for {}", column),
         }
     }
-    /// take the value and remove the content 
+    /// take the value and remove the content
     pub fn remove<T>(&mut self, column: &str) -> T
         where T: FromValue
     {

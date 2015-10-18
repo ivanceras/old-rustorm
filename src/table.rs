@@ -94,6 +94,7 @@ pub trait IsTable{
 }
 
 /// all referenced table used in context
+#[allow(dead_code)]
 pub struct RefTable<'a> {
     /// the table being referred
     pub table: &'a Table,
@@ -562,7 +563,7 @@ impl Table{
                                          tables: &'a Vec<Table>)
                                          -> Vec<(&'a Table, &'a Table)> {
         let mut indirect_referring_tables = Vec::new();
-        for (rt, column) in self.referring_tables(tables) {
+        for (rt, _column) in self.referring_tables(tables) {
             let rt_pk = rt.primary_columns();
             let rt_fk = rt.foreign_columns();
             let rt_uc = rt.uninherited_columns();
@@ -571,7 +572,7 @@ impl Table{
                 let ref_tables = rt.referred_tables(tables);
                 let (_, t0) = ref_tables[0];
                 let (_, t1) = ref_tables[1];
-                let mut other_table;
+                let other_table;
                 //if self.name == t0.name && self.schema == t0.schema{
                 if self == t0 {
                     other_table = t1;

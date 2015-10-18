@@ -105,9 +105,9 @@ impl <'a>EntityManager<'a>{
         q.add_filter(filter);
         q.collect_one(self.db)
     }
-    /// 
+    ///
     /// get an exact match, the value is filter against the primary key of the table
-    /// 
+    ///
     pub fn get_exact<T>(&self, id: &ToValue) -> Result<T, DbError>
         where T: IsTable + IsDao
     {
@@ -177,62 +177,62 @@ impl <'a>EntityManager<'a>{
     /// insert this record on the database, explicitly setting the defaults of the columns
     /// it may produce the same result with insert_with_ignore_columns
     /// the query is different since it may mentions `created` now(),
-    pub fn insert_ignore_defaulted_columns<T>(&self, dao: Dao) -> Result<T, DbError>
+    pub fn insert_ignore_defaulted_columns<T>(&self, _dao: Dao) -> Result<T, DbError>
         where T: IsTable + IsDao
     {
-        panic!("not yet")
+        unimplemented!()
     }
 
     /// this is called when there is a problem with the transaction
     pub fn reset(&self) {
-        panic!("not yet")
+        unimplemented!()
     }
 
     /// when there is a problem with the transaction process, this can be called
     pub fn rollback(&self) {
-        panic!("not yet")
+        unimplemented!()
     }
 
     /// update the Dao, return the updated Dao
-    pub fn update<T>(&self, dao: &Dao) -> Result<T, DbError>
+    pub fn update<T>(&self, _dao: &Dao) -> Result<T, DbError>
         where T: IsTable + IsDao
     {
-        panic!("not yet")
+        unimplemented!()
     }
 
     /// update the Dao, return the updated Dao
     /// ignored columns will remain unchanged
     pub fn update_ignore_columns<T>(&self,
-                                    dao: &Dao,
-                                    ignore_columns: Vec<&str>)
+                                    _dao: &Dao,
+                                    _ignore_columns: Vec<&str>)
                                     -> Result<T, DbError>
         where T: IsTable + IsDao
     {
-        panic!("not yet")
+        unimplemented!()
     }
 
     /// update the Dao, return the updated Dao
     /// only the columns specified, the rest is unchanged
-    pub fn update_only_columns<T>(&self, dao: &Dao, columns: Vec<&str>) -> Result<T, DbError>
+    pub fn update_only_columns<T>(&self, _dao: &Dao, _columns: Vec<&str>) -> Result<T, DbError>
         where T: IsTable + IsDao
     {
-        panic!("not yet")
+        unimplemented!()
     }
 
     /// update the Dao, return the updated Dao
     /// the default columns will be reset to whatever the db's default function will come up.
     /// ie. updated column will be defaulted everytime a record is updated.
-    pub fn update_ignore_defaulted_columns<T>(&self, dao: &Dao) -> Result<T, DbError>
+    pub fn update_ignore_defaulted_columns<T>(&self, _dao: &Dao) -> Result<T, DbError>
         where T: IsTable + IsDao
     {
-        panic!("not yet")
+        unimplemented!()
     }
 
     /// update the Dao with filter, return the updated Dao
-    pub fn update_with_filter<T>(&self, dao: &Dao, filter: Vec<Filter>) -> Result<T, DbError>
+    pub fn update_with_filter<T>(&self, _dao: &Dao, _filter: Vec<Filter>) -> Result<T, DbError>
         where T: IsTable + IsDao
     {
-        panic!("not yet")
+        unimplemented!()
     }
 
     /// whether to use insert or update
@@ -240,18 +240,20 @@ impl <'a>EntityManager<'a>{
     /// update when it is an existing recor
     /// may use UPSERT in newer versions of postgres
     /// may use MERGE in oracle, mssql
-    pub fn save<T>(&self, dao: T) -> Result<T, DbError>
+    pub fn save<T>(&self, _dao: T) -> Result<T, DbError>
         where T: IsTable + IsDao
     {
-        panic!("not yet");
+        unimplemented!()
     }
+
     ///
     /// Search a set of record from the base Query that would have been returned by the base query
     ///
-    fn search<T>(&self, keyword: &str) -> Result<Vec<T>, DbError>
+    #[allow(dead_code)]
+    fn search<T>(&self, _keyword: &str) -> Result<Vec<T>, DbError>
         where T: IsTable + IsDao
     {
-        panic!("not yet");
+        unimplemented!()
     }
 
 }
