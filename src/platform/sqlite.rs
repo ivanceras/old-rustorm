@@ -8,34 +8,19 @@ use database::SqlOption;
 use rusqlite::SqliteConnection;
 use rusqlite::types::ToSql;
 use rusqlite::SqliteRow;
-use rusqlite::SqliteError;
 use table::{Table, Column, Foreign};
 use database::DatabaseDDL;
 use database::DbError;
 use r2d2::PooledConnection;
 use r2d2_sqlite::SqliteConnectionManager;
 use regex::Regex;
-use regex::Error as RegexError;
 use std::collections::BTreeMap;
 
 pub struct Sqlite {
     pool: Option<PooledConnection<SqliteConnectionManager>>,
 }
 
-impl From<SqliteError> for DbError {
-    fn from(err: SqliteError) -> Self {
-        DbError::from_string(format!("{:?}", err))
-    }
-}
-
-impl From<RegexError> for DbError {
-    fn from(err: RegexError) -> Self {
-        DbError::from_string(format!("{:?}", err))
-    }
-}
-
-impl Sqlite{
-
+impl Sqlite {
     pub fn new() -> Self {
         Sqlite { pool: None }
     }
@@ -58,10 +43,9 @@ impl Sqlite{
     }
 
     pub fn get_connection(&self) -> &SqliteConnection {
-        if self.pool.is_some() {
-            &self.pool.as_ref().unwrap()
-        } else {
-            panic!("No connection for this database")
+        match self.pool.as_ref() {
+            Some(conn) => &conn,
+            None => panic!("No connection for this database")
         }
     }
 

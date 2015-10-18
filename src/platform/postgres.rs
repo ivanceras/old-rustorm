@@ -6,7 +6,6 @@ use postgres::Connection;
 use regex::Regex;
 use dao::Value;
 use database::{Database, DatabaseDev, DatabaseDDL, DbError};
-use postgres::error::Error as PgError;
 use postgres::types::Type;
 use postgres::types::ToSql;
 use writer::SqlFrag;
@@ -18,12 +17,6 @@ use r2d2_postgres::PostgresConnectionManager;
 pub struct Postgres {
     /// a connection pool is provided
     pub pool: Option<PooledConnection<PostgresConnectionManager>>,
-}
-
-impl From<PgError> for DbError {
-    fn from(err: PgError) -> Self {
-        DbError::from_string(format!("{:?}", err))
-    }
 }
 
 /// Build the Query into a SQL statements that is a valid

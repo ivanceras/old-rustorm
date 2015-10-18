@@ -7,7 +7,7 @@ use writer::SqlFrag;
 use database::SqlOption;
 
 use mysql::value::Value as MyValue;
-use mysql::error::{MyResult, MyError};
+use mysql::error::MyResult;
 use mysql::conn::Stmt;
 use mysql::conn::pool::MyPool;
 
@@ -17,12 +17,6 @@ use database::DbError;
 
 pub struct Mysql {
     pool: Option<MyPool>,
-}
-
-impl From<MyError> for DbError {
-    fn from(err: MyError) -> Self {
-        DbError::from_string(format!("{:?}", err))
-    }
 }
 
 impl Mysql{
