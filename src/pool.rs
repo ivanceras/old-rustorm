@@ -25,23 +25,24 @@ pub enum Platform {
     Mysql(Mysql),
 }
 
-impl Platform{
+impl Platform {
     pub fn as_ref(&self) -> &Database {
         match *self {
             Platform::Postgres(ref pg) => pg,
             #[cfg(feature = "sqlite")]
             Platform::Sqlite(ref lite) => lite,
             Platform::Mysql(ref my) => my,
-            _ => panic!("others not yet.."),
+            _ => unimplemented!(),
         }
     }
+
     pub fn as_ddl(&self) -> &DatabaseDDL {
         match *self {
             Platform::Postgres(ref pg) => pg,
             #[cfg(feature = "sqlite")]
             Platform::Sqlite(ref lite) => lite,
             Platform::Mysql(ref my) => my,
-            _ => panic!("others not yet.."),
+            _ => unimplemented!(),
         }
     }
 
@@ -50,7 +51,7 @@ impl Platform{
             Platform::Postgres(ref pg) => pg,
             #[cfg(feature = "sqlite")]
             Platform::Sqlite(ref lite) => lite,
-            _ => panic!("others not yet.."),
+            _ => unimplemented!(),
         }
     }
 }
@@ -65,8 +66,7 @@ pub enum ManagedPool {
     Mysql(Option<MyPool>),
 }
 
-impl ManagedPool{
-
+impl ManagedPool {
     /// initialize the pool
     pub fn init(url: &str, pool_size: usize) -> Result<Self, DbError> {
         let config = DbConfig::from_url(url);
@@ -75,32 +75,21 @@ impl ManagedPool{
                 let platform: &str = &config.platform;
                 match platform {
                     "postgres" => {
-                        let manager = PostgresConnectionManager::new(url, SslMode::None).unwrap();
+                        let manager = try!(PostgresConnectionManager::new(url, SslMode::None));
                         println!("Creating a connection with a pool size of {}", pool_size);
                         let config = Config::builder().pool_size(pool_size as u32).build();
-                        let pool = Pool::new(config, manager);
-                        match pool {
-                            Ok(pool) => Ok(ManagedPool::Postgres(pool)),
-                            Err(e) => {
-                                println!("Unable to create a pool");
-                                Err(DbError::new(&format!("{}", e)))
-                            }
-                        }
-
+                        let pool = try!(Pool::new(config, manager));
+                        Ok(ManagedPool::Postgres(pool))
                     }
+
                     #[cfg(feature = "sqlite")]
                     "sqlite" => {
-                        let manager = SqliteConnectionManager::new(&config.database).unwrap();
+                        let manager = try!(SqliteConnectionManager::new(&config.database));
                         let config = Config::builder().pool_size(pool_size as u32).build();
-                        match Pool::new(config, manager) {
-                            Ok(pool) => Ok(ManagedPool::Sqlite(pool)),
-                            Err(e) => {
-                                println!("Unable to create a pool");
-                                Err(DbError::new(&format!("{}", e)))
-                            }
-                        }
-
+                        let pool = try!(Pool::new(config, manager));
+                        Ok(ManagedPool::Sqlite(pool))
                     }
+
                     "mysql" => {
                         let opts = MyOpts {
                             user: config.username,
@@ -110,16 +99,11 @@ impl ManagedPool{
                             tcp_port: config.port.unwrap_or(3306),
                             ..Default::default()
                         };
-                        match MyPool::new_manual(0, pool_size, opts) {
-                            Ok(pool) => Ok(ManagedPool::Mysql(Some(pool))),
-                            Err(e) => {
-                                println!("Unable to create a pool");
-                                Err(DbError::new(&format!("{}", e)))
-                            }
-                        }
-
+                        let pool = try!(MyPool::new_manual(0, pool_size, opts));
+                        Ok(ManagedPool::Mysql(Some(pool)))
                     }
-                    _ => panic!("not yet"),
+
+                    _ => unimplemented!(),
                 }
             }
             None => {
