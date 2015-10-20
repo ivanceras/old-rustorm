@@ -14,7 +14,7 @@ pub struct EntityManager<'a> {
     pub db: &'a Database,
 }
 
-impl <'a>EntityManager<'a>{
+impl <'a>EntityManager<'a> {
 
     /// Create an entity manager with the database connection provided
     pub fn new(db: &'a Database) -> Self {
@@ -115,7 +115,7 @@ impl <'a>EntityManager<'a>{
         let primary = table.primary_columns();
         assert!(primary.len() == 1,
                 "There should only be 1 primary column for this to work");
-        let pk = primary[0].name.to_string();
+        let pk = primary[0].name.to_owned();
 
         Query::select_all()
             .from_table(&table.complete_name())

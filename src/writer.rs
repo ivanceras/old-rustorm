@@ -10,7 +10,7 @@ pub struct SqlFrag {
     pub sql_options: Vec<SqlOption>,
 }
 
-impl fmt::Display for SqlFrag{
+impl fmt::Display for SqlFrag {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         try!(write!(f, "{}", self.sql));
         let mut do_comma = false;
@@ -27,7 +27,7 @@ impl fmt::Display for SqlFrag{
     }
 }
 
-impl SqlFrag{
+impl SqlFrag {
 
     #[inline]
     pub fn new(sql_options: Vec<SqlOption>) -> Self {

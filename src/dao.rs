@@ -72,7 +72,7 @@ pub enum Value {
 
 /// custom implementation for value encoding to json,
 /// does not include unnecessary enum variants fields.
-impl Encodable for Value{
+impl Encodable for Value {
 
     fn encode<S: Encoder>(&self, s: &mut S) -> Result<(), S::Error> {
         match *self {
@@ -103,7 +103,7 @@ impl Encodable for Value{
         }
     }
 }
-impl ToJson for Value{
+impl ToJson for Value {
 
     fn to_json(&self) -> Json {
         match *self {
@@ -134,7 +134,7 @@ impl ToJson for Value{
 }
 
 
-impl fmt::Display for Value{
+impl fmt::Display for Value {
 
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
@@ -165,7 +165,7 @@ impl fmt::Display for Value{
 
 /// trait for converting dao to model
 /// sized and clonable
-pub trait IsDao{
+pub trait IsDao {
 
     /// convert dao to an instance of the corresponding struct of the model
     /// taking into considerating the renamed columns
@@ -177,7 +177,7 @@ pub trait IsDao{
 }
 
 /// Ignore Column are columns that are redundant when displaying as API results
-pub trait ToCompact{
+pub trait ToCompact {
 
     /// list of redundant fields that will be removed when doing a compact serialization
     fn redundant_fields(&self) -> Vec<&str>;
@@ -218,7 +218,7 @@ pub struct SerDaoResult {
     pub page_size: Option<usize>,
 }
 
-impl SerDaoResult{
+impl SerDaoResult {
 
     pub fn from_dao_result(daoresult: DaoResult) -> Self {
         SerDaoResult {
@@ -230,20 +230,20 @@ impl SerDaoResult{
     }
 }
 
-impl Encodable for DaoResult{
+impl Encodable for DaoResult {
     fn encode<S: Encoder>(&self, s: &mut S) -> Result<(), S::Error> {
         self.dao.encode(s)
     }
 }
 
-impl DaoResult{
+impl DaoResult {
     /// get the list of renamed column name in matching table name
     fn get_renamed_columns(&self, table: &str) -> Vec<(String, String)> {
         let mut columns = vec![];
         for &(ref col, ref rename) in &self.renamed_columns {
-            if col.table.is_some() {
-                if col.table.as_ref().unwrap() == table {
-                    columns.push((col.column.to_string(), rename.to_string()));
+            if let Some(ref s) = col.table {
+                if s == table {
+                    columns.push((col.column.to_owned(), rename.to_owned()));
                 }
             }
         }
@@ -287,7 +287,7 @@ pub struct Dao {
 
 /// custom Encoder for Dao,
 /// decodes directly the content of `values`, instead of `values` as field of this `Dao` struct
-impl Encodable for Dao{
+impl Encodable for Dao {
     fn encode<S: Encoder>(&self, s: &mut S) -> Result<(), S::Error> {
         self.values.encode(s)
     }
@@ -299,26 +299,26 @@ impl Encodable for Dao{
 //        d.read_map()
 //    }
 //}
-impl ToJson for Dao{
+impl ToJson for Dao {
 
     fn to_json(&self) -> Json {
         let mut btree = BTreeMap::new();
         for (key, value) in &self.values {
-            btree.insert(key.to_string(), value.to_json());
+            btree.insert(key.to_owned(), value.to_json());
         }
         Json::Object(btree)
     }
 
 }
 
-impl Dao{
+impl Dao {
 
     pub fn new() -> Self {
         Dao { values: BTreeMap::new() }
     }
 
     pub fn set(&mut self, column: &str, value: &ToValue) {
-        self.values.insert(column.to_string(), value.to_db_type());
+        self.values.insert(column.to_owned(), value.to_db_type());
     }
 
     /// set to null the value of this column
@@ -327,7 +327,7 @@ impl Dao{
     }
 
     pub fn set_value(&mut self, column: &str, value: Value) {
-        self.values.insert(column.to_string(), value);
+        self.values.insert(column.to_owned(), value);
     }
     pub fn get_value(&self, column: &str) -> Value {
         let value = self.values.get(column);
@@ -356,14 +356,9 @@ impl Dao{
         where T: FromValue
     {
         let value = self.values.get(column);
-        if value.is_some() {
-            let v = value.as_ref().unwrap().clone();
-            match v {
-                &Value::Null => None,
-                _ => Some(FromValue::from_type(v.clone())),
-            }
-        } else {
-            None
+        match value {
+            None | Some(&Value::Null) => None,
+            Some(v) => Some(FromValue::from_type(v.clone())),
         }
     }
 
@@ -383,15 +378,9 @@ impl Dao{
     fn all_has_values(&self, non_nulls: &Vec<String>) -> bool {
         for column in non_nulls {
             let value = self.values.get(column);
-            if value.is_none() {
-                return false;
-            }
-            if value.is_some() {
-                let v = value.as_ref().unwrap().clone();
-                match v {
-                    &Value::Null => return false,
-                    _ => (),
-                }
+            match value {
+                None | Some(&Value::Null) => return false,
+                _ => (),
             }
         }
         true
@@ -405,117 +394,117 @@ impl Dao{
 
 
 /// rename to ToValue
-pub trait ToValue{
+pub trait ToValue {
     fn to_db_type(&self) -> Value;
 }
 
-impl ToValue for (){
+impl ToValue for () {
     fn to_db_type(&self) -> Value {
         Value::Null
     }
 }
 
-impl ToValue for bool{
+impl ToValue for bool {
     fn to_db_type(&self) -> Value {
         Value::Bool(self.clone())
     }
 }
 
 /// signed INTs
-impl ToValue for i8{
+impl ToValue for i8 {
     fn to_db_type(&self) -> Value {
         Value::I8(self.clone())
     }
 }
 
-impl ToValue for i16{
+impl ToValue for i16 {
     fn to_db_type(&self) -> Value {
         Value::I16(self.clone())
     }
 }
-impl ToValue for i32{
+impl ToValue for i32 {
     fn to_db_type(&self) -> Value {
         Value::I32(self.clone())
     }
 }
 
-impl ToValue for i64{
+impl ToValue for i64 {
     fn to_db_type(&self) -> Value {
         Value::I64(self.clone())
     }
 }
 /// unsigned INTs
-impl ToValue for u8{
+impl ToValue for u8 {
     fn to_db_type(&self) -> Value {
         Value::U8(self.clone())
     }
 }
 
-impl ToValue for u16{
+impl ToValue for u16 {
     fn to_db_type(&self) -> Value {
         Value::U16(self.clone())
     }
 }
-impl ToValue for u32{
+impl ToValue for u32 {
     fn to_db_type(&self) -> Value {
         Value::U32(self.clone())
     }
 }
 
-impl ToValue for u64{
+impl ToValue for u64 {
     fn to_db_type(&self) -> Value {
         Value::U64(self.clone())
     }
 }
 
-impl ToValue for f32{
+impl ToValue for f32 {
     fn to_db_type(&self) -> Value {
         Value::F32(self.clone())
     }
 }
 
-impl ToValue for f64{
+impl ToValue for f64 {
     fn to_db_type(&self) -> Value {
         Value::F64(self.clone())
     }
 }
 
-impl <'a>ToValue for &'a str{
+impl <'a>ToValue for &'a str {
     fn to_db_type(&self) -> Value {
-        Value::String(self.to_string())
+        Value::String((*self).to_owned())
     }
 }
 
-impl ToValue for String{
+impl ToValue for String {
     fn to_db_type(&self) -> Value {
         Value::String(self.clone())
     }
 }
 
-impl ToValue for Uuid{
+impl ToValue for Uuid {
     fn to_db_type(&self) -> Value {
         Value::Uuid(self.clone())
     }
 }
 
-impl ToValue for DateTime<UTC>{
+impl ToValue for DateTime<UTC> {
     fn to_db_type(&self) -> Value {
         Value::DateTime(self.clone())
     }
 }
 
-impl ToValue for NaiveDate{
+impl ToValue for NaiveDate {
     fn to_db_type(&self) -> Value {
         Value::NaiveDate(self.clone())
     }
 }
 
-impl ToValue for NaiveTime{
+impl ToValue for NaiveTime {
     fn to_db_type(&self) -> Value {
         Value::NaiveTime(self.clone())
     }
 }
-impl ToValue for NaiveDateTime{
+impl ToValue for NaiveDateTime {
     fn to_db_type(&self) -> Value {
         Value::NaiveDateTime(self.clone())
     }
@@ -534,11 +523,11 @@ impl ToValue for NaiveDateTime{
 ///
 ///
 ///
-pub trait FromValue{
+pub trait FromValue {
     fn from_type(ty: Value) -> Self;
 }
 
-impl FromValue for bool{
+impl FromValue for bool {
     fn from_type(ty: Value) -> Self {
         match ty {
             Value::Bool(x) => x,
@@ -547,7 +536,7 @@ impl FromValue for bool{
     }
 }
 
-impl FromValue for i8{
+impl FromValue for i8 {
     fn from_type(ty: Value) -> Self {
         match ty {
             Value::I8(x) => x,
@@ -555,7 +544,7 @@ impl FromValue for i8{
         }
     }
 }
-impl FromValue for i16{
+impl FromValue for i16 {
     fn from_type(ty: Value) -> Self {
         match ty {
             Value::I16(x) => x,
@@ -563,7 +552,7 @@ impl FromValue for i16{
         }
     }
 }
-impl FromValue for i32{
+impl FromValue for i32 {
     fn from_type(ty: Value) -> Self {
         match ty {
             Value::I32(x) => x,
@@ -571,7 +560,7 @@ impl FromValue for i32{
         }
     }
 }
-impl FromValue for i64{
+impl FromValue for i64 {
     fn from_type(ty: Value) -> Self {
         match ty {
             Value::I64(x) => x,
@@ -579,7 +568,7 @@ impl FromValue for i64{
         }
     }
 }
-impl FromValue for u8{
+impl FromValue for u8 {
     fn from_type(ty: Value) -> Self {
         match ty {
             Value::U8(x) => x,
@@ -587,7 +576,7 @@ impl FromValue for u8{
         }
     }
 }
-impl FromValue for u16{
+impl FromValue for u16 {
     fn from_type(ty: Value) -> Self {
         match ty {
             Value::U16(x) => x,
@@ -595,7 +584,7 @@ impl FromValue for u16{
         }
     }
 }
-impl FromValue for u32{
+impl FromValue for u32 {
     fn from_type(ty: Value) -> Self {
         match ty {
             Value::U32(x) => x,
@@ -603,7 +592,7 @@ impl FromValue for u32{
         }
     }
 }
-impl FromValue for u64{
+impl FromValue for u64 {
     fn from_type(ty: Value) -> Self {
         match ty {
             Value::U64(x) => x,
@@ -612,7 +601,7 @@ impl FromValue for u64{
     }
 }
 
-impl FromValue for f32{
+impl FromValue for f32 {
     fn from_type(ty: Value) -> Self {
         match ty {
             Value::F32(x) => x,
@@ -620,7 +609,7 @@ impl FromValue for f32{
         }
     }
 }
-impl FromValue for f64{
+impl FromValue for f64 {
     fn from_type(ty: Value) -> Self {
         match ty {
             Value::F64(x) => x,
@@ -629,7 +618,7 @@ impl FromValue for f64{
     }
 }
 
-impl FromValue for String{
+impl FromValue for String {
     fn from_type(ty: Value) -> Self {
         match ty {
             Value::String(x) => x,
@@ -638,7 +627,7 @@ impl FromValue for String{
     }
 }
 
-impl FromValue for Uuid{
+impl FromValue for Uuid {
     fn from_type(ty: Value) -> Self {
         match ty {
             Value::Uuid(x) => x,
@@ -647,7 +636,7 @@ impl FromValue for Uuid{
     }
 }
 
-impl FromValue for DateTime<UTC>{
+impl FromValue for DateTime<UTC> {
     fn from_type(ty: Value) -> Self {
         match ty {
             Value::DateTime(x) => x,
@@ -656,7 +645,7 @@ impl FromValue for DateTime<UTC>{
     }
 }
 
-impl FromValue for NaiveTime{
+impl FromValue for NaiveTime {
     fn from_type(ty: Value) -> Self {
         match ty {
             Value::NaiveTime(x) => x,
@@ -665,7 +654,7 @@ impl FromValue for NaiveTime{
     }
 }
 
-impl FromValue for NaiveDate{
+impl FromValue for NaiveDate {
     fn from_type(ty: Value) -> Self {
         match ty {
             Value::NaiveDate(x) => x,
@@ -674,7 +663,7 @@ impl FromValue for NaiveDate{
     }
 }
 
-impl FromValue for NaiveDateTime{
+impl FromValue for NaiveDateTime {
     fn from_type(ty: Value) -> Self {
         match ty {
             Value::NaiveDateTime(x) => x,

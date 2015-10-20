@@ -110,7 +110,7 @@ pub struct Filter {
     pub subfilters: Vec<Filter>,
 }
 
-impl Filter{
+impl Filter {
 
     /// user friendly, commonly use API
     pub fn new(column: &str, equality: Equality, value: &ToValue) -> Self {
@@ -220,7 +220,7 @@ pub struct Field {
     pub name: Option<String>,
 }
 
-impl Field{
+impl Field {
 
     fn rename(&self) -> Field {
         match self.operand {
@@ -236,22 +236,22 @@ impl Field{
     }
 }
 
-impl ColumnName{
+impl ColumnName {
 
     pub fn from_str(column: &str) -> Self {
         if column.contains(".") {
             let splinters = column.split(".").collect::<Vec<&str>>();
             assert!(splinters.len() == 2, "There should only be 2 splinters");
-            let table_split = splinters[0].to_string();
-            let column_split = splinters[1].to_string();
+            let table_split = splinters[0].to_owned();
+            let column_split = splinters[1].to_owned();
             ColumnName {
-                column: column_split.to_string(),
-                table: Some(table_split.to_string()),
+                column: column_split.to_owned(),
+                table: Some(table_split.to_owned()),
                 schema: None,
             }
         } else {
             ColumnName {
-                column: column.to_string(),
+                column: column.to_owned(),
                 table: None,
                 schema: None,
             }
@@ -259,28 +259,25 @@ impl ColumnName{
     }
 
     fn default_rename(&self) -> String {
-        if self.table.is_some() {
-            return format!("{}_{}", self.table.as_ref().unwrap(), self.column);
-        } else {
-            panic!("Unable to rename {} since table is not specified",
-                   self.column);
+        match self.table {
+            Some(ref s) => format!("{}.{}", s, self.column),
+            None => panic!("Unable to rename {} since table is not specified",
+                           self.column),
         }
     }
 
     /// table name and column name
     pub fn complete_name(&self) -> String {
-        if self.table.is_some() {
-            return format!("{}.{}", self.table.as_ref().unwrap(), self.column);
-        } else {
-            return self.column.to_string();
+        match self.table {
+            Some(ref s) => format!("{}.{}", s, self.column),
+            None => self.column.to_owned(),
         }
     }
     /// includes the schema, table name and column name
     pub fn super_complete_name(&self) -> String {
-        if self.schema.is_some() {
-            return format!("{}.{}", self.schema.as_ref().unwrap(), self.complete_name());
-        } else {
-            return self.complete_name();
+        match self.schema {
+            Some(ref s) => format!("{}.{}", s, self.complete_name()),
+            None => self.complete_name(),
         }
     }
 
@@ -291,13 +288,13 @@ impl ColumnName{
     }
 }
 
-impl fmt::Display for ColumnName{
+impl fmt::Display for ColumnName {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{}", self.complete_name())
     }
 }
 
-impl PartialEq for ColumnName{
+impl PartialEq for ColumnName {
     fn eq(&self, other: &Self) -> bool {
         self.column == other.column && self.table == other.table
     }
@@ -317,14 +314,14 @@ pub struct TableName {
     pub columns: Vec<ColumnName>,
 }
 
-impl TableName{
+impl TableName {
 
     pub fn from_str(str: &str) -> Self {
         if str.contains(".") {
             let splinters = str.split(".").collect::<Vec<&str>>();
             assert!(splinters.len() == 2, "There should only be 2 splinters");
-            let schema_split = splinters[0].to_string();
-            let table_split = splinters[1].to_string();
+            let schema_split = splinters[0].to_owned();
+            let table_split = splinters[1].to_owned();
 
             TableName {
                 schema: Some(schema_split),
@@ -335,7 +332,7 @@ impl TableName{
         } else {
             TableName {
                 schema: None,
-                name: str.to_string(),
+                name: str.to_owned(),
                 columns: vec![],
             }
         }
@@ -344,12 +341,12 @@ impl TableName{
     pub fn complete_name(&self) -> String {
         match self.schema {
             Some (ref schema) => format!("{}.{}", schema, self.name),
-            None => self.name.to_string(),
+            None => self.name.to_owned(),
         }
     }
 }
 
-impl PartialEq for TableName{
+impl PartialEq for TableName {
     fn eq(&self, other: &Self) -> bool {
         self.name == other.name && self.schema == other.schema
     }
@@ -359,49 +356,49 @@ impl PartialEq for TableName{
     }
 }
 
-impl fmt::Display for TableName{
+impl fmt::Display for TableName {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{}", self.complete_name())
     }
 }
 
 /// convert str, IsTable to TableName
-pub trait ToTableName{
+pub trait ToTableName {
 
     fn to_table_name(&self) -> TableName;
 
 }
 
-impl <'a>ToTableName for &'a str{
+impl <'a>ToTableName for &'a str {
 
     fn to_table_name(&self) -> TableName {
         TableName::from_str(self)
     }
 }
 
-impl ToTableName for str{
+impl ToTableName for str {
 
     fn to_table_name(&self) -> TableName {
         TableName::from_str(self)
     }
 }
 
-impl ToTableName for Table{
+impl ToTableName for Table {
 
     /// contain the columns for later use when renaming is necessary
     fn to_table_name(&self) -> TableName {
         let mut columns = vec![];
         for c in &self.columns {
             let column_name = ColumnName {
-                schema: Some(self.schema.to_string()),
-                table: Some(self.name.to_string()),
-                column: c.name.to_string(),
+                schema: Some(self.schema.to_owned()),
+                table: Some(self.name.to_owned()),
+                column: c.name.to_owned(),
             };
             columns.push(column_name);
         }
         TableName {
-            schema: Some(self.schema.to_string()),
-            name: self.name.to_string(),
+            schema: Some(self.schema.to_owned()),
+            name: self.name.to_owned(),
             columns: columns,
         }
     }
@@ -416,7 +413,7 @@ pub enum Error {
 
 #[derive(Debug)]
 #[derive(Clone)]
-pub struct Query{
+pub struct Query {
 
     ///sql type determine which type of query to form, some fields are not applicable to other types of query
     pub sql_type:SqlType,
@@ -477,7 +474,7 @@ pub struct Query{
     pub enumerated_returns: Vec<Field>,
 }
 
-impl Query{
+impl Query {
 
     /// the default query is select
     pub fn new() -> Self {
@@ -675,7 +672,7 @@ impl Query{
     /// wrapped in the from_query
     /// build a builder for this
     pub fn declare_query(&mut self, query: Query, alias: &str) -> &mut Self {
-        self.declared_query.insert(alias.to_string(), query);
+        self.declared_query.insert(alias.to_owned(), query);
         self
     }
 
@@ -687,7 +684,7 @@ impl Query{
         let operand = Operand::Query(query);
         let field = Field {
             operand: operand,
-            name: Some(alias.to_string()),
+            name: Some(alias.to_owned()),
         };
         self.from_field(field)
     }
@@ -698,19 +695,13 @@ impl Query{
     }
 
     pub fn get_from_table(&self) -> Option<&TableName> {
-        match self.from {
-            Some(ref field) => {
-                match field.operand {
-                    Operand::TableName(ref table_name) => {
-                        Some(table_name)
-                    }
-                    _ => None,
-                }
+        if let Some(ref field) = self.from {
+            if let Operand::TableName(ref table_name) = field.operand {
+                return Some(table_name);
             }
-            None => None,
         }
+        None
     }
-
 
     /// join a table on this query
     ///
@@ -718,7 +709,6 @@ impl Query{
         self.joins.push(join);
         self
     }
-
 
     /// join a table on this query
     ///
@@ -730,8 +720,8 @@ impl Query{
             modifier: Some(Modifier::LEFT),
             join_type: None,
             table_name: table.to_table_name(),
-            column1: vec![column1.to_string()],
-            column2: vec![column2.to_string()],
+            column1: vec![column1.to_owned()],
+            column2: vec![column2.to_owned()],
         };
         self.join(join)
     }
@@ -743,8 +733,8 @@ impl Query{
             modifier: Some(Modifier::RIGHT),
             join_type: None,
             table_name: table.to_table_name(),
-            column1: vec![column1.to_string()],
-            column2: vec![column2.to_string()],
+            column1: vec![column1.to_owned()],
+            column2: vec![column2.to_owned()],
         };
         self.join(join)
     }
@@ -756,8 +746,8 @@ impl Query{
             modifier: Some(Modifier::FULL),
             join_type: None,
             table_name: table.to_table_name(),
-            column1: vec![column1.to_string()],
-            column2: vec![column2.to_string()],
+            column1: vec![column1.to_owned()],
+            column2: vec![column2.to_owned()],
         };
         self.join(join)
     }
@@ -770,20 +760,20 @@ impl Query{
             modifier: None,
             join_type: Some(JoinType::INNER),
             table_name: table.to_table_name(),
-            column1: vec![column1.to_string()],
-            column2: vec![column2.to_string()],
+            column1: vec![column1.to_owned()],
+            column2: vec![column2.to_owned()],
         };
         self.join(join)
     }
 
     ///ascending orderby of this column
     pub fn asc(&mut self, column: &str) -> &mut Self {
-        self.order_by.push((column.to_string(), Direction::ASC));
+        self.order_by.push((column.to_owned(), Direction::ASC));
         self
     }
     ///ascending orderby of this column
     pub fn desc(&mut self, column: &str) -> &mut Self {
-        self.order_by.push((column.to_string(), Direction::DESC));
+        self.order_by.push((column.to_owned(), Direction::DESC));
         self
     }
 
@@ -792,13 +782,10 @@ impl Query{
         let mut indexes = vec![];
         let mut cnt = 0;
         for field in &self.enumerated_fields {
-            match field.operand {
-                Operand::ColumnName(ref column_name) => {
-                    if column_name.column == column {
-                        indexes.push(cnt);
-                    }
+            if let Operand::ColumnName(ref column_name) = field.operand {
+                if column_name.column == column {
+                    indexes.push(cnt);
                 }
-                _ => {}
             }
             cnt += 1;
         }
@@ -819,8 +806,8 @@ impl Query{
     pub fn get_involved_tables(&self) -> Vec<TableName> {
         let mut tables = vec![];
         let from_table = self.get_from_table();
-        if from_table.is_some() {
-            tables.push(from_table.unwrap().clone());
+        if let Some(from) = from_table {
+            tables.push(from.clone());
         }
         for j in &self.joins {
             if !tables.contains(&&j.table_name) {
@@ -887,14 +874,10 @@ impl Query{
         let mut renamed_columns = vec![];
         let renamed_fields = self.get_renamed_fields();
         for field in &renamed_fields {
-            match field.operand {
-                Operand::ColumnName(ref column_name) => {
-                    if field.name.is_some() {
-                        let rename = field.name.as_ref().unwrap().to_string();
-                        renamed_columns.push((column_name.clone(), rename));
-                    }
+            if let Operand::ColumnName(ref column_name) = field.operand {
+                if let Some(ref rename) = field.name {
+                    renamed_columns.push((column_name.clone(), rename.to_owned()));
                 }
-                _ => (),
             }
         }
         renamed_columns
@@ -907,10 +890,8 @@ impl Query{
         let enumerated_columns = self.get_enumerated_columns();
         for c in &enumerated_columns {
             for d in &enumerated_columns {
-                if c != d {
-                    if c.is_conflicted(d) {
-                        conflicts.push(c.column.to_string());
-                    }
+                if c != d && c.is_conflicted(d) {
+                    conflicts.push(c.column.to_owned());
                 }
             }
         }
@@ -929,13 +910,10 @@ impl Query{
     fn index_of_field(&self, column: &ColumnName) -> Option<usize> {
         let mut cnt = 0;
         for field in &self.enumerated_fields {
-            match field.operand {
-                Operand::ColumnName(ref column_name) => {
-                    if column_name == column {
-                        return Some(cnt);
-                    }
+            if let Operand::ColumnName(ref column_name) = field.operand {
+                if column_name == column {
+                    return Some(cnt);
                 }
-                _ => {}
             }
             cnt += 1;
         }
@@ -944,8 +922,8 @@ impl Query{
 
     fn remove_from_enumerated(&mut self, column_name: &ColumnName) -> &mut Self {
         let index = self.index_of_field(column_name);
-        if index.is_some() {
-            self.enumerated_fields.remove(index.unwrap());
+        if let Some(idx) = index {
+            self.enumerated_fields.remove(idx);
         }
         self
     }
@@ -955,11 +933,8 @@ impl Query{
     pub fn get_enumerated_columns(&self) -> Vec<&ColumnName> {
         let mut columns = vec![];
         for field in &self.enumerated_fields {
-            match field.operand {
-                Operand::ColumnName(ref column_name) => {
-                    columns.push(column_name);
-                }
-                _ => {}
+            if let Operand::ColumnName(ref column_name) = field.operand {
+                columns.push(column_name);
             }
         }
         columns
