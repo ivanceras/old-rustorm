@@ -95,3 +95,7 @@ order by schemaname, viewname;
 
 ## September 9, 2015
 * Replace rustc_serialize with serde-rs
+
+
+## October 21, 2015
+* Make mysql as optional dependency
