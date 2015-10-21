@@ -1,7 +1,11 @@
 # Rustorm
 
 [![Latest Version](https://img.shields.io/crates/v/rustorm.svg)](https://crates.io/crates/rustorm)
+
 [![Build Status](https://api.travis-ci.org/ivanceras/rustorm.svg)](https://travis-ci.org/ivanceras/rustorm)
+
+[![Coverage Status](https://coveralls.io/repos/ivanceras/rustorm/badge.svg?branch=master&service=github)](https://coveralls.io/github/ivanceras/rustorm?branch=master)
+
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 
 An ORM for rust
