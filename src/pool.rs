@@ -25,6 +25,7 @@ pub enum Platform {
     #[cfg(feature = "sqlite")]
     Sqlite(Sqlite),
     Oracle,
+    #[cfg(feature = "mysql")]
     Mysql(Mysql),
 }
 
@@ -34,6 +35,7 @@ impl Platform {
             Platform::Postgres(ref pg) => pg,
             #[cfg(feature = "sqlite")]
             Platform::Sqlite(ref lite) => lite,
+            #[cfg(feature = "mysql")]
             Platform::Mysql(ref my) => my,
             _ => unimplemented!(),
         }
@@ -44,6 +46,7 @@ impl Platform {
             Platform::Postgres(ref pg) => pg,
             #[cfg(feature = "sqlite")]
             Platform::Sqlite(ref lite) => lite,
+            #[cfg(feature = "mysql")]
             Platform::Mysql(ref my) => my,
             _ => unimplemented!(),
         }
@@ -66,6 +69,7 @@ pub enum ManagedPool {
     #[cfg(feature = "sqlite")]
     Sqlite(Pool<SqliteConnectionManager>),
     Oracle,
+    #[cfg(feature = "mysql")]
     Mysql(Option<MyPool>),
 }
 
@@ -92,7 +96,7 @@ impl ManagedPool {
                         let pool = try!(Pool::new(config, manager));
                         Ok(ManagedPool::Sqlite(pool))
                     }
-
+                    #[cfg(feature = "mysql")]
                     "mysql" => {
                         let opts = MyOpts {
                             user: config.username,
@@ -143,6 +147,7 @@ impl ManagedPool {
                     }
                 }
             }
+            #[cfg(feature = "mysql")]
             ManagedPool::Mysql(ref pool) => {
                 let my = Mysql::with_pooled_connection(pool.clone().unwrap());// I hope cloning doesn't really clone the pool, just the Arc
                 Ok(Platform::Mysql(my))

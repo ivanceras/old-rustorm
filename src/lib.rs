@@ -76,12 +76,12 @@
 //!
 //!
 
+extern crate rustc_serialize;
 extern crate postgres;
 #[cfg(feature = "sqlite")]
 extern crate rusqlite;
 #[cfg(feature = "mysql")]
 extern crate mysql;
-extern crate rustc_serialize;
 extern crate uuid;
 extern crate chrono;
 extern crate regex;

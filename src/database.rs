@@ -108,7 +108,7 @@ impl From<PgConnectError> for DbError {
         DbError::PlatformError(From::from(err))
     }
 }
-
+#[cfg(feature = "mysql")]
 impl From<MyError> for DbError {
     fn from(err: MyError) -> Self {
         DbError::PlatformError(From::from(err))

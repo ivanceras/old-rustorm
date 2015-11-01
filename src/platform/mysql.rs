@@ -22,7 +22,6 @@ use time::Timespec;
 pub struct Mysql {
     pool: Option<MyPool>,
 }
-
 impl Mysql{
     pub fn new() -> Self {
         Mysql { pool: None }

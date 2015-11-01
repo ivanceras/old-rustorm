@@ -9,7 +9,6 @@ use std::fmt;
 use query::ColumnName;
 use table::IsTable;
 use rustc_serialize::{Encodable, Encoder};
-#[allow(unused_imports)]
 use rustc_serialize::json::{self, ToJson, Json};
 
 

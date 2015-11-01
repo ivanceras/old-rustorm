@@ -1,11 +1,13 @@
 pub mod postgres;
 #[cfg(feature = "sqlite")]
 pub mod sqlite;
+#[cfg(feature = "mysql")]
 pub mod mysql;
 
 pub use self::postgres::Postgres;
 #[cfg(feature = "sqlite")]
 pub use self::sqlite::Sqlite;
+#[cfg(feature = "mysql")]
 pub use self::mysql::Mysql;
 
 use std::error::Error;
@@ -21,6 +23,7 @@ use rusqlite::SqliteError;
 pub enum PlatformError {
     PostgresError(PgError),
     PostgresConnectError(PgConnectError),
+    #[cfg(feature = "mysql")]
     MySQLError(MyError),
     #[cfg(feature = "sqlite")]
     SqliteError(SqliteError),
@@ -31,6 +34,7 @@ impl Error for PlatformError {
         match *self {
             PlatformError::PostgresError(ref err) => err.description(),
             PlatformError::PostgresConnectError(ref err) => err.description(),
+            #[cfg(feature = "mysql")]
             PlatformError::MySQLError(ref err) => err.description(),
             #[cfg(feature = "sqlite")]
             PlatformError::SqliteError(ref err) => err.description(),
@@ -41,6 +45,7 @@ impl Error for PlatformError {
         match *self {
             PlatformError::PostgresError(ref err) => Some(err),
             PlatformError::PostgresConnectError(ref err) => Some(err),
+            #[cfg(feature = "mysql")]
             PlatformError::MySQLError(ref err) => Some(err),
             #[cfg(feature = "sqlite")]
             PlatformError::SqliteError(ref err) => Some(err),
@@ -53,6 +58,7 @@ impl fmt::Display for PlatformError {
         match *self {
             PlatformError::PostgresError(ref err) => write!(f, "PostgreSQL error: {}", err),
             PlatformError::PostgresConnectError(ref err) => write!(f, "PostgreSQL connection error: {}", err),
+            #[cfg(feature = "mysql")]
             PlatformError::MySQLError(ref err) => write!(f, "MySQL error: {}", err),
             #[cfg(feature = "sqlite")]
             PlatformError::SqliteError(ref err) => write!(f, "SQlite error: {}", err),
@@ -72,6 +78,7 @@ impl From<PgConnectError> for PlatformError {
     }
 }
 
+#[cfg(feature = "mysql")]
 impl From<MyError> for PlatformError {
     fn from(err: MyError) -> Self {
         PlatformError::MySQLError(err)
