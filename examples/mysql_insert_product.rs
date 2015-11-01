@@ -10,6 +10,7 @@ fn main() {
 
     let _ = Query::insert()
                  .set("name", &"Test Product")
+                 .set("created_by", &10000)
                  .into_table(&"product")
                  .execute(db.as_ref());
 }

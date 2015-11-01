@@ -9,6 +9,7 @@ use database::SqlOption;
 use mysql::value::Value as MyValue;
 use mysql::consts::ColumnType;
 use mysql::value::FromValue;
+use mysql::value::IntoValue;
 use mysql::error::MyResult;
 use mysql::conn::Stmt;
 use mysql::conn::pool::MyPool;
@@ -16,6 +17,7 @@ use mysql::conn::pool::MyPool;
 use table::Table;
 use database::DatabaseDDL;
 use database::DbError;
+use time::Timespec;
 
 pub struct Mysql {
     pool: Option<MyPool>,
@@ -33,10 +35,50 @@ impl Mysql{
     fn from_rust_type_tosql(types: &[Value]) -> Vec<MyValue> {
         let mut params: Vec<MyValue> = vec![];
         for t in types {
-            match t {
-                &Value::String(ref x) => {
+            match *t {
+                Value::Bool(ref x) => {
+                    let v = x.into_value();
+                    params.push(v);
+                },
+                Value::String(ref x) => {
                     params.push(MyValue::Bytes(x.as_bytes().to_owned()));
-                }
+                },
+                Value::I8(ref x) => {
+                    let v = x.into_value();
+                    params.push(v);
+                },
+                 Value::I16(ref x) => {
+                    let v = x.into_value();
+                    params.push(v);
+                },
+                Value::I32(ref x) => {
+                    let v = x.into_value();
+                    params.push(v);
+                },
+                Value::I64(ref x) => {
+                    let v = x.into_value();
+                    params.push(v);
+                },
+                Value::U8(ref x) => {
+                    let v = x.into_value();
+                    params.push(v);
+                },
+                Value::U32(ref x) => {
+                    let v = x.into_value();
+                    params.push(v);
+                },
+                Value::U64(ref x) => {
+                    let v = x.into_value();
+                    params.push(v);
+                },
+                Value::F32(ref x) => {
+                    let v = x.into_value();
+                    params.push(v);
+                },
+                Value::F64(ref x) => {
+                    let v = x.into_value();
+                    params.push(v);
+                },
                 _ => panic!("not yet here {:?}", t),
             }
         }
@@ -81,7 +123,10 @@ impl Mysql{
                                     Value::F64(v)
                                 },
                                 ColumnType::MYSQL_TYPE_NULL => Value::Null,
-                                ColumnType::MYSQL_TYPE_TIMESTAMP =>unimplemented!(),
+                                ColumnType::MYSQL_TYPE_TIMESTAMP => {
+                                    let v: Timespec = FromValue::from_value(value.clone());
+                                    Value::String(format!("{}, {}",v.sec, v.nsec)) //FIXME: provide an appropriate conversion here
+                                },
                                 ColumnType::MYSQL_TYPE_LONGLONG =>unimplemented!(),
                                 ColumnType::MYSQL_TYPE_INT24 => {
                                     let v: i32 = FromValue::from_value(value.clone());
@@ -93,7 +138,10 @@ impl Mysql{
                                 ColumnType::MYSQL_TYPE_YEAR =>unimplemented!(),
                                 ColumnType::MYSQL_TYPE_VARCHAR =>unimplemented!(),
                                 ColumnType::MYSQL_TYPE_BIT =>unimplemented!(),
-                                ColumnType::MYSQL_TYPE_NEWDECIMAL =>unimplemented!(),
+                                ColumnType::MYSQL_TYPE_NEWDECIMAL => {
+                                    let v: f64 = FromValue::from_value(value.clone());
+                                    Value::F64(v)
+                                },
                                 ColumnType::MYSQL_TYPE_ENUM =>unimplemented!(),
                                 ColumnType::MYSQL_TYPE_SET =>unimplemented!(),
                                 ColumnType::MYSQL_TYPE_TINY_BLOB => {
@@ -173,16 +221,16 @@ impl Mysql{
                 "varchar(36)".to_owned()
             }
             "NaiveDateTime" => {
-                "numeric".to_owned()
+                "timestamp".to_owned()
             }
             "DateTime<UTC>" => {
-                "numeric".to_owned()
+                "timestamp".to_owned()
             }
             "NaiveDate" => {
-                "numeric".to_owned()
+                "date".to_owned()
             }
             "NaiveTime" => {
-                "numeric".to_owned()
+                "time".to_owned()
             }
             "HashMap<String, Option<String>>" => {
                 "text".to_owned()

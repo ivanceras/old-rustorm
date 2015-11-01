@@ -89,6 +89,7 @@ extern crate r2d2;
 extern crate r2d2_postgres;
 #[cfg(feature = "sqlite")]
 extern crate r2d2_sqlite;
+extern crate time;
 
 
 pub mod em;
