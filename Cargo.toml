@@ -31,12 +31,12 @@ features = ["time", "uuid", "chrono"]
 [dependencies]
 rustc-serialize = "0.3.16"
 uuid = "0.1.18"
-log = "0.3.2"
+log = "0.3.3"
 env_logger = "0.3.1"
 regex = "0.1.41"
 url = "0.2.37"
-time = "0.1.32"
-r2d2 = "0.6.0"
+time = "0.1.33"
+r2d2 = "0.6.1"
 r2d2_postgres = "0.9.3"
 rusqlite = { version = "0.3.1", optional = true }
 r2d2_sqlite = { version = "0.0.1", optional = true }
