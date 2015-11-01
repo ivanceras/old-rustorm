@@ -8,8 +8,7 @@ fn main() {
     let pool = ManagedPool::init(&url, 1).unwrap();
     let db = pool.connect().unwrap();
 
-    let dao = Query::select()
-                   .columns(vec!["name"])
+    let dao = Query::select_all()
                    .from_table(&"product")
                    .retrieve(db.as_ref());
 

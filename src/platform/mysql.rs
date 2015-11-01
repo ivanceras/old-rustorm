@@ -7,6 +7,8 @@ use writer::SqlFrag;
 use database::SqlOption;
 
 use mysql::value::Value as MyValue;
+use mysql::consts::ColumnType;
+use mysql::value::FromValue;
 use mysql::error::MyResult;
 use mysql::conn::Stmt;
 use mysql::conn::pool::MyPool;
@@ -42,10 +44,88 @@ impl Mysql{
     }
 
     /// convert a record of a row into rust type
-    fn from_sql_to_rust_type(row: &[MyValue], index: usize) -> Value {
+    fn from_sql_to_rust_type(row: &[MyValue], index: usize, column_type: &ColumnType) -> Value {
         let value = row.get(index);
         match value {
-            Some(value) => Value::String(value.into_str()),
+            Some(value) => {
+                    println!("sql to rust {:?} type: {:?}", value, column_type);
+                    match *value{
+                        MyValue::NULL => {
+                            Value::Null
+                        },
+                        
+                        _ => {
+                            match *column_type{
+                                ColumnType::MYSQL_TYPE_DECIMAL => {
+                                    let v: f64 = FromValue::from_value(value.clone());
+                                    Value::F64(v)
+                                },
+                                ColumnType::MYSQL_TYPE_TINY =>{
+                                    let v: i8 = FromValue::from_value(value.clone());
+                                    Value::I8(v)
+                                },
+                                ColumnType::MYSQL_TYPE_SHORT => {
+                                    let v: i16 = FromValue::from_value(value.clone());
+                                    Value::I16(v)
+                                },
+                                ColumnType::MYSQL_TYPE_LONG => {
+                                    let v: i64 = FromValue::from_value(value.clone());
+                                    Value::I64(v)
+                                },
+                                ColumnType::MYSQL_TYPE_FLOAT =>{
+                                    let v: f32 = FromValue::from_value(value.clone());
+                                    Value::F32(v)
+                                },
+                                ColumnType::MYSQL_TYPE_DOUBLE => {
+                                    let v: f64 = FromValue::from_value(value.clone());
+                                    Value::F64(v)
+                                },
+                                ColumnType::MYSQL_TYPE_NULL => Value::Null,
+                                ColumnType::MYSQL_TYPE_TIMESTAMP =>unimplemented!(),
+                                ColumnType::MYSQL_TYPE_LONGLONG =>unimplemented!(),
+                                ColumnType::MYSQL_TYPE_INT24 => {
+                                    let v: i32 = FromValue::from_value(value.clone());
+                                    Value::I32(v)
+                                },
+                                ColumnType::MYSQL_TYPE_DATE =>unimplemented!(),
+                                ColumnType::MYSQL_TYPE_TIME =>unimplemented!(),
+                                ColumnType::MYSQL_TYPE_DATETIME =>unimplemented!(),
+                                ColumnType::MYSQL_TYPE_YEAR =>unimplemented!(),
+                                ColumnType::MYSQL_TYPE_VARCHAR =>unimplemented!(),
+                                ColumnType::MYSQL_TYPE_BIT =>unimplemented!(),
+                                ColumnType::MYSQL_TYPE_NEWDECIMAL =>unimplemented!(),
+                                ColumnType::MYSQL_TYPE_ENUM =>unimplemented!(),
+                                ColumnType::MYSQL_TYPE_SET =>unimplemented!(),
+                                ColumnType::MYSQL_TYPE_TINY_BLOB => {
+                                    let v: String = FromValue::from_value(value.clone());
+                                    Value::String(v)
+                                },
+                                ColumnType::MYSQL_TYPE_MEDIUM_BLOB => {
+                                    let v: String = FromValue::from_value(value.clone());
+                                    Value::String(v)
+                                },
+                                ColumnType::MYSQL_TYPE_LONG_BLOB => {
+                                    let v: String = FromValue::from_value(value.clone());
+                                    Value::String(v)
+                                },
+                                ColumnType::MYSQL_TYPE_BLOB => {
+                                    let v: String = FromValue::from_value(value.clone());
+                                    Value::String(v)
+                                },
+                                ColumnType::MYSQL_TYPE_VAR_STRING => {
+                                    let v: String = FromValue::from_value(value.clone());
+                                    Value::String(v)
+                                },
+                                ColumnType::MYSQL_TYPE_STRING => {
+                                    let v: String = FromValue::from_value(value.clone());
+                                    Value::String(v)
+                                },
+                                ColumnType::MYSQL_TYPE_GEOMETRY => unimplemented!(),
+                            }
+                        }
+                    }
+                    
+                },
             None => Value::Null,
         }
     }
@@ -176,7 +256,8 @@ impl Database for Mysql {
         let mut columns = vec![];
         for col in stmt.columns_ref().unwrap() {
             let column_name = String::from_utf8(col.name.clone()).unwrap();
-            columns.push(column_name);
+            println!("column type: {:?}", col.column_type);
+            columns.push( (column_name, col.column_type) );
         }
         let mut daos = vec![];
         let param = Mysql::from_rust_type_tosql(params);
@@ -185,9 +266,9 @@ impl Database for Mysql {
             let row = try!(row);
             let mut index = 0;
             let mut dao = Dao::new();
-            for col in &columns {
-                let rtype = Mysql::from_sql_to_rust_type(&row, index);
-                dao.set_value(col, rtype);
+            for &(ref column_name, ref column_type) in &columns {
+                let rtype = Mysql::from_sql_to_rust_type(&row, index, column_type);
+                dao.set_value(&column_name, rtype);
                 index += 1;
             }
             daos.push(dao);
