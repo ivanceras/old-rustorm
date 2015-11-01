@@ -13,6 +13,7 @@ use mysql::value::IntoValue;
 use mysql::error::MyResult;
 use mysql::conn::Stmt;
 use mysql::conn::pool::MyPool;
+use chrono::naive::datetime::NaiveDateTime;
 
 use table::Table;
 use database::DatabaseDDL;
@@ -124,25 +125,55 @@ impl Mysql{
                                 ColumnType::MYSQL_TYPE_NULL => Value::Null,
                                 ColumnType::MYSQL_TYPE_TIMESTAMP => {
                                     let v: Timespec = FromValue::from_value(value.clone());
-                                    Value::String(format!("{}, {}",v.sec, v.nsec)) //FIXME: provide an appropriate conversion here
+                                    let t = NaiveDateTime::from_timestamp(v.sec, v.nsec as u32);
+                                    println!("time: {}",t);
+                                    Value::NaiveDateTime(t)
                                 },
-                                ColumnType::MYSQL_TYPE_LONGLONG =>unimplemented!(),
+                                ColumnType::MYSQL_TYPE_LONGLONG =>  {
+                                    let v: i64 = FromValue::from_value(value.clone());
+                                    Value::I64(v)
+                                },
                                 ColumnType::MYSQL_TYPE_INT24 => {
                                     let v: i32 = FromValue::from_value(value.clone());
                                     Value::I32(v)
                                 },
-                                ColumnType::MYSQL_TYPE_DATE =>unimplemented!(),
-                                ColumnType::MYSQL_TYPE_TIME =>unimplemented!(),
-                                ColumnType::MYSQL_TYPE_DATETIME =>unimplemented!(),
-                                ColumnType::MYSQL_TYPE_YEAR =>unimplemented!(),
-                                ColumnType::MYSQL_TYPE_VARCHAR =>unimplemented!(),
+                                ColumnType::MYSQL_TYPE_DATE => {
+                                    let v: Timespec = FromValue::from_value(value.clone());
+                                    let t = NaiveDateTime::from_timestamp(v.sec, v.nsec as u32);
+                                    Value::NaiveDateTime(t)
+                                },
+                                ColumnType::MYSQL_TYPE_TIME => {
+                                    let v: Timespec = FromValue::from_value(value.clone());
+                                    let t = NaiveDateTime::from_timestamp(v.sec, v.nsec as u32);
+                                    Value::NaiveDateTime(t)
+                                },
+                                ColumnType::MYSQL_TYPE_DATETIME => {
+                                    let v: Timespec = FromValue::from_value(value.clone());
+                                    let t = NaiveDateTime::from_timestamp(v.sec, v.nsec as u32);
+                                    Value::NaiveDateTime(t)
+                                },
+                                ColumnType::MYSQL_TYPE_YEAR => {
+                                    let v: Timespec = FromValue::from_value(value.clone());
+                                    let t = NaiveDateTime::from_timestamp(v.sec, v.nsec as u32);
+                                    Value::NaiveDateTime(t)
+                                },
+                                ColumnType::MYSQL_TYPE_VARCHAR => {
+                                    let v: String = FromValue::from_value(value.clone());
+                                    Value::String(v)
+                                },
                                 ColumnType::MYSQL_TYPE_BIT =>unimplemented!(),
                                 ColumnType::MYSQL_TYPE_NEWDECIMAL => {
                                     let v: f64 = FromValue::from_value(value.clone());
                                     Value::F64(v)
                                 },
-                                ColumnType::MYSQL_TYPE_ENUM =>unimplemented!(),
-                                ColumnType::MYSQL_TYPE_SET =>unimplemented!(),
+                                ColumnType::MYSQL_TYPE_ENUM => {
+                                    let v: String = FromValue::from_value(value.clone());
+                                    Value::String(v)
+                                },
+                                ColumnType::MYSQL_TYPE_SET => {
+                                    let v: String = FromValue::from_value(value.clone());
+                                    Value::String(v)
+                                },
                                 ColumnType::MYSQL_TYPE_TINY_BLOB => {
                                     let v: String = FromValue::from_value(value.clone());
                                     Value::String(v)
@@ -167,7 +198,10 @@ impl Mysql{
                                     let v: String = FromValue::from_value(value.clone());
                                     Value::String(v)
                                 },
-                                ColumnType::MYSQL_TYPE_GEOMETRY => unimplemented!(),
+                                ColumnType::MYSQL_TYPE_GEOMETRY => {
+                                    let v: String = FromValue::from_value(value.clone());
+                                    Value::String(v)
+                                },
                             }
                         }
                     }
