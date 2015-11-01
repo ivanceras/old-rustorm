@@ -11,6 +11,7 @@ use std::fmt;
 use r2d2;
 use postgres::error::Error as PgError;
 use postgres::error::ConnectError as PgConnectError;
+#[cfg(feature = "mysql")]
 use mysql::error::MyError;
 use regex::Error as RegexError;
 #[cfg(feature = "sqlite")]

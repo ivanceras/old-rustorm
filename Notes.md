@@ -320,3 +320,9 @@ CREATE TABLE product_availability (
 
 ## extract columns in sqlite, 
 http://stackoverflow.com/questions/2785702/use-javascript-regex-to-extract-column-names-from-sqlite-create-table-sql
+
+## Run test in the project using 
+
+```
+ cargo test --features "mysql sqlite"
+```

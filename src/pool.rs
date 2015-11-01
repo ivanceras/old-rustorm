@@ -7,8 +7,11 @@ use database::{Database, DatabaseDDL, DatabaseDev};
 use platform::Postgres;
 #[cfg(feature = "sqlite")]
 use platform::Sqlite;
+#[cfg(feature = "mysql")]
 use platform::Mysql;
+#[cfg(feature = "mysql")]
 use mysql::conn::pool::MyPool;
+#[cfg(feature = "mysql")]
 use mysql::conn::MyOpts;
 use database::DbError;
 

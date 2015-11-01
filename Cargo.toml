@@ -23,10 +23,6 @@ features = ["rustc-serialize"]
 version = "0.10.0"
 features = ["time", "uuid", "chrono"]
 
-#[dependencies.r2d2_sqlite]
-#path = "../r2d2-sqlite"
-#optional = true
-#version = "*"
 
 [dependencies]
 rustc-serialize = "0.3.16"
@@ -40,4 +36,4 @@ r2d2 = "0.6.1"
 r2d2_postgres = "0.9.3"
 rusqlite = { version = "0.3.1", optional = true }
 r2d2_sqlite = { version = "0.0.1", optional = true }
-mysql = "0.20.1"
+mysql = {version = "0.20.1", optional = true }

@@ -12,6 +12,7 @@ use std::error::Error;
 use std::fmt;
 use postgres::error::Error as PgError;
 use postgres::error::ConnectError as PgConnectError;
+#[cfg(feature = "mysql")]
 use mysql::error::MyError;
 #[cfg(feature = "sqlite")]
 use rusqlite::SqliteError;
