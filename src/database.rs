@@ -454,9 +454,9 @@ pub trait Database {
                 match join.join_type {
                     Some(ref join_type) => {
                         match *join_type {
-                            JoinType::CROSS => w.append("CROSS "),
-                            JoinType::INNER => w.append("INNER "),
-                            JoinType::OUTER => w.append("OUTER "),
+                            JoinType::CROSS => w.right_river("CROSS "),
+                            JoinType::INNER => w.right_river("INNER "),
+                            JoinType::OUTER => w.right_river("OUTER "),
                         };
                     }
                     None => (),

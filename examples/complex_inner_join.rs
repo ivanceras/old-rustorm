@@ -10,7 +10,6 @@ use rustorm::query::Equality;
 use rustorm::dao::{Dao, IsDao};
 use rustorm::pool::ManagedPool;
 
-
 #[derive(Debug, Clone)]
 pub struct Photo {
     pub photo_id: Uuid,
@@ -36,8 +35,7 @@ impl IsDao for Photo{
     }
 }
 
-#[test]
-fn test_filter_eq_query() {
+fn main() {
     let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v6";
     let pool = ManagedPool::init(&url, 1).unwrap();
     let db = pool.connect().unwrap();
@@ -45,16 +43,16 @@ fn test_filter_eq_query() {
     let mut query = Query::select_all();
 
     query.from_table("bazaar.product")
-         .left_join(&"bazaar.product_category",
-                    "product_category.product_id",
-                    "product.product_id")
-         .left_join(&"bazaar.category",
-                    "category.category_id",
-                    "product_category.category_id")
-         .left_join(&"product_photo",
-                    "product.product_id",
-                    "product_photo.product_id")
-         .left_join(&"bazaar.photo", "product_photo.photo_id", "photo.photo_id")
+         .inner_join_table("bazaar.product_category",
+                          "product_category.product_id",
+                          "product.product_id")
+         .inner_join_table("bazaar.category",
+                          "category.category_id",
+                          "product_category.category_id")
+         .inner_join_table("product_photo",
+                          "product.product_id",
+                          "product_photo.product_id")
+         .inner_join_table("bazaar.photo", "product_photo.photo_id", "photo.photo_id")
          .filter("product.name", Equality::EQ, &"GTX660 Ti videocard")
          .filter("category.name", Equality::EQ, &"Electronic")
          .group_by(vec!["category.name"])
@@ -66,13 +64,13 @@ fn test_filter_eq_query() {
     let expected = "
    SELECT *
      FROM bazaar.product
-          LEFT JOIN bazaar.product_category\x20
+          INNER JOIN bazaar.product_category\x20
           ON product_category.product_id = product.product_id\x20
-          LEFT JOIN bazaar.category\x20
+          INNER JOIN bazaar.category\x20
           ON category.category_id = product_category.category_id\x20
-          LEFT JOIN product_photo\x20
+          INNER JOIN product_photo\x20
           ON product.product_id = product_photo.product_id\x20
-          LEFT JOIN bazaar.photo\x20
+          INNER JOIN bazaar.photo\x20
           ON product_photo.photo_id = photo.photo_id\x20
     WHERE product.name = $1\x20
       AND category.name = $2\x20

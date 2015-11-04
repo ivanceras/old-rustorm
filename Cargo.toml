@@ -35,5 +35,5 @@ time = "0.1.33"
 r2d2 = "0.6.1"
 r2d2_postgres = "0.9.3"
 rusqlite = { version = "0.3.1", optional = true }
-r2d2_sqlite = { version = "0.0.1", optional = true }
+r2d2_sqlite = { version = "0.0.2", optional = true }
 mysql = {version = "0.20.1", optional = true }

@@ -37,7 +37,7 @@ impl IsDao for Photo{
 }
 
 #[test]
-fn test_filter_eq_query() {
+fn test_complex_query() {
     let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v6";
     let pool = ManagedPool::init(&url, 1).unwrap();
     let db = pool.connect().unwrap();
@@ -55,8 +55,8 @@ fn test_filter_eq_query() {
                     "product.product_id",
                     "product_photo.product_id")
          .left_join(&"bazaar.photo", "product_photo.photo_id", "photo.photo_id")
-         .filter("product.name", Equality::EQ, &"GTX660 Ti videocard")
-         .filter("category.name", Equality::EQ, &"Electronic")
+         .filter_eq("product.name", &"GTX660 Ti videocard")
+         .filter_eq("category.name", &"Electronic")
          .group_by(vec!["category.name"])
          .having("count(*)", Equality::GT, &1)
          .asc("product.name")
