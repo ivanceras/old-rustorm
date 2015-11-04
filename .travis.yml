@@ -16,4 +16,4 @@ after_success: |
   kcov --coveralls-id=$TRAVIS_JOB_ID --exclude-pattern=/.cargo target/kcov target/debug/rustorm-*
   
 script:
-- cargo test --features "sqlite mysql"
+- cargo test
