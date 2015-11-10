@@ -9,5 +9,14 @@ install:
 
 build: false
 
+services:
+  - postgresql  
+
+before_test:
+  - SET PGUSER=postgres
+  - SET PGPASSWORD=Password12!
+  - PATH=C:\Program Files\PostgreSQL\9.3\bin\;%PATH%
+  - .\scripts\setup.bat
+
 test_script:
   - cargo test --verbose
