@@ -384,6 +384,13 @@ impl ToTableName for str {
     }
 }
 
+impl ToTableName for String {
+
+    fn to_table_name(&self) -> TableName {
+        TableName::from_str(self)
+    }
+}
+
 impl ToTableName for Table {
 
     /// contain the columns for later use when renaming is necessary
@@ -433,12 +440,21 @@ pub struct Query {
 
     /// specify to use distinct ON set of columns
     pub distinct_on_columns:Vec<String>,
+    
+    /// where the focus of values of column selection
+    /// this is the table to insert to, update to delete, create, drop
+    /// whe used in select, this is the
+    /// pub from_table:Option<TableName>,
+
+    /// from field, where field can be a query, table, column, or function
+    pub from:Option<Box<Field>>,
+
+    /// joining multiple tables
+    pub joins:Vec<Join>,
 
     /// filter records, ~ where statement of the query
     pub filters:Vec<Filter>,
 
-    /// joining multiple tables
-    pub joins:Vec<Join>,
 
     /// ordering of the records via the columns specified
     /// TODO: ordering should be more flexible than this
@@ -459,14 +475,6 @@ pub struct Query {
 
     /// size of a page
     pub page_size:Option<usize>,
-
-    /// where the focus of values of column selection
-    /// this is the table to insert to, update to delete, create, drop
-    /// whe used in select, this is the
-    /// pub from_table:Option<TableName>,
-
-    /// from field, where field can be a query, table, column, or function
-    pub from:Option<Box<Field>>,
 
     /// The data values, used in bulk inserting, updating,
     pub values:Vec<Operand>,
@@ -634,6 +642,7 @@ impl Query {
     }
 
     /// A more terse way to write the query
+    /// only 1 table is supported yet
     pub fn from(&mut self, table: &ToTableName) -> &mut Self {
         let table_name = table.to_table_name();
         let operand = Operand::TableName(table_name);
