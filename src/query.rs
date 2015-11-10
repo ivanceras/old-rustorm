@@ -16,6 +16,7 @@ pub enum JoinType {
     CROSS,
     INNER,
     OUTER,
+    NATURAL,
 }
 #[derive(Debug)]
 #[derive(Clone)]

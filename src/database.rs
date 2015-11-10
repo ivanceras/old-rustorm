@@ -457,6 +457,7 @@ pub trait Database {
                             JoinType::CROSS => w.right_river("CROSS "),
                             JoinType::INNER => w.right_river("INNER "),
                             JoinType::OUTER => w.right_river("OUTER "),
+                            JoinType::NATURAL => w.right_river("NATURAL "),
                         };
                     }
                     None => (),
