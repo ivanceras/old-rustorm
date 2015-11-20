@@ -123,18 +123,20 @@ impl <'a>EntityManager<'a> {
             .collect_one(self.db)
     }
 
-    pub fn insert<T>(&self, dao: Dao) -> Result<T, DbError>
+/// [FIXME] The arrangement of columns are off
+    pub fn insert<T>(&self, t: &T) -> Result<T, DbError>
         where T: IsTable + IsDao
     {
         let table = T::table();
+        let dao = t.to_dao();
         let mut q = Query::insert();
         q.into_table(&table.complete_name());
         for key in dao.values.keys() {
             q.column(key);
         }
         q.return_all();
-        for c in &table.columns {
-            let value = dao.values.get(&c.name);
+        for key in dao.values.keys() {
+            let value = dao.values.get(key);
             match value {
                 Some(value) => {
                     q.add_value(Operand::Value(value.clone()));

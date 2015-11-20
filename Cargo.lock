@@ -13,6 +13,7 @@ dependencies = [
  "regex 0.1.41 (registry+https://github.com/rust-lang/crates.io-index)",
  "rusqlite 0.3.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "rustc-serialize 0.3.16 (registry+https://github.com/rust-lang/crates.io-index)",
+ "serde_json 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "time 0.1.33 (registry+https://github.com/rust-lang/crates.io-index)",
  "url 0.2.37 (registry+https://github.com/rust-lang/crates.io-index)",
  "uuid 0.1.18 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -328,6 +329,23 @@ dependencies = [
 name = "rustc-serialize"
 version = "0.3.16"
 source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "serde"
+version = "0.6.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "num 0.1.27 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "serde_json"
+version = "0.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "num 0.1.27 (registry+https://github.com/rust-lang/crates.io-index)",
+ "serde 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)",
+]
 
 [[package]]
 name = "tempdir"

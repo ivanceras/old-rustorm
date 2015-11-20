@@ -30,6 +30,10 @@ impl Column {
         let keyword = ["type", "yield", "macro"];
         keyword.contains(&str)
     }
+    
+    pub fn nullable(&self) -> bool{
+        !self.not_null
+    }
 
 
     ///some column names may be a rust reserve keyword, so have to correct them

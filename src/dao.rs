@@ -65,7 +65,7 @@ pub enum Value {
     NaiveDate(NaiveDate),
     NaiveTime(NaiveTime),
     NaiveDateTime(NaiveDateTime),
-    Null,
+    None,
 }
 
 
@@ -98,7 +98,7 @@ impl Encodable for Value {
             Value::NaiveDateTime(ref x) => x.encode(s),
             Value::Object(ref x) => x.encode(s),
             Value::Json(ref x) => x.encode(s),
-            Value::Null => s.emit_nil(),
+            Value::None => s.emit_nil(),
         }
     }
 }
@@ -126,7 +126,7 @@ impl ToJson for Value {
             //            Value::NaiveDateTime(ref x) => x.to_json(),
             Value::Object(ref x) => x.to_json(),
             Value::Json(ref x) => x.clone(),
-            Value::Null => Json::Null,
+            Value::None => Json::Null,
             _ => panic!("unsupported/unexpected type! {:?}", self),
         }
     }
@@ -155,7 +155,7 @@ impl fmt::Display for Value {
             Value::NaiveDateTime(ref x) => write!(f, "'{}'", x),
             Value::Object(ref x) => write!(f, "'{:?}'", x),
             Value::Json(ref x) => write!(f, "'{:?}'", x),
-            Value::Null => write!(f, "'nil'"),
+            Value::None => write!(f, "'nil'"),
             _ => panic!("unsupported/unexpected type! {:?}", self),
         }
     }
@@ -322,7 +322,7 @@ impl Dao {
 
     /// set to null the value of this column
     pub fn set_null(&mut self, column: &str) {
-        self.set_value(column, Value::Null);
+        self.set_value(column, Value::None);
     }
 
     pub fn set_value(&mut self, column: &str, value: Value) {
@@ -356,7 +356,7 @@ impl Dao {
     {
         let value = self.values.get(column);
         match value {
-            None | Some(&Value::Null) => None,
+            None | Some(&Value::None) => None,
             Some(v) => Some(FromValue::from_type(v.clone())),
         }
     }
@@ -378,7 +378,7 @@ impl Dao {
         for column in non_nulls {
             let value = self.values.get(column);
             match value {
-                None | Some(&Value::Null) => return false,
+                None | Some(&Value::None) => return false,
                 _ => (),
             }
         }
@@ -399,7 +399,7 @@ pub trait ToValue {
 
 impl ToValue for () {
     fn to_db_type(&self) -> Value {
-        Value::Null
+        Value::None
     }
 }
 
@@ -509,6 +509,11 @@ impl ToValue for NaiveDateTime {
     }
 }
 
+impl ToValue for Json {
+    fn to_db_type(&self) -> Value {
+        Value::Json(self.clone())
+    }
+}
 ///
 ///
 ///
@@ -671,7 +676,14 @@ impl FromValue for NaiveDateTime {
     }
 }
 
-
+impl FromValue for Json {
+    fn from_type(ty: Value) -> Self {
+        match ty {
+            Value::Json(x) => x,
+            _ => panic!("error!"),
+        }
+    }
+}
 
 #[test]
 fn test_dao() {
