@@ -13,6 +13,7 @@ use postgres::rows::Row;
 use database::SqlOption;
 use r2d2::PooledConnection;
 use r2d2_postgres::PostgresConnectionManager;
+use rustc_serialize::json::Json;
 
 pub struct Postgres {
     /// a connection pool is provided
@@ -22,6 +23,8 @@ pub struct Postgres {
 /// Build the Query into a SQL statements that is a valid
 /// PostgreSQL sql query,
 /// TODO: support version SqlOptions/specific syntax
+
+//static none: &'static Option<String> = &None;
 
 impl Postgres {
 
@@ -73,119 +76,137 @@ impl Postgres {
                 Value::NaiveDate(ref x) => params.push(x),
                 Value::NaiveTime(ref x) => params.push(x),
                 Value::NaiveDateTime(ref x) => params.push(x),
-                Value::Null => panic!("unsupported/unexpected type! {:?}", t),
+                Value::Json(ref x) => {
+//                    panic!("Json is not yet supported!..");
+                     static NONE: &'static Option<String> = &None;
+                        params.push(NONE)
+                }
+                Value::None => {
+                        static NONE: &'static Option<String> = &None;
+                        params.push(NONE)
+                    },
                 _ => panic!("not yet here {:?}", t),
             }
         }
         params
     }
+    
 
     /// convert a record of a row into rust type
     fn from_sql_to_rust_type(&self, dtype: &Type, row: &Row, index: usize) -> Value {
+        println!("converting fromsql to rust type..");
         match *dtype {
             Type::Uuid => {
                 let value = row.get_opt(index);
                 match value {
                     Ok(value) => Value::Uuid(value),
-                    Err(_) => Value::Null,
+                    Err(_) => Value::None,
                 }
             }
             Type::Varchar | Type::Text | Type::Bpchar => {
                 let value = row.get_opt(index);
                 match value {
                     Ok(value) => Value::String(value),
-                    Err(_) => Value::Null,
+                    Err(_) => Value::None,
                 }
             }
             Type::TimestampTZ | Type::Timestamp => {
                 let value = row.get_opt(index);
                 match value {
                     Ok(value) => Value::DateTime(value),
-                    Err(_) => Value::Null,
+                    Err(_) => Value::None,
                 }
             }
             Type::Float4 => {
                 let value = row.get_opt(index);
                 match value {
                     Ok(value) => Value::F32(value),
-                    Err(_) => Value::Null,
+                    Err(_) => Value::None,
                 }
             }
-            Type::Numeric | Type::Float8 => {
+            Type::Float8 => {
                 let value = row.get_opt(index);
                 match value {
                     Ok(value) => Value::F64(value),
-                    Err(_) => Value::Null,
+                    Err(_) => Value::None,
                 }
             }
+            Type::Numeric => {
+                let value = row.get_opt(index);
+                match value {
+                    Ok(value) => Value::F64(value),
+                    Err(_) => Value::None,
+                }
+            }, 
             Type::Bool => {
                 let value = row.get_opt(index);
                 match value {
                     Ok(value) => Value::Bool(value),
-                    Err(_) => Value::Null,
+                    Err(_) => Value::None,
                 }
             }
             Type::Json => {
-                let value = row.get_opt(index);
-                match value {
-                    Ok(value) => Value::String(value),
-                    Err(_) => Value::Null,
-                }
+//                let value = row.get_opt(index);
+//                match value {
+//                    Ok(value) => Value::String(value),
+//                    Err(_) => Value::None,
+//                }
+                Value::Json(Json::String("hello".to_owned()))
             }
             Type::Int2 => {
                 let value = row.get_opt(index);
                 match value {
                     Ok(value) => Value::I16(value),
-                    Err(_) => Value::Null,
+                    Err(_) => Value::None,
                 }
             }
             Type::Int4 => {
                 let value = row.get_opt(index);
                 match value {
                     Ok(value) => Value::I32(value),
-                    Err(_) => Value::Null,
+                    Err(_) => Value::None,
                 }
             }
             Type::Int8 => {
                 let value = row.get_opt(index);
                 match value {
                     Ok(value) => Value::I64(value),
-                    Err(_) => Value::Null,
+                    Err(_) => Value::None,
                 }
             }
             Type::Timetz => {
                 let value = row.get_opt(index);
                 match value {
                     Ok(value) => Value::DateTime(value),
-                    Err(_) => Value::Null,
+                    Err(_) => Value::None,
                 }
             }
             Type::Date => {
                 let value = row.get_opt(index);
                 match value {
                     Ok(value) => Value::DateTime(value),
-                    Err(_) => Value::Null,
+                    Err(_) => Value::None,
                 }
             }
             Type::Bytea => {
                 let value = row.get_opt(index);
                 match value {
                     Ok(value) => Value::VecU8(value),
-                    Err(_) => Value::Null,
+                    Err(_) => Value::None,
                 }
             }
             Type::Inet => {
                 let value = row.get_opt(index);
                 match value {
                     Ok(value) => Value::String(value),
-                    Err(_) => Value::Null,
+                    Err(_) => Value::None,
                 }
             }
             Type::Tsvector => {
                 let value = row.get_opt(index);
                 match value {
                     Ok(value) => Value::String(value),
-                    Err(_) => Value::Null,
+                    Err(_) => Value::None,
                 }
             }
             _ => panic!("Type {:?} is not covered!", dtype),
@@ -694,7 +715,10 @@ impl DatabaseDev for Postgres {
             "real" => {
                 (vec![], "f32".to_owned())
             }
-            "double precision" | "numeric" => {
+            "numeric" => {
+                panic!("No support for numeric yet, please use real or double precision")
+            }
+            "double precision" => {
                 (vec![], "f64".to_owned())
             }
             "name" | "character" | "character varying" | "text" | "citext" | "bpchar" => {
@@ -708,7 +732,7 @@ impl DatabaseDev for Postgres {
             // "Json".to_owned()))
             // },
             "json" | "jsonb" => {//FIXME :String for now, since Json itself is not encodable
-                ((vec![], "String".to_owned()))
+                ((vec!["rustc_serialize::json::Json".to_owned()], "Json".to_owned()))
             }
             "uuid" => {
                 (vec!["uuid::Uuid".to_owned()], "Uuid".to_owned())
