@@ -372,11 +372,11 @@ pub trait Database {
 
 
     fn build_filter(&self, w: &mut SqlFrag, parent_query: &Query, filter: &Filter) {
-        if !filter.subfilters.is_empty() {
+        if !filter.sub_filters.is_empty() {
             w.append("( ");
         }
         self.build_condition(w, parent_query, &filter.condition);
-        for filt in &filter.subfilters {
+        for filt in &filter.sub_filters {
             match filt.connector {
                 Connector::And => {
                     w.append("AND ");
@@ -387,7 +387,7 @@ pub trait Database {
             }
             self.build_filter(w, parent_query, filt);// build sub filters as well
         }
-        if !filter.subfilters.is_empty() {
+        if !filter.sub_filters.is_empty() {
             w.append(" )");
         }
     }
@@ -537,24 +537,19 @@ pub trait Database {
                 };
             }
         }
-
-        match query.page_size {
-            Some(page_size) => {
+        
+        match query.get_limit() {
+            Some(limit) => {
                 w.left_river("LIMIT ");
-                w.append(&format!("{}", page_size));
-            }
-            None => (),
-        }
-
-        match query.page {
-            Some(page) => {
-                w.left_river("OFFSET ");
-                assert!(query.page_size.is_some(),
-                        "Page size should be specified when paging");
-                let page_size = query.page_size.unwrap();
-                let offset = page * page_size;
-                w.append(&format!("{}", offset));
-            }
+                w.append(&format!("{}", limit.limit));
+                match limit.offset{
+                    Some(offset) => {
+                        w.left_river("OFFSET ");
+                        w.append(&format!("{}", offset));
+                    },
+                    None => (),
+                }
+            },
             None => (),
         }
         w

@@ -109,7 +109,7 @@ pub struct Filter {
     pub connector: Connector,
     /// TODO: maybe renamed to LHS, supports functions and SQL
     pub condition: Condition,
-    pub subfilters: Vec<Filter>, //[FIXME] rename to sub_filters
+    pub sub_filters: Vec<Filter>, //[FIXME] rename to sub_filters
 }
 
 impl Filter {
@@ -124,7 +124,7 @@ impl Filter {
                 equality: equality,
                 right: right,
             },
-            subfilters: vec![],
+            sub_filters: vec![],
         }
     }
 
@@ -138,7 +138,7 @@ impl Filter {
                 equality: equality,
                 right: right,
             },
-            subfilters: vec![],
+            sub_filters: vec![],
         }
     }
 
@@ -152,7 +152,7 @@ impl Filter {
                 equality: equality,
                 right: right,
             },
-            subfilters: vec![],
+            sub_filters: vec![],
         }
     }
 
@@ -167,27 +167,27 @@ impl Filter {
     pub fn and(&mut self, column: &str, equality: Equality, value: &ToValue) -> &mut Self {
         let mut filter = Filter::new(column, equality, value);
         filter.connector = Connector::And;
-        self.subfilters.push(filter);
+        self.sub_filters.push(filter);
         self
     }
 
     pub fn or(&mut self, column: &str, equality: Equality, value: &ToValue) -> &mut Self {
         let mut filter = Filter::new(column, equality, value);
         filter.connector = Connector::Or;
-        self.subfilters.push(filter);
+        self.sub_filters.push(filter);
         self
     }
 
     pub fn or_filter(&mut self, filter: Filter) -> &mut Self {
         let mut filter = filter.clone();
         filter.connector = Connector::Or;
-        self.subfilters.push(filter);
+        self.sub_filters.push(filter);
         self
     }
     pub fn and_filter(&mut self, filter: Filter) -> &mut Self {
         let mut filter = filter.clone();
         filter.connector = Connector::And;
-        self.subfilters.push(filter);
+        self.sub_filters.push(filter);
         self
     }
 }
@@ -420,6 +420,58 @@ pub enum Error {
     SqlError(String),
 }
 
+
+#[derive(Debug)]
+#[derive(PartialEq)]
+#[derive(Default)]
+#[derive(Clone)]
+pub struct Page{
+    pub page: usize,
+    pub page_size: usize,
+}
+
+impl Page{
+    fn to_limit(&self)->Limit{
+        Limit{
+            limit: self.page_size,
+            offset: Some(self.page * self.page_size),
+        }
+    }
+}
+
+#[derive(Debug)]
+#[derive(PartialEq)]
+#[derive(Default)]
+#[derive(Clone)]
+pub struct Limit{
+    pub limit: usize,
+    pub offset: Option<usize>,
+}
+
+#[derive(Debug)]
+#[derive(PartialEq)]
+#[derive(Clone)]
+pub enum Range{
+    Page(Page),
+    Limit(Limit),
+}
+
+impl Range{
+    
+    fn get_limit(&self)->Limit{
+        match self{
+            &Range::Page(ref page) => {
+                page.to_limit()
+            },
+            &Range::Limit(ref limit) => {
+                limit.clone()
+            }
+        }
+    }
+    
+}
+
+
 #[derive(Debug)]
 #[derive(Clone)]
 pub struct Query {
@@ -471,14 +523,9 @@ pub struct Query {
     /// exclude the mention of the columns in the SQL query, useful when ignoring changes in update/insert records
     pub excluded_columns:Vec<ColumnName>,
 
-    /// [FIXME] the lowest level should use limit and offset, page ang page size can be converted to limit and offset
-    /// but not the other way around.. 
-    /// paging of records
-    pub page:Option<usize>,
-
-    /// size of a page
-    pub page_size:Option<usize>,
-
+    /// caters both limit->offset and page->page_size
+    /// setting page and page_size can not interchange the order
+    pub range: Option<Range>,
     /// The data values, used in bulk inserting, updating,
     pub values:Vec<Operand>,
 
@@ -503,8 +550,7 @@ impl Query {
             group_by: vec![],
             having: vec![],
             excluded_columns: vec![],
-            page: None,
-            page_size: None,
+            range: None,
             from: None,
             values: vec![],
             enumerated_returns: vec![],
@@ -623,19 +669,55 @@ impl Query {
 
     /// when paging multiple records
     pub fn set_page(&mut self, page: usize) -> &mut Self {
-        self.page = Some(page);
+        let new_range = match self.range{
+            Some(ref range) => {
+                match range{
+                    &Range::Page(ref p) => {
+                        //replacing the page
+                        Some(Range::Page(Page{page:page, page_size: p.page_size}))
+                    },
+                    &Range::Limit(_) => {
+                        panic!("Do not mix page->page_size with limit and offset");
+                    }
+                }
+            },
+            None => {
+                // a new range with 0 page_size
+                Some(Range::Page(Page{page:page, page_size:0}))
+            }
+        };
+        self.range = new_range;
+        self
+    }
+    
+    pub fn set_page_size(&mut self, page_size: usize) -> &mut Self {
+        let new_range = match self.range{
+            Some(ref range) => {
+                match range{
+                    &Range::Page(ref p) => {
+                        //replacing the page_size
+                        Some(Range::Page(Page{page:p.page, page_size: page_size}))
+                    },
+                    &Range::Limit(_) => {
+                        panic!("Do not mix page->page_size with limit and offset");
+                    }
+                    
+                }
+            },
+            None => {
+                // a new range with page 1
+                Some(Range::Page(Page{page:1, page_size:page_size}))
+            }
+        };
+        self.range = new_range;
         self
     }
 
-    /// the number of items retrieve per page
-    pub fn set_page_size(&mut self, items: usize) -> &mut Self {
-        self.page_size = Some(items);
-        self
-    }
-
-    /// the number of items retrieve per page
-    pub fn limit(&mut self, limit: usize) -> &mut Self {
-        self.set_page_size(limit)
+    pub fn get_limit(&self)->Option<Limit>{
+        match self.range{
+            Some(ref range) => Some(range.get_limit()),
+            None => None
+        }
     }
 
     /// A more terse way to write the query
