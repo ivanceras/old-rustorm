@@ -66,6 +66,7 @@ pub enum Equality {
     IN,
     NOT_IN, // NOT_IN,
     LIKE,
+    //ILIKE, //FIXME add ILIKE
     IS_NOT_NULL, // NOT_NULL,
     IS_NULL, // IS_NULL,
 }
@@ -108,7 +109,7 @@ pub struct Filter {
     pub connector: Connector,
     /// TODO: maybe renamed to LHS, supports functions and SQL
     pub condition: Condition,
-    pub subfilters: Vec<Filter>,
+    pub subfilters: Vec<Filter>, //[FIXME] rename to sub_filters
 }
 
 impl Filter {
@@ -464,12 +465,14 @@ pub struct Query {
     /// grouping columns to create an aggregate
     pub group_by: Vec<Operand>,
 
-    /// having field
-    pub having: Vec<Condition>,
+    /// having field, [FIXME] this is supposed to be filter
+    pub having: Vec<Filter>,
 
     /// exclude the mention of the columns in the SQL query, useful when ignoring changes in update/insert records
     pub excluded_columns:Vec<ColumnName>,
 
+    /// [FIXME] the lowest level should use limit and offset, page ang page size can be converted to limit and offset
+    /// but not the other way around.. 
     /// paging of records
     pub page:Option<usize>,
 
@@ -590,14 +593,8 @@ impl Query {
     }
 
     pub fn having(&mut self, column: &str, equality: Equality, value: &ToValue) -> &mut Self {
-        let column_name = ColumnName::from_str(column);
-        let left = Operand::ColumnName(column_name);
-        let cond = Condition {
-            left: left,
-            equality: equality,
-            right: Operand::Value(value.to_db_type()),
-        };
-        self.having.push(cond);
+        let filter = Filter::new(column, equality, value);
+        self.having.push(filter);
         self
     }
 
@@ -1060,7 +1057,6 @@ impl Query {
     }
 
     /// execute the query then collect only 1 record
-    /// TODO: use Result<T,Error> instead of Option<T>
     pub fn collect_one<T: IsDao + IsTable>(&mut self, db: &Database) -> Result<T, DbError> {
         let result = try!(self.retrieve(db));
         match result.cast_one() {

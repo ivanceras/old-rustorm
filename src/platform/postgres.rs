@@ -78,8 +78,8 @@ impl Postgres {
                 Value::NaiveDateTime(ref x) => params.push(x),
                 Value::Json(ref x) => {
 //                    panic!("Json is not yet supported!..");
-                     static NONE: &'static Option<String> = &None;
-                        params.push(NONE)
+//                     static NONE: &'static Option<String> = &None;
+                       params.push(x)
                 }
                 Value::None => {
                         static NONE: &'static Option<String> = &None;
@@ -146,12 +146,11 @@ impl Postgres {
                 }
             }
             Type::Json => {
-//                let value = row.get_opt(index);
-//                match value {
-//                    Ok(value) => Value::String(value),
-//                    Err(_) => Value::None,
-//                }
-                Value::Json(Json::String("hello".to_owned()))
+                let value = row.get_opt(index);
+                match value {
+                    Ok(value) => Value::Json(value),
+                    Err(_) => Value::None,
+                }
             }
             Type::Int2 => {
                 let value = row.get_opt(index);
@@ -808,7 +807,7 @@ impl DatabaseDev for Postgres {
                 "real".to_owned()
             }
             "f64" => {
-                "numeric".to_owned()
+                "double precision".to_owned()
             }
             "String" => {
                 "character varying".to_owned()

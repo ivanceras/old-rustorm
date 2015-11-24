@@ -513,7 +513,7 @@ pub trait Database {
                 } else {
                     do_comma = true;
                 }
-                self.build_condition(&mut w, query, hav);
+                self.build_filter(&mut w, query, hav);
             }
         }
 

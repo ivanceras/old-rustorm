@@ -1,6 +1,6 @@
 [package]
 name = "rustorm"
-version = "0.2.3"
+version = "0.3.0"
 authors = [ "Jovansonlee Cesar <ivanceras@gmail.com>" ]
 license = "MIT"
 description = "An ORM for rust"
@@ -20,8 +20,8 @@ version = "0.2.16"
 features = ["rustc-serialize"]
 
 [dependencies.postgres]
-version = "0.10.0"
-features = ["time", "uuid", "chrono"]
+version = "0.10.1"
+features = ["time", "uuid", "chrono", "rustc-serialize"]
 
 
 [dependencies]
@@ -29,9 +29,9 @@ rustc-serialize = "0.3.16"
 serde_json = "0.6.0"
 uuid = "0.1.18"
 log = "0.3.3"
-env_logger = "0.3.1"
+env_logger = "0.3.2"
 regex = "0.1.41"
-url = "0.2.37"
+url = "0.2.38"
 time = "0.1.33"
 r2d2 = "0.6.1"
 r2d2_postgres = "0.9.3"
