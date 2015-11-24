@@ -345,6 +345,10 @@ pub trait Database {
                 w.append("LIKE ");
                 self.build_operand(w, parent_query, &cond.right);
             }
+            Equality::ILIKE => {
+                w.append("ILIKE ");
+                self.build_operand(w, parent_query, &cond.right);
+            }
             Equality::IS_NOT_NULL => {
                 w.append("IS NOT NULL");
             }

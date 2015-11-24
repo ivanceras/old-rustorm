@@ -66,7 +66,7 @@ pub enum Equality {
     IN,
     NOT_IN, // NOT_IN,
     LIKE,
-    //ILIKE, //FIXME add ILIKE
+    ILIKE, //FIXME add ILIKE
     IS_NOT_NULL, // NOT_NULL,
     IS_NULL, // IS_NULL,
 }
