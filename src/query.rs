@@ -712,6 +712,10 @@ impl Query {
         self.range = new_range;
         self
     }
+    
+    pub fn limit(&mut self, n: usize)->&mut Self{
+        self.set_page_size(n)
+    }
 
     pub fn get_limit(&self)->Option<Limit>{
         match self.range{
