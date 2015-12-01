@@ -12,9 +12,9 @@ addons:
   postgresql: 9.4
 before_install:
  - if [[ $(uname -s) == 'Darwin' ]]; then
-       pg_ctl -D /usr/local/var/postgres start
+       pg_ctl -D /usr/local/var/postgres start;
    else
-       echo "Not on darwim"
+       echo "Not on darwin";
   fi
 before_script:
  - "./scripts/setup.sh"
