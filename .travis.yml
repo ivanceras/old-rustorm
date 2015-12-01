@@ -11,7 +11,8 @@ rust:
 addons:
   postgresql: 9.4
 before_script:
-- "./scripts/setup.sh"
+ - pg_ctl -D /usr/local/var/postgres start
+ - "./scripts/setup.sh"
 
 after_success: |
   sudo apt-get install libcurl4-openssl-dev libelf-dev libdw-dev &&
