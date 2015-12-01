@@ -14,7 +14,7 @@ install:
  - if [[ $(uname -s) == 'Darwin' ]]; then
        brew rm postgis --force;
        brew install postgis --force;
-       pg_ctl -tart -l postgres.log --pgdata /usr/local/var/postgres;
+       pg_ctl -w start -l postgres.log --pgdata /usr/local/var/postgres;
        createuser -s postgres; 
        /usr/local/var/postgres start;
    else
