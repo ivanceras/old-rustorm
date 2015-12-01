@@ -10,8 +10,13 @@ rust:
 - stable
 addons:
   postgresql: 9.4
+before_install:
+ - if [[ $(uname -s) == 'Darwin' ]]; then
+       pg_ctl -D /usr/local/var/postgres start
+   else
+       echo "Not on darwim"
+  fi
 before_script:
- - pg_ctl -D /usr/local/var/postgres start
  - "./scripts/setup.sh"
 
 after_success: |
