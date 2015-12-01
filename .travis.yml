@@ -10,7 +10,7 @@ rust:
 - stable
 addons:
   postgresql: 9.4
-before_install:
+install:
  - if [[ $(uname -s) == 'Darwin' ]]; then
        brew rm postgis --force;
        brew install postgis --force;
