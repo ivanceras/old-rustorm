@@ -267,6 +267,7 @@ impl DaoResult {
         obj
     }
 
+    /// FIXME: should return an error when there are more than 1 to be casted
     pub fn cast_one<T: IsTable + IsDao>(&self) -> Option<T> {
         let mut casted = self.cast::<T>();
         if casted.len() < 1 {
