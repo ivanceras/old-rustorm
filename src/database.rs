@@ -3,7 +3,7 @@ use table::Table;
 use dao::{Dao, DaoResult, Value};
 use writer::SqlFrag;
 use query::{Connector, Equality, Operand, Field};
-use query::{Direction, Modifier, JoinType};
+use query::{Direction, Modifier, NullsWhere, JoinType};
 use query::{Filter, Condition};
 use query::SqlType;
 use std::error::Error;
@@ -524,7 +524,7 @@ pub trait Database {
         if !query.order_by.is_empty() {
             w.left_river("ORDER BY ");
             let mut do_comma = false;
-            for &(ref column, ref direction) in &query.order_by {
+            for &(ref column, ref direction, ref nulls_where) in &query.order_by {
                 if do_comma {
                     w.commasp();
                 } else {
@@ -534,6 +534,11 @@ pub trait Database {
                 match *direction {
                     Direction::ASC => w.append(" ASC"),
                     Direction::DESC => w.append(" DESC"),
+                };
+                match *nulls_where {
+                    NullsWhere::FIRST => w.append(" NULLS FIRST"),
+                    NullsWhere::LAST => w.append(" NULLS LAST"),
+                    NullsWhere::UNSPECIFIED => w.append(""),
                 };
             }
         }
