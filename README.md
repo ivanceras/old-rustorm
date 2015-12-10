@@ -1,12 +1,12 @@
 # Rustorm
 
-[![Join the chat at https://gitter.im/ivanceras/rustorm](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/ivanceras/rustorm?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 [![Latest Version](https://img.shields.io/crates/v/rustorm.svg)](https://crates.io/crates/rustorm)
 [![Build Status](https://api.travis-ci.org/ivanceras/rustorm.svg)](https://travis-ci.org/ivanceras/rustorm)
 [![Coverage Status](https://coveralls.io/repos/ivanceras/rustorm/badge.svg?branch=master&service=github)](https://coveralls.io/github/ivanceras/rustorm?branch=master)
 [![Build status](https://ci.appveyor.com/api/projects/status/v48jf16of0n56nm2?svg=true)](https://ci.appveyor.com/project/ivanceras/rustorm)
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
+[![Join the chat at https://gitter.im/ivanceras/rustorm](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/ivanceras/rustorm?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 An ORM for rust
 
