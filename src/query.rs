@@ -1057,6 +1057,18 @@ impl Query {
         self.add_filter(Filter::new(column, equality, value))
     }
 
+    // attach and clause
+    pub fn and(&mut self, column: &str, equality: Equality, value: &ToValue) -> &mut Self {
+        self.filters.last_mut().unwrap().and(column, equality, value);
+        self
+    }
+
+    // attach or clause
+    pub fn or(&mut self, column: &str, equality: Equality, value: &ToValue) -> &mut Self {
+        self.filters.last_mut().unwrap().or(column, equality, value);
+        self
+    }
+
     /// column = value
     pub fn filter_eq(&mut self, column: &str, value: &ToValue) -> &mut Self {
         self.add_filter(Filter::new(column, Equality::EQ, value))
