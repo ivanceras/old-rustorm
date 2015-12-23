@@ -10,6 +10,7 @@ use rustorm::pool::ManagedPool;
 use rustorm::em::EntityManager;
 use rustorm::table::{Table, Column};
 use rustorm::table::IsTable;
+use rustorm::dao::Type;
 
 
 
@@ -54,7 +55,7 @@ impl IsTable for Product{
             columns: vec![
                 Column{
                     name:"product_id".to_string(),
-                    data_type:"Uuid".to_string(),
+                    data_type: Type::Uuid,
                     db_data_type:"uuid".to_string(),
                     is_primary:true, is_unique:false, not_null:true, is_inherited:false,
                     default:Some("uuid_generate_v4()".to_string()),
@@ -63,7 +64,7 @@ impl IsTable for Product{
                 },
                 Column{
                     name:"name".to_string(),
-                    data_type:"String".to_string(),
+                    data_type: Type::String,
                     db_data_type:"character varying".to_string(),
                     is_primary:false, is_unique:false, not_null:true, is_inherited:false,
                     default:None,
@@ -72,7 +73,7 @@ impl IsTable for Product{
                 },
                 Column{
                     name:"description".to_string(),
-                    data_type:"String".to_string(),
+                    data_type: Type::String,
                     db_data_type:"character varying".to_string(),
                     is_primary:false, is_unique:false, not_null:false, is_inherited:true,
                     default:None,

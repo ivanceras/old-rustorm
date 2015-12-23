@@ -426,15 +426,21 @@ pub enum Error {
 #[derive(Default)]
 #[derive(Clone)]
 pub struct Page{
-    pub page: usize,
-    pub page_size: usize,
+    pub page: Option<usize>,
+    pub page_size: Option<usize>,
 }
 
 impl Page{
     fn to_limit(&self)->Limit{
+        let offset = if self.page.is_some() && self.page_size.is_some(){
+            Some(self.page.unwrap() *  self.page_size.unwrap())
+        }else{
+            None
+        };
+
         Limit{
             limit: self.page_size,
-            offset: Some(self.page * self.page_size),
+            offset: offset,
         }
     }
 }
@@ -444,7 +450,7 @@ impl Page{
 #[derive(Default)]
 #[derive(Clone)]
 pub struct Limit{
-    pub limit: usize,
+    pub limit: Option<usize>,
     pub offset: Option<usize>,
 }
 
@@ -674,7 +680,7 @@ impl Query {
                 match range{
                     &Range::Page(ref p) => {
                         //replacing the page
-                        Some(Range::Page(Page{page:page, page_size: p.page_size}))
+                        Some(Range::Page(Page{page:Some(page), page_size: p.page_size}))
                     },
                     &Range::Limit(_) => {
                         panic!("Do not mix page->page_size with limit and offset");
@@ -683,7 +689,7 @@ impl Query {
             },
             None => {
                 // a new range with 0 page_size
-                Some(Range::Page(Page{page:page, page_size:0}))
+                Some(Range::Page(Page{page:Some(page), page_size:None}))
             }
         };
         self.range = new_range;
@@ -696,7 +702,7 @@ impl Query {
                 match range{
                     &Range::Page(ref p) => {
                         //replacing the page_size
-                        Some(Range::Page(Page{page:p.page, page_size: page_size}))
+                        Some(Range::Page(Page{page:p.page, page_size: Some(page_size)}))
                     },
                     &Range::Limit(_) => {
                         panic!("Do not mix page->page_size with limit and offset");
@@ -706,13 +712,14 @@ impl Query {
             },
             None => {
                 // a new range with page 1
-                Some(Range::Page(Page{page:1, page_size:page_size}))
+                Some(Range::Page(Page{page:None, page_size:Some(page_size)}))
             }
         };
         self.range = new_range;
         self
     }
     
+	/// FIXME: This should have a different implementation for setting the limit and offset
     pub fn limit(&mut self, n: usize)->&mut Self{
         self.set_page_size(n)
     }
@@ -1116,6 +1123,7 @@ impl Query {
         db.build_query(self)
     }
 
+	///retrieve a generic types, type is unknown at runtime
     /// expects a return, such as select, insert/update with returning clause
     pub fn retrieve(&mut self, db: &Database) -> Result<DaoResult, DbError> {
         self.finalize();

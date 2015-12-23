@@ -6,7 +6,7 @@ use postgres::Connection;
 use regex::Regex;
 use dao::Value;
 use database::{Database, DatabaseDev, DatabaseDDL, DbError};
-use postgres::types::Type;
+use postgres::types::Type as PgType;
 use postgres::types::ToSql;
 use writer::SqlFrag;
 use postgres::rows::Row;
@@ -14,6 +14,7 @@ use database::SqlOption;
 use r2d2::PooledConnection;
 use r2d2_postgres::PostgresConnectionManager;
 use rustc_serialize::json::Json;
+use dao::Type;
 
 pub struct Postgres {
     /// a connection pool is provided
@@ -93,115 +94,114 @@ impl Postgres {
     
 
     /// convert a record of a row into rust type
-    fn from_sql_to_rust_type(&self, dtype: &Type, row: &Row, index: usize) -> Value {
-        println!("converting fromsql to rust type..");
+    fn from_sql_to_rust_type(&self, dtype: &PgType, row: &Row, index: usize) -> Value {
         match *dtype {
-            Type::Uuid => {
+            PgType::Uuid => {
                 let value = row.get_opt(index);
                 match value {
                     Ok(value) => Value::Uuid(value),
                     Err(_) => Value::None,
                 }
             }
-            Type::Varchar | Type::Text | Type::Bpchar => {
+            PgType::Varchar | PgType::Text | PgType::Bpchar => {
                 let value = row.get_opt(index);
                 match value {
                     Ok(value) => Value::String(value),
                     Err(_) => Value::None,
                 }
             }
-            Type::TimestampTZ | Type::Timestamp => {
+            PgType::TimestampTZ | PgType::Timestamp => {
                 let value = row.get_opt(index);
                 match value {
                     Ok(value) => Value::DateTime(value),
                     Err(_) => Value::None,
                 }
             }
-            Type::Float4 => {
+            PgType::Float4 => {
                 let value = row.get_opt(index);
                 match value {
                     Ok(value) => Value::F32(value),
                     Err(_) => Value::None,
                 }
             }
-            Type::Float8 => {
+            PgType::Float8 => {
                 let value = row.get_opt(index);
                 match value {
                     Ok(value) => Value::F64(value),
                     Err(_) => Value::None,
                 }
             }
-            Type::Numeric => {
+            PgType::Numeric => {
                 let value = row.get_opt(index);
                 match value {
                     Ok(value) => Value::F64(value),
                     Err(_) => Value::None,
                 }
             }, 
-            Type::Bool => {
+            PgType::Bool => {
                 let value = row.get_opt(index);
                 match value {
                     Ok(value) => Value::Bool(value),
                     Err(_) => Value::None,
                 }
             }
-            Type::Json => {
+            PgType::Json => {
                 let value = row.get_opt(index);
                 match value {
                     Ok(value) => Value::Json(value),
                     Err(_) => Value::None,
                 }
             }
-            Type::Int2 => {
+            PgType::Int2 => {
                 let value = row.get_opt(index);
                 match value {
                     Ok(value) => Value::I16(value),
                     Err(_) => Value::None,
                 }
             }
-            Type::Int4 => {
+            PgType::Int4 => {
                 let value = row.get_opt(index);
                 match value {
                     Ok(value) => Value::I32(value),
                     Err(_) => Value::None,
                 }
             }
-            Type::Int8 => {
+            PgType::Int8 => {
                 let value = row.get_opt(index);
                 match value {
                     Ok(value) => Value::I64(value),
                     Err(_) => Value::None,
                 }
             }
-            Type::Timetz => {
+            PgType::Timetz => {
                 let value = row.get_opt(index);
                 match value {
                     Ok(value) => Value::DateTime(value),
                     Err(_) => Value::None,
                 }
             }
-            Type::Date => {
+            PgType::Date => {
                 let value = row.get_opt(index);
                 match value {
                     Ok(value) => Value::DateTime(value),
                     Err(_) => Value::None,
                 }
             }
-            Type::Bytea => {
+            PgType::Bytea => {
                 let value = row.get_opt(index);
                 match value {
                     Ok(value) => Value::VecU8(value),
                     Err(_) => Value::None,
                 }
             }
-            Type::Inet => {
+            PgType::Inet => {
                 let value = row.get_opt(index);
                 match value {
                     Ok(value) => Value::String(value),
                     Err(_) => Value::None,
                 }
             }
-            Type::Tsvector => {
+            PgType::Tsvector => {
                 let value = row.get_opt(index);
                 match value {
                     Ok(value) => Value::String(value),
@@ -691,89 +691,90 @@ impl DatabaseDev for Postgres {
 
     /// get the rust data type names from database data type names
     /// will be used in source code generation
-    fn dbtype_to_rust_type(&self, db_type: &str) -> (Vec<String>, String) {
+    fn dbtype_to_rust_type(&self, db_type: &str) -> (Vec<String>, Type) {
         match db_type {
             "boolean" => {
-                (vec![], "bool".to_owned())
+                (vec![], Type::Bool)
             }
             "char" => {
-                (vec![], "i8".to_owned())
+                (vec![], Type::I8)
             }
             "smallint" | "smallserial" => {
-                (vec![], "i16".to_owned())
+                (vec![], Type::I16)
             }
             "integer" | "int" | "serial" => {
-                (vec![], "i32".to_owned())
+                (vec![], Type::I32)
             }
             "oid" => {
-                (vec![], "u32".to_owned())
+                (vec![], Type::U32)
             }
             "bigint" | "bigserial" => {
-                (vec![], "i64".to_owned())
+                (vec![], Type::I64)
             }
             "real" => {
-                (vec![], "f32".to_owned())
+                (vec![], Type::F32)
             }
             "numeric" => {
+                //(vec![], Type::F64)
                 panic!("No support for numeric yet, please use real or double precision")
             }
             "double precision" => {
-                (vec![], "f64".to_owned())
+                (vec![], Type::F64)
             }
             "name" | "character" | "character varying" | "text" | "citext" | "bpchar" => {
-                (vec![], "String".to_owned())
+                (vec![], Type::String)
             }
             "bytea" => {
-                (vec![], "Vec<u8>".to_owned())
+                (vec![], Type::VecU8)
             }
             // "json" | "jsonb" => {
             // ((Some(vec!["rustc_serialize::json::Json".to_owned()]),
             // "Json".to_owned()))
             // },
             "json" | "jsonb" => {//FIXME :String for now, since Json itself is not encodable
-                ((vec!["rustc_serialize::json::Json".to_owned()], "Json".to_owned()))
+                (vec!["rustc_serialize::json::Json".to_owned()], Type::Json)
             }
             "uuid" => {
-                (vec!["uuid::Uuid".to_owned()], "Uuid".to_owned())
+                (vec!["uuid::Uuid".to_owned()], Type::Uuid)
             }
             "timestamp" => {
                 (vec!["chrono::naive::datetime::NaiveDateTime".to_owned()],
-                 "NaiveDateTime".to_owned())
+                 Type::NaiveDateTime)
             }
             "timestamp without time zone" => {
                 (vec!["chrono::naive::datetime::NaiveDateTime".to_owned()],
-                 "NaiveDateTime".to_owned())
+                 Type::NaiveDateTime)
             }
             "timestamp with time zone" => {
                 (vec!["chrono::datetime::DateTime".to_owned(),
                       "chrono::offset::utc::UTC".to_owned()],
-                 "DateTime<UTC>".to_owned())
+                 Type::DateTime)
             }
             "time with time zone" => {
                 (vec!["chrono::naive::time::NaiveTime".to_owned(),
                       "chrono::offset::utc::UTC".to_owned()],
-                 "NaiveTime".to_owned())
+                 Type::NaiveTime)
             }
             "date" => {
                 (vec!["chrono::naive::date::NaiveDate".to_owned()],
-                 "NaiveDate".to_owned())
+                 Type::NaiveDate)
             }
             "time" => {
                 (vec!["chrono::naive::time::NaiveTime".to_owned()],
-                 "NaiveTime".to_owned())
+                 Type::NaiveTime)
             }
             "hstore" => {
                 (vec!["std::collections::HashMap".to_owned()],
-                 "HashMap<String, Option<String>>".to_owned())
+                 Type::Object)
             }
             "interval" => {
-                (vec![], "u32".to_owned())
+                (vec![], Type::U32)
             }
             "inet[]" => {
-                (vec![], "String".to_owned())
+                (vec![], Type::String)
             }
             "tsvector" | "inet" => {
-                (vec![], "String".to_owned())
+                (vec![], Type::String)
             }//or everything else should be string
             _ => panic!("Unable to get the equivalent data type for {}", db_type),
         }
