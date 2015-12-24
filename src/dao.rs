@@ -8,8 +8,9 @@ use chrono::offset::utc::UTC;
 use std::fmt;
 use query::ColumnName;
 use table::IsTable;
-use rustc_serialize::{Encodable, Encoder};
+use rustc_serialize::{Encodable, Encoder, Decodable, Decoder};
 use rustc_serialize::json::{self, ToJson, Json};
+use rustc_serialize::DecoderHelpers;
 
 
 #[derive(Debug)]
@@ -97,6 +98,35 @@ pub enum Value {
     None,
 }
 
+impl Value{
+	
+	pub fn get_type(&self)->Type{
+        match *self {
+            Value::Bool(_) => Type::Bool,
+            Value::I8(_) => Type::I8,
+            Value::I16(_) => Type::I16,
+            Value::I32(_) => Type::I32,
+            Value::I64(_) => Type::I64,
+            Value::U8(_) => Type::U8,
+            Value::U16(_) => Type::U16,
+            Value::U32(_) => Type::U32,
+            Value::U64(_) => Type::U64,
+            Value::F32(_) => Type::F32,
+            Value::F64(_) => Type::F64,
+            Value::String(_) => Type::String,
+            Value::VecU8(_) => Type::VecU8,
+            Value::Uuid(_) => Type::Uuid,
+            Value::DateTime(_) => Type::DateTime,
+            Value::NaiveDate(_) => Type::NaiveDate,
+            Value::NaiveTime(_) => Type::NaiveTime,
+            Value::NaiveDateTime(_) => Type::NaiveDateTime,
+            Value::Object(_) => Type::Object,
+            Value::Json(_) => Type::Json,
+            Value::None => Type::Object,
+        }
+	}
+}
+
 
 /// custom implementation for value encoding to json,
 /// does not include unnecessary enum variants fields.
@@ -130,6 +160,7 @@ impl Encodable for Value {
         }
     }
 }
+
 impl ToJson for Value {
 
     fn to_json(&self) -> Json {
@@ -237,6 +268,8 @@ pub struct DaoResult {
 }
 
 /// a serializable array of dao to be serialized to json request
+/// a utility struct to hold only the needed fields from DaoResult that is needed
+/// in serializing the object, the non-significant ones are not included such as the renamed_columns
 /// TODO: add Decodable
 #[derive(RustcEncodable)]
 pub struct SerDaoResult {
@@ -248,19 +281,20 @@ pub struct SerDaoResult {
 
 impl SerDaoResult {
 
-    pub fn from_dao_result(daoresult: DaoResult) -> Self {
+    pub fn from_dao_result(daoresult: &DaoResult) -> Self {
         SerDaoResult {
-            dao: daoresult.dao,
-            total: daoresult.total,
-            page: daoresult.page,
-            page_size: daoresult.page_size,
+            dao: daoresult.dao.clone(),
+            total: daoresult.total.clone(),
+            page: daoresult.page.clone(),
+            page_size: daoresult.page_size.clone(),
         }
     }
 }
 
 impl Encodable for DaoResult {
     fn encode<S: Encoder>(&self, s: &mut S) -> Result<(), S::Error> {
-        self.dao.encode(s)
+		let ser = SerDaoResult::from_dao_result(self);
+		ser.encode(s)
     }
 }
 
@@ -314,6 +348,40 @@ pub struct Dao {
     pub values: BTreeMap<String, Value>,
 }
 
+impl Dao{
+	/// reconstruct a dao from json string value
+	pub fn from_str(s: &str)->Result<Self, ()>{
+		let json: Json = Json::from_str(s).unwrap();
+		// then convert this map to Value
+		println!("from str: {:#?}", json);
+		let values = match json{
+			Json::Object(btree) => {
+				let mut new_map:BTreeMap<String, Value> = BTreeMap::new();
+				for (k, v) in btree.iter(){
+					println!("{:?}: {:?}", k, v);
+					let value = match v{
+						&Json::I64(v) => Value::I64(v),
+						&Json::U64(v) => Value::U64(v),
+						&Json::F64(v) => Value::F64(v),
+						&Json::String(ref v) => Value::String(v.to_owned()),
+						&Json::Boolean(v) => Value::Bool(v),
+						&Json::Null => Value::None,
+						_ => panic!("other types soon.."),
+					};
+					println!("to value: {:?}", value);
+					new_map.insert(k.to_owned(), value);
+				}
+				println!("new map: {:#?}", new_map);
+				new_map
+			},
+			_ => panic!("expecting an object"),
+		};
+		Ok(Dao{
+			values: values
+		})
+	}
+}
+
 /// custom Encoder for Dao,
 /// decodes directly the content of `values`, instead of `values` as field of this `Dao` struct
 impl Encodable for Dao {
@@ -321,13 +389,6 @@ impl Encodable for Dao {
         self.values.encode(s)
     }
 }
-
-//impl Decodable for Dao{
-//
-//    fn decode<D: Decoder>(d: &mut D) -> Result<Self, D::Error>{
-//        d.read_map()
-//    }
-//}
 impl ToJson for Dao {
 
     fn to_json(&self) -> Json {

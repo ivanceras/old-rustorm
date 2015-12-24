@@ -1,6 +1,6 @@
 [root]
 name = "rustorm"
-version = "0.3.3"
+version = "0.4.0"
 dependencies = [
  "chrono 0.2.17 (registry+https://github.com/rust-lang/crates.io-index)",
  "env_logger 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)",

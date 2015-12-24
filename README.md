@@ -19,7 +19,8 @@ An ORM for rust
 
 ## [Documentation](http://ivanceras.github.io/rustorm/rustorm)
 
-
+## Philosophy
+* Rustorm is designed to work on generic models, that is it will work on any database where the table definition is unknown
 
 ## Example
 

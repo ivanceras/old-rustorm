@@ -66,7 +66,7 @@ pub enum Equality {
     IN,
     NOT_IN, // NOT_IN,
     LIKE,
-    ILIKE, //FIXME add ILIKE
+    ILIKE, //add ILIKE
     IS_NOT_NULL, // NOT_NULL,
     IS_NULL, // IS_NULL,
 }
@@ -101,15 +101,13 @@ pub struct Condition {
     pub right: Operand,
 }
 
-/// TODO: support for functions on columns
-/// TODO: need to merge with Expr
 #[derive(Debug)]
 #[derive(Clone)]
 pub struct Filter {
     pub connector: Connector,
     /// TODO: maybe renamed to LHS, supports functions and SQL
     pub condition: Condition,
-    pub sub_filters: Vec<Filter>, //[FIXME] rename to sub_filters
+    pub sub_filters: Vec<Filter>, 
 }
 
 impl Filter {
@@ -516,14 +514,13 @@ pub struct Query {
 
 
     /// ordering of the records via the columns specified
-    /// TODO: ordering should be more flexible than this
     /// needs to support expressions
     pub order_by:Vec<(String, Direction)>,
 
     /// grouping columns to create an aggregate
     pub group_by: Vec<Operand>,
 
-    /// having field, [FIXME] this is supposed to be filter
+    /// having field, 
     pub having: Vec<Filter>,
 
     /// exclude the mention of the columns in the SQL query, useful when ignoring changes in update/insert records
@@ -719,7 +716,6 @@ impl Query {
         self
     }
     
-	/// FIXME: This should have a different implementation for setting the limit and offset
     pub fn limit(&mut self, n: usize)->&mut Self{
         self.set_page_size(n)
     }
@@ -1106,6 +1102,11 @@ impl Query {
         self.column(column);
         self.value(value)
     }
+	pub fn set_value(&mut self, column: &str, value: &Value) -> &mut Self{
+		self.column(column);
+        let operand = Operand::Value(value.clone());
+		self.add_value(operand)
+	}
 
     pub fn return_all(&mut self) -> &mut Self {
         self.enumerate_column_as_return("*")
