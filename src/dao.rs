@@ -38,6 +38,7 @@ pub enum Type {
     NaiveDate,
     NaiveTime,
     NaiveDateTime,
+	None,
 }
 impl Type{
 	/// get the string representation when used in rust code
@@ -63,7 +64,7 @@ impl Type{
 			Type::NaiveDate => "NaiveDate".to_owned(),
 			Type::NaiveTime => "NaiveTime".to_owned(),
 			Type::NaiveDateTime => "NaiveDateTime".to_owned(),
-
+			Type::None => "None".to_owned(),
 
 		}
 	}
@@ -95,7 +96,7 @@ pub enum Value {
     NaiveDate(NaiveDate),
     NaiveTime(NaiveTime),
     NaiveDateTime(NaiveDateTime),
-    None,
+    None(Type),
 }
 
 impl Value{
@@ -122,7 +123,7 @@ impl Value{
             Value::NaiveDateTime(_) => Type::NaiveDateTime,
             Value::Object(_) => Type::Object,
             Value::Json(_) => Type::Json,
-            Value::None => Type::Object,
+            Value::None(_) => Type::None,
         }
 	}
 }
@@ -156,7 +157,7 @@ impl Encodable for Value {
             Value::NaiveDateTime(ref x) => x.encode(s),
             Value::Object(ref x) => x.encode(s),
             Value::Json(ref x) => x.encode(s),
-            Value::None => s.emit_nil(),
+            Value::None(_) => s.emit_nil(),
         }
     }
 }
@@ -185,7 +186,7 @@ impl ToJson for Value {
             //            Value::NaiveDateTime(ref x) => x.to_json(),
             Value::Object(ref x) => x.to_json(),
             Value::Json(ref x) => x.clone(),
-            Value::None => Json::Null,
+            Value::None(_) => Json::Null,
             _ => panic!("unsupported/unexpected type! {:?}", self),
         }
     }
@@ -214,7 +215,7 @@ impl fmt::Display for Value {
             Value::NaiveDateTime(ref x) => write!(f, "'{}'", x),
             Value::Object(ref x) => write!(f, "'{:?}'", x),
             Value::Json(ref x) => write!(f, "'{:?}'", x),
-            Value::None => write!(f, "'nil'"),
+            Value::None(_) => write!(f, "'nil'"),
             _ => panic!("unsupported/unexpected type! {:?}", self),
         }
     }
@@ -348,34 +349,64 @@ pub struct Dao {
     pub values: BTreeMap<String, Value>,
 }
 
+pub type ParseError = String;
+
 impl Dao{
-	/// reconstruct a dao from json string value
-	pub fn from_str(s: &str)->Result<Self, ()>{
+	pub fn from_str(s: &str)->Result<Vec<Self>, ParseError>{
+		println!("parsing multiple records from json");
 		let json: Json = Json::from_str(s).unwrap();
-		// then convert this map to Value
-		println!("from str: {:#?}", json);
-		let values = match json{
+		println!("from str json: {:#?}", json);
+		match json{
+			Json::Array(array) => {
+				let mut dao_list = vec![];
+				for obj in array{
+					let map = Self::json_object_to_btree(obj);
+					let dao = Dao{ values: map };
+					dao_list.push(dao);
+				}
+				Ok(dao_list)
+			},
+			_ => Err("Expecting an array".to_owned())
+		}
+	}
+
+	fn json_object_to_btree(json: Json)->BTreeMap<String, Value>{
+		match json{
 			Json::Object(btree) => {
 				let mut new_map:BTreeMap<String, Value> = BTreeMap::new();
 				for (k, v) in btree.iter(){
-					println!("{:?}: {:?}", k, v);
 					let value = match v{
 						&Json::I64(v) => Value::I64(v),
 						&Json::U64(v) => Value::U64(v),
 						&Json::F64(v) => Value::F64(v),
 						&Json::String(ref v) => Value::String(v.to_owned()),
 						&Json::Boolean(v) => Value::Bool(v),
-						&Json::Null => Value::None,
-						_ => panic!("other types soon.."),
+						&Json::Null => Value::None(Type::Json),
+						&Json::Object(ref v) => {
+							let mut map: BTreeMap<String, Value> = BTreeMap::new();
+							for (k, v) in v.iter(){
+								let value = Value::Json(v.clone());
+								map.insert(k.to_owned(), value);
+							}
+							Value::Object(map)
+						},
+						&Json::Array(ref arr) => {
+							Value::Json(Json::Array(arr.clone()))
+						},
 					};
-					println!("to value: {:?}", value);
 					new_map.insert(k.to_owned(), value);
 				}
-				println!("new map: {:#?}", new_map);
 				new_map
 			},
 			_ => panic!("expecting an object"),
-		};
+		}
+	}
+	/// reconstruct a dao from json string value
+	pub fn from_str_one(s: &str)->Result<Self, ()>{
+		let json: Json = Json::from_str(s).unwrap();
+		// then convert this map to Value
+		println!("from str: {:#?}", json);
+		let values = Self::json_object_to_btree(json);
 		Ok(Dao{
 			values: values
 		})
@@ -412,9 +443,9 @@ impl Dao {
     }
 
     /// set to null the value of this column
-    pub fn set_null(&mut self, column: &str) {
-        self.set_value(column, Value::None);
-    }
+    //pub fn set_null(&mut self, column: &str) {
+    //    self.set_value(column, Value::None);
+    //}
 
     pub fn set_value(&mut self, column: &str, value: Value) {
         self.values.insert(column.to_owned(), value);
@@ -447,7 +478,7 @@ impl Dao {
     {
         let value = self.values.get(column);
         match value {
-            None | Some(&Value::None) => None,
+            None | Some(&Value::None(_)) => None,
             Some(v) => Some(FromValue::from_type(v.clone())),
         }
     }
@@ -469,7 +500,7 @@ impl Dao {
         for column in non_nulls {
             let value = self.values.get(column);
             match value {
-                None | Some(&Value::None) => return false,
+                None | Some(&Value::None(_)) => return false,
                 _ => (),
             }
         }
@@ -490,7 +521,7 @@ pub trait ToValue {
 
 impl ToValue for () {
     fn to_db_type(&self) -> Value {
-        Value::None
+        Value::None(Type::String)
     }
 }
 
