@@ -17,6 +17,7 @@ use regex::Error as RegexError;
 #[cfg(feature = "sqlite")]
 use rusqlite::SqliteError;
 use platform::PlatformError;
+use dao::Type;
 
 /// SqlOption, contains the info about the features and quirks of underlying database
 #[derive(PartialEq)]
@@ -546,7 +547,12 @@ pub trait Database {
         match query.get_limit() {
             Some(limit) => {
                 w.left_river("LIMIT ");
-                w.append(&format!("{}", limit.limit));
+                match limit.limit{
+                    Some(limit) => {
+                        w.append(&format!("{}", limit));
+                    },
+                    None => ()
+                }
                 match limit.offset{
                     Some(offset) => {
                         w.left_river("OFFSET ");
@@ -744,7 +750,7 @@ pub trait DatabaseDev {
 
     ///get the equivalent postgresql database data type to rust data type
     /// returns (module, type)
-    fn dbtype_to_rust_type(&self, db_type: &str) -> (Vec<String>, String);
+    fn dbtype_to_rust_type(&self, db_type: &str) -> (Vec<String>, Type);
 
     fn rust_type_to_dbtype(&self, rust_type: &str) -> String;
 

@@ -1,4 +1,5 @@
 use std::fmt;
+use dao::Type;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct Foreign {
@@ -11,7 +12,7 @@ pub struct Foreign {
 pub struct Column {
     pub name: String,
     /// the generic data type, ie: u32, f64, string
-    pub data_type: String,
+    pub data_type: Type,
     /// the database data type of this column, ie: int, numeric, character varying
     pub db_data_type: String,
     pub is_primary: bool,

@@ -99,3 +99,15 @@ order by schemaname, viewname;
 
 ## October 21, 2015
 * Make mysql as optional dependency
+
+
+## Macro
+
+#[derive(IsDao,IsTable)]
+pub struct Product{
+    #[column(rename="product_name")]
+    name: String,
+    #[render(image_base64)]
+    base64: String,
+}
+

@@ -38,6 +38,35 @@ pub enum Type {
     NaiveTime,
     NaiveDateTime,
 }
+impl Type{
+	/// get the string representation when used in rust code
+	pub fn to_str_repr(&self)->String{
+		match *self{
+			Type::Bool => "bool".to_owned(),
+			Type::I8 => "i8".to_owned(),
+			Type::I16 => "i16".to_owned(),
+			Type::I32 => "i32".to_owned(),
+			Type::I64 => "i64".to_owned(),
+			Type::U8 => "u8".to_owned(),
+			Type::U16 => "u16".to_owned(),
+			Type::U32 => "u32".to_owned(),
+			Type::U64 => "u64".to_owned(),
+			Type::F32 => "f32".to_owned(),
+			Type::F64 => "f64".to_owned(),
+			Type::String =>"String".to_owned(),
+			Type::VecU8 => "Vec<u8>".to_owned(),
+			Type::Object => "BTreeMap<String, Value>".to_owned(), 
+			Type::Json => "Json".to_owned(),
+			Type::Uuid => "Uuid".to_owned(),
+			Type::DateTime => "DateTime<UTC>".to_owned(),
+			Type::NaiveDate => "NaiveDate".to_owned(),
+			Type::NaiveTime => "NaiveTime".to_owned(),
+			Type::NaiveDateTime => "NaiveDateTime".to_owned(),
+
+
+		}
+	}
+}
 
 
 #[derive(Debug)]
@@ -90,7 +119,6 @@ impl Encodable for Value {
             Value::VecU8(ref x) => x.encode(s),
             Value::Uuid(ref x) => x.encode(s),
             Value::DateTime(ref x) => {
-                println!("encoding date time: {}", x.to_rfc3339());
                 x.to_rfc3339().encode(s)
             }
             Value::NaiveDate(ref x) => x.encode(s),
@@ -209,6 +237,7 @@ pub struct DaoResult {
 }
 
 /// a serializable array of dao to be serialized to json request
+/// TODO: add Decodable
 #[derive(RustcEncodable)]
 pub struct SerDaoResult {
     pub dao: Vec<Dao>,
@@ -267,6 +296,7 @@ impl DaoResult {
         obj
     }
 
+    /// FIXME: should return an error when there are more than 1 to be casted
     pub fn cast_one<T: IsTable + IsDao>(&self) -> Option<T> {
         let mut casted = self.cast::<T>();
         if casted.len() < 1 {
