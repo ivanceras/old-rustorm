@@ -139,7 +139,7 @@ impl <'a>EntityManager<'a> {
             let value = dao.values.get(key);
             match value {
                 Some(value) => {
-                    q.add_value(Operand::Value(value.clone()));
+                    q.add_value(value);
                 }
                 None => (),
             }
@@ -168,7 +168,7 @@ impl <'a>EntityManager<'a> {
             let value = dao.values.get(&c.name);
             match value {
                 Some(value) => {
-                    q.add_value(Operand::Value(value.clone()));
+                    q.add_value(value);
                 }
                 None => (),
             }
