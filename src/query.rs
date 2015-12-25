@@ -1087,14 +1087,19 @@ impl Query {
         self.add_filter(Filter::new(column, Equality::GTE, value))
     }
 
-    pub fn add_value(&mut self, value: Operand) -> &mut Self {
+    pub fn add_value_operand(&mut self, value: Operand) -> &mut Self {
         self.values.push(value);
         self
     }
 
+    pub fn add_value(&mut self, value: &Value) -> &mut Self {
+        let operand = Operand::Value(value.clone());
+        self.values.push(operand);
+        self
+    }
     pub fn value(&mut self, value: &ToValue) -> &mut Self {
-        let operand = Operand::Value(value.to_db_type());
-        self.add_value(operand)
+        let value = value.to_db_type();
+        self.add_value(&value)
     }
 
     /// set a value of a column when inserting/updating records
@@ -1104,8 +1109,7 @@ impl Query {
     }
 	pub fn set_value(&mut self, column: &str, value: &Value) -> &mut Self{
 		self.column(column);
-        let operand = Operand::Value(value.clone());
-		self.add_value(operand)
+		self.add_value(value)
 	}
 
     pub fn return_all(&mut self) -> &mut Self {
