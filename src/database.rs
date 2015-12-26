@@ -561,7 +561,9 @@ pub trait Database {
         w
     }
 
-    /// TODO complete this
+    /// TODO: when the number of values is greater than the number of columns
+	/// wrap it into another set and make sure the values are in multiples of the the n columns
+	/// http://www.postgresql.org/docs/9.0/static/dml-insert.html
     fn build_insert(&self, query: &Query) -> SqlFrag {
         println!("building insert query");
         let mut w = SqlFrag::new(self.sql_options());
