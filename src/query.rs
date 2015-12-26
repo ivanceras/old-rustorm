@@ -42,6 +42,13 @@ pub enum Direction {
     DESC,
 }
 
+#[derive(Debug)]
+#[derive(Clone)]
+pub enum NullsWhere {
+    UNSPECIFIED,
+    FIRST,
+    LAST,
+}
 
 ////
 /// Filter struct merged to query
@@ -515,7 +522,7 @@ pub struct Query {
 
     /// ordering of the records via the columns specified
     /// needs to support expressions
-    pub order_by:Vec<(String, Direction)>,
+    pub order_by:Vec<(String, Direction, NullsWhere)>,
 
     /// grouping columns to create an aggregate
     pub group_by: Vec<Operand>,
@@ -864,12 +871,32 @@ impl Query {
 
     ///ascending orderby of this column
     pub fn asc(&mut self, column: &str) -> &mut Self {
-        self.order_by.push((column.to_owned(), Direction::ASC));
+        self.order_by.push((column.to_owned(), Direction::ASC, NullsWhere::UNSPECIFIED));
         self
     }
     ///ascending orderby of this column
+    pub fn asc_nulls_first(&mut self, column: &str) -> &mut Self {
+        self.order_by.push((column.to_owned(), Direction::ASC, NullsWhere::FIRST));
+        self
+    }
+    ///ascending orderby of this column
+    pub fn asc_nulls_last(&mut self, column: &str) -> &mut Self {
+        self.order_by.push((column.to_owned(), Direction::ASC, NullsWhere::LAST));
+        self
+    }
+    ///descending orderby of this column
     pub fn desc(&mut self, column: &str) -> &mut Self {
-        self.order_by.push((column.to_owned(), Direction::DESC));
+        self.order_by.push((column.to_owned(), Direction::DESC, NullsWhere::UNSPECIFIED));
+        self
+    }
+    ///descending orderby of this column
+    pub fn desc_nulls_first(&mut self, column: &str) -> &mut Self {
+        self.order_by.push((column.to_owned(), Direction::DESC, NullsWhere::FIRST));
+        self
+    }
+    ///descending orderby of this column
+    pub fn desc_nulls_last(&mut self, column: &str) -> &mut Self {
+        self.order_by.push((column.to_owned(), Direction::DESC, NullsWhere::LAST));
         self
     }
 
