@@ -279,10 +279,10 @@ pub trait Database {
                 w.append(")");
             }
             Operand::Query(ref _q) => {
-                panic!("TODO: causes error Attributes 'readnone and readonly' are incompatible! \
-                        LLVM ERROR: Broken function found, compilation aborted!")
-                //let sql_frag = &self.build_query(&q);
-                //w.append(&sql_frag.sql);
+                //panic!("TODO: causes error Attributes 'readnone and readonly' are incompatible! \
+                //        LLVM ERROR: Broken function found, compilation aborted!")
+                let sql_frag = &self.build_query(&_q);
+                w.append(&sql_frag.sql);
             }
             Operand::Value(ref value) => {
                 w.parameter(value.clone());
@@ -525,21 +525,30 @@ pub trait Database {
         if !query.order_by.is_empty() {
             w.left_river("ORDER BY ");
             let mut do_comma = false;
-            for &(ref column, ref direction, ref nulls_where) in &query.order_by {
+            for order in &query.order_by {
                 if do_comma {
                     w.commasp();
                 } else {
                     do_comma = true;
                 }
-                w.append(&column);
-                match *direction {
-                    Direction::ASC => w.append(" ASC"),
-                    Direction::DESC => w.append(" DESC"),
+				self.build_operand(&mut w, query, &order.operand);
+                match &order.direction {
+					&Some(ref direction) => {
+						match direction{
+                    		&Direction::ASC => w.append(" ASC"),
+                    		&Direction::DESC => w.append(" DESC"),
+						}
+					},
+					&None => w.append("")
                 };
-                match *nulls_where {
-                    NullsWhere::FIRST => w.append(" NULLS FIRST"),
-                    NullsWhere::LAST => w.append(" NULLS LAST"),
-                    NullsWhere::UNSPECIFIED => w.append(""),
+                match &order.nulls_where {
+					&Some(ref nulls_where) => {
+						match nulls_where{
+                    		&NullsWhere::FIRST => w.append(" NULLS FIRST"),
+                    		&NullsWhere::LAST => w.append(" NULLS LAST"),
+						}
+					},
+					&None => w.append(""),
                 };
             }
         }

@@ -45,12 +45,19 @@ pub enum Direction {
 #[derive(Debug)]
 #[derive(Clone)]
 pub enum NullsWhere {
-    UNSPECIFIED,
     FIRST,
     LAST,
 }
 
-////
+#[derive(Debug)]
+#[derive(Clone)]
+pub struct Order{
+	pub operand: Operand,
+	pub direction: Option<Direction>,
+	pub nulls_where: Option<NullsWhere>,
+}
+
+///
 /// Filter struct merged to query
 ///
 #[derive(Debug)]
@@ -521,8 +528,8 @@ pub struct Query {
 
 
     /// ordering of the records via the columns specified
-    /// needs to support expressions
-    pub order_by:Vec<(String, Direction, NullsWhere)>,
+    /// TODO: needs to support expressions/functions too
+    pub order_by:Vec<Order>,
 
     /// grouping columns to create an aggregate
     pub group_by: Vec<Operand>,
@@ -869,34 +876,46 @@ impl Query {
         self.join(join)
     }
 
+	fn add_order(&mut self, operand: Operand, direction:Option<Direction>, nulls_where:Option<NullsWhere>)->&mut Self{
+        self.order_by.push(Order{
+			operand: operand,
+			direction: direction,
+			nulls_where: nulls_where,
+		});
+        self
+	}
+	pub fn order_by(&mut self, column: &str, direction: Option<Direction>, nulls_where: Option<NullsWhere>)->&mut Self{
+		let operand = Operand::ColumnName(ColumnName::from_str(column));
+		self.add_order(operand, direction, nulls_where)
+	}
     ///ascending orderby of this column
     pub fn asc(&mut self, column: &str) -> &mut Self {
-        self.order_by.push((column.to_owned(), Direction::ASC, NullsWhere::UNSPECIFIED));
+        self.order_by(column,  Some(Direction::ASC), None);
         self
     }
     ///ascending orderby of this column
     pub fn asc_nulls_first(&mut self, column: &str) -> &mut Self {
-        self.order_by.push((column.to_owned(), Direction::ASC, NullsWhere::FIRST));
+        self.order_by(column, Some(Direction::ASC), Some(NullsWhere::FIRST));
         self
     }
     ///ascending orderby of this column
     pub fn asc_nulls_last(&mut self, column: &str) -> &mut Self {
-        self.order_by.push((column.to_owned(), Direction::ASC, NullsWhere::LAST));
+        self.order_by(column, Some(Direction::ASC), Some(NullsWhere::LAST));
         self
     }
     ///descending orderby of this column
     pub fn desc(&mut self, column: &str) -> &mut Self {
-        self.order_by.push((column.to_owned(), Direction::DESC, NullsWhere::UNSPECIFIED));
+        self.order_by(column, Some(Direction::DESC), None);
         self
     }
     ///descending orderby of this column
     pub fn desc_nulls_first(&mut self, column: &str) -> &mut Self {
-        self.order_by.push((column.to_owned(), Direction::DESC, NullsWhere::FIRST));
+        self.order_by(column, Some(Direction::DESC), Some(NullsWhere::FIRST));
         self
     }
     ///descending orderby of this column
     pub fn desc_nulls_last(&mut self, column: &str) -> &mut Self {
-        self.order_by.push((column.to_owned(), Direction::DESC, NullsWhere::LAST));
+        self.order_by(column, Some(Direction::DESC), Some(NullsWhere::LAST));
         self
     }
 
