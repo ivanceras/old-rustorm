@@ -443,9 +443,10 @@ impl Dao {
     }
 
     /// set to null the value of this column
-    //pub fn set_null(&mut self, column: &str) {
-    //    self.set_value(column, Value::None);
-    //}
+	/// TODO: correct the Null value here
+    pub fn set_null(&mut self, column: &str) {
+        self.set_value(column, Value::None(Type::String))
+    }
 
     pub fn set_value(&mut self, column: &str, value: Value) {
         self.values.insert(column.to_owned(), value);
