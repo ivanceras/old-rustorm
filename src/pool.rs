@@ -91,8 +91,7 @@ impl ManagedPool {
 
                     #[cfg(feature = "sqlite")]
                     "sqlite" => {
-                        //let manager = try!(SqliteConnectionManager::new(&config.database));
-                        let manager = SqliteConnectionManager::new(&config.database).unwrap();
+                        let manager = try!(SqliteConnectionManager::new(&config.database));
                         let config = Config::builder().pool_size(pool_size as u32).build();
                         let pool = try!(Pool::new(config, manager));
                         Ok(ManagedPool::Sqlite(pool))
