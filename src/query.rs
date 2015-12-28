@@ -9,6 +9,7 @@ use table::IsTable;
 use writer::SqlFrag;
 use std::fmt;
 use database::DbError;
+use database::BuildMode;
 
 #[derive(Debug)]
 #[derive(Clone)]
@@ -1183,8 +1184,14 @@ impl Query {
     /// build the query only, not executed, useful when debugging
     pub fn build(&mut self, db: &Database) -> SqlFrag {
         self.finalize();
-        db.build_query(self)
+        db.build_query(self, BuildMode::Standard)
     }
+
+	/// Warning: don't use this in production
+	pub fn debug_build(&mut self, db: &Database)-> SqlFrag{
+		self.finalize();
+		db.build_query(self, BuildMode::DebugMode)
+	}
 
 	///retrieve a generic types, type is unknown at runtime
     /// expects a return, such as select, insert/update with returning clause

@@ -1,5 +1,5 @@
 use dao::Value;
-use database::SqlOption;
+use database::{SqlOption,BuildMode};
 use std::fmt;
 
 /// sql fragment
@@ -8,6 +8,7 @@ pub struct SqlFrag {
     pub sql: String,
     pub params: Vec<Value>,
     pub sql_options: Vec<SqlOption>,
+	pub build_mode: BuildMode
 }
 
 impl fmt::Display for SqlFrag {
@@ -30,11 +31,12 @@ impl fmt::Display for SqlFrag {
 impl SqlFrag {
 
     #[inline]
-    pub fn new(sql_options: Vec<SqlOption>) -> Self {
+    pub fn new(sql_options: Vec<SqlOption>, build_mode: BuildMode) -> Self {
         SqlFrag {
             sql: String::new(),
             params: vec![],
             sql_options: sql_options,
+			build_mode: build_mode,
         }
     }
 
@@ -130,13 +132,21 @@ impl SqlFrag {
     }
     ///append parameter including the needed sql keywords
     pub fn parameter(&mut self, param: Value) {
-        self.params.push(param);
-        if self.sql_options.contains(&SqlOption::UsesNumberedParam) {
-            let numbered_param = format!("${} ", self.params.len());
-            self.append(&numbered_param);
-        } else if self.sql_options.contains(&SqlOption::UsesQuestionMark) {
-            self.append("?");
-        }
+		match self.build_mode{
+			BuildMode::Standard => {
+        		self.params.push(param);
+				if self.sql_options.contains(&SqlOption::UsesNumberedParam) {
+					let numbered_param = format!("${} ", self.params.len());
+					self.append(&numbered_param);
+				} else if self.sql_options.contains(&SqlOption::UsesQuestionMark) {
+					self.append("?");
+				}
+			},
+			BuildMode::DebugMode => {
+				// use fmt::Display
+				self.append(&format!("{}",&param));
+			}
+		}
     }
 
 }

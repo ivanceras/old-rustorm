@@ -39,6 +39,16 @@ pub enum SqlOption {
     ReturnMetaColumns,
 }
 
+/// specifies if the sql will be build in debug mode for debugging purposed
+#[derive(PartialEq)]
+#[derive(Clone)]
+pub enum BuildMode{
+	///build in debug mode
+	DebugMode,
+	/// build in standard mode
+	Standard,
+}
+
 #[derive(Debug)]
 pub enum DbError {
     Error(String),
@@ -173,8 +183,8 @@ pub trait Database {
     /// insert
     /// insert an object, returns the inserted Dao value
     /// including the value generated via the defaults
-    fn insert(&self, query: &Query) -> Result<Dao, DbError> {
-        let sql_frag = self.build_insert(query);
+    fn insert(&self, query: &Query, build_mode: BuildMode) -> Result<Dao, DbError> {
+        let sql_frag = self.build_insert(query, build_mode);
         match self.execute_sql_with_one_return(&sql_frag.sql, &sql_frag.params) {
             Ok(Some(result)) => Ok(result),
             Ok(None) => Err(DbError::new("No result from insert")),
@@ -193,7 +203,7 @@ pub trait Database {
     /// execute query with return dao,
     /// use the enumerated column for data extraction when db doesn't support returning the records column names
     fn execute_with_return(&self, query: &Query) -> Result<DaoResult, DbError> {
-        let sql_frag = &self.build_query(query);
+        let sql_frag = &self.build_query(query, BuildMode::Standard);
         let result = try!(self.execute_sql_with_return(&sql_frag.sql, &sql_frag.params));
         let dao_result = DaoResult {
             dao: result,
@@ -207,13 +217,13 @@ pub trait Database {
 
     /// execute query with 1 return dao
     fn execute_with_one_return(&self, query: &Query) -> Result<Option<Dao>, DbError> {
-        let sql_frag = &self.build_query(query);
+        let sql_frag = &self.build_query(query, BuildMode::Standard);
         self.execute_sql_with_one_return(&sql_frag.sql, &sql_frag.params)
     }
 
     /// execute query with no return dao
     fn execute(&self, query: &Query) -> Result<usize, DbError> {
-        let sql_frag = &self.build_query(query);
+        let sql_frag = &self.build_query(query, BuildMode::Standard);
         self.execute_sql(&sql_frag.sql, &sql_frag.params)
     }
 
@@ -239,12 +249,12 @@ pub trait Database {
     /// use by select to build the select query
     /// build all types of query
     /// TODO: need to supply the number of parameters where to start the numbering of the number parameters
-    fn build_query(&self, query: &Query) -> SqlFrag {
+    fn build_query(&self, query: &Query, build_mode: BuildMode) -> SqlFrag {
         match query.sql_type {
-            SqlType::SELECT => self.build_select(query),
-            SqlType::INSERT => self.build_insert(query),
-            SqlType::UPDATE => self.build_update(query),
-            SqlType::DELETE => self.build_delete(query),
+            SqlType::SELECT => self.build_select(query, build_mode),
+            SqlType::INSERT => self.build_insert(query, build_mode),
+            SqlType::UPDATE => self.build_update(query, build_mode),
+            SqlType::DELETE => self.build_delete(query, build_mode),
         }
     }
 
@@ -281,7 +291,7 @@ pub trait Database {
             Operand::Query(ref _q) => {
                 //panic!("TODO: causes error Attributes 'readnone and readonly' are incompatible! \
                 //        LLVM ERROR: Broken function found, compilation aborted!")
-                let sql_frag = &self.build_query(&_q);
+                let sql_frag = &self.build_query(&_q, w.build_mode.clone());
                 w.append(&sql_frag.sql);
             }
             Operand::Value(ref value) => {
@@ -429,8 +439,8 @@ pub trait Database {
     }
 
     /// build the select statment from the query object
-    fn build_select(&self, query: &Query) -> SqlFrag {
-        let mut w = SqlFrag::new(self.sql_options());
+    fn build_select(&self, query: &Query, build_mode: BuildMode) -> SqlFrag {
+        let mut w = SqlFrag::new(self.sql_options(), build_mode);
         w.left_river("SELECT");
         self.build_enumerated_fields(&mut w, query, &query.enumerated_fields); //TODO: add support for column_sql, fields, functions
         w.left_river("FROM");
@@ -578,9 +588,9 @@ pub trait Database {
     /// TODO: when the number of values is greater than the number of columns
 	/// wrap it into another set and make sure the values are in multiples of the the n columns
 	/// http://www.postgresql.org/docs/9.0/static/dml-insert.html
-    fn build_insert(&self, query: &Query) -> SqlFrag {
+    fn build_insert(&self, query: &Query, build_mode: BuildMode) -> SqlFrag {
         println!("building insert query");
-        let mut w = SqlFrag::new(self.sql_options());
+        let mut w = SqlFrag::new(self.sql_options(), build_mode);
         w.left_river("INSERT");
         w.append("INTO ");
         let into_table = query.get_from_table();
@@ -632,8 +642,8 @@ pub trait Database {
     }
 
 
-    fn build_update(&self, query: &Query) -> SqlFrag {
-        let mut w = SqlFrag::new(self.sql_options());
+    fn build_update(&self, query: &Query, build_mode: BuildMode) -> SqlFrag {
+        let mut w = SqlFrag::new(self.sql_options(), build_mode);
         w.left_river("UPDATE ");
         let from_table = query.get_from_table();
         assert!(from_table.is_some(), "There should be table to update from");
@@ -682,8 +692,8 @@ pub trait Database {
         w
     }
 
-    fn build_delete(&self, query: &Query) -> SqlFrag {
-        let mut w = SqlFrag::new(self.sql_options());
+    fn build_delete(&self, query: &Query, build_mode: BuildMode) -> SqlFrag {
+        let mut w = SqlFrag::new(self.sql_options(), build_mode);
         w.left_river("DELETE FROM ");
         let from_table = query.get_from_table();
         assert!(from_table.is_some(), "There should be table to delete from");
