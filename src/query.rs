@@ -1190,7 +1190,7 @@ impl Query {
 	/// Warning: don't use this in production
 	pub fn debug_build(&mut self, db: &Database)-> SqlFrag{
 		self.finalize();
-		db.build_query(self, BuildMode::DebugMode)
+		db.build_query(self, BuildMode::Debug)
 	}
 
 	///retrieve a generic types, type is unknown at runtime

@@ -44,7 +44,7 @@ pub enum SqlOption {
 #[derive(Clone)]
 pub enum BuildMode{
 	///build in debug mode
-	DebugMode,
+	Debug,
 	/// build in standard mode
 	Standard,
 }
@@ -108,11 +108,13 @@ impl From<RegexError> for DbError {
     }
 }
 
+
 impl From<PgError> for DbError {
     fn from(err: PgError) -> Self {
         DbError::PlatformError(From::from(err))
     }
 }
+
 
 impl From<PgConnectError> for DbError {
     fn from(err: PgConnectError) -> Self {
@@ -183,8 +185,8 @@ pub trait Database {
     /// insert
     /// insert an object, returns the inserted Dao value
     /// including the value generated via the defaults
-    fn insert(&self, query: &Query, build_mode: BuildMode) -> Result<Dao, DbError> {
-        let sql_frag = self.build_insert(query, build_mode);
+    fn insert(&self, query: &Query) -> Result<Dao, DbError> {
+        let sql_frag = self.build_insert(query, BuildMode::Standard);
         match self.execute_sql_with_one_return(&sql_frag.sql, &sql_frag.params) {
             Ok(Some(result)) => Ok(result),
             Ok(None) => Err(DbError::new("No result from insert")),

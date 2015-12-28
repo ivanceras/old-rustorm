@@ -47,7 +47,7 @@ impl Postgres {
 
     pub fn get_connection(&self) -> &Connection {
         match self.pool {
-            Some(ref pool) => pool,
+            Some(ref pool) => &pool,
             None => panic!("No connection for this database"),
         }
     }
@@ -726,8 +726,8 @@ impl DatabaseDev for Postgres {
                 (vec![], Type::F32)
             }
             "numeric" => {
-                //(vec![], Type::F64)
-                panic!("No support for numeric yet, please use real or double precision")
+                (vec![], Type::F64)
+                //panic!("No support for numeric yet, please use real or double precision")
             }
             "double precision" => {
                 (vec![], Type::F64)
@@ -738,11 +738,7 @@ impl DatabaseDev for Postgres {
             "bytea" => {
                 (vec![], Type::VecU8)
             }
-            // "json" | "jsonb" => {
-            // ((Some(vec!["rustc_serialize::json::Json".to_owned()]),
-            // "Json".to_owned()))
-            // },
-            "json" | "jsonb" => {//FIXME :String for now, since Json itself is not encodable
+            "json" | "jsonb" => {
                 (vec!["rustc_serialize::json::Json".to_owned()], Type::Json)
             }
             "uuid" => {

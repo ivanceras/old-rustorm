@@ -31,3 +31,4 @@ after_success: |
   
 script:
 - cargo test
+- cargo test --features "sqlite mysql"

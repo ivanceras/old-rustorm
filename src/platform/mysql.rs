@@ -4,7 +4,7 @@ use dao::Dao;
 use dao::Value;
 use database::Database;
 use writer::SqlFrag;
-use database::SqlOption;
+use database::{SqlOption, BuildMode};
 
 use mysql::value::Value as MyValue;
 use mysql::consts::ColumnType;
@@ -19,6 +19,7 @@ use table::Table;
 use database::DatabaseDDL;
 use database::DbError;
 use time::Timespec;
+use dao::Type;
 
 pub struct Mysql {
     pool: Option<MyPool>,
@@ -93,7 +94,7 @@ impl Mysql{
                     println!("sql to rust {:?} type: {:?}", value, column_type);
                     match *value{
                         MyValue::NULL => {
-                            Value::Null
+                            Value::None(Type::String)// should put Type::Unknown
                         },
                         
                         _ => {
@@ -122,7 +123,7 @@ impl Mysql{
                                     let v: f64 = FromValue::from_value(value.clone());
                                     Value::F64(v)
                                 },
-                                ColumnType::MYSQL_TYPE_NULL => Value::Null,
+                                ColumnType::MYSQL_TYPE_NULL => Value::None(Type::String),
                                 ColumnType::MYSQL_TYPE_TIMESTAMP => {
                                     let v: Timespec = FromValue::from_value(value.clone());
                                     let t = NaiveDateTime::from_timestamp(v.sec, v.nsec as u32);
@@ -207,7 +208,7 @@ impl Mysql{
                     }
                     
                 },
-            None => Value::Null,
+            None => Value::None(Type::String),
         }
     }
 
@@ -215,60 +216,57 @@ impl Mysql{
     /// convert rust data type names to database data type names
     /// will be used in generating SQL for table creation
     /// FIXME, need to restore the exact data type as before
-    fn rust_type_to_dbtype(&self, rust_type: &str) -> String {
-        match rust_type {
-            "bool" => {
-                "boolean".to_owned()
+    fn rust_type_to_dbtype(&self, rust_type: &Type) -> String {
+        match *rust_type {
+            Type::Bool => {
+                "bool".to_owned()
             }
-            "i8" => {
+            Type::I8 => {
+                "tinyint(1)".to_owned()
+            }
+            Type::I16 => {
                 "integer".to_owned()
             }
-            "i16" => {
+            Type::I32 => {
                 "integer".to_owned()
             }
-            "i32" => {
+            Type::U32 => {
                 "integer".to_owned()
             }
-            "u32" => {
+            Type::I64 => {
                 "integer".to_owned()
             }
-            "i64" => {
-                "integer".to_owned()
-            }
-            "f32" => {
+            Type::F32 => {
                 "real".to_owned()
             }
-            "f64" => {
+            Type::F64 => {
                 "real".to_owned()
             }
-            "String" => {
+            Type::String => {
                 "text".to_owned()
             }
-            "Vec<u8>" => {
+            Type::VecU8 => {
                 "blob".to_owned()
             }
-            "Json" => {
+            Type::Json => {
                 "text".to_owned()
             }
-            "Uuid" => {
+            Type::Uuid => {
                 "varchar(36)".to_owned()
             }
-            "NaiveDateTime" => {
+            Type::NaiveDateTime => {
                 "timestamp".to_owned()
             }
-            "DateTime<UTC>" => {
+            Type::DateTime => {
                 "timestamp".to_owned()
             }
-            "NaiveDate" => {
+            Type::NaiveDate => {
                 "date".to_owned()
             }
-            "NaiveTime" => {
+            Type::NaiveTime => {
                 "time".to_owned()
             }
-            "HashMap<String, Option<String>>" => {
-                "text".to_owned()
-            }
-            _ => panic!("Unable to get the equivalent database data type for {}",
+            _ => panic!("Unable to get the equivalent database data type for {:?}",
                         rust_type),
         }
     }
@@ -393,7 +391,7 @@ impl DatabaseDDL for Mysql{
     }
 
     fn build_create_table(&self, table: &Table) -> SqlFrag {
-        let mut w = SqlFrag::new(self.sql_options());
+        let mut w = SqlFrag::new(self.sql_options(), BuildMode::Standard);
         w.append("CREATE TABLE ");
         w.append(&table.name);
         w.append("(");

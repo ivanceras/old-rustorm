@@ -142,7 +142,7 @@ impl SqlFrag {
 					self.append("?");
 				}
 			},
-			BuildMode::DebugMode => {
+			BuildMode::Debug => {
 				// use fmt::Display
 				self.append(&format!("{}",&param));
 			}

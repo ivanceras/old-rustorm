@@ -2,7 +2,7 @@ use query::Query;
 use dao::Dao;
 
 use dao::Value;
-use database::{Database, DatabaseDev};
+use database::{Database, DatabaseDev, BuildMode};
 use writer::SqlFrag;
 use database::SqlOption;
 use rusqlite::SqliteConnection;
@@ -15,6 +15,7 @@ use r2d2::PooledConnection;
 use r2d2_sqlite::SqliteConnectionManager;
 use regex::Regex;
 use std::collections::BTreeMap;
+use dao::Type;
 
 pub struct Sqlite {
     pool: Option<PooledConnection<SqliteConnectionManager>>,
@@ -43,8 +44,8 @@ impl Sqlite {
     }
 
     pub fn get_connection(&self) -> &SqliteConnection {
-        match self.pool.as_ref() {
-            Some(conn) => &conn,
+        match self.pool {
+            Some(ref pool) => &pool,
             None => panic!("No connection for this database")
         }
     }
@@ -54,7 +55,7 @@ impl Sqlite {
         let value = row.get_checked(index as i32);
         match value {
             Ok(value) => Value::String(value),
-            Err(_) => Value::Null,
+            Err(_) => Value::None(Type::String),
         }
     }
 
@@ -62,61 +63,58 @@ impl Sqlite {
     /// convert rust data type names to database data type names
     /// will be used in generating SQL for table creation
     /// FIXME, need to restore the exact data type as before
-    fn rust_type_to_dbtype(&self, rust_type: &str) -> String {
+    fn rust_type_to_dbtype(&self, rust_type: &Type) -> String {
 
-        let rust_type = match rust_type {
-            "bool" => {
+        let rust_type = match *rust_type {
+            Type::Bool => {
                 "boolean".to_owned()
             }
-            "i8" => {
+           Type::I8 => {
                 "integer".to_owned()
             }
-            "i16" => {
+            Type::I16 => {
                 "integer".to_owned()
             }
-            "i32" => {
+            Type::I32 => {
                 "integer".to_owned()
             }
-            "u32" => {
+            Type::U32 => {
                 "integer".to_owned()
             }
-            "i64" => {
+            Type::I64 => {
                 "integer".to_owned()
             }
-            "f32" => {
+            Type::F32 => {
                 "real".to_owned()
             }
-            "f64" => {
+            Type::F64 => {
                 "real".to_owned()
             }
-            "String" => {
+            Type::String => {
                 "text".to_owned()
             }
-            "Vec<u8>" => {
+            Type::VecU8 => {
                 "blob".to_owned()
             }
-            "Json" => {
+            Type::Json => {
                 "text".to_owned()
             }
-            "Uuid" => {
+            Type::Uuid => {
                 "text".to_owned()
             }
-            "NaiveDateTime" => {
+            Type::NaiveDateTime => {
                 "numeric".to_owned()
             }
-            "DateTime<UTC>" => {
+            Type::DateTime => {
                 "numeric".to_owned()
             }
-            "NaiveDate" => {
+            Type::NaiveDate => {
                 "numeric".to_owned()
             }
-            "NaiveTime" => {
+            Type::NaiveTime => {
                 "numeric".to_owned()
             }
-            "HashMap<String, Option<String>>" => {
-                "text".to_owned()
-            }
-            _ => panic!("Unable to get the equivalent database data type for {}",
+            _ => panic!("Unable to get the equivalent database data type for {:?}",
                         rust_type),
         };
         rust_type
@@ -319,7 +317,7 @@ impl Database for Sqlite {
     }
 
     fn insert(&self, query: &Query) -> Result<Dao, DbError> {
-        let sql_frag = self.build_insert(query);
+        let sql_frag = self.build_insert(query, BuildMode::Standard);
         match self.execute_sql_with_one_return(&sql_frag.sql, &sql_frag.params) {
             Ok(Some(result)) => Ok(result),
             Ok(None) => Err(DbError::new("No result from insert")),
@@ -410,28 +408,8 @@ impl DatabaseDDL for Sqlite {
 
     fn build_create_table(&self, table: &Table) -> SqlFrag {
 
-        fn build_foreign_key_stmt(table: &Table) -> SqlFrag {
-            let mut w = SqlFrag::new(vec![]);
-            let mut do_comma = true;//there has been colcommentsumns mentioned
-            for c in &table.columns {
-                if let Some(ref foreign) = c.foreign {
-                    if do_comma {
-                        w.commasp();
-                    } else {
-                        do_comma = true;
-                    }
-                    w.ln_tab();
-                    w.append("FOREIGN KEY");
-                    w.append(&format!("({})", c.name));
-                    w.append(" REFERENCES ");
-                    w.append(&format!("{}", foreign.table));
-                    w.append(&format!("({})", foreign.column));
-                }
-            }
-            w
-        }
 
-        let mut w = SqlFrag::new(self.sql_options());
+        let mut w = SqlFrag::new(self.sql_options(), BuildMode::Standard);
         w.append("CREATE TABLE ");
         w.append(&table.name);
         w.append("(");
@@ -452,8 +430,22 @@ impl DatabaseDDL for Sqlite {
                 w.append(" PRIMARY KEY ");
             }
         }
-        let fsql = build_foreign_key_stmt(table);
-        w.append(&fsql.sql);
+		let mut do_comma = true;//there has been colcommentsumns mentioned
+		for c in &table.columns {
+			if let Some(ref foreign) = c.foreign {
+				if do_comma {
+					w.commasp();
+				} else {
+					do_comma = true;
+				}
+				w.ln_tab();
+				w.append("FOREIGN KEY");
+				w.append(&format!("({})", c.name));
+				w.append(" REFERENCES ");
+				w.append(&format!("{}", foreign.table));
+				w.append(&format!("({})", foreign.column));
+			}
+		}
         w.ln();
         w.append(")");
         w
@@ -506,22 +498,23 @@ impl DatabaseDev for Sqlite {
                 let mut columns = vec![];
                 for r in result {
                     let column: String = r.get("name");
-                    let data_type: String = r.get("type");
+                    let db_data_type: String = r.get("type");
                     let default_value: String = r.get("dflt_value");
                     let not_null: String = r.get("notnull");
                     let pk: String = r.get("pk");
                     println!("column: {}", column);
-                    println!("data_type: {}", data_type);
+                    println!("data_type: {}", db_data_type);
                     println!("not null: {}", not_null);
                     println!("pk: {}", pk);
                     println!("default_value: {}", default_value);
 
                     let column_comment = self.get_column_comment(&column_comments, &column);
                     let column_foreign = self.get_column_foreign(&foreign, &column);
+					let (_, data_type) = self.dbtype_to_rust_type(&db_data_type);
                     let column = Column {
                         name: column,
-                        data_type: data_type.to_owned(),
-                        db_data_type: data_type.to_owned(),
+                        data_type: data_type,
+                        db_data_type: db_data_type,
                         is_primary: pk != "0",
                         is_unique: false,
                         default: Some(default_value),
@@ -572,7 +565,7 @@ impl DatabaseDev for Sqlite {
         vec![]
     }
 
-    fn dbtype_to_rust_type(&self, _db_type: &str) -> (Vec<String>, String) {
+    fn dbtype_to_rust_type(&self, _db_type: &str) -> (Vec<String>, Type) {
         unimplemented!()
     }
 
