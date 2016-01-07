@@ -775,6 +775,6 @@ pub trait DatabaseDev {
     /// returns (module, type)
     fn dbtype_to_rust_type(&self, db_type: &str) -> (Vec<String>, Type);
 
-    fn rust_type_to_dbtype(&self, rust_type: &str) -> String;
+    fn rust_type_to_dbtype(&self, rust_type: &Type) -> String;
 
 }

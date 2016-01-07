@@ -412,14 +412,14 @@ impl ToTableName for Table {
         let mut columns = vec![];
         for c in &self.columns {
             let column_name = ColumnName {
-                schema: Some(self.schema.to_owned()),
+                schema: self.schema.clone(),
                 table: Some(self.name.to_owned()),
                 column: c.name.to_owned(),
             };
             columns.push(column_name);
         }
         TableName {
-            schema: Some(self.schema.to_owned()),
+            schema: self.schema.clone(),
             name: self.name.to_owned(),
             columns: columns,
         }

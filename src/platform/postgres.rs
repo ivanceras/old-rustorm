@@ -17,6 +17,7 @@ use rustc_serialize::json::Json;
 use dao::Type;
 use postgres::types::IsNull;
 use uuid::Uuid;
+use query::Operand;
 
 pub struct Postgres {
     /// a connection pool is provided
@@ -306,8 +307,8 @@ impl Postgres {
             let is_primary: bool = row.get("is_primary");
             let is_unique: bool = row.get("is_unique");
 
-            let default: Option<String> = match row.get_opt("default") {
-                Ok(x) => Some(x),
+            let default: Option<Operand> = match row.get_opt("default") {
+                Ok(x) => Some(Operand::Value(Value::String(x))),
                 Err(_) => None,
             };
             let comment: Option<String> = match row.get_opt("comment") {
@@ -332,9 +333,9 @@ impl Postgres {
             let foreign = if foreign_table.is_some() && foreign_column.is_some() &&
                              foreign_schema.is_some() {
                 Some(Foreign {
-                    schema: foreign_schema.unwrap(),
+                    schema: foreign_schema,
                     table: foreign_table.unwrap(),
-                    column: foreign_column.unwrap(),
+                    column: vec![foreign_column.unwrap()],
                 })
 
             } else {
@@ -623,7 +624,7 @@ impl DatabaseDev for Postgres {
         }
 
         Table {
-            schema: schema.to_owned(),
+            schema: Some(schema.to_owned()),
             name: table.to_owned(),
             parent_table: parent,
             sub_table: subclass,
@@ -791,60 +792,60 @@ impl DatabaseDev for Postgres {
     /// convert rust data type names to database data type names
     /// will be used in generating SQL for table creation
     /// FIXME, need to restore the exact data type as before
-    fn rust_type_to_dbtype(&self, rust_type: &str) -> String {
-        match rust_type {
-            "bool" => {
+    fn rust_type_to_dbtype(&self, rust_type: &Type) -> String {
+        match *rust_type {
+            Type::Bool => {
                 "boolean".to_owned()
             }
-            "i8" => {
+            Type::I8 => {
                 "char".to_owned()
             }
-            "i16" => {
+            Type::I16 => {
                 "smallint".to_owned()
             }
-            "i32" => {
+            Type::I32 => {
                 "integer".to_owned()
             }
-            "u32" => {
+            Type::U32 => {
                 "oid".to_owned()
             }
-            "i64" => {
+            Type::I64 => {
                 "bigint".to_owned()
             }
-            "f32" => {
+            Type::F32 => {
                 "real".to_owned()
             }
-            "f64" => {
+            Type::F64 => {
                 "double precision".to_owned()
             }
-            "String" => {
+            Type::String => {
                 "character varying".to_owned()
             }
-            "Vec<u8>" => {
+            Type::VecU8 => {
                 "bytea".to_owned()
             }
-            "Json" => {
+            Type::Json => {
                 "json".to_owned()
             }
-            "Uuid" => {
+            Type::Uuid => {
                 "uuid".to_owned()
             }
-            "NaiveDateTime" => {
+            Type::NaiveDateTime => {
                 "timestamp".to_owned()
             }
-            "DateTime<UTC>" => {
+            Type::DateTime => {
                 "timestamp with time zone".to_owned()
             }
-            "NaiveDate" => {
+            Type::NaiveDate => {
                 "date".to_owned()
             }
-            "NaiveTime" => {
+            Type::NaiveTime => {
                 "time".to_owned()
             }
-            "HashMap<String, Option<String>>" => {
+            Type::Object => {
                 "hstore".to_owned()
             }
-            _ => panic!("Unable to get the equivalent database data type for {}",
+            _ => panic!("Unable to get the equivalent database data type for {:?}",
                         rust_type),
         }
     }
