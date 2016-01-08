@@ -10,6 +10,8 @@ use rustorm::query::Equality;
 use rustorm::dao::{Dao, IsDao};
 use rustorm::pool::ManagedPool;
 use rustorm::table::{IsTable, Table};
+use rustorm::dao::Value;
+use rustorm::query::Operand;
 
 #[derive(Debug, Clone)]
 pub struct Photo {
@@ -39,7 +41,7 @@ impl IsDao for Photo{
 impl IsTable for Photo{
     fn table() -> Table {
         Table {
-            schema: "bazaar".to_string(),
+            schema: Some("bazaar".to_string()),
             name: "photo".to_string(),
             parent_table: None,
             sub_table: vec![],

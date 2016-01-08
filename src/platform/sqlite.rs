@@ -16,6 +16,7 @@ use r2d2_sqlite::SqliteConnectionManager;
 use regex::Regex;
 use std::collections::BTreeMap;
 use dao::Type;
+use query::Operand;
 
 pub struct Sqlite {
     pool: Option<PooledConnection<SqliteConnectionManager>>,
@@ -137,7 +138,7 @@ impl Sqlite {
             println!("to: {}", to);
 
             let foreign = Foreign {
-                schema: "".to_owned(),
+                schema: None,
                 table: table.to_owned(),
                 column: to.to_owned(),
             };
@@ -517,7 +518,7 @@ impl DatabaseDev for Sqlite {
                         db_data_type: db_data_type,
                         is_primary: pk != "0",
                         is_unique: false,
-                        default: Some(default_value),
+                        default: Some(Operand::Value(Value::String(default_value))),
                         comment: column_comment,
                         not_null: not_null != "0",
                         is_inherited: false,
@@ -526,7 +527,7 @@ impl DatabaseDev for Sqlite {
                     columns.push(column);
                 }
                 Table {
-                    schema: "".to_owned(),
+                    schema: None,
                     name: table.to_owned(),
                     parent_table: None,
                     sub_table: vec![],
@@ -569,7 +570,7 @@ impl DatabaseDev for Sqlite {
         unimplemented!()
     }
 
-    fn rust_type_to_dbtype(&self, _rust_type: &str) -> String {
+    fn rust_type_to_dbtype(&self, _rust_type: &Type) -> String {
         unimplemented!()
     }
 }

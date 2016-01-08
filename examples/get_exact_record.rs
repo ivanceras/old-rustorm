@@ -11,7 +11,8 @@ use rustorm::em::EntityManager;
 use rustorm::table::{Table, Column};
 use rustorm::table::IsTable;
 use rustorm::dao::Type;
-
+use rustorm::dao::Value;
+use rustorm::query::Operand;
 
 
 #[derive(Debug, Clone)]
@@ -47,7 +48,7 @@ impl IsTable for Product{
     fn table() -> Table {
 
         Table {
-            schema: "bazaar".to_string(),
+            schema: Some("bazaar".to_string()),
             name: "product".to_string(),
             parent_table: None,
             sub_table: vec![],
@@ -58,7 +59,7 @@ impl IsTable for Product{
                     data_type: Type::Uuid,
                     db_data_type:"uuid".to_string(),
                     is_primary:true, is_unique:false, not_null:true, is_inherited:false,
-                    default:Some("uuid_generate_v4()".to_string()),
+                    default:Some(Operand::Value(Value::String("uuid_generate_v4()".to_owned()))),
                     comment:None,
                     foreign:None,
                 },

@@ -91,7 +91,7 @@ impl IsDao for Category{
 impl IsTable for Category{
     fn table() -> Table {
         Table {
-            schema: "bazaar".to_string(),
+            schema: Some("bazaar".to_string()),
             name: "category".to_string(),
             parent_table: Some("record".to_string()),
             sub_table: vec![],

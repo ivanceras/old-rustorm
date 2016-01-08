@@ -49,7 +49,7 @@
 //! impl IsTable for Product{
 //!     fn table()->Table{
 //!         Table{
-//!             schema:"bazaar".to_owned(),
+//!             schema:Some("bazaar".to_owned()),
 //!             name:"product".to_owned(),
 //!             parent_table:None,
 //!             sub_table:vec![],

@@ -48,7 +48,7 @@ impl IsDao for Product{
 impl IsTable for Product{
     fn table() -> Table {
         Table {
-            schema: "bazaar".to_string(),
+            schema: Some("bazaar".to_string()),
             name: "product".to_string(),
             parent_table: None,
             sub_table: vec![],
