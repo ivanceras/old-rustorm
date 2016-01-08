@@ -146,7 +146,7 @@ impl DbConfig {
 
 #[test]
 fn test_config_url() {
-    let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v6";
+    let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v8";
     let config = DbConfig {
         platform: "postgres".to_owned(),
         username: Some("postgres".to_owned()),
@@ -154,7 +154,7 @@ fn test_config_url() {
         host: Some(Host::Domain("localhost".to_owned())),
         port: None,
         ssl: false,
-        database: "bazaar_v6".to_owned(),
+        database: "bazaar_v8".to_owned(),
     };
 
     assert_eq!(config.get_url(), url.to_owned());
@@ -162,7 +162,7 @@ fn test_config_url() {
 
 #[test]
 fn test_config_from_url() {
-    let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v6";
+    let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v8";
     let config = DbConfig::from_url(url).unwrap();
     assert_eq!(config.get_url(), url.to_owned());
 }
@@ -170,14 +170,14 @@ fn test_config_from_url() {
 
 #[test]
 fn test_config_url_with_port() {
-    let url = "postgres://postgres:p0stgr3s@localhost:5432/bazaar_v6";
+    let url = "postgres://postgres:p0stgr3s@localhost:5432/bazaar_v8";
     let config = DbConfig {
         platform: "postgres".to_owned(),
         username: Some("postgres".to_owned()),
         password: Some("p0stgr3s".to_owned()),
         host: Some(Host::Domain("localhost".to_owned())),
         port: Some(5432),
-        database: "bazaar_v6".to_owned(),
+        database: "bazaar_v8".to_owned(),
         ssl: false,
     };
 
@@ -186,7 +186,7 @@ fn test_config_url_with_port() {
 
 #[test]
 fn test_config_sqlite_url_with_port() {
-    let url = "sqlite:///bazaar_v6.db";
+    let url = "sqlite:///bazaar_v8.db";
     let parsed_config = DbConfig::from_url(url).unwrap();
     let expected_config = DbConfig {
         platform: "sqlite".to_owned(),
@@ -194,7 +194,7 @@ fn test_config_sqlite_url_with_port() {
         password: None,
         host: None,
         port: None,
-        database: "/bazaar_v6.db/".to_owned(),
+        database: "/bazaar_v8.db/".to_owned(),
         ssl: false,
     };
     println!("{:?}", parsed_config);

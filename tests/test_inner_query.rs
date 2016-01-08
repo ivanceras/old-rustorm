@@ -38,7 +38,7 @@ impl IsDao for Photo{
 
 #[test]
 fn test_inner_join_query() {
-    let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v6";
+    let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v8";
     let pool = ManagedPool::init(&url, 1).unwrap();
     let db = pool.connect().unwrap();
 
@@ -87,7 +87,7 @@ fn test_inner_join_query() {
 
 #[test]
 fn test_left_inner_join_query() {
-    let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v6";
+    let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v8";
     let pool = ManagedPool::init(&url, 1).unwrap();
     let db = pool.connect().unwrap();
 

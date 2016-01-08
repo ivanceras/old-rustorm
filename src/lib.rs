@@ -60,7 +60,7 @@
 //!     }
 //! }
 //! fn main(){
-//!     let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v6";
+//!     let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v8";
 //!     let mut pool = ManagedPool::init(&url, 1).unwrap();
 //!     let db = pool.connect().unwrap();
 //!     let prod: Product = Query::select_all()
