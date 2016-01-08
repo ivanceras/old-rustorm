@@ -456,6 +456,45 @@ impl Table {
         columns.sort_by(|a, b| a.name.cmp(&b.name));
         columns
     }
+	
+	fn get_parent_table<'a>(&self, tables: &'a [Table]) -> Option<&'a Table>{
+		match &self.parent_table{
+			&Some(ref p_table) => {
+				let tmp_table = Table::with_name(&p_table);
+				Some(Self::get_table(&tmp_table.schema, &tmp_table.name, tables))
+			},
+			&None => None
+		}
+	}
+
+	/// tell whether this column exist on the parent column as well.
+	/// does the calculation through the structure, may not correctly reflect the database
+	fn is_inherited_column(self, column: &str, tables: &[Table])->bool{
+		match self.get_parent_table(tables){
+			Some(parent_table) =>{
+				for column in &self.columns{
+					if parent_table.has_column_name(&column.name){
+						return true;
+					}
+				}
+				false
+			},
+			None => false,
+		}
+	}
+
+	fn same_schema(&self, table: &Table)->bool{
+		match &self.schema{
+			&None => match &table.schema{
+				&None => true,
+				&Some(_) => false,
+			},
+			&Some(ref schema) => match &table.schema{
+				&None => false,
+				&Some(ref tschema) => (schema == tschema)
+			}
+		}
+	}
 
     /// return the first match of table name regardless of which schema it belongs to.
     /// get the table definition using the table name from an array of table object
