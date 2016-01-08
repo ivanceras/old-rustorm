@@ -6,30 +6,37 @@ use query::Operand;
 pub struct Foreign {
     pub schema: Option<String>,
     pub table: String,
-    pub column: Vec<String>, //TODO: Maybe Option<String> is more appropriate
+    pub column: String, 
 }
 
 impl Foreign{
 	
-	pub fn from_str(s: &str) -> Self{
-		if s.contains("."){
-			let splinters = s.split(".").collect::<Vec<&str>>();
+	pub fn from_str(schema_table: &str, column: &str) -> Self{
+		if schema_table.contains("."){
+			let splinters = schema_table.split(".").collect::<Vec<&str>>();
 			assert!(splinters.len() == 2, "There should only be 2 parts");
 			let schema = splinters[0].to_owned();
 			let table = splinters[1].to_owned();
 			Foreign{
 				schema: Some(schema),
 				table: table,
-				column: vec![],
+				column: column.to_owned(),
 			}
 		}else{
 			Foreign{
 				schema: None,
-				table: s.to_owned(),
-				column: vec![],
+				table: schema_table.to_owned(),
+				column: column.to_owned(),
 			}
 		}
 	}
+
+    pub fn complete_table_name(&self) -> String {
+        match self.schema {
+            Some (ref schema) => format!("{}.{}", schema, self.table),
+            None => self.table.to_owned(),
+        }
+    }
 
 }
 
@@ -237,6 +244,27 @@ impl PartialEq for Table {
 
 
 impl Table {
+
+	/// create table with name	
+	pub fn with_name(schema_table: &str)->Self{
+		if schema_table.contains("."){
+			let splinters = schema_table.split(".").collect::<Vec<&str>>();
+			assert!(splinters.len() == 2, "There should only be 2 parts");
+			let schema = splinters[0].to_owned();
+			let table = splinters[1].to_owned();
+			Table{
+				schema: Some(schema),
+				name: table,
+				..Default::default()
+			}
+		}else{
+			Table{
+				schema: None,
+				name: schema_table.to_owned(),
+				..Default::default()
+			}
+		}
+	}
 
     /// return the long name of the table using schema.table_name
     pub fn complete_name(&self) -> String {
@@ -704,7 +732,7 @@ impl Table {
             let table = foreign.table;
             let schema = foreign.schema;
             let column = foreign.column;
-            if self.name == table && self.are_primary_columns(&column) &&
+            if self.name == table && self.is_primary(&column) &&
 				match schema{
 					Some(ref schema) => match &self.schema{
 						&Some(ref tschema) => (schema == tschema), 

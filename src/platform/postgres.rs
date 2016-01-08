@@ -335,7 +335,7 @@ impl Postgres {
                 Some(Foreign {
                     schema: foreign_schema,
                     table: foreign_table.unwrap(),
-                    column: vec![foreign_column.unwrap()],
+                    column: foreign_column.unwrap(),
                 })
 
             } else {
