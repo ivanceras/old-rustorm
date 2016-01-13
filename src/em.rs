@@ -24,7 +24,7 @@ impl <'a>EntityManager<'a> {
     /// delete records of this table
     pub fn delete(&self, table: &Table, filters: Vec<Filter>) -> usize {
         let mut query = Query::delete();
-        query.from(table);
+        query.FROM(table);
         for filter in filters {
             query.add_filter(filter);
         }
@@ -39,8 +39,8 @@ impl <'a>EntityManager<'a> {
         where T: IsTable + IsDao
     {
         let table = T::table();
-        let mut q = Query::select_all();
-        q.from_table(&table.complete_name());
+        let mut q = Query::SELECT_ALL();
+        q.FROM(&table);
         q.collect(self.db)
     }
 
@@ -49,8 +49,8 @@ impl <'a>EntityManager<'a> {
         where T: IsTable + IsDao
     {
         let table = T::table();
-        let mut q = Query::select();
-        q.from_table(&table.complete_name());
+        let mut q = Query::SELECT();
+        q.FROM(&table);
         q.columns(columns);
         q.collect(self.db)
     }
@@ -60,8 +60,8 @@ impl <'a>EntityManager<'a> {
         where T: IsTable + IsDao
     {
         let table = T::table();
-        let mut q = Query::select();
-        q.from_table(&table.complete_name());
+        let mut q = Query::SELECT();
+        q.FROM(&table);
         for c in table.columns {
             q.column(&c.name);
         }
@@ -75,9 +75,9 @@ impl <'a>EntityManager<'a> {
         where T: IsTable + IsDao
     {
         let table = T::table();
-        let mut q = Query::select_all();
+        let mut q = Query::SELECT_ALL();
         q.distinct();
-        q.from_table(&table.complete_name());
+        q.FROM(&table);
         q.collect(self.db)
     }
 
@@ -87,8 +87,8 @@ impl <'a>EntityManager<'a> {
         where T: IsTable + IsDao
     {
         let table = T::table();
-        let mut q = Query::select_all();
-        q.from_table(&table.complete_name());
+        let mut q = Query::SELECT_ALL();
+        q.FROM(&table);
         for f in filters {
             q.add_filter(f);
         }
@@ -100,8 +100,8 @@ impl <'a>EntityManager<'a> {
         where T: IsTable + IsDao
     {
         let table = T::table();
-        let mut q = Query::select_all();
-        q.from_table(&table.complete_name());
+        let mut q = Query::SELECT_ALL();
+        q.FROM(&table);
         q.add_filter(filter);
         q.collect_one(self.db)
     }
@@ -117,8 +117,8 @@ impl <'a>EntityManager<'a> {
                 "There should only be 1 primary column for this to work");
         let pk = primary[0].name.to_owned();
 
-        Query::select_all()
-            .from_table(&table.complete_name())
+        Query::SELECT_ALL()
+            .FROM(&table)
             .filter(&pk, Equality::EQ, id)
             .collect_one(self.db)
     }
@@ -130,7 +130,7 @@ impl <'a>EntityManager<'a> {
         let table = T::table();
         let dao = t.to_dao();
         let mut q = Query::insert();
-        q.into_table(&table.complete_name());
+        q.INTO(&table);
         for key in dao.values.keys() {
             q.column(key);
         }
@@ -158,7 +158,7 @@ impl <'a>EntityManager<'a> {
     {
         let table = T::table();
         let mut q = Query::insert();
-        q.into_table(&table.complete_name());
+        q.INTO(&table);
         for key in dao.values.keys() {
             q.column(key);
         }

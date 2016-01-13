@@ -9,6 +9,7 @@ use rustorm::query::Query;
 use rustorm::query::Equality;
 use rustorm::dao::{Dao, IsDao};
 use rustorm::pool::ManagedPool;
+use rustorm::query::HasEquality;
 
 #[derive(Debug, Clone)]
 pub struct Photo {
@@ -40,25 +41,25 @@ fn main() {
     let pool = ManagedPool::init(&url, 1).unwrap();
     let db = pool.connect().unwrap();
 
-    let mut query = Query::select_all();
+    let mut query = Query::SELECT_ALL();
 
-    query.from_table("bazaar.product")
-         .left_join_table("bazaar.product_category",
+    query.FROM(&"bazaar.product")
+         .LEFT_JOIN(&"bazaar.product_category",
                           "product_category.product_id",
                           "product.product_id")
-         .left_join_table("bazaar.category",
+         .LEFT_JOIN(&"bazaar.category",
                           "category.category_id",
                           "product_category.category_id")
-         .left_join_table("product_photo",
+         .LEFT_JOIN(&"product_photo",
                           "product.product_id",
                           "product_photo.product_id")
-         .left_join_table("bazaar.photo", "product_photo.photo_id", "photo.photo_id")
-         .filter("product.name", Equality::EQ, &"GTX660 Ti videocard")
-         .filter("category.name", Equality::EQ, &"Electronic")
-         .group_by(vec!["category.name"])
-         .having("count(*)", Equality::GT, &1)
-         .asc("product.name")
-         .desc("product.created");
+         .LEFT_JOIN(&"bazaar.photo", "product_photo.photo_id", "photo.photo_id")
+         .WHERE("product.name".EQ(&"GTX660 Ti videocard"))
+         .AND("category.name".EQ(&"Electronic"))
+         .GROUP_BY(&["category.name"])
+         .HAVING("count(*)", Equality::GT, &1)
+         .ASC("product.name")
+         .DESC("product.created");
     let frag = query.build(db.as_ref());
 
     let expected = "

@@ -42,7 +42,7 @@ fn main() {
 
     let mut query = Query::select_all();
 
-    query.from_table("bazaar.product")
+    query.from(&"bazaar.product")
          .inner_join_table("bazaar.product_category",
                           "product_category.product_id",
                           "product.product_id")

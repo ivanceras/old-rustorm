@@ -44,7 +44,7 @@ fn test_inner_join_query() {
 
     let mut query = Query::select_all();
 
-    query.from_table("bazaar.product")
+    query.from(&"bazaar.product")
          .inner_join_table("bazaar.product_category",
                           "product_category.product_id",
                           "product.product_id")
@@ -101,7 +101,7 @@ fn test_left_inner_join_query() {
             column2: vec!["product.product_id".to_owned()],
         };
 
-    query.from_table("bazaar.product")
+    query.from(&"bazaar.product")
          .join(join)
          .inner_join_table("bazaar.category",
                           "category.category_id",

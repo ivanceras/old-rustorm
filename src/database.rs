@@ -411,7 +411,7 @@ pub trait Database {
         let mut do_and = false;
         for filter in filters {
             if do_and {
-                w.left_river("AND ");
+                w.left_river(" AND ");
             } else {
                 do_and = true;
             }

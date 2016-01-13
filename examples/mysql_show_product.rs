@@ -10,7 +10,7 @@ fn main() {
     let db = pool.connect().unwrap();
 
     let dao = Query::select_all()
-                   .from_table(&"product")
+                   .from(&"product")
                    .retrieve(db.as_ref());
 
     println!("dao: {:#?}", dao);

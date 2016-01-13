@@ -10,6 +10,8 @@ use writer::SqlFrag;
 use std::fmt;
 use database::DbError;
 use database::BuildMode;
+use std::ops::BitAnd;
+use std::ops::BitOr;
 
 #[derive(Debug)]
 #[derive(Clone)]
@@ -301,6 +303,83 @@ impl ColumnName {
     fn is_conflicted(&self, other: &ColumnName) -> bool {
         self.column == other.column
     }
+
+}
+
+impl HasEquality for ColumnName{
+
+	fn EQ(&self, value:&ToValue)->Filter{
+		Filter::new(&self.complete_name(), Equality::EQ, value)
+	}
+	fn NEQ(&self, value:&ToValue)->Filter{
+		Filter::new(&self.complete_name(), Equality::NEQ, value)
+	}
+
+}
+
+pub trait ToColumnName {
+	fn to_column_name(&self)->ColumnName;
+}
+
+impl <'a>ToColumnName for &'a str{
+	fn to_column_name(&self)->ColumnName{
+		ColumnName::from_str(self)
+	}	
+}
+
+impl BitAnd for Filter{
+	type Output = Filter;
+	
+	fn bitand(self, sub_filter: Filter)-> Filter{
+		let mut filter = self.clone();
+		filter.and_filter(sub_filter);
+		filter
+	}
+}
+
+impl BitOr for Filter{
+	type Output = Filter;
+	
+	fn bitor(self, sub_filter: Filter)-> Filter{
+		let mut filter = self.clone();
+		filter.or_filter(sub_filter);
+		filter
+	}
+}
+
+pub trait HasEquality{
+	
+	fn EQ(&self, value: &ToValue)->Filter;
+	fn NEQ(&self, value: &ToValue)->Filter;
+}
+
+impl <F>HasEquality for F where F:Fn()->ColumnName{
+	
+	fn EQ(&self, value: &ToValue)->Filter{
+		let col = self();
+		Filter::new(&col.complete_name(), Equality::EQ, value)
+	}
+	fn NEQ(&self, value: &ToValue)->Filter{
+		let col = self();
+		Filter::new(&col.complete_name(), Equality::NEQ, value)
+	}
+}
+impl <'a> HasEquality for &'a str{
+	
+	fn EQ(&self, value: &ToValue)->Filter{
+		let col = self.to_column_name();
+		Filter::new(&col.complete_name(), Equality::EQ, value)
+	}
+	fn NEQ(&self, value: &ToValue)->Filter{
+		let col = self.to_column_name();
+		Filter::new(&col.complete_name(), Equality::NEQ, value)
+	}
+}
+
+impl <F>ToColumnName for F where F: Fn()->ColumnName{
+	fn to_column_name(&self)->ColumnName{
+		self()	
+	}
 }
 
 impl fmt::Display for ColumnName {
@@ -391,19 +470,14 @@ impl <'a>ToTableName for &'a str {
     }
 }
 
-impl ToTableName for str {
-
-    fn to_table_name(&self) -> TableName {
-        TableName::from_str(self)
-    }
+impl <F>ToTableName for F where F: Fn() -> Table{
+	fn to_table_name(&self) -> TableName{
+		let table = self();
+		println!("table: {:?}", table);
+		table.to_table_name()
+	}
 }
 
-impl ToTableName for String {
-
-    fn to_table_name(&self) -> TableName {
-        TableName::from_str(self)
-    }
-}
 
 impl ToTableName for Table {
 
@@ -575,7 +649,7 @@ impl Query {
         }
     }
 
-    pub fn select() -> Self {
+    pub fn SELECT() -> Self {
         let mut q = Query::new();
         q.sql_type = SqlType::SELECT;
         q
@@ -603,13 +677,13 @@ impl Query {
         self
     }
 
-    pub fn select_all() -> Self {
-        let mut q = Self::select();
+    pub fn SELECT_ALL() ->Self {
+        let mut q = Self::SELECT();
         q.all();
         q
     }
     pub fn enumerate_all() -> Self {
-        let mut q = Self::select();
+        let mut q = Self::SELECT();
         q.enumerate_all = true;
         q
     }
@@ -647,7 +721,7 @@ impl Query {
         self
     }
 
-    pub fn group_by(&mut self, columns: Vec<&str>) -> &mut Self {
+    pub fn GROUP_BY(&mut self, columns: &[&str]) -> &mut Self {
         for c in columns {
             let column_name = ColumnName::from_str(c);
             let operand = Operand::ColumnName(column_name);
@@ -656,7 +730,7 @@ impl Query {
         self
     }
 
-    pub fn having(&mut self, column: &str, equality: Equality, value: &ToValue) -> &mut Self {
+    pub fn HAVING(&mut self, column: &str, equality: Equality, value: &ToValue) -> &mut Self {
         let filter = Filter::new(column, equality, value);
         self.having.push(filter);
         self
@@ -744,7 +818,20 @@ impl Query {
 
     /// A more terse way to write the query
     /// only 1 table is supported yet
-    pub fn from(&mut self, table: &ToTableName) -> &mut Self {
+    pub fn FROM(&mut self, table: &ToTableName) -> &mut Self {
+        let table_name = table.to_table_name();
+        let operand = Operand::TableName(table_name);
+        let field = Field {
+            operand: operand,
+            name: None,
+        };
+        self.from_field(field)
+    } 
+
+/*
+	pub fn from_fn<F>(&mut self, fn_table: F) -> &mut Self
+		where F: Fn()->Table{
+		let table = fn_table();
         let table_name = table.to_table_name();
         let operand = Operand::TableName(table_name);
         let field = Field {
@@ -753,28 +840,34 @@ impl Query {
         };
         self.from_field(field)
     }
+*/
     /// enumerate only the columns that is coming from this table
     /// this will invalidate enumerate_all
     pub fn only_from(&mut self, table: &ToTableName) -> &mut Self {
         self.enumerate_all = false;
         self.enumerate_from_table(&table.to_table_name());
-        self.from(table)
+        self.FROM(table)
     }
-    pub fn from_table(&mut self, table: &str) -> &mut Self {
+    
+/*
+	pub fn from_table(&mut self, table: &str) -> &mut Self {
         self.from(&table)
     }
+*/
     /// `into` is used in rust, os settled with `into_`
-    pub fn into_(&mut self, table: &ToTableName) -> &mut Self {
+    pub fn INTO(&mut self, table: &ToTableName) -> &mut Self {
         self.sql_type = SqlType::INSERT;
-        self.from(table)
+        self.FROM(table)
     }
+	/*
     /// can not use into since it's rust .into built-in (owned)
     pub fn into_table(&mut self, table: &str) -> &mut Self {
         self.into_(&table)
     }
+	*/
     /// can be used in behalf of into_, from,
     pub fn table(&mut self, table: &ToTableName) -> &mut Self {
-        self.from(table)
+        self.FROM(table)
     }
 
     /// if the database support CTE declareted query i.e WITH,
@@ -823,10 +916,12 @@ impl Query {
 
     /// join a table on this query
     ///
+	/*
     pub fn left_join_table(&mut self, table: &str, column1: &str, column2: &str) -> &mut Self {
         self.left_join(&table, column1, column2)
     }
-    pub fn left_join(&mut self, table: &ToTableName, column1: &str, column2: &str) -> &mut Self {
+	*/
+    pub fn LEFT_JOIN(&mut self, table: &ToTableName, column1: &str, column2: &str) -> &mut Self {
         let join = Join {
             modifier: Some(Modifier::LEFT),
             join_type: None,
@@ -836,9 +931,11 @@ impl Query {
         };
         self.join(join)
     }
+	/*
     pub fn right_join_table(&mut self, table: &str, column1: &str, column2: &str) -> &mut Self {
         self.right_join(&table, column1, column2)
     }
+	*/
     pub fn right_join(&mut self, table: &ToTableName, column1: &str, column2: &str) -> &mut Self {
         let join = Join {
             modifier: Some(Modifier::RIGHT),
@@ -849,9 +946,11 @@ impl Query {
         };
         self.join(join)
     }
+	/*
     pub fn full_join_table(&mut self, table: &str, column1: &str, column2: &str) -> &mut Self {
         self.full_join(&table, column1, column2)
     }
+	*/
     pub fn full_join(&mut self, table: &ToTableName, column1: &str, column2: &str) -> &mut Self {
         let join = Join {
             modifier: Some(Modifier::FULL),
@@ -862,10 +961,11 @@ impl Query {
         };
         self.join(join)
     }
-
+	/*
     pub fn inner_join_table(&mut self, table: &str, column1: &str, column2: &str) -> &mut Self {
         self.inner_join(&table, column1, column2)
     }
+	*/
     pub fn inner_join(&mut self, table: &ToTableName, column1: &str, column2: &str) -> &mut Self {
         let join = Join {
             modifier: None,
@@ -890,32 +990,32 @@ impl Query {
 		self.add_order(operand, direction, nulls_where)
 	}
     ///ascending orderby of this column
-    pub fn asc(&mut self, column: &str) -> &mut Self {
+    pub fn ASC(&mut self, column: &str) -> &mut Self {
         self.order_by(column,  Some(Direction::ASC), None);
         self
     }
     ///ascending orderby of this column
-    pub fn asc_nulls_first(&mut self, column: &str) -> &mut Self {
+    pub fn ASC_NULLS_FIRST(&mut self, column: &str) -> &mut Self {
         self.order_by(column, Some(Direction::ASC), Some(NullsWhere::FIRST));
         self
     }
     ///ascending orderby of this column
-    pub fn asc_nulls_last(&mut self, column: &str) -> &mut Self {
+    pub fn ASC_NULLS_LAST(&mut self, column: &str) -> &mut Self {
         self.order_by(column, Some(Direction::ASC), Some(NullsWhere::LAST));
         self
     }
     ///descending orderby of this column
-    pub fn desc(&mut self, column: &str) -> &mut Self {
+    pub fn DESC(&mut self, column: &str) -> &mut Self {
         self.order_by(column, Some(Direction::DESC), None);
         self
     }
     ///descending orderby of this column
-    pub fn desc_nulls_first(&mut self, column: &str) -> &mut Self {
+    pub fn DESC_NULLS_FIRST(&mut self, column: &str) -> &mut Self {
         self.order_by(column, Some(Direction::DESC), Some(NullsWhere::FIRST));
         self
     }
     ///descending orderby of this column
-    pub fn desc_nulls_last(&mut self, column: &str) -> &mut Self {
+    pub fn DESC_NULLS_LAST(&mut self, column: &str) -> &mut Self {
         self.order_by(column, Some(Direction::DESC), Some(NullsWhere::LAST));
         self
     }
@@ -1089,6 +1189,10 @@ impl Query {
         self
     }
 
+    pub fn WHERE(&mut self, filter: Filter) -> &mut Self {
+        self.filters.push(filter);
+        self
+    }
     pub fn add_filters(&mut self, filters: Vec<Filter>) -> &mut Self {
         for f in filters {
             self.add_filter(f);
@@ -1101,13 +1205,13 @@ impl Query {
     }
 
     // attach and clause
-    pub fn and(&mut self, column: &str, equality: Equality, value: &ToValue) -> &mut Self {
-        self.filters.last_mut().unwrap().and(column, equality, value);
+    pub fn AND(&mut self, filter: Filter) -> &mut Self {
+        self.filters.push(filter);
         self
     }
 
     // attach or clause
-    pub fn or(&mut self, column: &str, equality: Equality, value: &ToValue) -> &mut Self {
+    pub fn OR(&mut self, column: &str, equality: Equality, value: &ToValue) -> &mut Self {
         self.filters.last_mut().unwrap().or(column, equality, value);
         self
     }

@@ -64,7 +64,7 @@ fn main() {
     let db = pool.connect().unwrap();
 
     let products: Vec<Product> = Query::select_all()
-                                     .from_table("bazaar.product")
+                                     .from(&"bazaar.product")
                                      .collect(db.as_ref())
                                      .unwrap();
 

@@ -66,7 +66,7 @@ fn test_simple_query() {
     let db = pool.connect().unwrap();
 
     let prod: Product = Query::select_all()
-                            .from_table("bazaar.product")
+                            .from(&"bazaar.product")
                             .filter("name", Equality::EQ, &"GTX660 Ti videocard")
                             .collect_one(db.as_ref())
                             .unwrap();

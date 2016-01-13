@@ -88,7 +88,7 @@ fn main() {
 /// a dispatched controller with an accesss to a database reference
 fn show_product(db: &Database) {
     let prod: Product = Query::select_all()
-                            .from_table("bazaar.product")
+                            .from(&"bazaar.product")
                             .filter("name", Equality::EQ, &"GTX660 Ti videocard")
                             .collect_one(db)
                             .unwrap();

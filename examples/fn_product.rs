@@ -10,7 +10,33 @@ use rustorm::query::Equality;
 use rustorm::dao::{Dao, IsDao};
 use rustorm::pool::ManagedPool;
 use rustorm::table::{IsTable, Table};
+use rustorm::query::ToColumnName;
+use rustorm::query::Filter;
+use rustorm::query::HasEquality;
+use std::ops::Deref;
 
+mod bazaar{
+	use rustorm::table::{IsTable, Table};
+    pub fn product() -> Table {
+        Table {
+            schema: Some("bazaar".to_string()),
+            name: "product".to_string(),
+            parent_table: None,
+            sub_table: vec![],
+            comment: None,
+            columns: vec![],
+            is_view: false,
+        }
+    }
+	mod product{
+		use rustorm::query::ColumnName;
+
+
+		pub fn name()->ColumnName{
+			ColumnName::from_str("product.name")
+		}	
+	}
+}
 
 
 #[derive(Debug, Clone)]
@@ -63,10 +89,10 @@ fn main() {
     let pool = ManagedPool::init(&url, 1).unwrap();
     let db = pool.connect().unwrap();
 
-    let prod: Product = Query::select_all()
-                            .from(&"bazaar::product")
-                            .filter("name", Equality::EQ, &"GTX660 Ti videocard")
-                            .collect_one(db.as_ref())
+    let prod: Product = Query::SELECT_ALL()
+                            .FROM(&bazaar::product)
+                            .WHERE("name".EQ(&"GTX660 Ti videocard"))
+                            .collect_one(&*db)
                             .unwrap();
 
     println!("{}  {}  {:?}",

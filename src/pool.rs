@@ -14,6 +14,7 @@ use mysql::conn::pool::MyPool;
 #[cfg(feature = "mysql")]
 use mysql::conn::MyOpts;
 use database::DbError;
+use std::ops::Deref;
 
 #[cfg(feature = "sqlite")]
 use r2d2_sqlite::SqliteConnectionManager;
@@ -61,6 +62,24 @@ impl Platform {
         }
     }
 }
+
+impl Deref for Platform{
+	type Target = Database;
+
+	fn deref(&self)->&Self::Target{
+		println!("using deref...");
+        match *self {
+            Platform::Postgres(ref pg) => pg,
+            #[cfg(feature = "sqlite")]
+            Platform::Sqlite(ref lite) => lite,
+            #[cfg(feature = "mysql")]
+            Platform::Mysql(ref my) => my,
+            _ => unimplemented!(),
+        }
+	}
+	
+}
+
 
 /// Postgres, Sqlite uses r2d2 connection manager,
 /// Mysql has its own connection pooling
