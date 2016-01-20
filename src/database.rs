@@ -304,7 +304,6 @@ pub trait Database {
                 if !operands.is_empty() {
                     w.append("(");
                     for op in operands {
-                        println!("op: {:?}", op);
                         if do_comma {
                             w.commasp();
                         } else {
@@ -591,7 +590,6 @@ pub trait Database {
 	/// wrap it into another set and make sure the values are in multiples of the the n columns
 	/// http://www.postgresql.org/docs/9.0/static/dml-insert.html
     fn build_insert(&self, query: &Query, build_mode: BuildMode) -> SqlFrag {
-        println!("building insert query");
         let mut w = SqlFrag::new(self.sql_options(), build_mode);
         w.left_river("INSERT");
         w.append("INTO ");
