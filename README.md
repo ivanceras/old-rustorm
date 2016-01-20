@@ -307,3 +307,16 @@ Follow me on twitter: [@ivanceras](https://twitter.com/ivanceras)
 [bountysource](https://www.bountysource.com/teams/rustorm)
 
 * Suggestions are much welcome!
+
+## Related project
+
+
+ * [deuterium-orm](https://github.com/deuterium-orm/deuterium)
+ * [treasure](https://github.com/phonkee/treasure)
+ * [diesel](https://github.com/sgrif/diesel)
+
+If you are looking for a more rubost and correct implementation of an ORM, diesel may be the right library for you.
+The authors and contributors in diesel has much more experience with a more fluent API's, ORM and correct rust codes.
+
+I had been writing much java codes in my last projects as evident in my implementation code, which is not too rusty at all.
+
