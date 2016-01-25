@@ -6,6 +6,7 @@ extern crate rustc_serialize;
 use uuid::Uuid;
 
 use rustorm::query::Query;
+use rustorm::query::QueryBuilder;
 use rustorm::query::Equality;
 use rustorm::dao::{Dao, IsDao};
 use rustorm::pool::ManagedPool;
@@ -42,25 +43,26 @@ fn test_complex_query() {
     let pool = ManagedPool::init(&url, 1).unwrap();
     let db = pool.connect().unwrap();
 
-    let mut query = Query::select_all();
+    let mut query = QueryBuilder::SELECT_ALL();
 
-    query.from(&"bazaar.product")
-         .left_join(&"bazaar.product_category",
-                    "product_category.product_id",
-                    "product.product_id")
-         .left_join(&"bazaar.category",
-                    "category.category_id",
-                    "product_category.category_id")
-         .left_join(&"product_photo",
-                    "product.product_id",
-                    "product_photo.product_id")
-         .left_join(&"bazaar.photo", "product_photo.photo_id", "photo.photo_id")
+    query.FROM(&"bazaar.product")
+         .LEFT_JOIN(&"bazaar.product_category",
+                    &"product_category.product_id",
+                    &"product.product_id")
+         .LEFT_JOIN(&"bazaar.category",
+                    &"category.category_id",
+                    &"product_category.category_id")
+         .LEFT_JOIN(&"product_photo",
+                    &"product.product_id",
+                    &"product_photo.product_id")
+         .LEFT_JOIN(&"bazaar.photo", 
+		 			&"product_photo.photo_id", &"photo.photo_id")
          .filter_eq("product.name", &"GTX660 Ti videocard")
          .filter_eq("category.name", &"Electronic")
-         .group_by(vec!["category.name"])
-         .having("count(*)", Equality::GT, &1)
-         .asc("product.name")
-         .desc("product.created");
+         .GROUP_BY(&[&"category.name"])
+         .HAVING("count(*)", Equality::GT, &1)
+         .ASC("product.name")
+         .DESC("product.created");
     let frag = query.build(db.as_ref());
 
     let expected = "

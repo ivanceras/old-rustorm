@@ -7,6 +7,7 @@ extern crate rustc_serialize;
 use uuid::Uuid;
 
 use rustorm::query::Query;
+use rustorm::query::QueryBuilder;
 use rustorm::query::Equality;
 use rustorm::dao::{Dao, IsDao};
 use rustorm::pool::ManagedPool;
@@ -65,9 +66,9 @@ fn test_simple_query() {
     let pool = ManagedPool::init(&url, 1).unwrap();
     let db = pool.connect().unwrap();
 
-    let prod: Product = Query::select_all()
-                            .from(&"bazaar.product")
-                            .filter("name", Equality::EQ, &"GTX660 Ti videocard")
+    let prod: Product = QueryBuilder::SELECT_ALL()
+                            .FROM(&"bazaar.product")
+                            .WHERE("name".EQ(&"GTX660 Ti videocard"))
                             .collect_one(db.as_ref())
                             .unwrap();
 

@@ -42,6 +42,7 @@ impl Foreign{
 
 #[derive(Debug, Clone)]
 pub struct Column {
+	pub table: Option<String>,
     pub name: String,
     /// the generic data type, ie: u32, f64, string
     pub data_type: Type,

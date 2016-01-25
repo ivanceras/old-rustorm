@@ -18,6 +18,8 @@
 //! use rustorm::dao::{Dao,IsDao};
 //! use rustorm::pool::ManagedPool;
 //! use rustorm::table::{IsTable,Table};
+//! use rustorm::query::builder::SELECT_ALL;
+//! use rustorm::query::filter::HasEquality;
 //! #[derive(Debug, Clone)]
 //! pub struct Product {
 //!     pub product_id:Uuid,
@@ -63,9 +65,9 @@
 //!     let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v8";
 //!     let mut pool = ManagedPool::init(&url, 1).unwrap();
 //!     let db = pool.connect().unwrap();
-//!     let prod: Product = Query::select_all()
-//!             .from(&"bazaar.product")
-//!             .filter("name", Equality::EQ, &"GTX660 Ti videocard")
+//!     let prod: Product = SELECT_ALL()
+//!             .FROM(&"bazaar.product")
+//!             .WHERE("name".EQ_VALUE(&"GTX660 Ti videocard"))
 //!             .collect_one(db.as_ref()).unwrap();
 //!     println!("{}  {}  {:?}", prod.product_id, prod.name.unwrap(), prod.description);
 //! }
@@ -93,7 +95,7 @@ extern crate r2d2_sqlite;
 extern crate time;
 
 
-pub mod em;
+//pub mod em;
 pub mod query;
 pub mod dao;
 pub mod database;

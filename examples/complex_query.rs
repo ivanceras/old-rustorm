@@ -5,11 +5,17 @@ extern crate rustc_serialize;
 
 use uuid::Uuid;
 
-use rustorm::query::Query;
+use rustorm::query::{Query,QueryBuilder};
 use rustorm::query::Equality;
 use rustorm::dao::{Dao, IsDao};
 use rustorm::pool::ManagedPool;
 use rustorm::query::HasEquality;
+use rustorm::query::function::COUNT;
+use rustorm::query::ToTableName;
+use rustorm::query::HasDirection;
+use rustorm::query::order::ToOrder;
+use rustorm::query::join::ToJoin;
+use rustorm::query::operand::ToOperand;
 
 #[derive(Debug, Clone)]
 pub struct Photo {
@@ -41,25 +47,28 @@ fn main() {
     let pool = ManagedPool::init(&url, 1).unwrap();
     let db = pool.connect().unwrap();
 
-    let mut query = Query::SELECT_ALL();
+    let mut query = QueryBuilder::SELECT_ALL();
 
     query.FROM(&"bazaar.product")
-         .LEFT_JOIN(&"bazaar.product_category",
-                          "product_category.product_id",
-                          "product.product_id")
-         .LEFT_JOIN(&"bazaar.category",
-                          "category.category_id",
-                          "product_category.category_id")
-         .LEFT_JOIN(&"product_photo",
-                          "product.product_id",
-                          "product_photo.product_id")
-         .LEFT_JOIN(&"bazaar.photo", "product_photo.photo_id", "photo.photo_id")
-         .WHERE("product.name".EQ(&"GTX660 Ti videocard"))
-         .AND("category.name".EQ(&"Electronic"))
-         .GROUP_BY(&["category.name"])
-         .HAVING("count(*)", Equality::GT, &1)
-         .ASC("product.name")
-         .DESC("product.created");
+         .LEFT_JOIN("bazaar.product_category"
+		 		.ON("product_category.product_id".EQ(&"product.product_id")
+		 			.AND("product_category.product_id".EQ(&"product.product_id"))
+				)
+			)
+         .LEFT_JOIN("bazaar.category"
+		 		.ON("category.category_id".EQ(&"product_category.category_id")))
+
+         .LEFT_JOIN("product_photo"
+                .ON("product.product_id".EQ(&"product_photo.product_id")))
+         .LEFT_JOIN("bazaar.photo"
+		 	    .ON("product_photo.photo_id".EQ(&"photo.photo_id")))
+         .WHERE(
+		 	"product.name".EQ(&"GTX660 Ti videocard")
+         	.AND("category.name".EQ(&"Electronic"))
+			)
+         .GROUP_BY(&("category.name","category.id"))
+         .HAVING(COUNT(&"*").GT(&1))
+         .ORDER_BY(&["product.name".ASC()]);
     let frag = query.build(db.as_ref());
 
     let expected = "

@@ -10,206 +10,35 @@ use writer::SqlFrag;
 use std::fmt;
 use database::DbError;
 use database::BuildMode;
-use std::ops::BitAnd;
-use std::ops::BitOr;
 
-#[derive(Debug)]
-#[derive(Clone)]
-pub enum JoinType {
-    CROSS,
-    INNER,
-    OUTER,
-    NATURAL,
-}
-#[derive(Debug)]
-#[derive(Clone)]
-pub enum Modifier {
-    LEFT,
-    RIGHT,
-    FULL,
-}
+pub mod column_name;
+pub mod table_name;
+pub mod filter;
+pub mod builder;
+pub mod function;
+pub mod join;
+pub mod operand;
+pub mod order;
 
-#[derive(Debug)]
-#[derive(Clone)]
-pub struct Join {
-    pub modifier: Option<Modifier>,
-    pub join_type: Option<JoinType>,
-    pub table_name: TableName,
-    pub column1: Vec<String>,
-    pub column2: Vec<String>,
-}
-#[derive(Debug)]
-#[derive(Clone)]
-pub enum Direction {
-    ASC,
-    DESC,
-}
-
-#[derive(Debug)]
-#[derive(Clone)]
-pub enum NullsWhere {
-    FIRST,
-    LAST,
-}
-
-#[derive(Debug)]
-#[derive(Clone)]
-pub struct Order{
-	pub operand: Operand,
-	pub direction: Option<Direction>,
-	pub nulls_where: Option<NullsWhere>,
-}
-
-///
-/// Filter struct merged to query
-///
-#[derive(Debug)]
-#[derive(Clone)]
-pub enum Connector {
-    And,
-    Or,
-}
-
-#[derive(Debug)]
-#[derive(Clone)]
-#[allow(non_camel_case_types)]
-pub enum Equality {
-    EQ, // EQUAL,
-    NEQ, // NOT_EQUAL,
-    LT, // LESS_THAN,
-    LTE, // LESS_THAN_OR_EQUAL,
-    GT, // GREATER_THAN,
-    GTE, // GREATER_THAN_OR_EQUAL,
-    IN,
-    NOT_IN, // NOT_IN,
-    LIKE,
-    ILIKE, //add ILIKE
-    IS_NOT_NULL, // NOT_NULL,
-    IS_NULL, // IS_NULL,
-}
-
-/// function in a sql statement
-#[derive(Debug)]
-#[derive(Clone)]
-pub struct Function {
-    pub function: String,
-    pub params: Vec<Operand>,
-}
-
-/// Operands can be columns, functions, query or value types
-#[derive(Debug)]
-#[derive(Clone)]
-pub enum Operand {
-    ColumnName(ColumnName),
-    TableName(TableName),
-    Function(Function),
-    Query(Query),
-    Value(Value),
-    Vec(Vec<Operand>),
-}
-
-/// expression has left operand,
-/// equality and right operand
-#[derive(Debug)]
-#[derive(Clone)]
-pub struct Condition {
-    pub left: Operand,
-    pub equality: Equality,
-    pub right: Operand,
-}
-
-#[derive(Debug)]
-#[derive(Clone)]
-pub struct Filter {
-    pub connector: Connector,
-    /// TODO: maybe renamed to LHS, supports functions and SQL
-    pub condition: Condition,
-    pub sub_filters: Vec<Filter>, 
-}
-
-impl Filter {
-
-    /// user friendly, commonly use API
-    pub fn new(column: &str, equality: Equality, value: &ToValue) -> Self {
-        let right = Operand::Value(value.to_db_type());
-        Filter {
-            connector: Connector::And,
-            condition: Condition {
-                left: Operand::ColumnName(ColumnName::from_str(column)),
-                equality: equality,
-                right: right,
-            },
-            sub_filters: vec![],
-        }
-    }
-
-    /// user friendly, commonly use API
-    pub fn with_value(column: &str, equality: Equality, value: Value) -> Self {
-        let right = Operand::Value(value);
-        Filter {
-            connector: Connector::And,
-            condition: Condition {
-                left: Operand::ColumnName(ColumnName::from_str(column)),
-                equality: equality,
-                right: right,
-            },
-            sub_filters: vec![],
-        }
-    }
+pub use self::column_name::{ColumnName,ToColumnName};
+pub use self::table_name::{TableName,ToTableName};
+pub use self::filter::{Filter,Condition,Equality,Connector,HasEquality};
+pub use self::builder::QueryBuilder;
+pub use self::function::COUNT;
+pub use self::function::Function;
+pub use self::join::{Join,JoinType,Modifier};
+pub use self::operand::Operand;
+pub use self::order::{Order,ToOrder,HasDirection,NullsWhere,Direction};
 
 
-    /// not very commonly used, offers enough flexibility
-    pub fn bare_new(left: Operand, equality: Equality, right: Operand) -> Self {
-        Filter {
-            connector: Connector::And,
-            condition: Condition {
-                left: left,
-                equality: equality,
-                right: right,
-            },
-            sub_filters: vec![],
-        }
-    }
 
 
-    pub fn is_null(column: &str) -> Self {
-        Filter::new(column, Equality::IS_NULL, &())
-    }
-    pub fn is_not_null(column: &str) -> Self {
-        Filter::new(column, Equality::IS_NOT_NULL, &())
-    }
 
-    pub fn and(&mut self, column: &str, equality: Equality, value: &ToValue) -> &mut Self {
-        let mut filter = Filter::new(column, equality, value);
-        filter.connector = Connector::And;
-        self.sub_filters.push(filter);
-        self
-    }
-
-    pub fn or(&mut self, column: &str, equality: Equality, value: &ToValue) -> &mut Self {
-        let mut filter = Filter::new(column, equality, value);
-        filter.connector = Connector::Or;
-        self.sub_filters.push(filter);
-        self
-    }
-
-    pub fn or_filter(&mut self, filter: Filter) -> &mut Self {
-        let mut filter = filter.clone();
-        filter.connector = Connector::Or;
-        self.sub_filters.push(filter);
-        self
-    }
-    pub fn and_filter(&mut self, filter: Filter) -> &mut Self {
-        let mut filter = filter.clone();
-        filter.connector = Connector::And;
-        self.sub_filters.push(filter);
-        self
-    }
-}
 
 /// Could have been SqlAction
 #[derive(Debug)]
 #[derive(Clone)]
+#[derive(PartialEq)]
 pub enum SqlType {
     // DML
     SELECT,
@@ -218,15 +47,6 @@ pub enum SqlType {
     DELETE,
 }
 
-#[derive(Clone)]
-#[derive(Debug)]
-#[derive(RustcEncodable, RustcDecodable)]
-pub struct ColumnName {
-    pub column: String,
-    pub table: Option<String>,
-    // //optional schema, if ever there are same tables resideing in  different schema/namespace
-    pub schema: Option<String>,
-}
 
 #[derive(Debug)]
 #[derive(Clone)]
@@ -253,252 +73,9 @@ impl Field {
     }
 }
 
-impl ColumnName {
-
-    pub fn from_str(column: &str) -> Self {
-        if column.contains(".") {
-            let splinters = column.split(".").collect::<Vec<&str>>();
-            assert!(splinters.len() == 2, "There should only be 2 splinters");
-            let table_split = splinters[0].to_owned();
-            let column_split = splinters[1].to_owned();
-            ColumnName {
-                column: column_split.to_owned(),
-                table: Some(table_split.to_owned()),
-                schema: None,
-            }
-        } else {
-            ColumnName {
-                column: column.to_owned(),
-                table: None,
-                schema: None,
-            }
-        }
-    }
-
-    fn default_rename(&self) -> String {
-        match self.table {
-            Some(ref s) => format!("{}.{}", s, self.column),
-            None => panic!("Unable to rename {} since table is not specified",
-                           self.column),
-        }
-    }
-
-    /// table name and column name
-    pub fn complete_name(&self) -> String {
-        match self.table {
-            Some(ref s) => format!("{}.{}", s, self.column),
-            None => self.column.to_owned(),
-        }
-    }
-    /// includes the schema, table name and column name
-    pub fn super_complete_name(&self) -> String {
-        match self.schema {
-            Some(ref s) => format!("{}.{}", s, self.complete_name()),
-            None => self.complete_name(),
-        }
-    }
-
-    /// is this column conflicts the other column
-    /// conflicts means, when used both in a SQL query, it will result to ambiguous columns
-    fn is_conflicted(&self, other: &ColumnName) -> bool {
-        self.column == other.column
-    }
-
-}
-
-impl HasEquality for ColumnName{
-
-	fn EQ(&self, value:&ToValue)->Filter{
-		Filter::new(&self.complete_name(), Equality::EQ, value)
-	}
-	fn NEQ(&self, value:&ToValue)->Filter{
-		Filter::new(&self.complete_name(), Equality::NEQ, value)
-	}
-
-}
-
-pub trait ToColumnName {
-	fn to_column_name(&self)->ColumnName;
-}
-
-impl <'a>ToColumnName for &'a str{
-	fn to_column_name(&self)->ColumnName{
-		ColumnName::from_str(self)
-	}	
-}
-
-impl BitAnd for Filter{
-	type Output = Filter;
-	
-	fn bitand(self, sub_filter: Filter)-> Filter{
-		let mut filter = self.clone();
-		filter.and_filter(sub_filter);
-		filter
-	}
-}
-
-impl BitOr for Filter{
-	type Output = Filter;
-	
-	fn bitor(self, sub_filter: Filter)-> Filter{
-		let mut filter = self.clone();
-		filter.or_filter(sub_filter);
-		filter
-	}
-}
-
-pub trait HasEquality{
-	
-	fn EQ(&self, value: &ToValue)->Filter;
-	fn NEQ(&self, value: &ToValue)->Filter;
-}
-
-impl <F>HasEquality for F where F:Fn()->ColumnName{
-	
-	fn EQ(&self, value: &ToValue)->Filter{
-		let col = self();
-		Filter::new(&col.complete_name(), Equality::EQ, value)
-	}
-	fn NEQ(&self, value: &ToValue)->Filter{
-		let col = self();
-		Filter::new(&col.complete_name(), Equality::NEQ, value)
-	}
-}
-impl <'a> HasEquality for &'a str{
-	
-	fn EQ(&self, value: &ToValue)->Filter{
-		let col = self.to_column_name();
-		Filter::new(&col.complete_name(), Equality::EQ, value)
-	}
-	fn NEQ(&self, value: &ToValue)->Filter{
-		let col = self.to_column_name();
-		Filter::new(&col.complete_name(), Equality::NEQ, value)
-	}
-}
-
-impl <F>ToColumnName for F where F: Fn()->ColumnName{
-	fn to_column_name(&self)->ColumnName{
-		self()	
-	}
-}
-
-impl fmt::Display for ColumnName {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}", self.complete_name())
-    }
-}
-
-impl PartialEq for ColumnName {
-    fn eq(&self, other: &Self) -> bool {
-        self.column == other.column && self.table == other.table
-    }
-
-    fn ne(&self, other: &Self) -> bool {
-        self.column != other.column || self.table != other.table || self.schema != other.schema
-    }
-}
 
 
-#[derive(Clone)]
-#[derive(Debug)]
-pub struct TableName {
-    pub schema: Option<String>,
-    pub name: String,
-    /// optional columns needed when rename for conflicting columns are needed
-    pub columns: Vec<ColumnName>,
-}
 
-impl TableName {
-
-    pub fn from_str(str: &str) -> Self {
-        if str.contains(".") {
-            let splinters = str.split(".").collect::<Vec<&str>>();
-            assert!(splinters.len() == 2, "There should only be 2 splinters");
-            let schema_split = splinters[0].to_owned();
-            let table_split = splinters[1].to_owned();
-
-            TableName {
-                schema: Some(schema_split),
-                name: table_split,
-                columns: vec![],
-            }
-
-        } else {
-            TableName {
-                schema: None,
-                name: str.to_owned(),
-                columns: vec![],
-            }
-        }
-    }
-
-    pub fn complete_name(&self) -> String {
-        match self.schema {
-            Some (ref schema) => format!("{}.{}", schema, self.name),
-            None => self.name.to_owned(),
-        }
-    }
-}
-
-impl PartialEq for TableName {
-    fn eq(&self, other: &Self) -> bool {
-        self.name == other.name && self.schema == other.schema
-    }
-
-    fn ne(&self, other: &Self) -> bool {
-        self.name != other.name || self.schema != other.schema
-    }
-}
-
-impl fmt::Display for TableName {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}", self.complete_name())
-    }
-}
-
-/// convert str, IsTable to TableName
-pub trait ToTableName {
-
-    fn to_table_name(&self) -> TableName;
-
-}
-
-impl <'a>ToTableName for &'a str {
-
-    fn to_table_name(&self) -> TableName {
-        TableName::from_str(self)
-    }
-}
-
-impl <F>ToTableName for F where F: Fn() -> Table{
-	fn to_table_name(&self) -> TableName{
-		let table = self();
-		println!("table: {:?}", table);
-		table.to_table_name()
-	}
-}
-
-
-impl ToTableName for Table {
-
-    /// contain the columns for later use when renaming is necessary
-    fn to_table_name(&self) -> TableName {
-        let mut columns = vec![];
-        for c in &self.columns {
-            let column_name = ColumnName {
-                schema: self.schema.clone(),
-                table: Some(self.name.to_owned()),
-                column: c.name.to_owned(),
-            };
-            columns.push(column_name);
-        }
-        TableName {
-            schema: self.schema.clone(),
-            name: self.name.to_owned(),
-            columns: columns,
-        }
-    }
-}
 
 /// Query Error
 pub enum Error {
@@ -593,7 +170,9 @@ pub struct Query {
     /// pub from_table:Option<TableName>,
 
     /// from field, where field can be a query, table, column, or function
-    pub from:Option<Box<Field>>,
+	/// TODO: Use Vec<Field> here since from can have multiple tables
+    //pub from:Option<Box<Field>>,
+    pub from:Vec<Field>,
 
     /// joining multiple tables
     pub joins:Vec<Join>,
@@ -643,49 +222,16 @@ impl Query {
             having: vec![],
             excluded_columns: vec![],
             range: None,
-            from: None,
+            from: vec![],
             values: vec![],
             enumerated_returns: vec![],
         }
     }
 
-    pub fn SELECT() -> Self {
-        let mut q = Query::new();
-        q.sql_type = SqlType::SELECT;
-        q
-    }
 
-    pub fn insert() -> Self {
-        let mut q = Query::new();
-        q.sql_type = SqlType::INSERT;
-        q
-    }
-    pub fn update() -> Self {
-        let mut q = Query::new();
-        q.sql_type = SqlType::UPDATE;
-        q
-    }
-    pub fn delete() -> Self {
-        let mut q = Query::new();
-        q.sql_type = SqlType::DELETE;
-        q
-    }
-
-    /// add DISTINCT ie: SELECT DISTINCT
-    pub fn distinct(&mut self) -> &mut Self {
-        self.distinct = true;
-        self
-    }
-
-    pub fn SELECT_ALL() ->Self {
-        let mut q = Self::SELECT();
-        q.all();
-        q
-    }
-    pub fn enumerate_all() -> Self {
-        let mut q = Self::SELECT();
-        q.enumerate_all = true;
-        q
+    pub fn enumerate_all(&mut self) -> &mut Self {
+        self.enumerate_all = true;
+       	self
     }
 
     pub fn all(&mut self) -> &mut Self {
@@ -721,20 +267,6 @@ impl Query {
         self
     }
 
-    pub fn GROUP_BY(&mut self, columns: &[&str]) -> &mut Self {
-        for c in columns {
-            let column_name = ColumnName::from_str(c);
-            let operand = Operand::ColumnName(column_name);
-            self.group_by.push(operand);
-        }
-        self
-    }
-
-    pub fn HAVING(&mut self, column: &str, equality: Equality, value: &ToValue) -> &mut Self {
-        let filter = Filter::new(column, equality, value);
-        self.having.push(filter);
-        self
-    }
 
     /// exclude columns when inserting/updating data
     /// also ignores the column when selecting records
@@ -805,10 +337,6 @@ impl Query {
         self
     }
     
-    pub fn limit(&mut self, n: usize)->&mut Self{
-        self.set_page_size(n)
-    }
-
     pub fn get_limit(&self)->Option<Limit>{
         match self.range{
             Some(ref range) => Some(range.get_limit()),
@@ -816,69 +344,15 @@ impl Query {
         }
     }
 
-    /// A more terse way to write the query
-    /// only 1 table is supported yet
-    pub fn FROM(&mut self, table: &ToTableName) -> &mut Self {
-        let table_name = table.to_table_name();
-        let operand = Operand::TableName(table_name);
-        let field = Field {
-            operand: operand,
-            name: None,
-        };
-        self.from_field(field)
-    } 
-
-/*
-	pub fn from_fn<F>(&mut self, fn_table: F) -> &mut Self
-		where F: Fn()->Table{
-		let table = fn_table();
-        let table_name = table.to_table_name();
-        let operand = Operand::TableName(table_name);
-        let field = Field {
-            operand: operand,
-            name: None,
-        };
-        self.from_field(field)
-    }
-*/
     /// enumerate only the columns that is coming from this table
     /// this will invalidate enumerate_all
     pub fn only_from(&mut self, table: &ToTableName) -> &mut Self {
         self.enumerate_all = false;
         self.enumerate_from_table(&table.to_table_name());
-        self.FROM(table)
+		self
     }
     
-/*
-	pub fn from_table(&mut self, table: &str) -> &mut Self {
-        self.from(&table)
-    }
-*/
-    /// `into` is used in rust, os settled with `into_`
-    pub fn INTO(&mut self, table: &ToTableName) -> &mut Self {
-        self.sql_type = SqlType::INSERT;
-        self.FROM(table)
-    }
-	/*
-    /// can not use into since it's rust .into built-in (owned)
-    pub fn into_table(&mut self, table: &str) -> &mut Self {
-        self.into_(&table)
-    }
-	*/
-    /// can be used in behalf of into_, from,
-    pub fn table(&mut self, table: &ToTableName) -> &mut Self {
-        self.FROM(table)
-    }
 
-    /// if the database support CTE declareted query i.e WITH,
-    /// then this query will be declared
-    /// if database doesn't support WITH queries, then this query will be
-    /// wrapped in the from_query
-    /// build a builder for this
-    pub fn declare_query(&mut self, query: Query, alias: &str) -> &mut Self {
-        self.declared_query.insert(alias.to_owned(), query);
-        self
-    }
 
     /// a query to query from
     /// use WITH (query) t1 SELECT from t1 declaration in postgresql, sqlite
@@ -894,88 +368,21 @@ impl Query {
     }
 
     pub fn from_field(&mut self, field: Field) -> &mut Self {
-        self.from = Some(Box::new(field));
+        self.from.push(field);
         self
     }
 
+
     pub fn get_from_table(&self) -> Option<&TableName> {
-        if let Some(ref field) = self.from {
-            if let Operand::TableName(ref table_name) = field.operand {
-                return Some(table_name);
-            }
+        if !self.from.is_empty() {
+			match self.from[0].operand{
+				Operand::TableName(ref table_name) => return Some(table_name),
+				_ => return None
+			} 
         }
         None
     }
 
-    /// join a table on this query
-    ///
-    pub fn join(&mut self, join: Join) -> &mut Self {
-        self.joins.push(join);
-        self
-    }
-
-    /// join a table on this query
-    ///
-	/*
-    pub fn left_join_table(&mut self, table: &str, column1: &str, column2: &str) -> &mut Self {
-        self.left_join(&table, column1, column2)
-    }
-	*/
-    pub fn LEFT_JOIN(&mut self, table: &ToTableName, column1: &str, column2: &str) -> &mut Self {
-        let join = Join {
-            modifier: Some(Modifier::LEFT),
-            join_type: None,
-            table_name: table.to_table_name(),
-            column1: vec![column1.to_owned()],
-            column2: vec![column2.to_owned()],
-        };
-        self.join(join)
-    }
-	/*
-    pub fn right_join_table(&mut self, table: &str, column1: &str, column2: &str) -> &mut Self {
-        self.right_join(&table, column1, column2)
-    }
-	*/
-    pub fn right_join(&mut self, table: &ToTableName, column1: &str, column2: &str) -> &mut Self {
-        let join = Join {
-            modifier: Some(Modifier::RIGHT),
-            join_type: None,
-            table_name: table.to_table_name(),
-            column1: vec![column1.to_owned()],
-            column2: vec![column2.to_owned()],
-        };
-        self.join(join)
-    }
-	/*
-    pub fn full_join_table(&mut self, table: &str, column1: &str, column2: &str) -> &mut Self {
-        self.full_join(&table, column1, column2)
-    }
-	*/
-    pub fn full_join(&mut self, table: &ToTableName, column1: &str, column2: &str) -> &mut Self {
-        let join = Join {
-            modifier: Some(Modifier::FULL),
-            join_type: None,
-            table_name: table.to_table_name(),
-            column1: vec![column1.to_owned()],
-            column2: vec![column2.to_owned()],
-        };
-        self.join(join)
-    }
-	/*
-    pub fn inner_join_table(&mut self, table: &str, column1: &str, column2: &str) -> &mut Self {
-        self.inner_join(&table, column1, column2)
-    }
-	*/
-    pub fn inner_join(&mut self, table: &ToTableName, column1: &str, column2: &str) -> &mut Self {
-        let join = Join {
-            modifier: None,
-            join_type: Some(JoinType::INNER),
-            table_name: table.to_table_name(),
-            column1: vec![column1.to_owned()],
-            column2: vec![column2.to_owned()],
-        };
-        self.join(join)
-    }
 
 	fn add_order(&mut self, operand: Operand, direction:Option<Direction>, nulls_where:Option<NullsWhere>)->&mut Self{
         self.order_by.push(Order{
@@ -985,40 +392,6 @@ impl Query {
 		});
         self
 	}
-	pub fn order_by(&mut self, column: &str, direction: Option<Direction>, nulls_where: Option<NullsWhere>)->&mut Self{
-		let operand = Operand::ColumnName(ColumnName::from_str(column));
-		self.add_order(operand, direction, nulls_where)
-	}
-    ///ascending orderby of this column
-    pub fn ASC(&mut self, column: &str) -> &mut Self {
-        self.order_by(column,  Some(Direction::ASC), None);
-        self
-    }
-    ///ascending orderby of this column
-    pub fn ASC_NULLS_FIRST(&mut self, column: &str) -> &mut Self {
-        self.order_by(column, Some(Direction::ASC), Some(NullsWhere::FIRST));
-        self
-    }
-    ///ascending orderby of this column
-    pub fn ASC_NULLS_LAST(&mut self, column: &str) -> &mut Self {
-        self.order_by(column, Some(Direction::ASC), Some(NullsWhere::LAST));
-        self
-    }
-    ///descending orderby of this column
-    pub fn DESC(&mut self, column: &str) -> &mut Self {
-        self.order_by(column, Some(Direction::DESC), None);
-        self
-    }
-    ///descending orderby of this column
-    pub fn DESC_NULLS_FIRST(&mut self, column: &str) -> &mut Self {
-        self.order_by(column, Some(Direction::DESC), Some(NullsWhere::FIRST));
-        self
-    }
-    ///descending orderby of this column
-    pub fn DESC_NULLS_LAST(&mut self, column: &str) -> &mut Self {
-        self.order_by(column, Some(Direction::DESC), Some(NullsWhere::LAST));
-        self
-    }
 
     /// get the indexes of the fields that matches the the column name
     fn match_fields_indexes(&self, column: &str) -> Vec<usize> {
@@ -1206,6 +579,8 @@ impl Query {
 
     // attach and clause
     pub fn AND(&mut self, filter: Filter) -> &mut Self {
+        // TODO: if last function call is filter, then append to filter
+        // if last function call is join, then append to join
         self.filters.push(filter);
         self
     }
@@ -1254,7 +629,7 @@ impl Query {
     }
 
     /// set a value of a column when inserting/updating records
-    pub fn set(&mut self, column: &str, value: &ToValue) -> &mut Self {
+    pub fn SET(&mut self, column: &str, value: &ToValue) -> &mut Self {
         self.column(column);
         self.value(value)
     }

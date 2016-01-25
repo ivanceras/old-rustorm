@@ -63,8 +63,8 @@ fn main() {
     let pool = ManagedPool::init(&url, 1).unwrap();
     let db = pool.connect().unwrap();
 
-    let prod: Product = Query::select_all()
-                            .from(&"bazaar::product")
+    let prod: Product = Query::SELECT_ALL()
+                            .FROM(&"bazaar::product")
                             .filter("name", Equality::EQ, &"GTX660 Ti videocard")
                             .collect_one(db.as_ref())
                             .unwrap();

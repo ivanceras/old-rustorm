@@ -278,6 +278,8 @@ pub trait Database {
                 }
             }
             Operand::Function(ref function) => {
+				w.sp();
+				w.append(&function.function);
                 w.append("(");
                 let mut do_comma = false;
                 for param in &function.params {
@@ -389,6 +391,7 @@ pub trait Database {
             w.append("( ");
         }
         self.build_condition(w, parent_query, &filter.condition);
+		w.sp();	
         for filt in &filter.sub_filters {
             match filt.connector {
                 Connector::And => {
@@ -447,15 +450,13 @@ pub trait Database {
         self.build_enumerated_fields(&mut w, query, &query.enumerated_fields); //TODO: add support for column_sql, fields, functions
         w.left_river("FROM");
 
-        assert!(query.from.is_some(),
+        assert!(!query.from.is_empty(),
                 "There should be table, query, function to select from");
-
-        match query.from {
-            Some(ref field) => {
-                self.build_field(&mut w, query, field);
-            }
-            None => println!("Warning: No from in this query"),
-        }
+		let mut do_comma = false;
+		for field in &query.from{
+			if do_comma {w.commasp();}else{do_comma = true;}
+			self.build_field(&mut w, query, field);
+		}
         if !query.joins.is_empty() {
             for join in &query.joins {
                 match join.modifier {
@@ -481,24 +482,8 @@ pub trait Database {
                 }
                 w.append("JOIN ");
                 w.append(&join.table_name.complete_name());
-                w.append(" ");
-                assert!(join.column1.len() == join.column2.len(),
-                        "There should be equal number of corresponding columns to join");
-                let mut cnt = 0;
-                let mut do_and = false;
-                for jc in &join.column1 {
-                    if do_and {
-                        w.right_river("AND ");
-                    } else {
-                        w.right_river("ON ");
-                        do_and = true;
-                    }
-                    w.append(jc);
-                    w.append(" = ");
-                    w.append(&join.column2[cnt]);
-                    w.append(" ");
-                    cnt += 1;
-                }
+				w.right_river("ON ");
+				self.build_filter(&mut w, query, &join.on);
             }
         }
 

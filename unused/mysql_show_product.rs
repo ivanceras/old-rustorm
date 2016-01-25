@@ -9,8 +9,8 @@ fn main() {
     let pool = ManagedPool::init(&url, 1).unwrap();
     let db = pool.connect().unwrap();
 
-    let dao = Query::select_all()
-                   .from(&"product")
+    let dao = Query::SELECT_ALL()
+                   .FROM(&"product")
                    .retrieve(db.as_ref());
 
     println!("dao: {:#?}", dao);
