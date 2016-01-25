@@ -549,23 +549,17 @@ pub trait Database {
                 };
             }
         }
-        
-        match query.get_limit() {
+        match query.range.limit{
             Some(limit) => {
                 w.left_river("LIMIT ");
-                match limit.limit{
-                    Some(limit) => {
-                        w.append(&format!("{}", limit));
-                    },
-                    None => ()
-                }
-                match limit.offset{
-                    Some(offset) => {
-                        w.left_river("OFFSET ");
-                        w.append(&format!("{}", offset));
-                    },
-                    None => (),
-                }
+                w.append(&format!("{}", limit));
+            },
+            None => ()
+        }
+        match query.range.offset{
+            Some(offset) => {
+                w.left_river("OFFSET ");
+                w.append(&format!("{}", offset));
             },
             None => (),
         }

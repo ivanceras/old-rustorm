@@ -66,7 +66,7 @@ fn main() {
 		 	"product.name".EQ(&"GTX660 Ti videocard")
          	.AND("category.name".EQ(&"Electronic"))
 			)
-         .GROUP_BY(&("category.name","category.id"))
+         .GROUP_BY(&["category.name","category.id"])
          .HAVING(COUNT(&"*").GT(&1))
          .ORDER_BY(&["product.name".ASC()]);
     let frag = query.build(db.as_ref());

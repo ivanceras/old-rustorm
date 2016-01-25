@@ -85,61 +85,34 @@ pub enum Error {
 }
 
 
-#[derive(Debug)]
-#[derive(PartialEq)]
-#[derive(Default)]
-#[derive(Clone)]
-pub struct Page{
-    pub page: Option<usize>,
-    pub page_size: Option<usize>,
-}
-
-impl Page{
-    fn to_limit(&self)->Limit{
-        let offset = if self.page.is_some() && self.page_size.is_some(){
-            Some(self.page.unwrap() *  self.page_size.unwrap())
-        }else{
-            None
-        };
-
-        Limit{
-            limit: self.page_size,
-            offset: offset,
-        }
-    }
-}
 
 #[derive(Debug)]
 #[derive(PartialEq)]
 #[derive(Default)]
 #[derive(Clone)]
-pub struct Limit{
+pub struct Range{
     pub limit: Option<usize>,
     pub offset: Option<usize>,
 }
 
-#[derive(Debug)]
-#[derive(PartialEq)]
-#[derive(Clone)]
-pub enum Range{
-    Page(Page),
-    Limit(Limit),
-}
-
 impl Range{
-    
-    fn get_limit(&self)->Limit{
-        match self{
-            &Range::Page(ref page) => {
-                page.to_limit()
-            },
-            &Range::Limit(ref limit) => {
-                limit.clone()
-            }
+
+    pub fn new()->Self{
+        Range{
+            limit: None,
+            offset: None
         }
     }
     
+    pub fn set_limit(&mut self, limit: usize){
+        self.limit = Some(limit);
+    }
+    pub fn set_offset(&mut self, offset: usize){
+        self.offset = Some(offset);
+    }
+
 }
+
 
 
 #[derive(Debug)]
@@ -158,7 +131,6 @@ pub struct Query {
     pub declared_query: BTreeMap<String, Query>,
 
     ///fields can be functions, column sql query, and even columns
-    /// TODO; merge enumerated column to this, add a builder for fields
     pub enumerated_fields:Vec<Field>,
 
     /// specify to use distinct ON set of columns
@@ -170,8 +142,6 @@ pub struct Query {
     /// pub from_table:Option<TableName>,
 
     /// from field, where field can be a query, table, column, or function
-	/// TODO: Use Vec<Field> here since from can have multiple tables
-    //pub from:Option<Box<Field>>,
     pub from:Vec<Field>,
 
     /// joining multiple tables
@@ -182,7 +152,6 @@ pub struct Query {
 
 
     /// ordering of the records via the columns specified
-    /// TODO: needs to support expressions/functions too
     pub order_by:Vec<Order>,
 
     /// grouping columns to create an aggregate
@@ -196,7 +165,7 @@ pub struct Query {
 
     /// caters both limit->offset and page->page_size
     /// setting page and page_size can not interchange the order
-    pub range: Option<Range>,
+    pub range: Range,
     /// The data values, used in bulk inserting, updating,
     pub values:Vec<Operand>,
 
@@ -221,7 +190,7 @@ impl Query {
             group_by: vec![],
             having: vec![],
             excluded_columns: vec![],
-            range: None,
+            range: Range::new(),
             from: vec![],
             values: vec![],
             enumerated_returns: vec![],
@@ -229,23 +198,21 @@ impl Query {
     }
 
 
-    pub fn enumerate_all(&mut self) -> &mut Self {
+    pub fn enumerate_all(&mut self) {
         self.enumerate_all = true;
-       	self
     }
 
-    pub fn all(&mut self) -> &mut Self {
-        self.column("*")
+    pub fn all(&mut self){
+        self.column("*");
     }
 
-    fn enumerate(&mut self, column_name: ColumnName) -> &mut Self {
+    fn enumerate(&mut self, column_name: ColumnName){
         let operand = Operand::ColumnName(column_name);
         let field = Field {
             operand: operand,
             name: None,
         };
         self.enumerated_fields.push(field);
-        self
     }
 
     /// all enumerated columns shall be called from this
@@ -253,103 +220,55 @@ impl Query {
     /// columns that are not conflicts from some other table,
     /// but is the other conflicting column is not explicityly enumerated will not be renamed
     ///
-    pub fn column(&mut self, column: &str) -> &mut Self {
+    pub fn column(&mut self, column: &str){
         let column_name = ColumnName::from_str(column);
         self.enumerate(column_name);
-        self
     }
 
 
-    pub fn columns(&mut self, columns: Vec<&str>) -> &mut Self {
+    pub fn columns(&mut self, columns: Vec<&str>){
         for c in columns {
             self.column(c);
         }
-        self
     }
 
 
     /// exclude columns when inserting/updating data
     /// also ignores the column when selecting records
     /// useful for manipulating thin records by excluding huge binary blobs such as images
-    pub fn exclude_column(&mut self, column: &str) -> &mut Self {
+    pub fn exclude_column(&mut self, column: &str){
         let c = ColumnName::from_str(column);
         self.excluded_columns.push(c);
-        self
     }
-    pub fn exclude_columns(&mut self, columns: Vec<&str>) -> &mut Self {
+    pub fn exclude_columns(&mut self, columns: Vec<&str>){
         for c in columns {
             self.exclude_column(c);
         }
-        self
     }
 
-    pub fn distinct_on_columns(&mut self, columns: &Vec<String>) -> &mut Self {
+    pub fn distinct_on_columns(&mut self, columns: &Vec<String>){
         let columns = columns.clone();
         for c in columns {
             self.distinct_on_columns.push(c);
         }
-        self
     }
 
-    /// when paging multiple records
-    pub fn set_page(&mut self, page: usize) -> &mut Self {
-        let new_range = match self.range{
-            Some(ref range) => {
-                match range{
-                    &Range::Page(ref p) => {
-                        //replacing the page
-                        Some(Range::Page(Page{page:Some(page), page_size: p.page_size}))
-                    },
-                    &Range::Limit(_) => {
-                        panic!("Do not mix page->page_size with limit and offset");
-                    }
-                }
-            },
-            None => {
-                // a new range with 0 page_size
-                Some(Range::Page(Page{page:Some(page), page_size:None}))
-            }
-        };
-        self.range = new_range;
-        self
+    pub fn set_limit(&mut self, limit: usize){
+        self.range.set_limit(limit);
+    }
+    pub fn set_offset(&mut self, offset: usize){
+        self.range.set_offset(offset);
     }
     
-    pub fn set_page_size(&mut self, page_size: usize) -> &mut Self {
-        let new_range = match self.range{
-            Some(ref range) => {
-                match range{
-                    &Range::Page(ref p) => {
-                        //replacing the page_size
-                        Some(Range::Page(Page{page:p.page, page_size: Some(page_size)}))
-                    },
-                    &Range::Limit(_) => {
-                        panic!("Do not mix page->page_size with limit and offset");
-                    }
-                    
-                }
-            },
-            None => {
-                // a new range with page 1
-                Some(Range::Page(Page{page:None, page_size:Some(page_size)}))
-            }
-        };
-        self.range = new_range;
-        self
-    }
-    
-    pub fn get_limit(&self)->Option<Limit>{
-        match self.range{
-            Some(ref range) => Some(range.get_limit()),
-            None => None
-        }
+    pub fn get_range(&self)->Range{
+        self.range.to_owned()
     }
 
     /// enumerate only the columns that is coming from this table
     /// this will invalidate enumerate_all
-    pub fn only_from(&mut self, table: &ToTableName) -> &mut Self {
+    pub fn only_from(&mut self, table: &ToTableName){
         self.enumerate_all = false;
         self.enumerate_from_table(&table.to_table_name());
-		self
     }
     
 
@@ -358,21 +277,20 @@ impl Query {
     /// use WITH (query) t1 SELECT from t1 declaration in postgresql, sqlite
     /// use SELECT FROM (query) in oracle, mysql, others
     /// alias of the table
-    pub fn from_query(&mut self, query: Query, alias: &str) -> &mut Self {
+    pub fn from_query(&mut self, query: Query, alias: &str){
         let operand = Operand::Query(query);
         let field = Field {
             operand: operand,
             name: Some(alias.to_owned()),
         };
-        self.from_field(field)
+        self.from_field(field);
     }
 
-    pub fn from_field(&mut self, field: Field) -> &mut Self {
+    pub fn from_field(&mut self, field: Field){
         self.from.push(field);
-        self
     }
 
-
+    /// returns the first table in the from clause
     pub fn get_from_table(&self) -> Option<&TableName> {
         if !self.from.is_empty() {
 			match self.from[0].operand{
@@ -383,15 +301,6 @@ impl Query {
         None
     }
 
-
-	fn add_order(&mut self, operand: Operand, direction:Option<Direction>, nulls_where:Option<NullsWhere>)->&mut Self{
-        self.order_by.push(Order{
-			operand: operand,
-			direction: direction,
-			nulls_where: nulls_where,
-		});
-        self
-	}
 
     /// get the indexes of the fields that matches the the column name
     fn match_fields_indexes(&self, column: &str) -> Vec<usize> {
@@ -409,14 +318,13 @@ impl Query {
     }
 
     /// take the enumerated field that is a column that matched the name
-    fn rename_fields(&mut self, column: &str) -> &mut Self {
+    fn rename_fields(&mut self, column: &str){
         let matched_indexes = self.match_fields_indexes(column);
         for index in matched_indexes {
             let field = self.enumerated_fields.remove(index);//remove it
             let field = field.rename(); //rename it
             self.enumerated_fields.insert(index, field); //insert it back to the same location
         }
-        self
     }
 
     pub fn get_involved_tables(&self) -> Vec<TableName> {
@@ -438,7 +346,6 @@ impl Query {
     /// enumerate the columns of the involved tables
     /// skipping those which are explicitly ignored
     /// the query will then be built and ready to be executed
-    /// TODO: renamed conflicting enumerated columns
     /// if no enumerated fields and no excluded columns
     /// do a select all
     pub fn finalize(&mut self) -> &Self {
@@ -514,12 +421,11 @@ impl Query {
         conflicts
     }
     /// rename the fields that has a conflicting column
-    fn rename_conflicting_columns(&mut self) -> &mut Self {
+    fn rename_conflicting_columns(&mut self){
         let conflicts = self.get_conflicting_columns();
         for c in conflicts {
             self.rename_fields(&c);
         }
-        self
     }
 
     /// used by removed_from_enumerated
@@ -536,12 +442,11 @@ impl Query {
         None
     }
 
-    fn remove_from_enumerated(&mut self, column_name: &ColumnName) -> &mut Self {
+    fn remove_from_enumerated(&mut self, column_name: &ColumnName){
         let index = self.index_of_field(column_name);
         if let Some(idx) = index {
             self.enumerated_fields.remove(idx);
         }
-        self
     }
 
     /// return the list of enumerated columns
@@ -557,99 +462,54 @@ impl Query {
     }
 
 
-    pub fn add_filter(&mut self, filter: Filter) -> &mut Self {
+    pub fn add_filter(&mut self, filter: Filter){
         self.filters.push(filter);
-        self
-    }
-
-    pub fn WHERE(&mut self, filter: Filter) -> &mut Self {
-        self.filters.push(filter);
-        self
-    }
-    pub fn add_filters(&mut self, filters: Vec<Filter>) -> &mut Self {
-        for f in filters {
-            self.add_filter(f);
-        }
-        self
-    }
-
-    pub fn filter(&mut self, column: &str, equality: Equality, value: &ToValue) -> &mut Self {
-        self.add_filter(Filter::new(column, equality, value))
-    }
-
-    // attach and clause
-    pub fn AND(&mut self, filter: Filter) -> &mut Self {
-        // TODO: if last function call is filter, then append to filter
-        // if last function call is join, then append to join
-        self.filters.push(filter);
-        self
-    }
-
-    // attach or clause
-    pub fn OR(&mut self, column: &str, equality: Equality, value: &ToValue) -> &mut Self {
-        self.filters.last_mut().unwrap().or(column, equality, value);
-        self
     }
 
     /// column = value
-    pub fn filter_eq(&mut self, column: &str, value: &ToValue) -> &mut Self {
-        self.add_filter(Filter::new(column, Equality::EQ, value))
+    pub fn filter_eq(&mut self, column: &str, value: &ToValue){
+        self.add_filter(Filter::new(column, Equality::EQ, value));
     }
     /// column < value
-    pub fn filter_lt(&mut self, column: &str, value: &ToValue) -> &mut Self {
-        self.add_filter(Filter::new(column, Equality::LT, value))
+    pub fn filter_lt(&mut self, column: &str, value: &ToValue){
+        self.add_filter(Filter::new(column, Equality::LT, value));
     }
     /// column <= value
-    pub fn filter_lte(&mut self, column: &str, value: &ToValue) -> &mut Self {
-        self.add_filter(Filter::new(column, Equality::LTE, value))
+    pub fn filter_lte(&mut self, column: &str, value: &ToValue){
+        self.add_filter(Filter::new(column, Equality::LTE, value));
     }
 
     /// column > value
-    pub fn filter_gt(&mut self, column: &str, value: &ToValue) -> &mut Self {
-        self.add_filter(Filter::new(column, Equality::GT, value))
+    pub fn filter_gt(&mut self, column: &str, value: &ToValue){
+        self.add_filter(Filter::new(column, Equality::GT, value));
     }
     /// column <= value
-    pub fn filter_gte(&mut self, column: &str, value: &ToValue) -> &mut Self {
-        self.add_filter(Filter::new(column, Equality::GTE, value))
+    pub fn filter_gte(&mut self, column: &str, value: &ToValue){
+        self.add_filter(Filter::new(column, Equality::GTE, value));
     }
 
-    pub fn add_value_operand(&mut self, value: Operand) -> &mut Self {
-        self.values.push(value);
-        self
-    }
-
-    pub fn add_value(&mut self, value: &Value) -> &mut Self {
-        let operand = Operand::Value(value.clone());
-        self.values.push(operand);
-        self
-    }
-    pub fn value(&mut self, value: &ToValue) -> &mut Self {
+    pub fn value(&mut self, value: &ToValue){
         let value = value.to_db_type();
-        self.add_value(&value)
+        self.values.push(Operand::Value(value));
     }
 
     /// set a value of a column when inserting/updating records
-    pub fn SET(&mut self, column: &str, value: &ToValue) -> &mut Self {
+    pub fn set(&mut self, column: &str, value: &ToValue){
         self.column(column);
-        self.value(value)
-    }
-	pub fn set_value(&mut self, column: &str, value: &Value) -> &mut Self{
-		self.column(column);
-		self.add_value(value)
-	}
-
-    pub fn return_all(&mut self) -> &mut Self {
-        self.enumerate_column_as_return("*")
+        self.value(value);
     }
 
-    pub fn returns(&mut self, columns: Vec<&str>) -> &mut Self {
+    pub fn return_all(&mut self){
+        self.enumerate_column_as_return("*");
+    }
+
+    pub fn returns(&mut self, columns: Vec<&str>){
         for c in columns {
             self.enumerate_column_as_return(c);
         }
-        self
     }
 
-    pub fn enumerate_column_as_return(&mut self, column: &str) -> &mut Self {
+    pub fn enumerate_column_as_return(&mut self, column: &str){
         let column_name = ColumnName::from_str(column);
         let operand = Operand::ColumnName(column_name);
         let field = Field {
@@ -657,7 +517,6 @@ impl Query {
             name: None,
         };
         self.enumerated_returns.push(field);
-        self
     }
 
     /// build the query only, not executed, useful when debugging

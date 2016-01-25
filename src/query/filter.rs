@@ -47,7 +47,6 @@ pub enum Equality {
 #[derive(Clone)]
 pub struct Filter {
     pub connector: Connector,
-    /// TODO: maybe renamed to LHS, supports functions and SQL
     pub condition: Condition,
     pub sub_filters: Vec<Filter>, 
 }
@@ -60,35 +59,7 @@ impl Filter {
         Filter {
             connector: Connector::And,
             condition: Condition {
-                left: Operand::ColumnName(ColumnName::from_str(column)),
-                equality: equality,
-                right: right,
-            },
-            sub_filters: vec![],
-        }
-    }
-
-    /// user friendly, commonly use API
-    pub fn with_value(column: &str, equality: Equality, value: Value) -> Self {
-        let right = Operand::Value(value);
-        Filter {
-            connector: Connector::And,
-            condition: Condition {
-                left: Operand::ColumnName(ColumnName::from_str(column)),
-                equality: equality,
-                right: right,
-            },
-            sub_filters: vec![],
-        }
-    }
-
-
-    /// not very commonly used, offers enough flexibility
-    pub fn bare_new(left: Operand, equality: Equality, right: Operand) -> Self {
-        Filter {
-            connector: Connector::And,
-            condition: Condition {
-                left: left,
+                left: Operand::ColumnName(column.to_column_name()),
                 equality: equality,
                 right: right,
             },
@@ -104,12 +75,6 @@ impl Filter {
         Filter::new(column, Equality::IS_NOT_NULL, &())
     }
 
-    pub fn and(&mut self, column: &str, equality: Equality, value: &ToValue) -> &mut Self {
-        let mut filter = Filter::new(column, equality, value);
-        filter.connector = Connector::And;
-        self.sub_filters.push(filter);
-        self
-    }
 
 	pub fn AND(mut self, filter: Filter)->Self{
 		let mut filter = filter.clone();
@@ -117,49 +82,16 @@ impl Filter {
 		self.sub_filters.push(filter);
 		self
 	}
-
-    pub fn or(&mut self, column: &str, equality: Equality, value: &ToValue) -> &mut Self {
-        let mut filter = Filter::new(column, equality, value);
-        filter.connector = Connector::Or;
-        self.sub_filters.push(filter);
-        self
-    }
-
-    pub fn or_filter(&mut self, filter: Filter) -> &mut Self {
-        let mut filter = filter.clone();
-        filter.connector = Connector::Or;
-        self.sub_filters.push(filter);
-        self
-    }
-    pub fn and_filter(&mut self, filter: Filter) -> &mut Self {
-        let mut filter = filter.clone();
-        filter.connector = Connector::And;
-        self.sub_filters.push(filter);
-        self
-    }
-}
-
-
-
-impl BitAnd for Filter{
-	type Output = Filter;
-	
-	fn bitand(self, sub_filter: Filter)-> Filter{
-		let mut filter = self.clone();
-		filter.and_filter(sub_filter);
-		filter
+	pub fn OR(mut self, filter: Filter)->Self{
+		let mut filter = filter.clone();
+		filter.connector = Connector::Or;
+		self.sub_filters.push(filter);
+		self
 	}
+
 }
 
-impl BitOr for Filter{
-	type Output = Filter;
-	
-	fn bitor(self, sub_filter: Filter)-> Filter{
-		let mut filter = self.clone();
-		filter.or_filter(sub_filter);
-		filter
-	}
-}
+
 
 pub trait HasEquality{
 	

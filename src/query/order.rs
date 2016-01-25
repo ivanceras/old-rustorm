@@ -27,11 +27,12 @@ pub struct Order{
 }
 
 impl Order{
-    fn NULLS_FIRST(mut self)->Order{
+    
+    pub fn NULLS_FIRST(mut self)->Order{
 		self.nulls_where = Some(NullsWhere::FIRST);	
 		self
 	}
-    fn NULLS_LAST(mut self)->Order{
+    pub fn NULLS_LAST(mut self)->Order{
 		self.nulls_where = Some(NullsWhere::FIRST);	
 		self
 	}

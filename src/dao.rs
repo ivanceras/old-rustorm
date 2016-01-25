@@ -520,6 +520,7 @@ pub trait ToValue {
     fn to_db_type(&self) -> Value;
 }
 
+
 impl ToValue for () {
     fn to_db_type(&self) -> Value {
         Value::None(Type::String)

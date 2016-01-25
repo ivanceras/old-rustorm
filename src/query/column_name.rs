@@ -98,7 +98,7 @@ impl <F>ToColumnName for F where F: Fn()->Column{
 		let column = self();
         ColumnName{
             column: column.name,
-            table: None,
+            table: column.table,
             schema: None,
         }
 	}

@@ -39,8 +39,8 @@ pub struct QueryBuilder{
  	QueryBuilder::INSERT()
  }
 
- pub fn UPDATE()->QueryBuilder {
- 	QueryBuilder::UPDATE()
+ pub fn UPDATE(to_table_name: &ToTableName)->QueryBuilder {
+ 	QueryBuilder::UPDATE(to_table_name)
  }
 
  pub fn DELETE()->QueryBuilder {
@@ -49,10 +49,25 @@ pub struct QueryBuilder{
 
 impl QueryBuilder {
 
+    /// if the database support CTE declareted query i.e WITH,
+    /// then this query will be declared
+    /// if database doesn't support WITH queries, then this query will be
+    /// wrapped in the from_query
+    /// build a builder for this
+    pub fn WITH(&mut self, query: Query, alias: &str) -> &mut Self {
+        self.query.declared_query.insert(alias.to_owned(), query);
+        self
+    }
+
     pub fn SELECT() -> Self {
         let mut q = Query::new();
         q.sql_type = SqlType::SELECT;
         QueryBuilder{query: q}
+    }
+    pub fn SELECT_ALL() ->Self {
+        let mut qb = Self::SELECT();
+		qb.ALL();
+		qb
     }
 
     pub fn INSERT() -> Self {
@@ -60,9 +75,14 @@ impl QueryBuilder {
         q.sql_type = SqlType::INSERT;
         QueryBuilder{query: q}
     }
-    pub fn UPDATE() -> Self {
+    pub fn UPDATE(to_table_name: &ToTableName) -> Self {
         let mut q = Query::new();
         q.sql_type = SqlType::UPDATE;
+        let field = Field{
+            operand: Operand::TableName(to_table_name.to_table_name()),
+            name: None,
+        };
+        q.from_field(field);
         QueryBuilder{query: q}
     }
     pub fn DELETE() -> Self {
@@ -77,30 +97,34 @@ impl QueryBuilder {
         self
     }
 
-    pub fn SELECT_ALL() ->Self {
-        let mut qb = Self::SELECT();
-		qb.ALL();
-		qb
-    }
 
     pub fn ALL(&mut self) -> &mut Self {
         self.query.all();
         self
     }
 
-    pub fn GROUP_BY(&mut self, to_operand: &ToOperand) -> &mut Self {
-		self.query.group_by.push(to_operand.to_operand());
+    pub fn SET(&mut self, column: &str, to_value: &ToValue)->&mut Self{
+        self.query.set(column, to_value);
         self
     }
 
-    pub fn HAVING(&mut self, filter: Filter) -> &mut Self {
-		self.query.having.push(filter);
-        self
+    pub fn COLUMNS(&mut self, to_operand: &[&ToOperand])-> &mut Self {
+         for to in to_operand{
+            let field = Field{
+                operand: to.to_operand(),
+                name: None
+            };
+            self.query.enumerated_fields.push(field);
+         }
+         self
     }
 
-    
-    pub fn LIMIT(&mut self, n: usize)->&mut Self{
-        self.query.set_page_size(n);
+    pub fn VALUES(&mut self, to_values: &[&ToValue]) -> &mut Self{
+        for tov in to_values{
+            let v = tov.to_db_type();
+            let operand = Operand::Value(v);
+            self.query.values.push(operand);
+        }
         self
     }
 
@@ -130,15 +154,6 @@ impl QueryBuilder {
         self
     }
 
-    /// if the database support CTE declareted query i.e WITH,
-    /// then this query will be declared
-    /// if database doesn't support WITH queries, then this query will be
-    /// wrapped in the from_query
-    /// build a builder for this
-    pub fn WITH(&mut self, query: Query, alias: &str) -> &mut Self {
-        self.query.declared_query.insert(alias.to_owned(), query);
-        self
-    }
 
 
     /// join a table on this query
@@ -180,12 +195,43 @@ impl QueryBuilder {
         self
     }
 
+    pub fn GROUP_BY(&mut self, to_operand: &ToOperand) -> &mut Self {
+        let operand = to_operand.to_operand();
+        // put in the parent vector if there are multiple operands
+        match operand{
+            Operand::Vec(ref operands) => {
+                for op in operands{
+		            self.query.group_by.push(op.to_owned());
+                }
+            },
+            _ => {
+                self.query.group_by.push(to_operand.to_operand());
+            }
+        }
+        self
+    }
+
+    pub fn HAVING(&mut self, filter: Filter) -> &mut Self {
+		self.query.having.push(filter);
+        self
+    }
+
+    
 	pub fn ORDER_BY(&mut self, to_order: &ToOrder)->&mut Self {
 		let mut orders = to_order.to_order();
 		self.query.order_by.append(&mut orders);
         self
 	}
 
+    pub fn LIMIT(&mut self, n: usize)->&mut Self{
+        self.query.set_limit(n);
+        self
+    }
+
+    pub fn OFFSET(&mut self, o: usize)->&mut Self{
+        self.query.set_offset(o);
+        self
+    }
 
 
     /// build the query only, not executed, useful when debugging

@@ -126,12 +126,7 @@ impl ToOperand for &'static str{
 
 impl ToOperand for [&'static str;1]{
 	fn to_operand(&self)->Operand{
-		let mut operands = vec![];
-		for s in self{
-			let col = s.to_column_name();
-			operands.push(Operand::ColumnName(col));
-		}	
-		Operand::Vec(operands)
+	    Operand::ColumnName(self[0].to_column_name())
 	}
 } 
 
@@ -187,6 +182,4 @@ impl ToOperand for i32{
 		Operand::Value(Value::I32(*self))
 	}
 }
-
-
 
