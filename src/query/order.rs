@@ -71,17 +71,6 @@ impl_to_order_for_order!(10);
 impl_to_order_for_order!(11);
 impl_to_order_for_order!(12);
 
-/*
-impl ToOrder for [Order]{
-    fn to_order(&self)->Vec<Order>{
-        let mut orders = vec![];
-        for o in self{
-            orders.push(o.to_owned());
-        }
-        orders
-    }     
-}
-*/
 
 pub trait HasDirection{
 	

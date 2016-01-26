@@ -228,6 +228,16 @@ impl Query {
         }
     }
 
+    pub fn value(&mut self, value: &ToValue){
+        let value = value.to_db_type();
+        self.values.push(Operand::Value(value));
+    }
+
+    /// set a value of a column when inserting/updating records
+    pub fn set(&mut self, column: &str, value: &ToValue){
+        self.column(column);
+        self.value(value);
+    }
     pub fn set_limit(&mut self, limit: usize){
         self.range.set_limit(limit);
     }
@@ -464,16 +474,6 @@ impl Query {
         self.add_filter(Filter::new(column, Equality::GTE, value));
     }
 
-    pub fn value(&mut self, value: &ToValue){
-        let value = value.to_db_type();
-        self.values.push(Operand::Value(value));
-    }
-
-    /// set a value of a column when inserting/updating records
-    pub fn set(&mut self, column: &str, value: &ToValue){
-        self.column(column);
-        self.value(value);
-    }
 
     pub fn return_all(&mut self){
         self.enumerate_column_as_return("*");
