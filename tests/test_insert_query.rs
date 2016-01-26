@@ -28,7 +28,7 @@ fn test_insert() {
 
     let frag = INSERT().INTO(&"bazaar.product")
             .COLUMNS(&[&"name", &"description", &"active"])
-            .VALUES(&[&"GoPro", &"A nice camera", &true])
+            .VALUES(&[&"GoPro".to_owned(), &"A nice camera".to_owned(), &true])
     	 .build(db.as_ref());
 
     let expected = "

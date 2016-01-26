@@ -68,14 +68,6 @@ impl Filter {
     }
 
 
-    pub fn is_null(column: &str) -> Self {
-        Filter::new(column, Equality::IS_NULL, &())
-    }
-    pub fn is_not_null(column: &str) -> Self {
-        Filter::new(column, Equality::IS_NOT_NULL, &())
-    }
-
-
 	pub fn AND(mut self, filter: Filter)->Self{
 		let mut filter = filter.clone();
 		filter.connector = Connector::And;
@@ -95,17 +87,26 @@ impl Filter {
 
 pub trait HasEquality{
 	
-	fn EQ(&self, to_column: &ToOperand)->Filter;
-	fn GT(&self, operand: &ToOperand)->Filter;
-	fn EQ_VALUE(&self, to_column: &ToValue)->Filter;
+	fn EQ(&self, to_operand: &ToOperand)->Filter;
+	fn NEQ(&self, to_operand: &ToOperand)->Filter;
+	fn GT(&self, to_operand: &ToOperand)->Filter;
+	fn GTE(&self, to_operand: &ToOperand)->Filter;
+	fn LT(&self, to_operand: &ToOperand)->Filter;
+	fn LTE(&self, to_operand: &ToOperand)->Filter;
+	fn LIKE(&self, to_value: &ToValue)->Filter;
+	fn ILIKE(&self, to_value: &ToValue)->Filter;
+    fn IS_NULL(&self)->Filter;
+    fn IS_NOT_NULL(&self)->Filter;
+	fn IN(&self, to_operand: &ToOperand)->Filter;
+	fn NOT_IN(&self, to_operand: &ToOperand)->Filter;
 }
 
-impl <'a> HasEquality for &'a str{
+/// implementation of HasEquality for objects that can yield Operand
+impl <T>HasEquality for T where T:ToOperand{
 	
 	fn EQ(&self, to_operand: &ToOperand)->Filter{
-		let col = self.to_column_name();
 		let cond = Condition{
-			left: Operand::ColumnName(col), 
+			left: self.to_operand(), 
 			equality: Equality::EQ,
 			right: to_operand.to_operand() 
 		};
@@ -116,9 +117,8 @@ impl <'a> HasEquality for &'a str{
 		}
 	}
 	fn GT(&self, to_operand: &ToOperand)->Filter{
-		let col = self.to_column_name();
 		let cond = Condition{
-			left: Operand::ColumnName(col), 
+			left: self.to_operand(), 
 			equality: Equality::GT,
 			right: to_operand.to_operand() 
 		};
@@ -128,17 +128,43 @@ impl <'a> HasEquality for &'a str{
 			sub_filters: vec![]
 		}
 	}
-	fn EQ_VALUE(&self, to_value: &ToValue)->Filter{
-		let col = self.to_column_name();
-		let cond = Condition{
-			left: Operand::ColumnName(col), 
-			equality: Equality::EQ,
-			right: Operand::Value(to_value.to_db_type())
-		};
-		Filter{
-			connector: Connector::And,
-			condition:cond,
-			sub_filters: vec![]
-		}
-	}
+	fn NEQ(&self, to_operand: &ToOperand)->Filter{
+        unimplemented!()
+    }
+	fn GTE(&self, to_operand: &ToOperand)->Filter{
+        unimplemented!()
+    }
+
+	fn LT(&self, to_operand: &ToOperand)->Filter{
+        unimplemented!()
+    }
+
+	fn LTE(&self, to_operand: &ToOperand)->Filter{
+        unimplemented!()
+    }
+
+	fn LIKE(&self, to_value: &ToValue)->Filter{
+        unimplemented!()
+    }
+
+	fn ILIKE(&self, to_value: &ToValue)->Filter{
+        unimplemented!()
+    }
+
+    fn IS_NULL(&self)->Filter{
+        unimplemented!()
+    }
+
+    fn IS_NOT_NULL(&self)->Filter{
+        unimplemented!()
+    }
+
+	fn IN(&self, to_operand: &ToOperand)->Filter{
+        unimplemented!()
+    }
+
+	fn NOT_IN(&self, to_operand: &ToOperand)->Filter{
+        unimplemented!()
+    }
 }
+

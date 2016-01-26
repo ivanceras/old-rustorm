@@ -67,7 +67,7 @@
 //!     let db = pool.connect().unwrap();
 //!     let prod: Product = SELECT_ALL()
 //!             .FROM(&"bazaar.product")
-//!             .WHERE("name".EQ_VALUE(&"GTX660 Ti videocard"))
+//!             .WHERE("name".EQ(&"GTX660 Ti videocard".to_owned()))
 //!             .collect_one(db.as_ref()).unwrap();
 //!     println!("{}  {}  {:?}", prod.product_id, prod.name.unwrap(), prod.description);
 //! }

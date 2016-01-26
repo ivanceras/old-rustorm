@@ -21,6 +21,8 @@ use query::join::ToJoin;
 use dao::IsDao;
 use table::IsTable;
 use database::DbError;
+use query::ToField;
+use query::source::{QuerySource,ToSourceField,SourceField};
 
 pub struct QueryBuilder{
     query: Query
@@ -78,11 +80,12 @@ impl QueryBuilder {
     pub fn UPDATE(to_table_name: &ToTableName) -> Self {
         let mut q = Query::new();
         q.sql_type = SqlType::UPDATE;
-        let field = Field{
-            operand: Operand::TableName(to_table_name.to_table_name()),
-            name: None,
-        };
-        q.from_field(field);
+        let qs = QuerySource::TableName(to_table_name.to_table_name());
+		let sf = SourceField{
+			source: qs,
+			rename: None
+		};
+		q.from.push(sf);
         QueryBuilder{query: q}
     }
     pub fn DELETE() -> Self {
@@ -130,14 +133,8 @@ impl QueryBuilder {
 
     /// A more terse way to write the query
     /// only 1 table is supported yet
-    pub fn FROM(&mut self, table: &ToTableName) -> &mut Self {
-        let table_name = table.to_table_name();
-        let operand = Operand::TableName(table_name);
-        let field = Field {
-            operand: operand,
-            name: None,
-        };
-        self.query.from_field(field);
+    pub fn FROM(&mut self, to_source_field: &ToSourceField) -> &mut Self {
+		self.query.from(to_source_field);
         self
     } 
 
@@ -145,12 +142,18 @@ impl QueryBuilder {
     /// `into` is used in rust, os settled with `into_`
     pub fn INTO(&mut self, table: &ToTableName) -> &mut Self {
         assert_eq!(self.query.sql_type, SqlType::INSERT);
-        self.FROM(table);
+        self.TABLE(table);
         self
     }
     /// can be used in behalf of into_, from,
     pub fn TABLE(&mut self, table: &ToTableName) -> &mut Self {
-        self.FROM(table);
+		let table_name = table.to_table_name();
+        let qs = QuerySource::TableName(table_name);
+        let sf = SourceField {
+            source: qs,
+            rename: None,
+        };
+        self.query.from.push(sf);
         self
     }
 
@@ -246,3 +249,4 @@ impl QueryBuilder {
 		self.query.collect::<T>(db)
 	}
 }
+

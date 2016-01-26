@@ -27,8 +27,8 @@ fn test_update() {
     let db = pool.connect().unwrap();
 
     let frag = UPDATE(&"bazaar.product")
-            .SET("name", &"GoPro")
-            .SET("description", &"A nice camera")
+            .SET("name", &"GoPro".to_owned())
+            .SET("description", &"A nice camera".to_owned())
             .SET("active", &true)
             .WHERE("product_id".EQ(&10001))
     	 .build(db.as_ref());

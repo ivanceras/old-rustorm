@@ -107,4 +107,8 @@ impl ToTableName for Table {
     }
 }
 
-
+impl ToTableName for [&'static str;2]{
+	fn to_table_name(&self)->TableName{
+		unimplemented!()
+	}
+}

@@ -2,6 +2,7 @@
 use query::Operand;
 use query::{ColumnName,ToColumnName};
 use query::operand::ToOperand;
+use query::source::QuerySource;
 
 
 /// function in a sql statement
@@ -13,10 +14,12 @@ pub struct Function {
 }
 
 pub fn COUNT(to_operand: &ToOperand)->Operand{
-	Operand::Function(
-		Function{
-			function: "COUNT".to_owned(),
-			params: vec![to_operand.to_operand()]
-		}
+	Operand::QuerySource(
+		QuerySource::Function(
+			Function{
+				function: "COUNT".to_owned(),
+				params: vec![to_operand.to_operand()]
+			}
+		)
 	)
 }

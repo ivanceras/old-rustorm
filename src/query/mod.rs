@@ -19,6 +19,8 @@ pub mod function;
 pub mod join;
 pub mod operand;
 pub mod order;
+pub mod field;
+pub mod source;
 
 pub use self::column_name::{ColumnName,ToColumnName};
 pub use self::table_name::{TableName,ToTableName};
@@ -29,8 +31,9 @@ pub use self::function::Function;
 pub use self::join::{Join,JoinType,Modifier};
 pub use self::operand::Operand;
 pub use self::order::{Order,ToOrder,HasDirection,NullsWhere,Direction};
-
-
+pub use self::field::{Field,ToField};
+pub use self::source::SourceField;
+pub use self::source::{QuerySource,ToSourceField};
 
 
 
@@ -46,34 +49,6 @@ pub enum SqlType {
     UPDATE,
     DELETE,
 }
-
-
-#[derive(Debug)]
-#[derive(Clone)]
-pub struct Field {
-    /// the field
-    pub operand: Operand,
-    /// when renamed as field
-    pub name: Option<String>,
-}
-
-impl Field {
-
-    fn rename(&self) -> Field {
-        match self.operand {
-            Operand::ColumnName(ref column_name) => {
-                let rename = column_name.default_rename();
-                Field {
-                    operand: Operand::ColumnName(column_name.clone()),
-                    name: Some(rename),
-                }
-            }
-            _ => unimplemented!(),
-        }
-    }
-}
-
-
 
 
 
@@ -141,8 +116,8 @@ pub struct Query {
     /// whe used in select, this is the
     /// pub from_table:Option<TableName>,
 
-    /// from field, where field can be a query, table, column, or function
-    pub from:Vec<Field>,
+    /// from field, where field can be a query, table, or function
+    pub from:Vec<SourceField>,
 
     /// joining multiple tables
     pub joins:Vec<Join>,
@@ -278,27 +253,28 @@ impl Query {
     /// use SELECT FROM (query) in oracle, mysql, others
     /// alias of the table
     pub fn from_query(&mut self, query: Query, alias: &str){
-        let operand = Operand::Query(query);
-        let field = Field {
-            operand: operand,
-            name: Some(alias.to_owned()),
-        };
-        self.from_field(field);
+		let sf = SourceField{
+			source: QuerySource::Query(query),
+			rename: Some(alias.to_owned())
+		};
+        self.from.push(sf);
     }
 
-    pub fn from_field(&mut self, field: Field){
-        self.from.push(field);
+    pub fn from(&mut self, to_source_field: &ToSourceField){
+		self.from.append(&mut to_source_field.to_source_field());
     }
 
     /// returns the first table in the from clause
-    pub fn get_from_table(&self) -> Option<&TableName> {
-        if !self.from.is_empty() {
-			match self.from[0].operand{
-				Operand::TableName(ref table_name) => return Some(table_name),
-				_ => return None
-			} 
-        }
-        None
+    pub fn get_from_table(&self) -> Option<TableName> {
+		for fr in &self.from{
+			match &fr.source{
+				&QuerySource::TableName(ref table_name) => {
+					return Some(table_name.to_owned());
+				},
+				_ => {} 
+			}
+		}
+		None
     }
 
 

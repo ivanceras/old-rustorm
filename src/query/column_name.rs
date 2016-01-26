@@ -93,6 +93,7 @@ impl <'a>ToColumnName for &'a str{
 	}	
 }
 
+/*
 impl <F>ToColumnName for F where F: Fn()->Column{
 	fn to_column_name(&self)->ColumnName{
 		let column = self();
@@ -103,44 +104,8 @@ impl <F>ToColumnName for F where F: Fn()->Column{
         }
 	}
 }
+*/
 
-impl <F>HasEquality for F where F:Fn()->Column{
-	
-	fn EQ(&self, to_operand: &ToOperand)->Filter{
-		let column = self();
-		let column_name = ColumnName{
-			table: None,
-			column: column.name,
-			schema: None,
-		};
-		let cond = Condition{
-			left: Operand::ColumnName(column_name), 
-			equality: Equality::EQ,
-			right: to_operand.to_operand() 
-		};
-		Filter{
-			connector: Connector::And,
-			condition:cond,
-			sub_filters: vec![]
-		}
-	}
-	fn GT(&self, to_operand: &ToOperand)->Filter{
-		unimplemented!()
-	}
-	fn EQ_VALUE(&self, to_value: &ToValue)->Filter{
-		let col = self().to_column_name();
-		let cond = Condition{
-			left: Operand::ColumnName(col), 
-			equality: Equality::EQ,
-			right: Operand::Value(to_value.to_db_type())
-		};
-		Filter{
-			connector: Connector::And,
-			condition:cond,
-			sub_filters: vec![]
-		}
-	}
-}
 
 impl fmt::Display for ColumnName {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
@@ -157,3 +122,4 @@ impl PartialEq for ColumnName {
         self.column != other.column || self.table != other.table || self.schema != other.schema
     }
 }
+

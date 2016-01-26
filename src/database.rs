@@ -18,6 +18,8 @@ use regex::Error as RegexError;
 use rusqlite::SqliteError;
 use platform::PlatformError;
 use dao::Type;
+use query::source::{SourceField,QuerySource,ToSourceField};
+
 
 /// SqlOption, contains the info about the features and quirks of underlying database
 #[derive(PartialEq)]
@@ -270,34 +272,9 @@ pub trait Database {
                     w.append(&column_name.complete_name());
                 }
             }
-            Operand::TableName(ref table_name) => {
-                if self.sql_options().contains(&SqlOption::UsesSchema) {
-                    w.append(&table_name.complete_name());
-                } else {
-                    w.append(&table_name.name);
-                }
-            }
-            Operand::Function(ref function) => {
-				w.sp();
-				w.append(&function.function);
-                w.append("(");
-                let mut do_comma = false;
-                for param in &function.params {
-                    if do_comma {
-                        w.commasp();
-                    } else {
-                        do_comma = true;
-                    }
-                    self.build_operand(w, parent_query, param);
-                }
-                w.append(")");
-            }
-            Operand::Query(ref _q) => {
-                //panic!("TODO: causes error Attributes 'readnone and readonly' are incompatible! \
-                //        LLVM ERROR: Broken function found, compilation aborted!")
-                let sql_frag = &self.build_query(&_q, w.build_mode.clone());
-                w.append(&sql_frag.sql);
-            }
+			Operand::QuerySource(ref query_source) => {
+				self.build_query_source(w, parent_query, query_source);
+			}
             Operand::Value(ref value) => {
                 w.parameter(value.clone());
             }
@@ -384,7 +361,48 @@ pub trait Database {
             None => (),
         }
     }
+	
+    fn build_query_source(&self, w: &mut SqlFrag, parent_query: &Query, query_source: &QuerySource) {
+		match *query_source{
+            QuerySource::TableName(ref table_name) => {
+                if self.sql_options().contains(&SqlOption::UsesSchema) {
+                    w.append(&table_name.complete_name());
+                } else {
+                    w.append(&table_name.name);
+                }
+            }
+            QuerySource::Function(ref function) => {
+				w.sp();
+				w.append(&function.function);
+                w.append("(");
+                let mut do_comma = false;
+                for param in &function.params {
+                    if do_comma {
+                        w.commasp();
+                    } else {
+                        do_comma = true;
+                    }
+                    self.build_operand(w, parent_query, param);
+                }
+                w.append(")");
+            }
+            QuerySource::Query(ref _q) => {
+                let sql_frag = &self.build_query(&_q, w.build_mode.clone());
+                w.append(&sql_frag.sql);
+            }
+		}
+	}
 
+    fn build_source_field(&self, w: &mut SqlFrag, parent_query: &Query, source_field: &SourceField) {
+        self.build_query_source(w, parent_query, &source_field.source);
+        match source_field.rename {
+            Some(ref rename) => {
+                w.append(" AS ");
+                w.append(rename);
+            }
+            None => (),
+        }
+    }
 
     fn build_filter(&self, w: &mut SqlFrag, parent_query: &Query, filter: &Filter) {
         if !filter.sub_filters.is_empty() {
@@ -455,7 +473,7 @@ pub trait Database {
 		let mut do_comma = false;
 		for field in &query.from{
 			if do_comma {w.commasp();}else{do_comma = true;}
-			self.build_field(&mut w, query, field);
+			self.build_source_field(&mut w, query, field);
 		}
         if !query.joins.is_empty() {
             for join in &query.joins {

@@ -1,6 +1,7 @@
 use table::Column;
 use query::Operand;
 use query::operand::ToOperand;
+use query::ColumnName;
 
 
 #[derive(Debug)]
@@ -43,16 +44,6 @@ pub trait ToOrder{
 }
 
 
-impl ToOrder for [Order;1]{
-	fn to_order(&self)->Vec<Order>{
-		let mut orders = vec![];
-		for o in self{
-			orders.push(o.to_owned())
-		}
-		orders
-	}
-}
-
 macro_rules! impl_to_order_for_order{
 	($x:expr) => (
 		impl ToOrder for [Order;$x]{
@@ -67,6 +58,7 @@ macro_rules! impl_to_order_for_order{
 	);
 }
 
+impl_to_order_for_order!(1);
 impl_to_order_for_order!(2);
 impl_to_order_for_order!(3);
 impl_to_order_for_order!(4);
@@ -79,6 +71,18 @@ impl_to_order_for_order!(10);
 impl_to_order_for_order!(11);
 impl_to_order_for_order!(12);
 
+/*
+impl ToOrder for [Order]{
+    fn to_order(&self)->Vec<Order>{
+        let mut orders = vec![];
+        for o in self{
+            orders.push(o.to_owned());
+        }
+        orders
+    }     
+}
+*/
+
 pub trait HasDirection{
 	
 	fn ASC(&self)->Order;
@@ -90,21 +94,19 @@ pub trait HasDirection{
 
 }
 
-impl HasDirection for &'static str{
+impl <T> HasDirection for T where T:ToOperand{
 	
 	fn ASC(&self)->Order{
-		let operand = self.to_operand();
 		Order{
-			operand: operand,
+			operand: self.to_operand(),
 			direction: Some(Direction::ASC),
 			nulls_where: None,
 		}
 	}
 
 	fn DESC(&self)->Order{
-		let operand = self.to_operand();
 		Order{
-			operand: operand,
+			operand: self.to_operand(),
 			direction: Some(Direction::DESC),
 			nulls_where: None,
 		}
@@ -127,41 +129,4 @@ impl HasDirection for &'static str{
 	}
 
 }
-
-impl <F>HasDirection for F where F:Fn()->Column{
-	fn ASC(&self)->Order{
-		let operand = self.to_operand();
-		Order{
-			operand: operand,
-			direction: Some(Direction::ASC),
-			nulls_where: None,
-		}
-	}
-	fn DESC(&self)->Order{
-		let operand = self.to_operand();
-		Order{
-			operand: operand,
-			direction: Some(Direction::DESC),
-			nulls_where: None,
-		}
-	}
-
-    fn ASC_NULLS_FIRST(self)->Order{
-		unimplemented!()
-	}
-
-    fn ASC_NULLS_LAST(self)->Order{
-		unimplemented!()
-	}
-
-    fn DESC_NULLS_FIRST(self)->Order{
-		unimplemented!()
-	}
-
-    fn DESC_NULLS_LAST(self)->Order{
-		unimplemented!()
-	}
-
-}
-
 

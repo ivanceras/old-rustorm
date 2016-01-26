@@ -34,8 +34,8 @@ fn test_select() {
          .LEFT_JOIN("bazaar.photo" 
 		 		.ON("product_photo.photo_id".EQ(&"photo.photo_id")))
          .WHERE(
-		 	"product.name".EQ_VALUE(&"GTX660 Ti videocard")
-         	.AND("category.name".EQ_VALUE(&"Electronic"))
+		 	"product.name".EQ(&"GTX660 Ti videocard".to_owned())
+         	.AND("category.name".EQ(&"Electronic".to_owned()))
 			)
          .GROUP_BY(&["category.name"])
          .HAVING(COUNT(&"*").GT(&1))
