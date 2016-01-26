@@ -13,6 +13,7 @@ keywords = ["orm", "database", "sql"]
 name = "rustorm"
 
 [features]
+default = ["mysql"]
 sqlite = ["rusqlite","r2d2_sqlite"]
 
 [dependencies.chrono]
