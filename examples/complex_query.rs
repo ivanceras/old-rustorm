@@ -16,6 +16,7 @@ use rustorm::query::HasDirection;
 use rustorm::query::order::ToOrder;
 use rustorm::query::join::ToJoin;
 use rustorm::query::operand::ToOperand;
+use rustorm::query::builder::SELECT_ALL;
 
 #[derive(Debug, Clone)]
 pub struct Photo {
@@ -47,9 +48,8 @@ fn main() {
     let pool = ManagedPool::init(&url, 1).unwrap();
     let db = pool.connect().unwrap();
 
-    let mut query = QueryBuilder::SELECT_ALL();
-
-    query.FROM(&"bazaar.product")
+    let frag = SELECT_ALL()
+         .FROM(&"bazaar.product")
          .LEFT_JOIN("bazaar.product_category"
 		 		.ON("product_category.product_id".EQ(&"product.product_id")
 		 			.AND("product_category.product_id".EQ(&"product.product_id"))
@@ -68,8 +68,8 @@ fn main() {
 			)
          .GROUP_BY(&["category.name","category.id"])
          .HAVING(COUNT(&"*").GT(&1))
-         .ORDER_BY(&["product.name".ASC()]);
-    let frag = query.build(db.as_ref());
+         .ORDER_BY(&["product.name".ASC()])
+         .build(db.as_ref());
 
     let expected = "
 	   SELECT *
