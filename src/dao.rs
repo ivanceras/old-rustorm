@@ -520,6 +520,11 @@ pub trait ToValue {
     fn to_db_type(&self) -> Value;
 }
 
+impl ToValue for Value{
+	fn to_db_type(&self)->Value{
+		self.to_owned()
+	}
+}
 
 impl ToValue for () {
     fn to_db_type(&self) -> Value {

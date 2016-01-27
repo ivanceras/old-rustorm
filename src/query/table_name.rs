@@ -85,7 +85,6 @@ impl <F>ToTableName for F where F: Fn() -> Table{
 	}
 }
 
-
 impl ToTableName for Table {
 
     /// contain the columns for later use when renaming is necessary
@@ -105,10 +104,4 @@ impl ToTableName for Table {
             columns: columns,
         }
     }
-}
-
-impl ToTableName for [&'static str;2]{
-	fn to_table_name(&self)->TableName{
-		unimplemented!()
-	}
 }

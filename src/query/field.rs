@@ -27,7 +27,8 @@ impl Field {
                     name: Some(rename),
                 }
             }
-            _ => unimplemented!(),
+			// renames should only be called on column names
+            _ => unreachable!(),
         }
     }
 }

@@ -173,12 +173,39 @@ impl Query {
     }
 
 
+    pub fn select() -> Self {
+        let mut q = Query::new();
+        q.sql_type = SqlType::SELECT;
+        q
+    }
+
+    pub fn insert() -> Self {
+        let mut q = Query::new();
+        q.sql_type = SqlType::INSERT;
+        q
+    }
+    pub fn update() -> Self {
+        let mut q = Query::new();
+        q.sql_type = SqlType::UPDATE;
+        q
+    }
+    pub fn delete() -> Self {
+        let mut q = Query::new();
+        q.sql_type = SqlType::DELETE;
+        q
+    }
+
     pub fn enumerate_all(&mut self) {
         self.enumerate_all = true;
     }
 
     pub fn all(&mut self){
         self.column("*");
+    }
+	pub fn select_all() -> Self {
+        let mut q = Self::select();
+        q.all();
+        q
     }
 
     fn enumerate(&mut self, column_name: ColumnName){
@@ -274,6 +301,9 @@ impl Query {
 		self.from.append(&mut to_source_field.to_source_field());
     }
 
+    pub fn table(&mut self, to_source_field: &ToSourceField){
+		self.from(to_source_field);
+    }
     /// returns the first table in the from clause
     pub fn get_from_table(&self) -> Option<TableName> {
 		for fr in &self.from{

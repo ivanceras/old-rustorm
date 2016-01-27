@@ -93,19 +93,6 @@ impl <'a>ToColumnName for &'a str{
 	}	
 }
 
-/*
-impl <F>ToColumnName for F where F: Fn()->Column{
-	fn to_column_name(&self)->ColumnName{
-		let column = self();
-        ColumnName{
-            column: column.name,
-            table: column.table,
-            schema: None,
-        }
-	}
-}
-*/
-
 
 impl fmt::Display for ColumnName {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {

@@ -12,6 +12,14 @@ use query::Connector;
 use dao::ToValue;
 use query::source::QuerySource;
 use query::column_name::ToColumnName;
+use std::collections::BTreeMap;
+use uuid::Uuid;
+use chrono::datetime::DateTime;
+use chrono::naive::date::NaiveDate;
+use chrono::naive::time::NaiveTime;
+use chrono::naive::datetime::NaiveDateTime;
+use chrono::offset::utc::UTC;
+use rustc_serialize::json::Json;
 
 pub trait ToOperand{
 	
@@ -34,6 +42,7 @@ impl ToOperand for Operand{
 		self.to_owned()
 	}
 }
+
 
 
 impl <F>ToOperand for F where F:Fn()->Column{
@@ -108,6 +117,7 @@ impl_to_operand_for_static_str_array!(10);
 impl_to_operand_for_static_str_array!(11);
 impl_to_operand_for_static_str_array!(12);
 
+//TODO: Determine why does conflict to impl ToOperand for Fn()->Column
 /*
 impl <T>ToOperand for T where T:ToValue{
 	fn to_operand(&self)->Operand{
@@ -116,23 +126,54 @@ impl <T>ToOperand for T where T:ToValue{
 }
 */
 
-// static str is threaded as column
+
+
+/// static str is threaded as column
 // all other types are values
+
+// Note: &'static str is treated as Column
 impl ToOperand for &'static str{
 	fn to_operand(&self)->Operand{
 		Operand::ColumnName(self.to_column_name())
 	}
 } 
 
+/// String is treated as Value::String
 impl ToOperand for String{
     fn to_operand(&self)->Operand{
         Operand::Value(Value::String(self.to_owned()))
     }
 }
 
-impl ToOperand for i32{
-    fn to_operand(&self)->Operand{
-       Operand::Value(Value::I32(self.to_owned())) 
-    }
+/// A workaround for the conflicts in ToOperand for <T:ToValue>
+
+macro_rules! impl_to_operand_for_to_value{
+	($t:ty, $i:ident) => (
+		impl ToOperand for $t{
+			fn to_operand(&self)->Operand{
+				Operand::Value(Value::$i(self.to_owned()))
+			}
+		}
+		
+	);
 }
 
+impl_to_operand_for_to_value!(bool, Bool);
+impl_to_operand_for_to_value!(i8, I8);
+impl_to_operand_for_to_value!(i16, I16);
+impl_to_operand_for_to_value!(i32, I32);
+impl_to_operand_for_to_value!(i64, I64);
+impl_to_operand_for_to_value!(u8, U8);
+impl_to_operand_for_to_value!(u16, U16);
+impl_to_operand_for_to_value!(u32, U32);
+impl_to_operand_for_to_value!(u64, U64);
+impl_to_operand_for_to_value!(f32, F32);
+impl_to_operand_for_to_value!(f64, F64);
+impl_to_operand_for_to_value!(Vec<u8>, VecU8);
+impl_to_operand_for_to_value!(Uuid,  Uuid);
+impl_to_operand_for_to_value!(DateTime<UTC>, DateTime);
+impl_to_operand_for_to_value!(NaiveDate, NaiveDate);
+impl_to_operand_for_to_value!(NaiveTime, NaiveTime);
+impl_to_operand_for_to_value!(NaiveDateTime, NaiveDateTime);
+impl_to_operand_for_to_value!(BTreeMap<String,Value>, Object);
+impl_to_operand_for_to_value!(Json, Json);

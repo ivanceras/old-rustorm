@@ -119,6 +119,40 @@ macro_rules! fn_has_equality_operand{
     )
 }
 
+macro_rules! fn_has_equality_to_value{
+    ($f:ident, $eq:expr) => (
+        fn $f(&self, to_value: &ToValue)->Filter{
+			let cond = Condition{
+				left: self.to_operand(), 
+				equality: $eq,
+				right: Operand::Value(to_value.to_db_type()) 
+			};
+			Filter{
+				connector: Connector::And,
+				condition:cond,
+				sub_filters: vec![]
+			}
+		}
+    )
+}
+
+macro_rules! fn_has_equality_nulls{
+	($f:ident, $eq: expr) => (
+		fn $f(&self)->Filter{
+			let cond = Condition{
+				left: self.to_operand(), 
+				equality: $eq,
+				right: Operand::Value(Value::None(Type::String)) 
+			};
+			Filter{
+				connector: Connector::And,
+				condition:cond,
+				sub_filters: vec![]
+			}
+		}
+	)
+}
+
 /// implementation of HasEquality for objects that can yield Operand
 impl <T>HasEquality for T where T:ToOperand{
 	
@@ -130,40 +164,10 @@ impl <T>HasEquality for T where T:ToOperand{
     fn_has_equality_operand!(LTE, Equality::LTE);
     fn_has_equality_operand!(IN, Equality::IN);
     fn_has_equality_operand!(NOT_IN, Equality::NOT_IN);
-
-	fn LIKE(&self, to_value: &ToValue)->Filter{
-        unimplemented!()
-    }
-
-	fn ILIKE(&self, to_value: &ToValue)->Filter{
-        unimplemented!()
-    }
-
-    fn IS_NULL(&self)->Filter{
-        let cond = Condition{
-            left: self.to_operand(), 
-            equality: Equality::IS_NULL,
-            right: Operand::Value(Value::None(Type::String)) 
-        };
-        Filter{
-            connector: Connector::And,
-            condition:cond,
-            sub_filters: vec![]
-        }
-    }
-
-    fn IS_NOT_NULL(&self)->Filter{
-        let cond = Condition{
-            left: self.to_operand(), 
-            equality: Equality::IS_NOT_NULL,
-            right: Operand::Value(Value::None(Type::String)) 
-        };
-        Filter{
-            connector: Connector::And,
-            condition:cond,
-            sub_filters: vec![]
-        }
-    }
+	fn_has_equality_to_value!(LIKE, Equality::LIKE);
+	fn_has_equality_to_value!(ILIKE, Equality::ILIKE);
+	fn_has_equality_nulls!(IS_NULL, Equality::IS_NULL);
+	fn_has_equality_nulls!(IS_NOT_NULL, Equality::IS_NOT_NULL);
 
 }
 

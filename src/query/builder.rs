@@ -62,8 +62,7 @@ impl QueryBuilder {
     }
 
     pub fn SELECT() -> Self {
-        let mut q = Query::new();
-        q.sql_type = SqlType::SELECT;
+        let mut q = Query::select();
         QueryBuilder{query: q}
     }
     pub fn SELECT_ALL() ->Self {
@@ -73,13 +72,11 @@ impl QueryBuilder {
     }
 
     pub fn INSERT() -> Self {
-        let mut q = Query::new();
-        q.sql_type = SqlType::INSERT;
+        let mut q = Query::insert();
         QueryBuilder{query: q}
     }
     pub fn UPDATE(to_table_name: &ToTableName) -> Self {
-        let mut q = Query::new();
-        q.sql_type = SqlType::UPDATE;
+        let mut q = Query::update();
         let qs = QuerySource::TableName(to_table_name.to_table_name());
 		let sf = SourceField{
 			source: qs,
@@ -89,8 +86,7 @@ impl QueryBuilder {
         QueryBuilder{query: q}
     }
     pub fn DELETE() -> Self {
-        let mut q = Query::new();
-        q.sql_type = SqlType::DELETE;
+        let mut q = Query::delete();
         QueryBuilder{query: q}
     }
 
