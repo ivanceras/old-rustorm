@@ -1,23 +1,25 @@
 use query::Query;
 use dao::Dao;
+use table::{Table, Column, Foreign};
 
 use dao::Value;
 use database::Database;
 use writer::SqlFrag;
 use database::{SqlOption, BuildMode};
+use regex::Regex;
 
 use mysql::value::Value as MyValue;
 use mysql::consts::ColumnType;
 use mysql::value::FromValue;
 use mysql::value::IntoValue;
 use mysql::error::MyResult;
+use mysql::value::from_row;
 use mysql::conn::Stmt;
 use mysql::conn::pool::MyPool;
 use chrono::naive::datetime::NaiveDateTime;
+use query::Operand;
 
-use table::Table;
-use database::DatabaseDDL;
-use database::DbError;
+use database::{Database, DatabaseDev, DatabaseDDL, DbError};
 use time::Timespec;
 use dao::Type;
 
@@ -270,6 +272,105 @@ impl Mysql{
                         rust_type),
         }
     }
+
+	fn get_table_columns(&self, schema: &str, table: &str) -> Vec<Column> {
+        let sql = format!("select column_name, is_nullable, data_type from information_schema.columns where table_schema='{}' and table_name='{}'", schema, table);
+        
+        let conn = self.get_connection();
+        let stmt = conn.prepare(&sql).unwrap();
+        let mut columns = Vec::new();
+        for row in stmt.execute((&schema, &table)).unwrap() {
+            let (name, not_null, db_data_type) = from_row::<(String, bool, String)>(row.unwrap());
+            
+            // let name: String = row.get("column_name");
+            // let not_null: bool = row.get("is_nullable");
+            // let db_data_type: String = row.get("data_type");
+            //TODO: temporarily regex the data type to extract the size as well
+            let re = match Regex::new("(.+)\\((.+)\\)") {
+                Ok(re) => re,
+                Err(err) => panic!("{}", err),
+            };
+
+            let db_data_type = if re.is_match(&db_data_type) {
+                let cap = re.captures(&db_data_type).unwrap();
+                let data_type = cap.at(1).unwrap().to_owned();
+                // TODO::can be use in the later future
+                // let size = cap.at(2).unwrap().to_owned();
+                data_type
+            } else {
+                db_data_type
+            };
+
+            // let is_primary: bool = row.get("is_primary");
+            // let is_unique: bool = row.get("is_unique");
+            let is_primary: bool = false;
+            let is_unique: bool = false;
+
+            // let default: Option<Operand> = match row.get_opt("default") {
+            //     Ok(x) => Some(Operand::Value(Value::String(x))),
+            //     Err(_) => None,
+            // };
+            let default: Option<Operand> = None;
+            // let comment: Option<String> = match row.get_opt("comment") {
+            //     Ok(x) => Some(x),
+            //     Err(_) => None,
+            // };
+            let comment: Option<String> = None;
+
+            // let foreign_schema: Option<String> = match row.get_opt("foreign_schema") {
+            //     Ok(x) => Some(x),
+            //     Err(_) => None,
+            // };
+            let foreign_schema: Option<String> = None;
+            
+            // let foreign_column: Option<String> = match row.get_opt("foreign_column") {
+            //     Ok(x) => Some(x),
+            //     Err(_) => None,
+            // };
+            let foreign_column: Option<String> = None;
+            
+            // let foreign_table: Option<String> = match row.get_opt("foreign_table") {
+            //     Ok(x) => Some(x),
+            //     Err(_) => None,
+            // };
+            let foreign_table: Option<String> = None;
+
+            let foreign = if foreign_table.is_some() && foreign_column.is_some() &&
+                             foreign_schema.is_some() {
+                Some(Foreign {
+                    schema: foreign_schema,
+                    table: foreign_table.unwrap(),
+                    column: foreign_column.unwrap(),
+                })
+
+            } else {
+                None
+            };
+            let (_, data_type) = self.dbtype_to_rust_type(&db_data_type);
+            let column = Column {
+                name: name,
+                data_type: data_type,
+                db_data_type: db_data_type,
+                comment: comment,
+                is_primary: is_primary,
+                is_unique: is_unique,
+                default: default,
+                not_null: not_null,
+                foreign: foreign,
+                is_inherited: false, /* will be corrected later in the get_meta_data */
+            };
+            columns.push(column);
+        }
+        
+        columns
+        
+    }
+
+    fn get_table_comment(&self, schema: &str, table: &str) -> Option<String> {
+        
+        None
+    }
+
 
     fn get_prepared_statement<'a>(&'a self, sql: &'a str) -> MyResult<Stmt> {
         self.pool.as_ref().unwrap().prepare(sql)
