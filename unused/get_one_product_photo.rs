@@ -59,7 +59,7 @@ fn main() {
 
     let photo: Photo = Query::select_all()
                            .column("photo.url")
-                           .from_table("bazaar.product")
+                           .from(&"bazaar.product")
                            .left_join_table("bazaar.product_photo",
                                             "product.product_id",
                                             "product_photo.product_id")

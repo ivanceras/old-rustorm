@@ -18,6 +18,8 @@ use regex::Error as RegexError;
 use rusqlite::SqliteError;
 use platform::PlatformError;
 use dao::Type;
+use query::source::{SourceField,QuerySource,ToSourceField};
+
 
 /// SqlOption, contains the info about the features and quirks of underlying database
 #[derive(PartialEq)]
@@ -270,32 +272,9 @@ pub trait Database {
                     w.append(&column_name.complete_name());
                 }
             }
-            Operand::TableName(ref table_name) => {
-                if self.sql_options().contains(&SqlOption::UsesSchema) {
-                    w.append(&table_name.complete_name());
-                } else {
-                    w.append(&table_name.name);
-                }
-            }
-            Operand::Function(ref function) => {
-                w.append("(");
-                let mut do_comma = false;
-                for param in &function.params {
-                    if do_comma {
-                        w.commasp();
-                    } else {
-                        do_comma = true;
-                    }
-                    self.build_operand(w, parent_query, param);
-                }
-                w.append(")");
-            }
-            Operand::Query(ref _q) => {
-                //panic!("TODO: causes error Attributes 'readnone and readonly' are incompatible! \
-                //        LLVM ERROR: Broken function found, compilation aborted!")
-                let sql_frag = &self.build_query(&_q, w.build_mode.clone());
-                w.append(&sql_frag.sql);
-            }
+			Operand::QuerySource(ref query_source) => {
+				self.build_query_source(w, parent_query, query_source);
+			}
             Operand::Value(ref value) => {
                 w.parameter(value.clone());
             }
@@ -381,13 +360,55 @@ pub trait Database {
             None => (),
         }
     }
+	
+    fn build_query_source(&self, w: &mut SqlFrag, parent_query: &Query, query_source: &QuerySource) {
+		match *query_source{
+            QuerySource::TableName(ref table_name) => {
+                if self.sql_options().contains(&SqlOption::UsesSchema) {
+                    w.append(&table_name.complete_name());
+                } else {
+                    w.append(&table_name.name);
+                }
+            }
+            QuerySource::Function(ref function) => {
+				w.sp();
+				w.append(&function.function);
+                w.append("(");
+                let mut do_comma = false;
+                for param in &function.params {
+                    if do_comma {
+                        w.commasp();
+                    } else {
+                        do_comma = true;
+                    }
+                    self.build_operand(w, parent_query, param);
+                }
+                w.append(")");
+            }
+            QuerySource::Query(ref _q) => {
+                let sql_frag = &self.build_query(&_q, w.build_mode.clone());
+                w.append(&sql_frag.sql);
+            }
+		}
+	}
 
+    fn build_source_field(&self, w: &mut SqlFrag, parent_query: &Query, source_field: &SourceField) {
+        self.build_query_source(w, parent_query, &source_field.source);
+        match source_field.rename {
+            Some(ref rename) => {
+                w.append(" AS ");
+                w.append(rename);
+            }
+            None => (),
+        }
+    }
 
     fn build_filter(&self, w: &mut SqlFrag, parent_query: &Query, filter: &Filter) {
         if !filter.sub_filters.is_empty() {
             w.append("( ");
         }
         self.build_condition(w, parent_query, &filter.condition);
+		w.sp();	
         for filt in &filter.sub_filters {
             match filt.connector {
                 Connector::And => {
@@ -410,7 +431,7 @@ pub trait Database {
         let mut do_and = false;
         for filter in filters {
             if do_and {
-                w.left_river("AND ");
+                w.left_river(" AND ");
             } else {
                 do_and = true;
             }
@@ -446,15 +467,13 @@ pub trait Database {
         self.build_enumerated_fields(&mut w, query, &query.enumerated_fields); //TODO: add support for column_sql, fields, functions
         w.left_river("FROM");
 
-        assert!(query.from.is_some(),
+        assert!(!query.from.is_empty(),
                 "There should be table, query, function to select from");
-
-        match query.from {
-            Some(ref field) => {
-                self.build_field(&mut w, query, field);
-            }
-            None => println!("Warning: No from in this query"),
-        }
+		let mut do_comma = false;
+		for field in &query.from{
+			if do_comma {w.commasp();}else{do_comma = true;}
+			self.build_source_field(&mut w, query, field);
+		}
         if !query.joins.is_empty() {
             for join in &query.joins {
                 match join.modifier {
@@ -480,24 +499,8 @@ pub trait Database {
                 }
                 w.append("JOIN ");
                 w.append(&join.table_name.complete_name());
-                w.append(" ");
-                assert!(join.column1.len() == join.column2.len(),
-                        "There should be equal number of corresponding columns to join");
-                let mut cnt = 0;
-                let mut do_and = false;
-                for jc in &join.column1 {
-                    if do_and {
-                        w.right_river("AND ");
-                    } else {
-                        w.right_river("ON ");
-                        do_and = true;
-                    }
-                    w.append(jc);
-                    w.append(" = ");
-                    w.append(&join.column2[cnt]);
-                    w.append(" ");
-                    cnt += 1;
-                }
+				w.right_river("ON ");
+				self.build_filter(&mut w, query, &join.on);
             }
         }
 
@@ -563,23 +566,17 @@ pub trait Database {
                 };
             }
         }
-        
-        match query.get_limit() {
+        match query.range.limit{
             Some(limit) => {
                 w.left_river("LIMIT ");
-                match limit.limit{
-                    Some(limit) => {
-                        w.append(&format!("{}", limit));
-                    },
-                    None => ()
-                }
-                match limit.offset{
-                    Some(offset) => {
-                        w.left_river("OFFSET ");
-                        w.append(&format!("{}", offset));
-                    },
-                    None => (),
-                }
+                w.append(&format!("{}", limit));
+            },
+            None => ()
+        }
+        match query.range.offset{
+            Some(offset) => {
+                w.left_river("OFFSET ");
+                w.append(&format!("{}", offset));
             },
             None => (),
         }

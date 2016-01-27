@@ -10,7 +10,36 @@ use rustorm::query::Equality;
 use rustorm::dao::{Dao, IsDao};
 use rustorm::pool::ManagedPool;
 use rustorm::table::{IsTable, Table};
+use rustorm::query::ToColumnName;
+use rustorm::query::Filter;
+use rustorm::query::HasEquality;
 
+use bazaar::product;
+
+mod bazaar{
+	use rustorm::table::{IsTable, Table};
+    pub fn product() -> Table {
+        Table {
+            schema: Some("bazaar".to_string()),
+            name: "product".to_string(),
+            parent_table: None,
+            sub_table: vec![],
+            comment: None,
+            columns: vec![],
+            is_view: false,
+        }
+    }
+	pub mod product{
+		use rustorm::query::ColumnName;
+
+		pub fn name()->ColumnName{
+			ColumnName::from_str("product.name")
+		}	
+		pub fn description()->ColumnName{
+			ColumnName::from_str("product.description")
+		}	
+	}
+}
 
 
 #[derive(Debug, Clone)]
@@ -63,12 +92,19 @@ fn main() {
     let pool = ManagedPool::init(&url, 1).unwrap();
     let db = pool.connect().unwrap();
 
-    let prod: Product = Query::select_all()
-                            .from_table("bazaar.product")
-                            .filter("name", Equality::EQ, &"GTX660 Ti videocard")
-                            .collect_one(db.as_ref())
-                            .unwrap();
+	let mut query = Query::SELECT_ALL();
+		
+					query.FROM(&bazaar::product)
+					.WHERE(product::name.EQ(&"GTX660 Ti videocard") & 
+					product::description.NEQ(&"no description"));
 
+    let prod: Result<Product,_> =  query
+                            .collect_one(db.as_ref());
+
+	let sql = query.debug_build(db.as_ref());
+	println!("sql: {}", sql);
+
+	let prod = prod.unwrap();
     println!("{}  {}  {:?}",
              prod.product_id,
              prod.name.unwrap(),

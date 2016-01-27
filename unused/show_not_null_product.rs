@@ -6,6 +6,7 @@ extern crate rustc_serialize;
 use uuid::Uuid;
 
 use rustorm::query::Query;
+use rustorm::query::Equality;
 use rustorm::dao::{Dao, IsDao};
 use rustorm::pool::ManagedPool;
 use rustorm::table::{IsTable, Table};
@@ -26,7 +27,7 @@ impl IsDao for Product{
             description: dao.get_opt("description"),
         }
     }
-
+    
     fn to_dao(&self) -> Dao {
         let mut dao = Dao::new();
         dao.set("product_id", &self.product_id);
@@ -43,7 +44,6 @@ impl IsDao for Product{
 }
 
 impl IsTable for Product{
-
     fn table() -> Table {
         Table {
             schema: Some("bazaar".to_string()),
@@ -64,7 +64,8 @@ fn main() {
     let db = pool.connect().unwrap();
 
     let products: Vec<Product> = Query::select_all()
-                                     .from_table("bazaar.product")
+                                     .from(&"bazaar.product")
+                                     .filter("name", Equality::IS_NOT_NULL, &())
                                      .collect(db.as_ref())
                                      .unwrap();
 

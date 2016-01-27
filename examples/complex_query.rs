@@ -5,10 +5,18 @@ extern crate rustc_serialize;
 
 use uuid::Uuid;
 
-use rustorm::query::Query;
+use rustorm::query::{Query,QueryBuilder};
 use rustorm::query::Equality;
 use rustorm::dao::{Dao, IsDao};
 use rustorm::pool::ManagedPool;
+use rustorm::query::HasEquality;
+use rustorm::query::function::COUNT;
+use rustorm::query::ToTableName;
+use rustorm::query::HasDirection;
+use rustorm::query::order::ToOrder;
+use rustorm::query::join::ToJoin;
+use rustorm::query::operand::ToOperand;
+use rustorm::query::builder::SELECT_ALL;
 
 #[derive(Debug, Clone)]
 pub struct Photo {
@@ -40,43 +48,45 @@ fn main() {
     let pool = ManagedPool::init(&url, 1).unwrap();
     let db = pool.connect().unwrap();
 
-    let mut query = Query::select_all();
+    let frag = SELECT_ALL()
+         .FROM(&"bazaar.product")
+         .LEFT_JOIN("bazaar.product_category"
+		 		.ON("product_category.product_id".EQ(&"product.product_id")
+		 			.AND("product_category.product_id".EQ(&"product.product_id"))
+				)
+			)
+         .LEFT_JOIN("bazaar.category"
+		 		.ON("category.category_id".EQ(&"product_category.category_id")))
 
-    query.from_table("bazaar.product")
-         .left_join_table("bazaar.product_category",
-                          "product_category.product_id",
-                          "product.product_id")
-         .left_join_table("bazaar.category",
-                          "category.category_id",
-                          "product_category.category_id")
-         .left_join_table("product_photo",
-                          "product.product_id",
-                          "product_photo.product_id")
-         .left_join_table("bazaar.photo", "product_photo.photo_id", "photo.photo_id")
-         .filter("product.name", Equality::EQ, &"GTX660 Ti videocard")
-         .filter("category.name", Equality::EQ, &"Electronic")
-         .group_by(vec!["category.name"])
-         .having("count(*)", Equality::GT, &1)
-         .asc("product.name")
-         .desc("product.created");
-    let frag = query.build(db.as_ref());
+         .LEFT_JOIN("product_photo"
+                .ON("product.product_id".EQ(&"product_photo.product_id")))
+         .LEFT_JOIN("bazaar.photo"
+		 	    .ON("product_photo.photo_id".EQ(&"photo.photo_id")))
+         .WHERE(
+		 	"product.name".EQ(&"GTX660 Ti videocard".to_owned())
+         	.AND("category.name".EQ(&"Electronic".to_owned()))
+			)
+         .GROUP_BY(&["category.name","category.id"])
+         .HAVING(COUNT(&"*").GT(&1))
+         .ORDER_BY(&["product.name".ASC()])
+         .build(db.as_ref());
 
     let expected = "
-   SELECT *
+	   SELECT *
      FROM bazaar.product
-          LEFT JOIN bazaar.product_category\x20
-          ON product_category.product_id = product.product_id\x20
-          LEFT JOIN bazaar.category\x20
-          ON category.category_id = product_category.category_id\x20
-          LEFT JOIN product_photo\x20
-          ON product.product_id = product_photo.product_id\x20
-          LEFT JOIN bazaar.photo\x20
-          ON product_photo.photo_id = photo.photo_id\x20
-    WHERE product.name = $1\x20
-      AND category.name = $2\x20
- GROUP BY category.name\x20
-   HAVING count(*) > $3\x20
- ORDER BY product.name ASC, product.created DESC".to_string();
+          LEFT JOIN bazaar.product_category
+          ON ( product_category.product_id = product.product_id AND product_category.product_id = product.product_id  )
+          LEFT JOIN bazaar.category
+          ON category.category_id = product_category.category_id 
+          LEFT JOIN product_photo
+          ON product.product_id = product_photo.product_id 
+          LEFT JOIN bazaar.photo
+          ON product_photo.photo_id = photo.photo_id 
+    WHERE ( product.name = $1  AND category.name = $2   )
+ GROUP BY category.name ,category.id 
+   HAVING  COUNT(*) > $3  
+ ORDER BY product.name ASC"
+ .to_string();
     println!("actual:   {{\n{}}} [{}]", frag.sql, frag.sql.len());
     println!("expected: {{{}}} [{}]", expected, expected.len());
     assert!(frag.sql.trim() == expected.trim());

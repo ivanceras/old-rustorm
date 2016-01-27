@@ -9,7 +9,6 @@ use rustorm::query::Query;
 use rustorm::query::Equality;
 use rustorm::dao::{Dao, IsDao};
 use rustorm::pool::ManagedPool;
-use rustorm::query::{Join, Modifier, JoinType, ToTableName};
 
 #[derive(Debug, Clone)]
 pub struct Photo {
@@ -36,15 +35,14 @@ impl IsDao for Photo{
     }
 }
 
-#[test]
-fn test_inner_join_query() {
+fn main() {
     let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v8";
     let pool = ManagedPool::init(&url, 1).unwrap();
     let db = pool.connect().unwrap();
 
     let mut query = Query::select_all();
 
-    query.from_table("bazaar.product")
+    query.from(&"bazaar.product")
          .inner_join_table("bazaar.product_category",
                           "product_category.product_id",
                           "product.product_id")
@@ -82,61 +80,5 @@ fn test_inner_join_query() {
     println!("actual:   {{\n{}}} [{}]", frag.sql, frag.sql.len());
     println!("expected: {{{}}} [{}]", expected, expected.len());
     assert!(frag.sql.trim() == expected.trim());
-
-}
-
-#[test]
-fn test_left_inner_join_query() {
-    let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v8";
-    let pool = ManagedPool::init(&url, 1).unwrap();
-    let db = pool.connect().unwrap();
-
-    let mut query = Query::select_all();
-
-	let join = Join {
-            modifier: Some(Modifier::LEFT),
-            join_type: Some(JoinType::INNER),
-            table_name: "bazaar.product_category".to_table_name(),
-            column1: vec!["product_category.product_id".to_owned()],
-            column2: vec!["product.product_id".to_owned()],
-        };
-
-    query.from_table("bazaar.product")
-         .join(join)
-         .inner_join_table("bazaar.category",
-                          "category.category_id",
-                          "product_category.category_id")
-         .left_join_table("product_photo",
-                          "product.product_id",
-                          "product_photo.product_id")
-         .inner_join_table("bazaar.photo", "product_photo.photo_id", "photo.photo_id")
-         .filter("product.name", Equality::EQ, &"GTX660 Ti videocard")
-         .filter("category.name", Equality::EQ, &"Electronic")
-         .group_by(vec!["category.name"])
-         .having("count(*)", Equality::GT, &1)
-         .asc("product.name")
-         .desc("product.created");
-    let frag = query.build(db.as_ref());
-
-    let expected = "
-   SELECT *
-     FROM bazaar.product
-          LEFT\x20
-          INNER JOIN bazaar.product_category\x20
-          ON product_category.product_id = product.product_id\x20
-          INNER JOIN bazaar.category\x20
-          ON category.category_id = product_category.category_id\x20
-          LEFT JOIN product_photo\x20
-          ON product.product_id = product_photo.product_id\x20
-          INNER JOIN bazaar.photo\x20
-          ON product_photo.photo_id = photo.photo_id\x20
-    WHERE product.name = $1\x20
-      AND category.name = $2\x20
- GROUP BY category.name\x20
-   HAVING count(*) > $3\x20
- ORDER BY product.name ASC, product.created DESC".to_string();
-    println!("actual:   {{\n{:?}}} [{}]", frag.sql, frag.sql.len());
-    println!("expected: {{\n{:?}}} [{}]", expected, expected.len());
-    assert_eq!(frag.sql.trim(), expected.trim());
 
 }

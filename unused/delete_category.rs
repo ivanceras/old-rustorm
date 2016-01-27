@@ -14,7 +14,7 @@ fn main() {
     let pool = ManagedPool::init(&url, 1).unwrap();
     let db = pool.connect().unwrap();
     match Query::delete()
-               .from_table("bazaar.category")
+               .from(&"bazaar.category")
                .filter("name", Equality::LIKE, &"Test%")
                .execute(db.as_ref()) {
 

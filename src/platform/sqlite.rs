@@ -513,6 +513,7 @@ impl DatabaseDev for Sqlite {
                     let column_foreign = self.get_column_foreign(&foreign, &column);
 					let (_, data_type) = self.dbtype_to_rust_type(&db_data_type);
                     let column = Column {
+                        table: Some(table.to_owned()),
                         name: column,
                         data_type: data_type,
                         db_data_type: db_data_type,

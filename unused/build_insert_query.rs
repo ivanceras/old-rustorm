@@ -34,16 +34,14 @@ impl IsDao for Photo{
     }
 }
 
-
-#[test]
-fn test_insert_query() {
+fn main() {
     let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v8";
     let pool = ManagedPool::init(&url, 1).unwrap();
     let db = pool.connect().unwrap();
 
     let mut query = Query::insert();
 
-    query.into_table("bazaar.product")
+    query.INTO_TABLE("bazaar.product")
          .set("name", &"product1")
          .returns(vec!["category.name"]);
 

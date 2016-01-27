@@ -10,6 +10,33 @@ use rustorm::query::Equality;
 use rustorm::dao::{Dao, IsDao};
 use rustorm::pool::ManagedPool;
 use rustorm::table::{IsTable, Table};
+use rustorm::query::ToColumnName;
+use rustorm::query::Filter;
+use rustorm::query::HasEquality;
+use std::ops::Deref;
+
+mod bazaar{
+	use rustorm::table::{IsTable, Table};
+    pub fn product() -> Table {
+        Table {
+            schema: Some("bazaar".to_string()),
+            name: "product".to_string(),
+            parent_table: None,
+            sub_table: vec![],
+            comment: None,
+            columns: vec![],
+            is_view: false,
+        }
+    }
+	mod product{
+		use rustorm::query::ColumnName;
+
+
+		pub fn name()->ColumnName{
+			ColumnName::from_str("product.name")
+		}	
+	}
+}
 
 
 #[derive(Debug, Clone)]
@@ -27,7 +54,6 @@ impl IsDao for Product{
             description: dao.get_opt("description"),
         }
     }
-    
     fn to_dao(&self) -> Dao {
         let mut dao = Dao::new();
         dao.set("product_id", &self.product_id);
@@ -44,6 +70,7 @@ impl IsDao for Product{
 }
 
 impl IsTable for Product{
+
     fn table() -> Table {
         Table {
             schema: Some("bazaar".to_string()),
@@ -57,24 +84,19 @@ impl IsTable for Product{
     }
 }
 
-
 fn main() {
     let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v8";
     let pool = ManagedPool::init(&url, 1).unwrap();
     let db = pool.connect().unwrap();
 
-    let products: Vec<Product> = Query::select_all()
-                                     .from_table("bazaar.product")
-                                     .filter("name", Equality::IS_NOT_NULL, &())
-                                     .collect(db.as_ref())
-                                     .unwrap();
+    let prod: Product = Query::SELECT_ALL()
+                            .FROM(&bazaar::product)
+                            .WHERE("name".EQ(&"GTX660 Ti videocard"))
+                            .collect_one(&*db)
+                            .unwrap();
 
-    for prod in products {
-        let name = prod.name.unwrap();
-        let desc = match prod.description {
-            Some(desc) => desc,
-            None => "".to_string(),
-        };
-        println!("{}  {}  {:?}", prod.product_id, name, desc);
-    }
+    println!("{}  {}  {:?}",
+             prod.product_id,
+             prod.name.unwrap(),
+             prod.description);
 }

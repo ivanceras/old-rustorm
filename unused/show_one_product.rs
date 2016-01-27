@@ -7,11 +7,10 @@ use uuid::Uuid;
 
 use rustorm::query::Query;
 use rustorm::query::Equality;
-
+use rustorm::dao::{Dao, IsDao};
 use rustorm::pool::ManagedPool;
-use rustorm::database::Database;
-use rustorm::dao::{IsDao, Dao};
 use rustorm::table::{IsTable, Table};
+
 
 
 #[derive(Debug, Clone)]
@@ -29,7 +28,6 @@ impl IsDao for Product{
             description: dao.get_opt("description"),
         }
     }
-
     fn to_dao(&self) -> Dao {
         let mut dao = Dao::new();
         dao.set("product_id", &self.product_id);
@@ -46,6 +44,7 @@ impl IsDao for Product{
 }
 
 impl IsTable for Product{
+
     fn table() -> Table {
         Table {
             schema: Some("bazaar".to_string()),
@@ -59,43 +58,19 @@ impl IsTable for Product{
     }
 }
 
-/// on a webserver this will be the main thread, where it instantiate
-/// the connection pool in the entirety of the application
-/// when a request in made, a thread is spawned for that request
-/// with an access to the a connection pool
 fn main() {
     let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v8";
-    let pool = ManagedPool::init(url, 1);
-    match pool {
-        Ok(pool) => {
-            let db = pool.connect();
+    let pool = ManagedPool::init(&url, 1).unwrap();
+    let db = pool.connect().unwrap();
 
-            match db {
-                Ok(db) => {
-                    show_product(db.as_ref());//borrow a database
-                }
-                Err(e) => {
-                    println!("Unable to connect to database {}", e);
-                }
-            }
-        }
-        Err(_) => {
-            panic!("Unable to connect to database")
-        }
-    }
-}
-
-/// a dispatched controller with an accesss to a database reference
-fn show_product(db: &Database) {
-    let prod: Product = Query::select_all()
-                            .from_table("bazaar.product")
+    let prod: Product = Query::SELECT_ALL()
+                            .FROM(&"bazaar::product")
                             .filter("name", Equality::EQ, &"GTX660 Ti videocard")
-                            .collect_one(db)
+                            .collect_one(db.as_ref())
                             .unwrap();
 
     println!("{}  {}  {:?}",
              prod.product_id,
              prod.name.unwrap(),
              prod.description);
-
 }

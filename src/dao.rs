@@ -521,6 +521,12 @@ pub trait ToValue {
     fn to_db_type(&self) -> Value;
 }
 
+impl ToValue for Value{
+	fn to_db_type(&self)->Value{
+		self.to_owned()
+	}
+}
+
 impl ToValue for () {
     fn to_db_type(&self) -> Value {
         Value::None(Type::String)
@@ -591,12 +597,13 @@ impl ToValue for f64 {
         Value::F64(self.clone())
     }
 }
-
+/*
 impl <'a>ToValue for &'a str {
     fn to_db_type(&self) -> Value {
         Value::String((*self).to_owned())
     }
 }
+*/
 
 impl ToValue for String {
     fn to_db_type(&self) -> Value {
@@ -809,40 +816,3 @@ impl FromValue for Json {
     }
 }
 
-#[test]
-fn test_dao() {
-    let s = "lee";
-    let n = 20i8;
-    let date = UTC::now();
-    let mut d = Dao::new();
-    d.set("name", &s);
-    d.set("age", &n);
-    d.set("created", &date);
-    let name: String = d.get("name");
-    let age: i8 = d.get("age");
-    let created: DateTime<UTC> = d.get("created");
-    let none: Option<u8> = d.get_opt("none");
-    assert_eq!(name, s);
-    assert_eq!(age, 20i8);
-    assert_eq!(date, created);
-    assert_eq!(none, None);
-}
-
-#[test]
-fn test_json() {
-    let s = "lee";
-    let n = 20i8;
-    let date = UTC::now();
-    let mut dao = Dao::new();
-    dao.set("name", &s);
-    dao.set("age", &n);
-    dao.set("created", &date);
-    let _: String = dao.get("name");
-    let _: i8 = dao.get("age");
-    let _: DateTime<UTC> = dao.get("created");
-    let _: Option<u8> = dao.get_opt("none");
-    let expected = r#"{"age":20,"created":{"datetime":{"date":{"ymdf":16510090},"time":{"secs":28087,"frac":451865185}},"offset":{}},"name":"lee"}"#;
-    let actual = json::encode(&dao).unwrap();
-    println!("expected: {}", expected);
-    println!("actual: {}", actual);
-}

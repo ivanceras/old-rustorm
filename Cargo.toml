@@ -1,6 +1,6 @@
 [package]
 name = "rustorm"
-version = "0.4.3"
+version = "0.5.0"
 authors = [ "Jovansonlee Cesar <ivanceras@gmail.com>" ]
 license = "MIT"
 description = "An ORM for rust"
@@ -13,7 +13,6 @@ keywords = ["orm", "database", "sql"]
 name = "rustorm"
 
 [features]
-default = ["mysql"]
 sqlite = ["rusqlite","r2d2_sqlite"]
 
 [dependencies.chrono]

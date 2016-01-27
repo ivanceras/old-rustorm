@@ -6,7 +6,6 @@ extern crate rustc_serialize;
 use uuid::Uuid;
 
 use rustorm::query::Query;
-use rustorm::query::Equality;
 use rustorm::dao::{Dao, IsDao};
 use rustorm::pool::ManagedPool;
 use rustorm::table::{IsTable, Table};
@@ -42,6 +41,7 @@ impl IsDao for Product{
         dao
     }
 }
+
 impl IsTable for Product{
 
     fn table() -> Table {
@@ -57,19 +57,23 @@ impl IsTable for Product{
     }
 }
 
+
 fn main() {
     let url = "postgres://postgres:p0stgr3s@localhost/bazaar_v8";
     let pool = ManagedPool::init(&url, 1).unwrap();
     let db = pool.connect().unwrap();
 
-    let prod: Product = Query::select_all()
-                            .from_table("bazaar.product")
-                            .filter("name", Equality::EQ, &"GTX660 Ti videocard")
-                            .collect_one(db.as_ref())
-                            .unwrap();
+    let products: Vec<Product> = Query::select_all()
+                                     .from(&"bazaar.product")
+                                     .collect(db.as_ref())
+                                     .unwrap();
 
-    println!("{}  {}  {:?}",
-             prod.product_id,
-             prod.name.unwrap(),
-             prod.description);
+    for prod in products {
+        let name = prod.name.unwrap();
+        let desc = match prod.description {
+            Some(desc) => desc,
+            None => "".to_string(),
+        };
+        println!("{}  {}  {:?}", prod.product_id, name, desc);
+    }
 }
