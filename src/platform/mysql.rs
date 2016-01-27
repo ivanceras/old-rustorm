@@ -350,6 +350,7 @@ impl Mysql{
             };
             let (_, data_type) = self.dbtype_to_rust_type(&db_data_type);
             let column = Column {
+                table: Some(table.to_owned()),
                 name: name,
                 data_type: data_type,
                 db_data_type: db_data_type,
