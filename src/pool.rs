@@ -58,6 +58,8 @@ impl Platform {
             Platform::Postgres(ref pg) => pg,
             #[cfg(feature = "sqlite")]
             Platform::Sqlite(ref lite) => lite,
+            #[cfg(feature = "mysql")]
+            Platform::Mysql(ref my) => my,
             _ => unimplemented!(),
         }
     }

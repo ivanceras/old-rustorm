@@ -337,7 +337,8 @@ impl DaoResult {
         if casted.len() < 1 {
             return None;
         }
-        assert!(casted.len() == 1);
+	// why here assert??!!!
+        //assert!(casted.len() == 1);
         Some(casted.remove(0))
     }
 }
