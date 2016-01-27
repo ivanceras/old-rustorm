@@ -5,6 +5,7 @@ use dao::Value;
 use std::ops::BitAnd;
 use std::ops::BitOr;
 use query::operand::ToOperand;
+use dao::Type;
 
 /// expression has left operand,
 /// equality and right operand
@@ -101,47 +102,34 @@ pub trait HasEquality{
 	fn NOT_IN(&self, to_operand: &ToOperand)->Filter;
 }
 
+macro_rules! fn_has_equality_operand{
+    ($f:ident, $eq:expr) => (
+        fn $f(&self, to_operand: &ToOperand)->Filter{
+            let cond = Condition{
+                left: self.to_operand(), 
+                equality: $eq,
+                right: to_operand.to_operand() 
+            };
+            Filter{
+                connector: Connector::And,
+                condition:cond,
+                sub_filters: vec![]
+            }
+        }
+    )
+}
+
 /// implementation of HasEquality for objects that can yield Operand
 impl <T>HasEquality for T where T:ToOperand{
 	
-	fn EQ(&self, to_operand: &ToOperand)->Filter{
-		let cond = Condition{
-			left: self.to_operand(), 
-			equality: Equality::EQ,
-			right: to_operand.to_operand() 
-		};
-		Filter{
-			connector: Connector::And,
-			condition:cond,
-			sub_filters: vec![]
-		}
-	}
-	fn GT(&self, to_operand: &ToOperand)->Filter{
-		let cond = Condition{
-			left: self.to_operand(), 
-			equality: Equality::GT,
-			right: to_operand.to_operand() 
-		};
-		Filter{
-			connector: Connector::And,
-			condition:cond,
-			sub_filters: vec![]
-		}
-	}
-	fn NEQ(&self, to_operand: &ToOperand)->Filter{
-        unimplemented!()
-    }
-	fn GTE(&self, to_operand: &ToOperand)->Filter{
-        unimplemented!()
-    }
-
-	fn LT(&self, to_operand: &ToOperand)->Filter{
-        unimplemented!()
-    }
-
-	fn LTE(&self, to_operand: &ToOperand)->Filter{
-        unimplemented!()
-    }
+    fn_has_equality_operand!(EQ, Equality::EQ);
+    fn_has_equality_operand!(NEQ, Equality::NEQ);
+    fn_has_equality_operand!(GT, Equality::GT);
+    fn_has_equality_operand!(GTE, Equality::GTE);
+    fn_has_equality_operand!(LT, Equality::LT);
+    fn_has_equality_operand!(LTE, Equality::LTE);
+    fn_has_equality_operand!(IN, Equality::IN);
+    fn_has_equality_operand!(NOT_IN, Equality::NOT_IN);
 
 	fn LIKE(&self, to_value: &ToValue)->Filter{
         unimplemented!()
@@ -152,19 +140,30 @@ impl <T>HasEquality for T where T:ToOperand{
     }
 
     fn IS_NULL(&self)->Filter{
-        unimplemented!()
+        let cond = Condition{
+            left: self.to_operand(), 
+            equality: Equality::IS_NULL,
+            right: Operand::Value(Value::None(Type::String)) 
+        };
+        Filter{
+            connector: Connector::And,
+            condition:cond,
+            sub_filters: vec![]
+        }
     }
 
     fn IS_NOT_NULL(&self)->Filter{
-        unimplemented!()
+        let cond = Condition{
+            left: self.to_operand(), 
+            equality: Equality::IS_NOT_NULL,
+            right: Operand::Value(Value::None(Type::String)) 
+        };
+        Filter{
+            connector: Connector::And,
+            condition:cond,
+            sub_filters: vec![]
+        }
     }
 
-	fn IN(&self, to_operand: &ToOperand)->Filter{
-        unimplemented!()
-    }
-
-	fn NOT_IN(&self, to_operand: &ToOperand)->Filter{
-        unimplemented!()
-    }
 }
 
