@@ -96,7 +96,7 @@ impl Mysql{
         let value = row.get(index);
         match value {
             Some(value) => {
-                    println!("sql to rust {:?} type: {:?}", value, column_type);
+                    //println!("sql to rust {:?} type: {:?}", value, column_type);
                     match *value{
                         MyValue::NULL => {
                             Value::None(Type::String)// should put Type::Unknown
