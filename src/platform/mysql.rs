@@ -16,7 +16,11 @@ use mysql::value::from_row;
 use mysql::conn::Stmt;
 use mysql::conn::pool::MyPool;
 use chrono::naive::datetime::NaiveDateTime;
+use chrono::datetime::DateTime;
+use chrono::offset::utc::UTC;
+
 use query::Operand;
+
 
 use database::{Database, DatabaseDev, DatabaseDDL, DbError};
 use time::Timespec;
@@ -92,7 +96,7 @@ impl Mysql{
         let value = row.get(index);
         match value {
             Some(value) => {
-                    println!("sql to rust {:?} type: {:?}", value, column_type);
+                    //println!("sql to rust {:?} type: {:?}", value, column_type);
                     match *value{
                         MyValue::NULL => {
                             Value::None(Type::String)// should put Type::Unknown
@@ -129,7 +133,8 @@ impl Mysql{
                                     let v: Timespec = FromValue::from_value(value.clone());
                                     let t = NaiveDateTime::from_timestamp(v.sec, v.nsec as u32);
                                     println!("time: {}",t);
-                                    Value::NaiveDateTime(t)
+                                    let t2 = DateTime::from_utc(t, UTC);
+                                    Value::DateTime(t2)
                                 },
                                 ColumnType::MYSQL_TYPE_LONGLONG =>  {
                                     let v: i64 = FromValue::from_value(value.clone());
@@ -142,22 +147,28 @@ impl Mysql{
                                 ColumnType::MYSQL_TYPE_DATE => {
                                     let v: Timespec = FromValue::from_value(value.clone());
                                     let t = NaiveDateTime::from_timestamp(v.sec, v.nsec as u32);
-                                    Value::NaiveDateTime(t)
+                                    let t2 = DateTime::from_utc(t, UTC);
+                                    Value::DateTime(t2)
                                 },
                                 ColumnType::MYSQL_TYPE_TIME => {
                                     let v: Timespec = FromValue::from_value(value.clone());
                                     let t = NaiveDateTime::from_timestamp(v.sec, v.nsec as u32);
-                                    Value::NaiveDateTime(t)
+                                    let t2 = DateTime::from_utc(t, UTC);
+                                    Value::DateTime(t2)
                                 },
                                 ColumnType::MYSQL_TYPE_DATETIME => {
                                     let v: Timespec = FromValue::from_value(value.clone());
+                                    //let t = NaiveDateTime::from_timestamp(v.sec, v.nsec as u32);
+                                    //Value::NaiveDateTime(t)
                                     let t = NaiveDateTime::from_timestamp(v.sec, v.nsec as u32);
-                                    Value::NaiveDateTime(t)
+                                    let t2 = DateTime::from_utc(t, UTC);
+                                    Value::DateTime(t2)
                                 },
                                 ColumnType::MYSQL_TYPE_YEAR => {
                                     let v: Timespec = FromValue::from_value(value.clone());
                                     let t = NaiveDateTime::from_timestamp(v.sec, v.nsec as u32);
-                                    Value::NaiveDateTime(t)
+                                    let t2 = DateTime::from_utc(t, UTC);
+                                    Value::DateTime(t2)
                                 },
                                 ColumnType::MYSQL_TYPE_VARCHAR => {
                                     let v: String = FromValue::from_value(value.clone());
@@ -658,7 +669,9 @@ impl DatabaseDev for Mysql {
             "timestamp" | "datetime" => {
                 (vec!["chrono::datetime::DateTime".to_owned(),
                       "chrono::offset::utc::UTC".to_owned()],
-                 Type::NaiveDateTime)
+                 Type::DateTime)
+                //(vec!["chrono::naive::date::NaiveDateTime".to_owned()],
+                // Type::NaiveDateTime)
             }
             "date" => {
                 (vec!["chrono::naive::date::NaiveDate".to_owned()],
