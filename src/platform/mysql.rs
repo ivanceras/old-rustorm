@@ -132,7 +132,7 @@ impl Mysql{
                                 ColumnType::MYSQL_TYPE_TIMESTAMP => {
                                     let v: Timespec = FromValue::from_value(value.clone());
                                     let t = NaiveDateTime::from_timestamp(v.sec, v.nsec as u32);
-                                    println!("time: {}",t);
+                                    debug!("time: {}",t);
                                     let t2 = DateTime::from_utc(t, UTC);
                                     Value::DateTime(t2)
                                 },
@@ -443,14 +443,14 @@ impl Database for Mysql {
     }
 
     fn execute_sql_with_return(&self, sql: &str, params: &[Value]) -> Result<Vec<Dao>, DbError> {
-        println!("SQL: \n{}", sql);
-        println!("param: {:?}", params);
+        debug!("SQL: \n{}", sql);
+        debug!("param: {:?}", params);
         assert!(self.pool.is_some());
         let mut stmt = try!(self.get_prepared_statement(sql));
         let mut columns = vec![];
         for col in stmt.columns_ref().unwrap() {
             let column_name = String::from_utf8(col.name.clone()).unwrap();
-            println!("column type: {:?}", col.column_type);
+            debug!("column type: {:?}", col.column_type);
             columns.push( (column_name, col.column_type) );
         }
         let mut daos = vec![];
@@ -486,8 +486,8 @@ impl Database for Mysql {
     /// returns only the number of affected records or errors
     /// can be used with DDL operations (CREATE, DELETE, ALTER, DROP)
     fn execute_sql(&self, sql: &str, params: &[Value]) -> Result<usize, DbError> {
-        println!("SQL: \n{}", sql);
-        println!("param: {:?}", params);
+        debug!("SQL: \n{}", sql);
+        debug!("param: {:?}", params);
         let to_sql_types = Mysql::from_rust_type_tosql(params);
         assert!(self.pool.is_some());
         let result = try!(self.pool.as_ref().unwrap().prep_exec(sql, &to_sql_types));
@@ -532,7 +532,7 @@ impl DatabaseDDL for Mysql{
     fn create_table(&self, table: &Table) {
         let frag = self.build_create_table(table);
         match self.execute_sql(&frag.sql, &vec![]) {
-            Ok(_) => println!("created table.."),
+            Ok(_) => debug!("created table.."),
             Err(e) => panic!("table not created {}", e),
         }
     }

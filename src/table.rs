@@ -73,7 +73,7 @@ impl Column {
     ///some column names may be a rust reserve keyword, so have to correct them
     pub fn corrected_name(&self) -> String {
         if Self::is_keyword(&self.name) {
-            println!("Warning: {} is rust reserved keyword", self.name);
+            warn!("Warning: {} is rust reserved keyword", self.name);
             return format!("{}_", self.name);
         }
         self.name.to_owned()
