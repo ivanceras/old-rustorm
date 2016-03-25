@@ -80,7 +80,7 @@ impl <'a>ToTableName for &'a str {
 impl <F>ToTableName for F where F: Fn() -> Table{
 	fn to_table_name(&self) -> TableName{
 		let table = self();
-		println!("table: {:?}", table);
+		debug!("table: {:?}", table);
 		table.to_table_name()
 	}
 }
