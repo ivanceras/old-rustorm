@@ -482,8 +482,8 @@ impl Database for Postgres {
     }
 
     fn execute_sql_with_return(&self, sql: &str, params: &[Value]) -> Result<Vec<Dao>, DbError> {
-        println!("SQL: \n{}", sql);
-        println!("param: {:?}", params);
+        debug!("SQL: \n{}", sql);
+        debug!("param: {:?}", params);
         let conn = self.get_connection();
         let stmt = try!(conn.prepare(sql));
         let mut daos = vec![];
@@ -509,8 +509,8 @@ impl Database for Postgres {
     /// returns only the number of affected records or errors
     /// can be used with DDL operations (CREATE, DELETE, ALTER, DROP)
     fn execute_sql(&self, sql: &str, params: &[Value]) -> Result<usize, DbError> {
-        println!("SQL: \n{}", sql);
-        println!("param: {:?}", params);
+        debug!("SQL: \n{}", sql);
+        debug!("param: {:?}", params);
         let to_sql_types = self.from_rust_type_tosql(params);
         let conn = self.get_connection();
         let result = try!(conn.execute(sql, &to_sql_types));

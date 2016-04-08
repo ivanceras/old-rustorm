@@ -354,9 +354,9 @@ pub type ParseError = String;
 
 impl Dao{
 	pub fn from_str(s: &str)->Result<Vec<Self>, ParseError>{
-		println!("parsing multiple records from json");
+		debug!("parsing multiple records from json");
 		let json: Json = Json::from_str(s).unwrap();
-		println!("from str json: {:#?}", json);
+		debug!("from str json: {:#?}", json);
 		match json{
 			Json::Array(array) => {
 				let mut dao_list = vec![];
@@ -406,7 +406,7 @@ impl Dao{
 	pub fn from_str_one(s: &str)->Result<Self, ()>{
 		let json: Json = Json::from_str(s).unwrap();
 		// then convert this map to Value
-		println!("from str: {:#?}", json);
+		debug!("from str: {:#?}", json);
 		let values = Self::json_object_to_btree(json);
 		Ok(Dao{
 			values: values
