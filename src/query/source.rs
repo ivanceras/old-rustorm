@@ -44,6 +44,16 @@ impl ToSourceField for &'static str{
 	}
 }
 
+impl ToSourceField for String{
+	fn to_source_field(&self)->Vec<SourceField>{
+		let table_name = TableName::from_str(self);
+		let qs = QuerySource::TableName(table_name);
+		vec![SourceField{
+			source: qs,
+			rename: None,
+		}]
+	}
+}
 impl ToSourceField for Table{
 	
 	fn to_source_field(&self)->Vec<SourceField>{

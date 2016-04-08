@@ -253,7 +253,7 @@ pub trait ToCompact {
 
 /// meta result of a query useful when doing complex query, and also with paging
 /// TODO: good name: DaoRows
-#[derive(Debug)]
+#[derive(Debug,Clone)]
 pub struct DaoResult {
     pub dao: Vec<Dao>,
     ///renamed columns for each table
