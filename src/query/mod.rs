@@ -392,7 +392,7 @@ impl Query {
         }
     }
 
-    fn enumerate_from_table(&mut self, table: &TableName) {
+    pub fn enumerate_from_table(&mut self, table: &TableName) {
         for c in &table.columns {
             self.enumerate(c.clone());
         }

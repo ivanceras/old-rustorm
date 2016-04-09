@@ -181,9 +181,9 @@ impl ToJson for Value {
             Value::VecU8(ref x) => x.to_json(),
             Value::Uuid(ref x) => x.to_hyphenated_string().to_json(),
             Value::DateTime(ref x) => x.to_rfc3339().to_json(),
-            //            Value::NaiveDate(ref x) => x.to_json(),
-            //            Value::NaiveTime(ref x) => x.to_json(),
-            //            Value::NaiveDateTime(ref x) => x.to_json(),
+            //Value::NaiveDate(ref x) => x.to_rfc3339().to_json(),
+            //Value::NaiveTime(ref x) => x.to_rfc3339().to_json(),
+			//Value::NaiveDateTime(ref x) => x.to_rfc3339().to_json(),
             Value::Object(ref x) => x.to_json(),
             Value::Json(ref x) => x.clone(),
             Value::None(_) => Json::Null,
@@ -206,6 +206,8 @@ impl fmt::Display for Value {
             Value::U16(ref x) => write!(f, "'{}'", x),
             Value::U32(ref x) => write!(f, "'{}'", x),
             Value::U64(ref x) => write!(f, "'{}'", x),
+            Value::F32(ref x) => write!(f, "'{}'", x),
+            Value::F64(ref x) => write!(f, "'{}'", x),
             Value::String(ref x) => write!(f, "'{}'", x),
             Value::VecU8(ref x) => write!(f, "'{:?}'", x),
             Value::Uuid(ref x) => write!(f, "'{}'", x),
@@ -216,7 +218,6 @@ impl fmt::Display for Value {
             Value::Object(ref x) => write!(f, "'{:?}'", x),
             Value::Json(ref x) => write!(f, "'{:?}'", x),
             Value::None(_) => write!(f, "'nil'"),
-            _ => panic!("unsupported/unexpected type! {:?}", self),
         }
     }
 }

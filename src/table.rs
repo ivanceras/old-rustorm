@@ -69,6 +69,12 @@ impl Column {
         !self.not_null
     }
 
+    pub fn complete_name(&self) -> String {
+        match self.table {
+            Some (ref table) => format!("{}.{}", table, self.name),
+            None => self.name.to_owned(),
+        }
+    }
 
     ///some column names may be a rust reserve keyword, so have to correct them
     pub fn corrected_name(&self) -> String {

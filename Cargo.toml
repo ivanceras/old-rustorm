@@ -16,27 +16,27 @@ name = "rustorm"
 sqlite = ["rusqlite","r2d2_sqlite"]
 
 [dependencies.chrono]
-version = "0.2.16"
+version = "0.2"
 features = ["rustc-serialize"]
 
 [dependencies.postgres]
-version = "0.10.1"
+version = "0.10"
 features = ["time", "uuid", "chrono", "rustc-serialize"]
 
 
 [dependencies]
-rustc-serialize = "0.3.16"
-serde_json = "0.6.0"
-uuid = "0.1.18"
-log = "0.3.4"
-env_logger = "0.3.2"
-regex = "0.1.44"
-url = "0.2.38"
-time = "0.1.34"
-r2d2 = "0.6.1"
-r2d2_postgres = "0.9.3"
-rusqlite = { version = "0.6.0", optional = true }
-mysql = {version = "1.2.0", optional = true }
+rustc-serialize = "0.3"
+serde_json = "0.6"
+uuid = "0.1"
+log = "0.3"
+env_logger = "0.3"
+regex = "0.1"
+url = "0.2"
+time = "0.1"
+r2d2 = "0.6"
+r2d2_postgres = "0.9"
+rusqlite = { version = "0.6", optional = true }
+mysql = {version = "1.2", optional = true }
 
 [dependencies.r2d2_sqlite]
 version = "0.0.4"
