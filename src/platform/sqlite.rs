@@ -485,6 +485,10 @@ impl DatabaseDev for Sqlite {
         unimplemented!()
     }
 
+    fn get_row_count_estimate(&self, schema: &str, table: &str) -> Option<usize> {
+		unimplemented!()
+	}
+
     fn get_table_metadata(&self, schema: &str, table: &str, _is_view: bool) -> Table {
         debug!("extracting table meta data in sqlite");
         let sql = format!("PRAGMA table_info({});", table);

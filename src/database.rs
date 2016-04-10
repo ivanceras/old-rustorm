@@ -754,6 +754,9 @@ pub trait DatabaseDev {
 
     fn get_parent_table(&self, schema: &str, table: &str) -> Option<String>;
 
+	
+    fn get_row_count_estimate(&self, schema: &str, table: &str) -> Option<usize>;
+
     ////
     /// Build the Table object based on the extracted meta data info from database
     /// This is queries directly from the database, so this will be costly. Only used this on initialization processes

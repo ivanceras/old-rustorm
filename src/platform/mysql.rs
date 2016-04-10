@@ -567,6 +567,9 @@ impl DatabaseDev for Mysql {
     fn get_parent_table(&self, schema: &str, table: &str) -> Option<String> {
         None
     }
+    fn get_row_count_estimate(&self, schema: &str, table: &str) -> Option<usize> {
+		unimplemented!()
+	}
 
     fn get_table_sub_class(&self, schema: &str, table: &str) -> Vec<String> {
         vec![]

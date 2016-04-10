@@ -577,6 +577,29 @@ impl DatabaseDev for Postgres {
         None
     }
 
+	/// https://wiki.postgresql.org/wiki/Count_estimate
+	/// SELECT reltuples::BIGINT AS estimate FROM pg_class WHERE relname='schema_name.tbl';
+    fn get_row_count_estimate(&self, schema: &str, table: &str) -> Option<usize> {
+        let sql = "
+            SELECT
+				reltuples as count_estimate
+             FROM pg_class
+             INNER JOIN pg_namespace
+                ON pg_class.relnamespace = pg_namespace.oid
+             LEFT JOIN pg_inherits
+                 ON pg_class.oid = pg_inherits.inhrelid
+             WHERE pg_namespace.nspname = $1
+                 AND relname = $2
+                ";
+        let conn = self.get_connection();
+        let stmt = conn.prepare(&sql).unwrap();
+        for row in stmt.query(&[&schema, &table]).unwrap() {
+            let estimate: f32 = row.get("count_estimate");
+			println!("estimate: {}", estimate);
+			return Some(estimate as usize);
+        }
+        None
+    }
     fn get_table_sub_class(&self, schema: &str, table: &str) -> Vec<String> {
         let sql = "
             SELECT
