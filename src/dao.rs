@@ -344,9 +344,10 @@ impl DaoResult {
     }
 }
 
-#[derive(Debug, Clone)]
 /// TODO: optimization, used enum types for the key values
 /// This will save allocation of string to enum keys which is a few bytes, int
+#[derive(Debug, Clone)]
+#[derive(PartialEq)]
 pub struct Dao {
     pub values: BTreeMap<String, Value>,
 }
@@ -413,6 +414,7 @@ impl Dao{
 			values: values
 		})
 	}
+
 }
 
 /// custom Encoder for Dao,
