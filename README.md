@@ -7,6 +7,7 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/v48jf16of0n56nm2?svg=true)](https://ci.appveyor.com/project/ivanceras/rustorm)
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 [![Join the chat at https://gitter.im/ivanceras/rustorm](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/ivanceras/rustorm?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Clippy Linting Result](https://clippy.bashy.io/github/ivanceras/rustorm/master/badge.svg)]
 
 An ORM for rust
 
