@@ -110,6 +110,7 @@ impl Postgres {
         match *dtype {
             PgType::Uuid => {
                 let value = row.get_opt(index);
+                let value = value.unwrap();
                 match value {
                     Ok(value) => Value::Uuid(value),
                     Err(_) => Value::None(Type::Uuid),
@@ -117,6 +118,7 @@ impl Postgres {
             }
             PgType::Varchar | PgType::Text | PgType::Bpchar => {
                 let value = row.get_opt(index);
+                let value = value.unwrap();
                 match value {
                     Ok(value) => Value::String(value),
                     Err(_) => Value::None(Type::String),
@@ -124,6 +126,7 @@ impl Postgres {
             }
             PgType::TimestampTZ | PgType::Timestamp => {
                 let value = row.get_opt(index);
+                let value = value.unwrap();
                 match value {
                     Ok(value) => Value::DateTime(value),
                     Err(_) => Value::None(Type::DateTime),
@@ -131,6 +134,7 @@ impl Postgres {
             }
             PgType::Float4 => {
                 let value = row.get_opt(index);
+                let value = value.unwrap();
                 match value {
                     Ok(value) => Value::F32(value),
                     Err(_) => Value::None(Type::F32),
@@ -138,6 +142,7 @@ impl Postgres {
             }
             PgType::Float8 => {
                 let value = row.get_opt(index);
+                let value = value.unwrap();
                 match value {
                     Ok(value) => Value::F64(value),
                     Err(_) => Value::None(Type::F64),
@@ -145,6 +150,7 @@ impl Postgres {
             }
             PgType::Numeric => {
                 let value = row.get_opt(index);
+                let value = value.unwrap();
                 match value {
                     Ok(value) => Value::F64(value),
                     Err(_) => Value::None(Type::F64),
@@ -152,6 +158,7 @@ impl Postgres {
             }, 
             PgType::Bool => {
                 let value = row.get_opt(index);
+                let value = value.unwrap();
                 match value {
                     Ok(value) => Value::Bool(value),
                     Err(_) => Value::None(Type::F64),
@@ -159,6 +166,7 @@ impl Postgres {
             }
             PgType::Json => {
                 let value = row.get_opt(index);
+                let value = value.unwrap();
                 match value {
                     Ok(value) => Value::Json(value),
                     Err(_) => Value::None(Type::F64),
@@ -166,6 +174,7 @@ impl Postgres {
             }
             PgType::Int2 => {
                 let value = row.get_opt(index);
+                let value = value.unwrap();
                 match value {
                     Ok(value) => Value::I16(value),
                     Err(_) => Value::None(Type::F64),
@@ -173,6 +182,7 @@ impl Postgres {
             }
             PgType::Int4 => {
                 let value = row.get_opt(index);
+                let value = value.unwrap();
                 match value {
                     Ok(value) => Value::I32(value),
                     Err(_) => Value::None(Type::I32),
@@ -180,6 +190,7 @@ impl Postgres {
             }
             PgType::Int8 => {
                 let value = row.get_opt(index);
+                let value = value.unwrap();
                 match value {
                     Ok(value) => Value::I64(value),
                     Err(_) => Value::None(Type::I64),
@@ -187,6 +198,7 @@ impl Postgres {
             }
             PgType::Timetz => {
                 let value = row.get_opt(index);
+                let value = value.unwrap();
                 match value {
                     Ok(value) => Value::DateTime(value),
                     Err(_) => Value::None(Type::DateTime),
@@ -194,6 +206,7 @@ impl Postgres {
             }
             PgType::Date => {
                 let value = row.get_opt(index);
+                let value = value.unwrap();
                 match value {
                     Ok(value) => Value::DateTime(value),
                     Err(_) => Value::None(Type::DateTime),
@@ -201,6 +214,7 @@ impl Postgres {
             }
             PgType::Bytea => {
                 let value = row.get_opt(index);
+                let value = value.unwrap();
                 match value {
                     Ok(value) => Value::VecU8(value),
                     Err(_) => Value::None(Type::VecU8),
@@ -208,6 +222,7 @@ impl Postgres {
             }
             PgType::Inet => {
                 let value = row.get_opt(index);
+                let value = value.unwrap();
                 match value {
                     Ok(value) => Value::String(value),
                     Err(_) => Value::None(Type::String),
@@ -215,6 +230,7 @@ impl Postgres {
             }
             PgType::Tsvector => {
                 let value = row.get_opt(index);
+                let value = value.unwrap();
                 match value {
                     Ok(value) => Value::String(value),
                     Err(_) => Value::None(Type::String),
@@ -284,7 +300,7 @@ impl Postgres {
         let conn = self.get_connection();
         let stmt = conn.prepare(&sql).unwrap();
         let mut columns = Vec::new();
-        for row in stmt.query(&[&schema, &table]).unwrap() {
+        for row in stmt.query(&[&schema, &table]).unwrap().iter() {
             let name: String = row.get("name");
             let not_null: bool = row.get("notnull");
             let db_data_type: String = row.get("data_type");
@@ -307,24 +323,24 @@ impl Postgres {
             let is_primary: bool = row.get("is_primary");
             let is_unique: bool = row.get("is_unique");
 
-            let default: Option<Operand> = match row.get_opt("default") {
+            let default: Option<Operand> = match row.get_opt("default").unwrap() {
                 Ok(x) => Some(Operand::Value(Value::String(x))),
                 Err(_) => None,
             };
-            let comment: Option<String> = match row.get_opt("comment") {
+            let comment: Option<String> = match row.get_opt("comment").unwrap() {
                 Ok(x) => Some(x),
                 Err(_) => None,
             };
 
-            let foreign_schema: Option<String> = match row.get_opt("foreign_schema") {
+            let foreign_schema: Option<String> = match row.get_opt("foreign_schema").unwrap() {
                 Ok(x) => Some(x),
                 Err(_) => None,
             };
-            let foreign_column: Option<String> = match row.get_opt("foreign_column") {
+            let foreign_column: Option<String> = match row.get_opt("foreign_column").unwrap() {
                 Ok(x) => Some(x),
                 Err(_) => None,
             };
-            let foreign_table: Option<String> = match row.get_opt("foreign_table") {
+            let foreign_table: Option<String> = match row.get_opt("foreign_table").unwrap() {
                 Ok(x) => Some(x),
                 Err(_) => None,
             };
@@ -379,8 +395,8 @@ impl Postgres {
                 ";
         let conn = self.get_connection();
         let stmt = conn.prepare(&sql).unwrap();
-        for row in stmt.query(&[&schema, &table]).unwrap() {
-            let comment: Option<String> = match row.get_opt("comment") {
+        for row in stmt.query(&[&schema, &table]).unwrap().iter() {
+            let comment: Option<String> = match row.get_opt("comment").unwrap() {
                 Ok(x) => Some(x),
                 Err(_) => None,
             };
@@ -489,7 +505,7 @@ impl Database for Postgres {
         let mut daos = vec![];
         let param = self.from_rust_type_tosql(params);
         let rows = try!(stmt.query(&param));
-        for row in rows {
+        for row in rows.iter() {
             let columns = row.columns();
             let mut index = 0;
             let mut dao = Dao::new();
@@ -567,8 +583,8 @@ impl DatabaseDev for Postgres {
                 ";
         let conn = self.get_connection();
         let stmt = conn.prepare(&sql).unwrap();
-        for row in stmt.query(&[&schema, &table]).unwrap() {
-            let parent_table: Option<String> = match row.get_opt("parent_table") {
+        for row in stmt.query(&[&schema, &table]).unwrap().iter() {
+            let parent_table: Option<String> = match row.get_opt("parent_table").unwrap() {
                 Ok(x) => Some(x),
                 Err(_) => None,
             };
@@ -593,7 +609,7 @@ impl DatabaseDev for Postgres {
                 ";
         let conn = self.get_connection();
         let stmt = conn.prepare(&sql).unwrap();
-        for row in stmt.query(&[&schema, &table]).unwrap() {
+        for row in stmt.query(&[&schema, &table]).unwrap().iter() {
             let estimate: f32 = row.get("count_estimate");
 			println!("estimate: {}", estimate);
 			return Some(estimate as usize);
@@ -617,8 +633,8 @@ impl DatabaseDev for Postgres {
         let conn = self.get_connection();
         let stmt = conn.prepare(&sql).unwrap();
         let mut sub_classes: Vec<String> = vec![];
-        for row in stmt.query(&[&schema, &table]).unwrap() {
-            match row.get_opt("sub_class") {
+        for row in stmt.query(&[&schema, &table]).unwrap().iter() {
+            match row.get_opt("sub_class").unwrap() {
                 Ok(x) => sub_classes.push(x),
                 Err(_) => (),
             }
@@ -680,7 +696,7 @@ impl DatabaseDev for Postgres {
         let conn = self.get_connection();
         let stmt = conn.prepare(&sql).unwrap();
         let mut tables: Vec<(String, String, bool)> = Vec::new();
-        for row in stmt.query(&[]).unwrap() {
+        for row in stmt.query(&[]).unwrap().iter() {
             let table: String = row.get("table");
             let schema: String = row.get("schema");
             let is_view: bool = row.get("is_view");
@@ -717,7 +733,7 @@ impl DatabaseDev for Postgres {
         let conn = self.get_connection();
         let stmt = conn.prepare(&sql).unwrap();
         let mut inherited_columns = Vec::new();
-        for row in stmt.query(&[&schema, &table]).unwrap() {
+        for row in stmt.query(&[&schema, &table]).unwrap().iter() {
             let column: String = row.get("column_parent_name");
             inherited_columns.push(column);
         }

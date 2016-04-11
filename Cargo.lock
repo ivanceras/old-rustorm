@@ -6,14 +6,14 @@ dependencies = [
  "env_logger 0.3.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.3.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "mysql 1.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "postgres 0.10.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "postgres 0.11.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "r2d2 0.6.4 (registry+https://github.com/rust-lang/crates.io-index)",
- "r2d2_postgres 0.9.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "r2d2_postgres 0.10.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "r2d2_sqlite 0.0.4 (registry+https://github.com/rust-lang/crates.io-index)",
- "regex 0.1.63 (registry+https://github.com/rust-lang/crates.io-index)",
+ "regex 0.1.65 (registry+https://github.com/rust-lang/crates.io-index)",
  "rusqlite 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "rustc-serialize 0.3.19 (registry+https://github.com/rust-lang/crates.io-index)",
- "serde_json 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "serde_json 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "time 0.1.35 (registry+https://github.com/rust-lang/crates.io-index)",
  "url 0.2.38 (registry+https://github.com/rust-lang/crates.io-index)",
  "uuid 0.1.18 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -53,6 +53,11 @@ version = "0.4.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
+name = "byteorder"
+version = "0.5.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
 name = "cfg-if"
 version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -73,7 +78,7 @@ version = "0.3.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "log 0.3.6 (registry+https://github.com/rust-lang/crates.io-index)",
- "regex 0.1.63 (registry+https://github.com/rust-lang/crates.io-index)",
+ "regex 0.1.65 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -88,6 +93,11 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "winapi 0.2.6 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
+
+[[package]]
+name = "hex"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "kernel32-sys"
@@ -157,7 +167,7 @@ dependencies = [
  "byteorder 0.4.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "lazy_static 0.1.15 (registry+https://github.com/rust-lang/crates.io-index)",
  "openssl 0.7.9 (registry+https://github.com/rust-lang/crates.io-index)",
- "regex 0.1.63 (registry+https://github.com/rust-lang/crates.io-index)",
+ "regex 0.1.65 (registry+https://github.com/rust-lang/crates.io-index)",
  "time 0.1.35 (registry+https://github.com/rust-lang/crates.io-index)",
  "unix_socket 0.5.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -178,10 +188,6 @@ dependencies = [
 name = "num"
 version = "0.1.31"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-dependencies = [
- "rand 0.3.14 (registry+https://github.com/rust-lang/crates.io-index)",
- "rustc-serialize 0.3.19 (registry+https://github.com/rust-lang/crates.io-index)",
-]
 
 [[package]]
 name = "openssl"
@@ -227,24 +233,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "phf_codegen"
-version = "0.7.14"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-dependencies = [
- "phf_generator 0.7.14 (registry+https://github.com/rust-lang/crates.io-index)",
- "phf_shared 0.7.14 (registry+https://github.com/rust-lang/crates.io-index)",
-]
-
-[[package]]
-name = "phf_generator"
-version = "0.7.14"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-dependencies = [
- "phf_shared 0.7.14 (registry+https://github.com/rust-lang/crates.io-index)",
- "rand 0.3.14 (registry+https://github.com/rust-lang/crates.io-index)",
-]
-
-[[package]]
 name = "phf_shared"
 version = "0.7.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -264,16 +252,16 @@ dependencies = [
 
 [[package]]
 name = "postgres"
-version = "0.10.2"
+version = "0.11.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "bufstream 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "byteorder 0.4.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "byteorder 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "chrono 0.2.21 (registry+https://github.com/rust-lang/crates.io-index)",
+ "hex 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.3.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "net2 0.2.23 (registry+https://github.com/rust-lang/crates.io-index)",
  "phf 0.7.14 (registry+https://github.com/rust-lang/crates.io-index)",
- "phf_codegen 0.7.14 (registry+https://github.com/rust-lang/crates.io-index)",
  "rustc-serialize 0.3.19 (registry+https://github.com/rust-lang/crates.io-index)",
  "time 0.1.35 (registry+https://github.com/rust-lang/crates.io-index)",
  "uuid 0.1.18 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -290,10 +278,10 @@ dependencies = [
 
 [[package]]
 name = "r2d2_postgres"
-version = "0.9.3"
+version = "0.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
- "postgres 0.10.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "postgres 0.11.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "r2d2 0.6.4 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
@@ -316,7 +304,7 @@ dependencies = [
 
 [[package]]
 name = "regex"
-version = "0.1.63"
+version = "0.1.65"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "aho-corasick 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -356,12 +344,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "serde"
+version = "0.7.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
 name = "serde_json"
-version = "0.6.1"
+version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "num 0.1.31 (registry+https://github.com/rust-lang/crates.io-index)",
- "serde 0.6.15 (registry+https://github.com/rust-lang/crates.io-index)",
+ "serde 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -422,6 +415,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "rand 0.3.14 (registry+https://github.com/rust-lang/crates.io-index)",
  "rustc-serialize 0.3.19 (registry+https://github.com/rust-lang/crates.io-index)",
+ "serde 0.6.15 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
