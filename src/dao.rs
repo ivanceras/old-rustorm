@@ -181,13 +181,12 @@ impl ToJson for Value {
             Value::VecU8(ref x) => x.to_json(),
             Value::Uuid(ref x) => x.to_hyphenated_string().to_json(),
             Value::DateTime(ref x) => x.to_rfc3339().to_json(),
-            //Value::NaiveDate(ref x) => x.to_rfc3339().to_json(),
-            //Value::NaiveTime(ref x) => x.to_rfc3339().to_json(),
-			//Value::NaiveDateTime(ref x) => x.to_rfc3339().to_json(),
+            Value::NaiveDate(ref x) => format!("{}",x).to_json(),
+            Value::NaiveTime(ref x) => format!("{}",x).to_json(),
+			Value::NaiveDateTime(ref x) => format!("{}",x).to_json(),
             Value::Object(ref x) => x.to_json(),
             Value::Json(ref x) => x.clone(),
             Value::None(_) => Json::Null,
-            _ => panic!("unsupported/unexpected type! {:?}", self),
         }
     }
 }
