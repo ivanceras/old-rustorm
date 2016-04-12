@@ -35,6 +35,7 @@ pub enum Operand {
 	QuerySource(QuerySource),
     Value(Value),
     Vec(Vec<Operand>),
+	None,
 }
 /// work around for &ToOperand argument for Operand
 impl ToOperand for Operand{
@@ -145,6 +146,13 @@ impl ToOperand for String{
     }
 }
 
+impl ToOperand for Json{
+    fn to_operand(&self)->Operand{
+		let json_string = format!("{}",self.pretty());
+        Operand::Value(self.to_db_type())
+    }
+}
+
 /// A workaround for the conflicts in ToOperand for <T:ToValue>
 
 macro_rules! impl_to_operand_for_to_value{
@@ -175,5 +183,3 @@ impl_to_operand_for_to_value!(DateTime<UTC>, DateTime);
 impl_to_operand_for_to_value!(NaiveDate, NaiveDate);
 impl_to_operand_for_to_value!(NaiveTime, NaiveTime);
 impl_to_operand_for_to_value!(NaiveDateTime, NaiveDateTime);
-impl_to_operand_for_to_value!(BTreeMap<String,Value>, Object);
-impl_to_operand_for_to_value!(Json, Json);

@@ -293,6 +293,7 @@ pub trait Database {
                     w.append(")");
                 }
             }
+			Operand::None => () //dont do anything
         }
     }
 

@@ -16,6 +16,7 @@ use rustc_serialize::DecoderHelpers;
 #[derive(Debug)]
 #[derive(Clone)]
 #[derive(PartialEq)]
+#[derive(RustcEncodable)]
 ///supported generic datatypes for an ORM
 pub enum Type {
     Bool,
@@ -74,6 +75,8 @@ impl Type{
 #[derive(Debug)]
 #[derive(Clone)]
 #[derive(PartialEq)]
+#[derive(RustcEncodable)]
+#[derive(RustcDecodable)]
 ///supported generic datatypes for an ORM
 pub enum Value {
     Bool(bool),
@@ -89,14 +92,12 @@ pub enum Value {
     F64(f64),
     String(String),
     VecU8(Vec<u8>),
-    Object(BTreeMap<String, Value>),
-    Json(Json),
+    Json(String),
     Uuid(Uuid),
     DateTime(DateTime<UTC>),
     NaiveDate(NaiveDate),
     NaiveTime(NaiveTime),
     NaiveDateTime(NaiveDateTime),
-    None(Type),
 }
 
 impl Value{
@@ -121,16 +122,16 @@ impl Value{
             Value::NaiveDate(_) => Type::NaiveDate,
             Value::NaiveTime(_) => Type::NaiveTime,
             Value::NaiveDateTime(_) => Type::NaiveDateTime,
-            Value::Object(_) => Type::Object,
             Value::Json(_) => Type::Json,
-            Value::None(_) => Type::None,
         }
 	}
 }
 
 
+
 /// custom implementation for value encoding to json,
 /// does not include unnecessary enum variants fields.
+/*
 impl Encodable for Value {
 
     fn encode<S: Encoder>(&self, s: &mut S) -> Result<(), S::Error> {
@@ -161,7 +162,9 @@ impl Encodable for Value {
         }
     }
 }
+*/
 
+/*
 impl Decodable for Value{
     
     fn decode<D: Decoder>(d: &mut D) -> Result<Self, D::Error>{
@@ -169,6 +172,7 @@ impl Decodable for Value{
         panic!("not yet here!")
     }
 }
+*/
 
 
 
@@ -194,9 +198,7 @@ impl fmt::Display for Value {
             Value::NaiveDate(ref x) => write!(f, "'{}'", x),
             Value::NaiveTime(ref x) => write!(f, "'{}'", x),
             Value::NaiveDateTime(ref x) => write!(f, "'{}'", x),
-            Value::Object(ref x) => write!(f, "'{:?}'", x),
             Value::Json(ref x) => write!(f, "'{:?}'", x),
-            Value::None(_) => write!(f, "'nil'"),
         }
     }
 }
@@ -328,10 +330,11 @@ impl DaoCorrections for Dao{
     fn all_has_values(&self, non_nulls: &Vec<String>) -> bool {
         for column in non_nulls {
             let value = self.get(column);
-            match value {
-                None | Some(&Value::None(_)) => return false,
-                _ => (),
-            }
+			if let Some(value) = value{
+				// has value
+			}else{
+				return false;
+			}
         }
         true
     }
@@ -349,11 +352,6 @@ impl ToValue for Value{
 	}
 }
 
-impl ToValue for () {
-    fn to_db_type(&self) -> Value {
-        Value::None(Type::String)
-    }
-}
 
 impl ToValue for bool {
     fn to_db_type(&self) -> Value {
@@ -457,7 +455,8 @@ impl ToValue for NaiveDateTime {
 
 impl ToValue for Json {
     fn to_db_type(&self) -> Value {
-        Value::Json(self.clone())
+		let json_string = format!("{}", self.pretty());
+        Value::Json(json_string)
     }
 }
 ///
@@ -625,7 +624,7 @@ impl FromValue for NaiveDateTime {
 impl FromValue for Json {
     fn from_type(ty: Value) -> Self {
         match ty {
-            Value::Json(x) => x,
+            Value::Json(x) => Json::from_str(&x).unwrap(),
             _ => panic!("error!"),
         }
     }

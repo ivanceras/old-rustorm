@@ -18,6 +18,7 @@ use dao::Type;
 use postgres::types::IsNull;
 use uuid::Uuid;
 use query::Operand;
+use postgres as pg;
 
 pub struct Postgres {
     /// a connection pool is provided
@@ -81,164 +82,197 @@ impl Postgres {
                 Value::NaiveTime(ref x) => params.push(x),
                 Value::NaiveDateTime(ref x) => params.push(x),
                 Value::Json(ref x) => {
-//                    panic!("Json is not yet supported!..");
-//                     static NONE: &'static Option<String> = &None;
                        params.push(x)
                 }
-                Value::None(ref v_type) => {
-                        match v_type{
-							&Type::String => {
-								static none: &'static Option<String> = &None;
-								params.push(none)
-							},
-							&Type::Uuid => {
-								static none: &'static Option<Uuid> = &None;
-								params.push(none)
-							}
-							_ => panic!("not yet for Non type of {:?}",v_type),
-						}
-                    },
-                _ => panic!("not yet here {:?}", t),
             }
         }
         params
     }
     
 
-    /// convert a record of a row into rust type
-    fn from_sql_to_rust_type(&self, dtype: &PgType, row: &Row, index: usize) -> Value {
-        match *dtype {
-            PgType::Uuid => {
-                let value = row.get_opt(index);
-                let value = value.unwrap();
-                match value {
-                    Ok(value) => Value::Uuid(value),
-                    Err(_) => Value::None(Type::Uuid),
-                }
-            }
-            PgType::Varchar | PgType::Text | PgType::Bpchar => {
-                let value = row.get_opt(index);
-                let value = value.unwrap();
-                match value {
-                    Ok(value) => Value::String(value),
-                    Err(_) => Value::None(Type::String),
-                }
-            }
-            PgType::TimestampTZ | PgType::Timestamp => {
-                let value = row.get_opt(index);
-                let value = value.unwrap();
-                match value {
-                    Ok(value) => Value::DateTime(value),
-                    Err(_) => Value::None(Type::DateTime),
-                }
-            }
-            PgType::Float4 => {
-                let value = row.get_opt(index);
-                let value = value.unwrap();
-                match value {
-                    Ok(value) => Value::F32(value),
-                    Err(_) => Value::None(Type::F32),
-                }
-            }
-            PgType::Float8 => {
-                let value = row.get_opt(index);
-                let value = value.unwrap();
-                match value {
-                    Ok(value) => Value::F64(value),
-                    Err(_) => Value::None(Type::F64),
-                }
-            }
-            PgType::Numeric => {
-                let value = row.get_opt(index);
-                let value = value.unwrap();
-                match value {
-                    Ok(value) => Value::F64(value),
-                    Err(_) => Value::None(Type::F64),
-                }
-            }, 
-            PgType::Bool => {
-                let value = row.get_opt(index);
-                let value = value.unwrap();
-                match value {
-                    Ok(value) => Value::Bool(value),
-                    Err(_) => Value::None(Type::F64),
-                }
-            }
-            PgType::Json => {
-                let value = row.get_opt(index);
-                let value = value.unwrap();
-                match value {
-                    Ok(value) => Value::Json(value),
-                    Err(_) => Value::None(Type::F64),
-                }
-            }
-            PgType::Int2 => {
-                let value = row.get_opt(index);
-                let value = value.unwrap();
-                match value {
-                    Ok(value) => Value::I16(value),
-                    Err(_) => Value::None(Type::F64),
-                }
-            }
-            PgType::Int4 => {
-                let value = row.get_opt(index);
-                let value = value.unwrap();
-                match value {
-                    Ok(value) => Value::I32(value),
-                    Err(_) => Value::None(Type::I32),
-                }
-            }
-            PgType::Int8 => {
-                let value = row.get_opt(index);
-                let value = value.unwrap();
-                match value {
-                    Ok(value) => Value::I64(value),
-                    Err(_) => Value::None(Type::I64),
-                }
-            }
-            PgType::Timetz => {
-                let value = row.get_opt(index);
-                let value = value.unwrap();
-                match value {
-                    Ok(value) => Value::DateTime(value),
-                    Err(_) => Value::None(Type::DateTime),
-                }
-            }
-            PgType::Date => {
-                let value = row.get_opt(index);
-                let value = value.unwrap();
-                match value {
-                    Ok(value) => Value::DateTime(value),
-                    Err(_) => Value::None(Type::DateTime),
-                }
-            }
-            PgType::Bytea => {
-                let value = row.get_opt(index);
-                let value = value.unwrap();
-                match value {
-                    Ok(value) => Value::VecU8(value),
-                    Err(_) => Value::None(Type::VecU8),
-                }
-            }
-            PgType::Inet => {
-                let value = row.get_opt(index);
-                let value = value.unwrap();
-                match value {
-                    Ok(value) => Value::String(value),
-                    Err(_) => Value::None(Type::String),
-                }
-            }
-            PgType::Tsvector => {
-                let value = row.get_opt(index);
-                let value = value.unwrap();
-                match value {
-                    Ok(value) => Value::String(value),
-                    Err(_) => Value::None(Type::String),
-                }
-            }
-            _ => panic!("Type {:?} is not covered!", dtype),
-        }
-    }
+	/// convert a record of a row into rust type
+	fn from_sql_to_rust_type(&self, dtype: &PgType, row: &Row, index: usize) -> Option<Value> {
+		match *dtype {
+			PgType::Uuid => {
+				let value = row.get_opt(index);
+				println!("value: {:#?}", value);
+				match value{
+					Some(value) =>
+						match value {
+							Ok(value) => Some(Value::Uuid(value)),
+								Err(e) => None,
+						},
+							  None => None
+				}
+			}
+			PgType::Varchar | PgType::Text | PgType::Bpchar => {
+				let value = row.get_opt(index);
+				match value{
+					Some(value) => 
+						match value {
+							Ok(value) => Some(Value::String(value)),
+								Err(e) => None,
+						},
+							  None => None
+				}
+			}
+			PgType::TimestampTZ | PgType::Timestamp => {
+				let value = row.get_opt(index);
+				match value{
+					Some(value) =>
+						match value {
+							Ok(value) => Some(Value::DateTime(value)),
+								Err(e) => None,
+						},
+							  None => None
+				}
+			}
+			PgType::Float4 => {
+				let value = row.get_opt(index);
+				match value {
+					Some(value) =>
+						match value {
+							Ok(value) => Some(Value::F32(value)),
+								Err(e) => None,
+						},
+							  None => None
+				}
+			}
+			PgType::Float8 => {
+				let value = row.get_opt(index);
+				match value {
+					Some(value) =>
+						match value {
+							Ok(value) => Some(Value::F64(value)),
+								Err(e) => None,
+						},
+							  None => None
+				}
+			}
+			PgType::Numeric => {
+				let value = row.get_opt(index);
+				match value{
+					Some(value) => 
+						match value {
+							Ok(value) => Some(Value::F64(value)),
+								Err(e) => None,
+						},
+							  None => None
+				}
+			}, 
+				PgType::Bool => {
+					let value = row.get_opt(index);
+					match value{
+						Some(value) => 
+							match value {
+								Ok(value) => Some(Value::Bool(value)),
+									Err(e) => None,
+							},
+								  None => None
+					}
+				}
+			PgType::Json => {
+				let value = row.get_opt(index);
+				match value{
+					Some(value) => 
+						match value {
+							Ok(value) => Some(Value::Json(value)),
+								Err(e) => None,
+						},
+							  None => None
+				}
+			}
+			PgType::Int2 => {
+				let value = row.get_opt(index);
+				match value{
+					Some(value) => 
+						match value {
+							Ok(value) => Some(Value::I16(value)),
+								Err(e) => None,
+						},
+							  None => None
+				}
+			}
+			PgType::Int4 => {
+				let value = row.get_opt(index);
+				match value{
+					Some(value) => 
+						match value {
+							Ok(value) => Some(Value::I32(value)),
+								Err(e) => None,
+						},
+							  None => None
+				}
+			}
+			PgType::Int8 => {
+				let value = row.get_opt(index);
+				match value{
+					Some(value) => 
+						match value {
+							Ok(value) => Some(Value::I64(value)),
+								Err(e) => None,
+						},
+							  None => None
+				}
+			}
+			PgType::Timetz => {
+				let value = row.get_opt(index);
+				match value{
+					Some(value) => 
+						match value {
+							Ok(value) => Some(Value::DateTime(value)),
+								Err(e) => None,
+						},
+							  None => None
+				}
+			}
+			PgType::Date => {
+				let value = row.get_opt(index);
+				match value{
+					Some(value) => 
+						match value {
+							Ok(value) => Some(Value::DateTime(value)),
+								Err(e) => None,
+						},
+							  None => None
+				}
+			}
+			PgType::Bytea => {
+				let value = row.get_opt(index);
+				match value{
+					Some(value) => 
+						match value {
+							Ok(value) => Some(Value::VecU8(value)),
+								Err(e) => None,
+						},
+							  None => None
+				}
+			}
+			PgType::Inet => {
+				let value = row.get_opt(index);
+				match value{
+					Some(value) => 
+						match value {
+							Ok(value) => Some(Value::String(value)),
+								Err(e) => None,
+						},
+							  None => None
+				}
+			}
+			PgType::Tsvector => {
+				let value = row.get_opt(index);
+				match value{
+					Some(value) => 
+						match value {
+							Ok(value) => Some(Value::String(value)),
+								Err(e) => None,
+						},
+							  None => None
+				}
+			}
+			_ => panic!("Type {:?} is not covered!", dtype),
+		}
+	}
 
 
     ///
@@ -523,7 +557,9 @@ impl Database for Postgres {
                 let column_name = c.name();
                 let dtype = c.type_();
                 let rtype = self.from_sql_to_rust_type(&dtype, &row, index);
-                dao.insert(column_name.to_owned(), rtype);
+				if let Some(rtype) = rtype {
+                	dao.insert(column_name.to_owned(), rtype);
+				}
                 index += 1;
             }
             daos.push(dao);

@@ -142,7 +142,7 @@ macro_rules! fn_has_equality_nulls{
 			let cond = Condition{
 				left: self.to_operand(), 
 				equality: $eq,
-				right: Operand::Value(Value::None(Type::String)) 
+				right: Operand::None,
 			};
 			Filter{
 				connector: Connector::And,
