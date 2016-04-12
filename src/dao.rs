@@ -162,46 +162,14 @@ impl Encodable for Value {
     }
 }
 
-/*
 impl Decodable for Value{
     
-    fn decode<D:Decoder>(d: &mut D)->Result<Self, D::Error>{
-        panic!("not yet");
-        //d.read_enum
+    fn decode<D: Decoder>(d: &mut D) -> Result<Self, D::Error>{
+        //read some enum using d.read_enum...
+        panic!("not yet here!")
     }
 }
-*/
-/*
 
-impl ToJson for Value {
-
-    fn to_json(&self) -> Json {
-        match *self {
-            Value::Bool(ref x) => x.to_json(),
-            Value::I8(ref x) => x.to_json(),
-            Value::I16(ref x) => x.to_json(),
-            Value::I32(ref x) => x.to_json(),
-            Value::I64(ref x) => x.to_json(),
-            Value::U8(ref x) => x.to_json(),
-            Value::U16(ref x) => x.to_json(),
-            Value::U32(ref x) => x.to_json(),
-            Value::U64(ref x) => x.to_json(),
-            Value::F32(ref x) => x.to_json(),
-            Value::F64(ref x) => x.to_json(),
-            Value::String(ref x) => x.to_json(),
-            Value::VecU8(ref x) => x.to_json(),
-            Value::Uuid(ref x) => x.to_hyphenated_string().to_json(),
-            Value::DateTime(ref x) => x.to_rfc3339().to_json(),
-            Value::NaiveDate(ref x) => format!("{}",x).to_json(),
-            Value::NaiveTime(ref x) => format!("{}",x).to_json(),
-			Value::NaiveDateTime(ref x) => format!("{}",x).to_json(),
-            Value::Object(ref x) => x.to_json(),
-            Value::Json(ref x) => x.clone(),
-            Value::None(_) => Json::Null,
-        }
-    }
-}
-*/
 
 
 impl fmt::Display for Value {
@@ -266,6 +234,8 @@ pub trait ToCompact {
 /// meta result of a query useful when doing complex query, and also with paging
 /// TODO: good name: DaoRows
 #[derive(Debug,Clone)]
+#[derive(RustcEncodable)]
+#[derive(RustcDecodable)]
 pub struct DaoResult {
     pub dao: Vec<Dao>,
     ///renamed columns for each table
@@ -280,40 +250,6 @@ pub struct DaoResult {
     pub page_size: Option<usize>,
 }
 
-/*
-/// a serializable array of dao to be serialized to json request
-/// a utility struct to hold only the needed fields from DaoResult that is needed
-/// in serializing the object, the non-significant ones are not included such as the renamed_columns
-/// TODO: add Decodable
-#[derive(RustcEncodable)]
-pub struct SerDaoResult {
-    pub dao: Vec<Dao>,
-    pub total: Option<usize>,
-    pub page: Option<usize>,
-    pub page_size: Option<usize>,
-}
-
-impl SerDaoResult {
-
-    pub fn from_dao_result(daoresult: &DaoResult) -> Self {
-        SerDaoResult {
-            dao: daoresult.dao.clone(),
-            total: daoresult.total.clone(),
-            page: daoresult.page.clone(),
-            page_size: daoresult.page_size.clone(),
-        }
-    }
-}
-*/
-
-/*
-impl Encodable for DaoResult {
-    fn encode<S: Encoder>(&self, s: &mut S) -> Result<(), S::Error> {
-		let ser = SerDaoResult::from_dao_result(self);
-		ser.encode(s)
-    }
-}
-*/
 
 impl DaoResult {
     /// get the list of renamed column name in matching table name
@@ -353,27 +289,14 @@ impl DaoResult {
         if casted.len() < 1 {
             return None;
         }
-	// why here assert??!!!
-        //assert!(casted.len() == 1);
         Some(casted.remove(0))
     }
 }
 
 /// TODO: optimization, used enum types for the key values
 /// This will save allocation of string to enum keys which is a few bytes, int
-//#[derive(Debug, Clone)]
-//#[derive(PartialEq)]
-//#[derive(RustcEncodable)]
-//pub struct Dao(BTreeMap<String, Value>);
-
 pub type Dao = BTreeMap<String, Value>;
 
-
-/*
-pub struct Dao {
-    pub values: BTreeMap<String, Value>,
-}
-*/
 
 pub type ParseError = String;
 
@@ -414,51 +337,6 @@ impl DaoCorrections for Dao{
     }
 }
 
-/*
-/// custom Encoder for Dao,
-/// decodes directly the content of `values`, instead of `values` as field of this `Dao` struct
-impl Encodable for Dao {
-    fn encode<S: Encoder>(&self, s: &mut S) -> Result<(), S::Error> {
-        self.encode(s)
-    }
-}
-*/
-
-/*
-impl Decodable for Dao{
-    fn decode<D: Decoder>(d: &mut D)-> Result<Self, D::Error>{
-       let map = d.read_map(|x,y|{ Decodable::decode(x) });
-       match map{
-            Ok(map) => {
-                println!("map has been decoded: {:?}", map);
-                Ok(Dao(map))
-            },
-            Err(e) => Err(e)
-       }
-    } 
-}
-*/
-
-/*
-impl ToJson for Dao {
-
-    fn to_json(&self) -> Json {
-        let mut btree = BTreeMap::new();
-        for (key, value) in &self.0 {
-            btree.insert(key.to_owned(), value.to_json());
-        }
-        Json::Object(btree)
-    }
-
-}
-*/
-
-/*
-impl Dao {
-
-}
-
-*/
 
 /// rename to ToValue
 pub trait ToValue {
@@ -541,13 +419,6 @@ impl ToValue for f64 {
         Value::F64(self.clone())
     }
 }
-/*
-impl <'a>ToValue for &'a str {
-    fn to_db_type(&self) -> Value {
-        Value::String((*self).to_owned())
-    }
-}
-*/
 
 impl ToValue for String {
     fn to_db_type(&self) -> Value {
