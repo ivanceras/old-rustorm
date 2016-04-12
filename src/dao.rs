@@ -162,6 +162,17 @@ impl Encodable for Value {
     }
 }
 
+/*
+impl Decodable for Value{
+    
+    fn decode<D:Decoder>(d: &mut D)->Result<Self, D::Error>{
+        panic!("not yet");
+        //d.read_enum
+    }
+}
+*/
+/*
+
 impl ToJson for Value {
 
     fn to_json(&self) -> Json {
@@ -190,6 +201,7 @@ impl ToJson for Value {
         }
     }
 }
+*/
 
 
 impl fmt::Display for Value {
@@ -268,6 +280,7 @@ pub struct DaoResult {
     pub page_size: Option<usize>,
 }
 
+/*
 /// a serializable array of dao to be serialized to json request
 /// a utility struct to hold only the needed fields from DaoResult that is needed
 /// in serializing the object, the non-significant ones are not included such as the renamed_columns
@@ -291,13 +304,16 @@ impl SerDaoResult {
         }
     }
 }
+*/
 
+/*
 impl Encodable for DaoResult {
     fn encode<S: Encoder>(&self, s: &mut S) -> Result<(), S::Error> {
 		let ser = SerDaoResult::from_dao_result(self);
 		ser.encode(s)
     }
 }
+*/
 
 impl DaoResult {
     /// get the list of renamed column name in matching table name
@@ -345,164 +361,50 @@ impl DaoResult {
 
 /// TODO: optimization, used enum types for the key values
 /// This will save allocation of string to enum keys which is a few bytes, int
-#[derive(Debug, Clone)]
-#[derive(PartialEq)]
+//#[derive(Debug, Clone)]
+//#[derive(PartialEq)]
+//#[derive(RustcEncodable)]
+//pub struct Dao(BTreeMap<String, Value>);
+
+pub type Dao = BTreeMap<String, Value>;
+
+
+/*
 pub struct Dao {
     pub values: BTreeMap<String, Value>,
 }
+*/
 
 pub type ParseError = String;
 
-impl Dao{
-	pub fn from_str(s: &str)->Result<Vec<Self>, ParseError>{
-		debug!("parsing multiple records from json");
-		let json: Json = Json::from_str(s).unwrap();
-		debug!("from str json: {:#?}", json);
-		match json{
-			Json::Array(array) => {
-				let mut dao_list = vec![];
-				for obj in array{
-					let map = Self::json_object_to_btree(obj);
-					let dao = Dao{ values: map };
-					dao_list.push(dao);
-				}
-				Ok(dao_list)
-			},
-			_ => Err("Expecting an array".to_owned())
-		}
-	}
 
-	fn json_object_to_btree(json: Json)->BTreeMap<String, Value>{
-		match json{
-			Json::Object(btree) => {
-				let mut new_map:BTreeMap<String, Value> = BTreeMap::new();
-				for (k, v) in btree.iter(){
-					let value = match v{
-						&Json::I64(v) => Value::I64(v),
-						&Json::U64(v) => Value::U64(v),
-						&Json::F64(v) => Value::F64(v),
-						&Json::String(ref v) => Value::String(v.to_owned()),
-						&Json::Boolean(v) => Value::Bool(v),
-						&Json::Null => Value::None(Type::Json),
-						&Json::Object(ref v) => {
-							let mut map: BTreeMap<String, Value> = BTreeMap::new();
-							for (k, v) in v.iter(){
-								let value = Value::Json(v.clone());
-								map.insert(k.to_owned(), value);
-							}
-							Value::Object(map)
-						},
-						&Json::Array(ref arr) => {
-							Value::Json(Json::Array(arr.clone()))
-						},
-					};
-					new_map.insert(k.to_owned(), value);
-				}
-				new_map
-			},
-			_ => panic!("expecting an object"),
-		}
-	}
-	/// reconstruct a dao from json string value
-	pub fn from_str_one(s: &str)->Result<Self, ()>{
-		let json: Json = Json::from_str(s).unwrap();
-		// then convert this map to Value
-		debug!("from str: {:#?}", json);
-		let values = Self::json_object_to_btree(json);
-		Ok(Dao{
-			values: values
-		})
-	}
+trait DaoCorrections{
+    
+
+    fn correct_renamed_columns(&mut self, renamed_columns: &Vec<(String, String)>);
+
+    fn all_has_values(&self, non_nulls: &Vec<String>) -> bool;
 
 }
 
-/// custom Encoder for Dao,
-/// decodes directly the content of `values`, instead of `values` as field of this `Dao` struct
-impl Encodable for Dao {
-    fn encode<S: Encoder>(&self, s: &mut S) -> Result<(), S::Error> {
-        self.values.encode(s)
-    }
-}
-impl ToJson for Dao {
-
-    fn to_json(&self) -> Json {
-        let mut btree = BTreeMap::new();
-        for (key, value) in &self.values {
-            btree.insert(key.to_owned(), value.to_json());
-        }
-        Json::Object(btree)
-    }
-
-}
-
-impl Dao {
-
-    pub fn new() -> Self {
-        Dao { values: BTreeMap::new() }
-    }
-
-    pub fn set(&mut self, column: &str, value: &ToValue) {
-        self.values.insert(column.to_owned(), value.to_db_type());
-    }
-
-    /// set to null the value of this column
-	/// TODO: correct the Null value here
-    pub fn set_null(&mut self, column: &str) {
-        self.set_value(column, Value::None(Type::String))
-    }
-
-    pub fn set_value(&mut self, column: &str, value: Value) {
-        self.values.insert(column.to_owned(), value);
-    }
-    pub fn get_value(&self, column: &str) -> Value {
-        let value = self.values.get(column);
-        match value {
-            Some(value) => value.clone(),
-            None => panic!("No such value for {}", column),
-        }
-    }
-    /// take the value and remove the content
-    pub fn remove<T>(&mut self, column: &str) -> T
-        where T: FromValue
-    {
-        let value = self.values.remove(column).unwrap();
-        FromValue::from_type(value)
-    }
-
-    /// take the value but not removing the content
-    pub fn get<T>(&self, column: &str) -> T
-        where T: FromValue
-    {
-        let value = self.values.get(column).unwrap();
-        FromValue::from_type(value.clone())
-    }
-    /// get optional value
-    pub fn get_opt<T>(&self, column: &str) -> Option<T>
-        where T: FromValue
-    {
-        let value = self.values.get(column);
-        match value {
-            None | Some(&Value::None(_)) => None,
-            Some(v) => Some(FromValue::from_type(v.clone())),
-        }
-    }
-
-    /// get a reference of the type
-    pub fn as_ref(&self, column: &str) -> &Value {
-        self.values.get(column).unwrap()
-    }
+impl DaoCorrections for Dao{
 
 
     fn correct_renamed_columns(&mut self, renamed_columns: &Vec<(String, String)>) {
         for &(ref column, ref rename) in renamed_columns {
-            let value = self.get_value(rename);
-            self.set_value(&column, value);
+            let value:Option<Value> = match self.get(rename){
+                Some(value) => Some(value.to_owned()),
+                None => None
+            };
+            if let Some(value) = value{
+                self.insert(column.to_owned(), value.clone());
+            }
         }
     }
 
     fn all_has_values(&self, non_nulls: &Vec<String>) -> bool {
         for column in non_nulls {
-            let value = self.values.get(column);
+            let value = self.get(column);
             match value {
                 None | Some(&Value::None(_)) => return false,
                 _ => (),
@@ -510,13 +412,53 @@ impl Dao {
         }
         true
     }
-
-
-    pub fn as_map(&self) -> &BTreeMap<String, Value> {
-        &self.values
-    }
 }
 
+/*
+/// custom Encoder for Dao,
+/// decodes directly the content of `values`, instead of `values` as field of this `Dao` struct
+impl Encodable for Dao {
+    fn encode<S: Encoder>(&self, s: &mut S) -> Result<(), S::Error> {
+        self.encode(s)
+    }
+}
+*/
+
+/*
+impl Decodable for Dao{
+    fn decode<D: Decoder>(d: &mut D)-> Result<Self, D::Error>{
+       let map = d.read_map(|x,y|{ Decodable::decode(x) });
+       match map{
+            Ok(map) => {
+                println!("map has been decoded: {:?}", map);
+                Ok(Dao(map))
+            },
+            Err(e) => Err(e)
+       }
+    } 
+}
+*/
+
+/*
+impl ToJson for Dao {
+
+    fn to_json(&self) -> Json {
+        let mut btree = BTreeMap::new();
+        for (key, value) in &self.0 {
+            btree.insert(key.to_owned(), value.to_json());
+        }
+        Json::Object(btree)
+    }
+
+}
+*/
+
+/*
+impl Dao {
+
+}
+
+*/
 
 /// rename to ToValue
 pub trait ToValue {

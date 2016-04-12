@@ -442,7 +442,17 @@ impl Database for Postgres {
         let sql = "SHOW server_version";
         let dao = try!(self.execute_sql_with_one_return(sql, &vec![]));
         match dao {
-            Some(dao) => Ok(dao.get("server_version")),
+            Some(dao) => {
+                match dao.get("server_version"){
+                    Some(version) => {
+                        match version{
+                            &Value::String(ref version) => Ok(version.to_owned()),
+                            _ => Err(DbError::new("unexpected type"))
+                        }
+                    },
+                    None => Err(DbError::new("no version specified"))
+                }
+            },
             None => Err(DbError::new("Unable to get database version")),
         }
     }
@@ -513,7 +523,7 @@ impl Database for Postgres {
                 let column_name = c.name();
                 let dtype = c.type_();
                 let rtype = self.from_sql_to_rust_type(&dtype, &row, index);
-                dao.set_value(column_name, rtype);
+                dao.insert(column_name.to_owned(), rtype);
                 index += 1;
             }
             daos.push(dao);
