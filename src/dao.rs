@@ -11,6 +11,10 @@ use table::IsTable;
 use rustc_serialize::{Encodable, Encoder, Decodable, Decoder};
 use rustc_serialize::json::{self, ToJson, Json};
 use rustc_serialize::DecoderHelpers;
+use rustc_serialize::base64::STANDARD;
+use rustc_serialize::base64::ToBase64;
+use rustc_serialize::base64::FromBase64;
+use chrono::offset::fixed::FixedOffset;
 
 
 #[derive(Debug)]
@@ -32,14 +36,12 @@ pub enum Type {
     F64,
     String,
     VecU8,
-    Object,
     Json,
     Uuid,
     DateTime,
     NaiveDate,
     NaiveTime,
-    NaiveDateTime,
-	None,
+	NaiveDateTime,
 }
 impl Type{
 	/// get the string representation when used in rust code
@@ -58,14 +60,12 @@ impl Type{
 			Type::F64 => "f64".to_owned(),
 			Type::String =>"String".to_owned(),
 			Type::VecU8 => "Vec<u8>".to_owned(),
-			Type::Object => "BTreeMap<String, Value>".to_owned(), 
 			Type::Json => "Json".to_owned(),
 			Type::Uuid => "Uuid".to_owned(),
 			Type::DateTime => "DateTime<UTC>".to_owned(),
 			Type::NaiveDate => "NaiveDate".to_owned(),
 			Type::NaiveTime => "NaiveTime".to_owned(),
 			Type::NaiveDateTime => "NaiveDateTime".to_owned(),
-			Type::None => "None".to_owned(),
 
 		}
 	}
@@ -75,8 +75,6 @@ impl Type{
 #[derive(Debug)]
 #[derive(Clone)]
 #[derive(PartialEq)]
-#[derive(RustcEncodable)]
-#[derive(RustcDecodable)]
 ///supported generic datatypes for an ORM
 pub enum Value {
     Bool(bool),
@@ -92,9 +90,9 @@ pub enum Value {
     F64(f64),
     String(String),
     VecU8(Vec<u8>),
-    Json(String),
+    Json(Json),
     Uuid(Uuid),
-    DateTime(DateTime<UTC>),
+    DateTime(DateTime<FixedOffset>),
     NaiveDate(NaiveDate),
     NaiveTime(NaiveTime),
     NaiveDateTime(NaiveDateTime),
@@ -125,54 +123,159 @@ impl Value{
             Value::Json(_) => Type::Json,
         }
 	}
+
+	fn from_ser_value(ser_value: &SerValue)->Self{
+		match ser_value{
+			&SerValue::Bool(x) => Value::Bool(x),
+			&SerValue::I8(x) => Value::I8(x),
+			&SerValue::I16(x) => Value::I16(x),
+			&SerValue::I32(x) => Value::I32(x),
+			&SerValue::I64(x) => Value::I64(x),
+			&SerValue::U8(x) => Value::U8(x),
+			&SerValue::U16(x) => Value::U16(x),
+			&SerValue::U32(x) => Value::U32(x),
+			&SerValue::U64(x) => Value::U64(x),
+			&SerValue::F32(x) => Value::F32(x),
+			&SerValue::F64(x) => Value::F64(x),
+			&SerValue::String(ref x) => Value::String(x.to_owned()),
+			&SerValue::VecU8(ref x) => {
+				let vecu8 = x.from_base64().unwrap();
+				Value::VecU8(vecu8)
+			},
+			&SerValue::Uuid(x) => Value::Uuid(x),
+			&SerValue::DateTime(ref x) => {
+				let date = DateTime::parse_from_rfc3339(x).unwrap();
+				Value::DateTime(date)
+			},
+			&SerValue::NaiveDate(ref x) => {
+				//let date = DateTime::parse_from_str(x);
+				//Value::NaiveDate(date)
+				panic!("not yet here!");
+			},
+			&SerValue::NaiveTime(ref x) => {
+				//let time = NaiveTime::parse_from_str(x);
+				//Value::NaiveTime(time)
+				panic!("not yet here!");
+			},
+			&SerValue::NaiveDateTime(ref x) => {
+				//let time = NaiveTime::parse_from_str(x);
+				//Value::NaiveTime(time)
+				panic!("not yet here!");
+			},
+			&SerValue::Json(ref json) => {
+				let json = Json::from_str(json).unwrap();
+				Value::Json(json)
+			}
+		}
+	}
 }
 
 
 
 /// custom implementation for value encoding to json,
 /// does not include unnecessary enum variants fields.
-/*
 impl Encodable for Value {
 
     fn encode<S: Encoder>(&self, s: &mut S) -> Result<(), S::Error> {
-        match *self {
-            Value::Bool(ref x) => x.encode(s),
-            Value::I8(ref x) => x.encode(s),
-            Value::I16(ref x) => x.encode(s),
-            Value::I32(ref x) => x.encode(s),
-            Value::I64(ref x) => x.encode(s),
-            Value::U8(ref x) => x.encode(s),
-            Value::U16(ref x) => x.encode(s),
-            Value::U32(ref x) => x.encode(s),
-            Value::U64(ref x) => x.encode(s),
-            Value::F32(ref x) => x.encode(s),
-            Value::F64(ref x) => x.encode(s),
-            Value::String(ref x) => x.encode(s),
-            Value::VecU8(ref x) => x.encode(s),
-            Value::Uuid(ref x) => x.encode(s),
-            Value::DateTime(ref x) => {
-                x.to_rfc3339().encode(s)
-            }
-            Value::NaiveDate(ref x) => x.encode(s),
-            Value::NaiveTime(ref x) => x.encode(s),
-            Value::NaiveDateTime(ref x) => x.encode(s),
-            Value::Object(ref x) => x.encode(s),
-            Value::Json(ref x) => x.encode(s),
-            Value::None(_) => s.emit_nil(),
-        }
+		let ser_value = SerValue::from_value(&self);
+		ser_value.encode(s)
     }
 }
-*/
 
-/*
+/// serializable value to json, to avoid complexity
+/// in manipulating the clienside json things such as date,
+
+#[derive(RustcEncodable)]
+#[derive(RustcDecodable)]
+enum SerValue{
+	Bool(bool),
+	I8(i8),
+	I16(i16),
+	I32(i32),
+	I64(i64),
+	U8(u8),
+	U16(u16),
+	U32(u32),
+	U64(u64),
+	F32(f32),
+	F64(f64),
+	String(String),
+	VecU8(String), // blob in 64 bit
+	Uuid(Uuid),
+	DateTime(String), // in standard format string
+	NaiveDate(String),
+	NaiveTime(String),
+	NaiveDateTime(String),
+	Json(String),
+}
+
+impl SerValue{
+	
+	fn from_value(value:&Value)->Self{
+		match value{
+			&Value::Bool(x) => SerValue::Bool(x),
+			&Value::I8(x) => SerValue::I8(x),
+			&Value::I16(x) => SerValue::I16(x),
+			&Value::I32(x) => SerValue::I32(x),
+			&Value::I64(x) => SerValue::I64(x),
+			&Value::U8(x) => SerValue::U8(x),
+			&Value::U16(x) => SerValue::U16(x),
+			&Value::U32(x) => SerValue::U32(x),
+			&Value::U64(x) => SerValue::U64(x),
+			&Value::F32(x) => SerValue::F32(x),
+			&Value::F64(x) => SerValue::F64(x),
+			&Value::String(ref x) => SerValue::String(x.to_owned()),
+			&Value::VecU8(ref x) => {
+				let base64 = x.to_base64(STANDARD);
+				SerValue::VecU8(base64)
+			},
+			&Value::Uuid(x) => SerValue::Uuid(x),
+			&Value::DateTime(ref x) => {
+				let date_str = x.to_rfc3339();
+				SerValue::DateTime(date_str)
+			},
+			&Value::NaiveDate(ref x) => {
+				let date_str = format!("{}", x);
+				SerValue::NaiveDate(date_str)
+			},
+			&Value::NaiveTime(ref x) => {
+				let time_str = format!("{}", x);
+				SerValue::NaiveTime(time_str)
+			},
+			&Value::NaiveDateTime(ref x) => {
+				let time_str = format!("{}", x);
+				SerValue::NaiveTime(time_str)
+			},
+			&Value::Json(ref json) => {
+				let json_text = format!("{}", json.pretty());
+				SerValue::Json(json_text)
+			}
+		}
+
+	}
+}
+
+/// A quick solution to controlling the output of the decoded 
+/// json value at right amount of data structure nesting...
 impl Decodable for Value{
     
     fn decode<D: Decoder>(d: &mut D) -> Result<Self, D::Error>{
-        //read some enum using d.read_enum...
-        panic!("not yet here!")
+		let ser_value = try!(SerValue::decode(d));
+		let value = Value::from_ser_value(&ser_value);
+		Ok(value)
     }
 }
-*/
+
+#[test]
+fn test_decode_value(){
+	let mut dao = Dao::new();
+	dao.insert("hello".to_owned(), Value::String("hi".to_owned()));
+	let dao_json = json::encode(&dao).unwrap();
+	println!("{:#?}", dao_json);
+	let dec:Dao = json::decode(&dao_json).unwrap();
+	println!("{:#?}", dec);
+	assert_eq!(dao, dec);
+}
 
 
 
@@ -430,7 +533,7 @@ impl ToValue for Uuid {
     }
 }
 
-impl ToValue for DateTime<UTC> {
+impl ToValue for DateTime<FixedOffset> {
     fn to_db_type(&self) -> Value {
         Value::DateTime(self.clone())
     }
@@ -455,8 +558,7 @@ impl ToValue for NaiveDateTime {
 
 impl ToValue for Json {
     fn to_db_type(&self) -> Value {
-		let json_string = format!("{}", self.pretty());
-        Value::Json(json_string)
+        Value::Json(self.clone())
     }
 }
 ///
@@ -585,7 +687,7 @@ impl FromValue for Uuid {
     }
 }
 
-impl FromValue for DateTime<UTC> {
+impl FromValue for DateTime<FixedOffset> {
     fn from_type(ty: Value) -> Self {
         match ty {
             Value::DateTime(x) => x,
@@ -624,7 +726,7 @@ impl FromValue for NaiveDateTime {
 impl FromValue for Json {
     fn from_type(ty: Value) -> Self {
         match ty {
-            Value::Json(x) => Json::from_str(&x).unwrap(),
+            Value::Json(x) => x,
             _ => panic!("error!"),
         }
     }

@@ -856,10 +856,6 @@ impl DatabaseDev for Postgres {
                 (vec!["chrono::naive::time::NaiveTime".to_owned()],
                  Type::NaiveTime)
             }
-            "hstore" => {
-                (vec!["std::collections::HashMap".to_owned()],
-                 Type::Object)
-            }
             "interval" => {
                 (vec![], Type::U32)
             }
@@ -926,9 +922,6 @@ impl DatabaseDev for Postgres {
             }
             Type::NaiveTime => {
                 "time".to_owned()
-            }
-            Type::Object => {
-                "hstore".to_owned()
             }
             _ => panic!("Unable to get the equivalent database data type for {:?}",
                         rust_type),

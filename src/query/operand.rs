@@ -20,6 +20,7 @@ use chrono::naive::time::NaiveTime;
 use chrono::naive::datetime::NaiveDateTime;
 use chrono::offset::utc::UTC;
 use rustc_serialize::json::Json;
+use chrono::offset::fixed::FixedOffset;
 
 pub trait ToOperand{
 	
@@ -179,7 +180,7 @@ impl_to_operand_for_to_value!(f32, F32);
 impl_to_operand_for_to_value!(f64, F64);
 impl_to_operand_for_to_value!(Vec<u8>, VecU8);
 impl_to_operand_for_to_value!(Uuid,  Uuid);
-impl_to_operand_for_to_value!(DateTime<UTC>, DateTime);
+impl_to_operand_for_to_value!(DateTime<FixedOffset>, DateTime);
 impl_to_operand_for_to_value!(NaiveDate, NaiveDate);
 impl_to_operand_for_to_value!(NaiveTime, NaiveTime);
 impl_to_operand_for_to_value!(NaiveDateTime, NaiveDateTime);
