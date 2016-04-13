@@ -52,11 +52,11 @@ impl Sqlite {
     }
 
     /// convert a record of a row into rust type
-    fn from_sql_to_rust_type(&self, row: &SqliteRow, index: usize) -> Value {
+    fn from_sql_to_rust_type(&self, row: &SqliteRow, index: usize) -> Option<Value> {
         let value = row.get_checked(index as i32);
         match value {
-            Ok(value) => Value::String(value),
-            Err(_) => Value::None(Type::String),
+            Ok(value) => Some(Value::String(value)),
+            Err(_) => None,
         }
     }
 
@@ -126,25 +126,55 @@ impl Sqlite {
     fn get_foreign_keys(&self, _schema: &str, table: &str) -> Vec<Foreign> {
         debug!("Extracting foreign keys...");
         let sql = format!("PRAGMA foreign_key_list({});", table);
-        let result = self.execute_sql_with_return(&sql, &vec![]).unwrap();
-        debug!("result: {:#?}", result);
-        let mut foreigns = vec![];
-        for r in result {
-            let table: String = r.get("table");
-            let from: String = r.get("from");
-            let to: String = r.get("to");
-            debug!("table: {}", table);
-            debug!("from: {}", from);
-            debug!("to: {}", to);
+        let result:Result<Vec<Dao>,DbError> = self.execute_sql_with_return(&sql, &vec![]);
 
-            let foreign = Foreign {
-                schema: None,
-                table: table.to_owned(),
-                column: to.to_owned(),
-            };
-            foreigns.push(foreign);
+        match result{
+            Ok(result) => {
+                let mut foreigns = vec![];
+                for r in result{
+                    let table: Option<&Value> = r.get("table");
+                    let table = match table{
+                        Some(table) => match table{
+                            &Value::String(ref table) => table.to_owned(),
+                                _ => unreachable!(),
+                        },
+                            None => "".to_owned(),
+                    };
+                    let from: Option<&Value> = r.get("from");
+                    let from = match from{
+                        Some(from) => match from{
+                            &Value::String(ref from) => from.to_owned(),
+                                _ => unreachable!(),
+                        },
+                            None => "".to_owned(),
+                    };
+                    let to: Option<&Value> = r.get("to");
+                    let to = match to{
+                        Some(to) => match to{
+                            &Value::String(ref to) => to.to_owned(),
+                                _ => unreachable!(),
+                        },
+                            None => "".to_owned(),
+                    };
+                    debug!("table: {}", table);
+                    debug!("from: {}", from);
+                    debug!("to: {}", to);
+
+                    let foreign = Foreign {
+                        schema: None,
+                        table: table.to_owned(),
+                        column: to.to_owned(),
+                    };
+                    foreigns.push(foreign);
+
+                }  
+                foreigns
+            },
+                Err(e) => {
+                    vec![]
+                }
         }
-        foreigns
+
     }
 
     pub fn extract_comments
@@ -216,38 +246,60 @@ impl Sqlite {
     /// Don't support multi-line comment
     fn get_table_comment(&self, _schema: &str, table: &str) -> Option<String> {
         let sql = format!("SELECT sql FROM sqlite_master WHERE type = 'table' AND tbl_name = '{}'",
-                          table);
-        let result = self.execute_sql_with_return(&sql, &vec![]).unwrap();
-        assert_eq!(result.len(), 1);
-        let ref dao = result[0];
-        let create_sql: String = dao.get("sql");
-        match Sqlite::extract_comments(&create_sql) {
-            Ok((table_comment, _column_comments)) => {
-                debug!("table_comment: {:?}", table_comment);
-                table_comment
+                table);
+        let result = self.execute_sql_with_return(&sql, &vec![]);
+        match result{
+            Ok(result) => {
+                assert_eq!(result.len(), 1);
+                let ref dao = result[0];
+                match dao.get("sql"){
+                    Some(create_sql) => match create_sql{
+                        &Value::String(ref create_sql) => match Sqlite::extract_comments(&create_sql) {
+                            Ok((table_comment, _column_comments)) => {
+                                debug!("table_comment: {:?}", table_comment);
+                                table_comment
+                            }
+                            Err(_) => {
+                                None
+                            }
+                        },
+                              _ => None
+                    },
+                        None => None
+                }
+
             }
-            Err(_) => {
-                None
-            }
+            Err(_) => None,
         }
     }
     /// extract the comments for each column
     /// Don't support multi-line comment
     fn get_column_comments(&self, _schema: &str, table: &str) -> BTreeMap<String, Option<String>> {
         let sql = format!("SELECT sql FROM sqlite_master WHERE type = 'table' AND tbl_name = '{}'",
-                          table);
-        let result = self.execute_sql_with_return(&sql, &vec![]).unwrap();
-        assert_eq!(result.len(), 1);
-        let ref dao = result[0];
-        let create_sql: String = dao.get("sql");
-        match Sqlite::extract_comments(&create_sql) {
-            Ok((_table_comment, column_comments)) => {
-                debug!("column_comments: {:?}", column_comments);
-                column_comments
+                table);
+        let result = self.execute_sql_with_return(&sql, &vec![]);
+        let map = BTreeMap::new();
+        match result{
+            Ok(result) => {
+                assert_eq!(result.len(), 1);
+                let ref dao = result[0];
+                match dao.get("sql"){
+                    Some(create_sql) => match create_sql{
+                        &Value::String(ref create_sql) => {
+                            match Sqlite::extract_comments(&create_sql) {
+                                Ok((_table_comment, column_comments)) => {
+                                    debug!("column_comments: {:?}", column_comments);
+                                    column_comments
+                                }
+                                Err(_) => map 
+                            }
+                        }
+                        _ => map 
+                    },
+                        None => map,
+                }
             }
-            Err(_) => {
-                BTreeMap::new()
-            }
+            Err(e) => map,
         }
     }
 
@@ -277,7 +329,16 @@ impl Database for Sqlite {
         let sql = "SELECT sqlite_version() AS version";
         let dao = try!(self.execute_sql_with_one_return(sql, &vec![]));
         match dao {
-            Some(dao) => Ok(dao.get("version")),
+            Some(dao) => {
+                let version: Option<&Value> = dao.get("version");
+                match version{
+                    Some(version) => match version{
+                        &Value::String(ref version) => Ok(version.to_owned()),
+                        _ => Err(DbError::new("no version"))
+                    },
+                    None => Err(DbError::new("no version"))
+                }
+            }
             None => Err(DbError::new("Unable to get database version")),
         }
     }
@@ -356,7 +417,9 @@ impl Database for Sqlite {
             for col in &columns {
                 let rtype = self.from_sql_to_rust_type(&row, index);
                 debug!("{:?}", rtype);
-                dao.set_value(col, rtype);
+                if let Some(rtype) = rtype{
+                    dao.insert(col.to_owned(), rtype);
+                }
                 index += 1;
             }
             daos.push(dao);
@@ -502,11 +565,42 @@ impl DatabaseDev for Sqlite {
 
                 let mut columns = vec![];
                 for r in result {
-                    let column: String = r.get("name");
-                    let db_data_type: String = r.get("type");
-                    let default_value: String = r.get("dflt_value");
-                    let not_null: String = r.get("notnull");
-                    let pk: String = r.get("pk");
+                    let column: String = match r.get("name"){
+                        Some(name) => match name{
+                            &Value::String(ref name) => name.to_owned(),
+                            _ => unreachable!(),
+                        },
+                        None => "".to_owned()
+                    };
+                    let db_data_type: String = match r.get("type"){
+                        Some(db_data_type) => match db_data_type{
+                            &Value::String(ref db_data_type) => db_data_type.to_owned(),
+                            _ => unreachable!(),
+                        },
+                        None => "".to_owned()
+                    };
+
+                    let default_value: String = match r.get("dflt_value"){
+                        Some(default_value) => match default_value{
+                            &Value::String(ref default_value) => default_value.to_owned(),
+                            _ => unreachable!(),
+                        },
+                        None => "".to_owned()
+                    };
+                    let not_null: String = match r.get("notnull"){
+                        Some(not_null) => match not_null{
+                            &Value::String(ref not_null) => not_null.to_owned(),
+                            _ => unreachable!(),
+                        },
+                        None => "".to_owned()
+                    };
+                    let pk: String = match r.get("pk"){
+                        Some(pk) => match pk{
+                            &Value::String(ref pk) => pk.to_owned(),
+                            _ => unreachable!(),
+                        },
+                        None => "".to_owned()
+                    };
                     debug!("column: {}", column);
                     debug!("data_type: {}", db_data_type);
                     debug!("not null: {}", not_null);
@@ -515,7 +609,7 @@ impl DatabaseDev for Sqlite {
 
                     let column_comment = self.get_column_comment(&column_comments, &column);
                     let column_foreign = self.get_column_foreign(&foreign, &column);
-					let (_, data_type) = self.dbtype_to_rust_type(&db_data_type);
+                    let (_, data_type) = self.dbtype_to_rust_type(&db_data_type);
                     let column = Column {
                         table: Some(table.to_owned()),
                         name: column,
@@ -555,7 +649,13 @@ impl DatabaseDev for Sqlite {
                 let mut tables: Vec<(String, String, bool)> = Vec::new();
                 for r in result {
                     let schema = "".to_owned();
-                    let table: String = r.get("tbl_name");
+                    let table: String = match r.get("tbl_name"){
+                        Some(table) => match table{
+                            &Value::String(ref table) => table.to_owned(),
+                            _ => unreachable!()
+                        },
+                        None => "".to_owned()
+                    };
                     let is_view = false;
                     tables.push((schema, table, is_view))
                 }

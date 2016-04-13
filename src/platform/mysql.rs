@@ -92,135 +92,125 @@ impl Mysql{
     }
 
     /// convert a record of a row into rust type
-    fn from_sql_to_rust_type(row: &[MyValue], index: usize, column_type: &ColumnType) -> Value {
+    fn from_sql_to_rust_type(row: &[MyValue], index: usize, column_type: &ColumnType) -> Option<Value> {
         let value = row.get(index);
         match value {
             Some(value) => {
-                    //println!("sql to rust {:?} type: {:?}", value, column_type);
-                    match *value{
-                        MyValue::NULL => {
-                            Value::None(Type::String)// should put Type::Unknown
+                match *column_type{
+                    ColumnType::MYSQL_TYPE_DECIMAL => {
+                        let v: f64 = FromValue::from_value(value.clone());
+                        Some(Value::F64(v))
+                    },
+                        ColumnType::MYSQL_TYPE_TINY =>{
+                            let v: i8 = FromValue::from_value(value.clone());
+                            Some(Value::I8(v))
                         },
-                        
-                        _ => {
-                            match *column_type{
-                                ColumnType::MYSQL_TYPE_DECIMAL => {
-                                    let v: f64 = FromValue::from_value(value.clone());
-                                    Value::F64(v)
-                                },
-                                ColumnType::MYSQL_TYPE_TINY =>{
-                                    let v: i8 = FromValue::from_value(value.clone());
-                                    Value::I8(v)
-                                },
-                                ColumnType::MYSQL_TYPE_SHORT => {
-                                    let v: i16 = FromValue::from_value(value.clone());
-                                    Value::I16(v)
-                                },
-                                ColumnType::MYSQL_TYPE_LONG => {
-                                    let v: i64 = FromValue::from_value(value.clone());
-                                    Value::I64(v)
-                                },
-                                ColumnType::MYSQL_TYPE_FLOAT =>{
-                                    let v: f32 = FromValue::from_value(value.clone());
-                                    Value::F32(v)
-                                },
-                                ColumnType::MYSQL_TYPE_DOUBLE => {
-                                    let v: f64 = FromValue::from_value(value.clone());
-                                    Value::F64(v)
-                                },
-                                ColumnType::MYSQL_TYPE_NULL => Value::None(Type::String),
-                                ColumnType::MYSQL_TYPE_TIMESTAMP => {
-                                    let v: Timespec = FromValue::from_value(value.clone());
-                                    let t = NaiveDateTime::from_timestamp(v.sec, v.nsec as u32);
-                                    debug!("time: {}",t);
-                                    let t2 = DateTime::from_utc(t, UTC);
-                                    Value::DateTime(t2)
-                                },
-                                ColumnType::MYSQL_TYPE_LONGLONG =>  {
-                                    let v: i64 = FromValue::from_value(value.clone());
-                                    Value::I64(v)
-                                },
-                                ColumnType::MYSQL_TYPE_INT24 => {
-                                    let v: i32 = FromValue::from_value(value.clone());
-                                    Value::I32(v)
-                                },
-                                ColumnType::MYSQL_TYPE_DATE => {
-                                    let v: Timespec = FromValue::from_value(value.clone());
-                                    let t = NaiveDateTime::from_timestamp(v.sec, v.nsec as u32);
-                                    let t2 = DateTime::from_utc(t, UTC);
-                                    Value::DateTime(t2)
-                                },
-                                ColumnType::MYSQL_TYPE_TIME => {
-                                    let v: Timespec = FromValue::from_value(value.clone());
-                                    let t = NaiveDateTime::from_timestamp(v.sec, v.nsec as u32);
-                                    let t2 = DateTime::from_utc(t, UTC);
-                                    Value::DateTime(t2)
-                                },
-                                ColumnType::MYSQL_TYPE_DATETIME => {
-                                    let v: Timespec = FromValue::from_value(value.clone());
-                                    //let t = NaiveDateTime::from_timestamp(v.sec, v.nsec as u32);
-                                    //Value::NaiveDateTime(t)
-                                    let t = NaiveDateTime::from_timestamp(v.sec, v.nsec as u32);
-                                    let t2 = DateTime::from_utc(t, UTC);
-                                    Value::DateTime(t2)
-                                },
-                                ColumnType::MYSQL_TYPE_YEAR => {
-                                    let v: Timespec = FromValue::from_value(value.clone());
-                                    let t = NaiveDateTime::from_timestamp(v.sec, v.nsec as u32);
-                                    let t2 = DateTime::from_utc(t, UTC);
-                                    Value::DateTime(t2)
-                                },
-                                ColumnType::MYSQL_TYPE_VARCHAR => {
-                                    let v: String = FromValue::from_value(value.clone());
-                                    Value::String(v)
-                                },
-                                ColumnType::MYSQL_TYPE_BIT =>unimplemented!(),
-                                ColumnType::MYSQL_TYPE_NEWDECIMAL => {
-                                    let v: f64 = FromValue::from_value(value.clone());
-                                    Value::F64(v)
-                                },
-                                ColumnType::MYSQL_TYPE_ENUM => {
-                                    let v: String = FromValue::from_value(value.clone());
-                                    Value::String(v)
-                                },
-                                ColumnType::MYSQL_TYPE_SET => {
-                                    let v: String = FromValue::from_value(value.clone());
-                                    Value::String(v)
-                                },
-                                ColumnType::MYSQL_TYPE_TINY_BLOB => {
-                                    let v: String = FromValue::from_value(value.clone());
-                                    Value::String(v)
-                                },
-                                ColumnType::MYSQL_TYPE_MEDIUM_BLOB => {
-                                    let v: String = FromValue::from_value(value.clone());
-                                    Value::String(v)
-                                },
-                                ColumnType::MYSQL_TYPE_LONG_BLOB => {
-                                    let v: String = FromValue::from_value(value.clone());
-                                    Value::String(v)
-                                },
-                                ColumnType::MYSQL_TYPE_BLOB => {
-                                    let v: String = FromValue::from_value(value.clone());
-                                    Value::String(v)
-                                },
-                                ColumnType::MYSQL_TYPE_VAR_STRING => {
-                                    let v: String = FromValue::from_value(value.clone());
-                                    Value::String(v)
-                                },
-                                ColumnType::MYSQL_TYPE_STRING => {
-                                    let v: String = FromValue::from_value(value.clone());
-                                    Value::String(v)
-                                },
-                                ColumnType::MYSQL_TYPE_GEOMETRY => {
-                                    let v: String = FromValue::from_value(value.clone());
-                                    Value::String(v)
-                                },
-                            }
-                        }
-                    }
-                    
-                },
-            None => Value::None(Type::String),
+                        ColumnType::MYSQL_TYPE_SHORT => {
+                            let v: i16 = FromValue::from_value(value.clone());
+                            Some(Value::I16(v))
+                        },
+                        ColumnType::MYSQL_TYPE_LONG => {
+                            let v: i64 = FromValue::from_value(value.clone());
+                            Some(Value::I64(v))
+                        },
+                        ColumnType::MYSQL_TYPE_FLOAT =>{
+                            let v: f32 = FromValue::from_value(value.clone());
+                            Some(Value::F32(v))
+                        },
+                        ColumnType::MYSQL_TYPE_DOUBLE => {
+                            let v: f64 = FromValue::from_value(value.clone());
+                            Some(Value::F64(v))
+                        },
+                        ColumnType::MYSQL_TYPE_NULL => None,
+                        ColumnType::MYSQL_TYPE_TIMESTAMP => {
+                            let v: Timespec = FromValue::from_value(value.clone());
+                            let t = NaiveDateTime::from_timestamp(v.sec, v.nsec as u32);
+                            debug!("time: {}",t);
+                            let t2 = DateTime::from_utc(t, UTC);
+                            Some(Value::DateTime(t2))
+                        },
+                        ColumnType::MYSQL_TYPE_LONGLONG =>  {
+                            let v: i64 = FromValue::from_value(value.clone());
+                            Some(Value::I64(v))
+                        },
+                        ColumnType::MYSQL_TYPE_INT24 => {
+                            let v: i32 = FromValue::from_value(value.clone());
+                            Some(Value::I32(v))
+                        },
+                        ColumnType::MYSQL_TYPE_DATE => {
+                            let v: Timespec = FromValue::from_value(value.clone());
+                            let t = NaiveDateTime::from_timestamp(v.sec, v.nsec as u32);
+                            let t2 = DateTime::from_utc(t, UTC);
+                            Some(Value::DateTime(t2))
+                        },
+                        ColumnType::MYSQL_TYPE_TIME => {
+                            let v: Timespec = FromValue::from_value(value.clone());
+                            let t = NaiveDateTime::from_timestamp(v.sec, v.nsec as u32);
+                            let t2 = DateTime::from_utc(t, UTC);
+                            Some(Value::DateTime(t2))
+                        },
+                        ColumnType::MYSQL_TYPE_DATETIME => {
+                            let v: Timespec = FromValue::from_value(value.clone());
+                            //let t = NaiveDateTime::from_timestamp(v.sec, v.nsec as u32);
+                            //Value::NaiveDateTime(t)
+                            let t = NaiveDateTime::from_timestamp(v.sec, v.nsec as u32);
+                            let t2 = DateTime::from_utc(t, UTC);
+                            Some(Value::DateTime(t2))
+                        },
+                        ColumnType::MYSQL_TYPE_YEAR => {
+                            let v: Timespec = FromValue::from_value(value.clone());
+                            let t = NaiveDateTime::from_timestamp(v.sec, v.nsec as u32);
+                            let t2 = DateTime::from_utc(t, UTC);
+                            Some(Value::DateTime(t2))
+                        },
+                        ColumnType::MYSQL_TYPE_VARCHAR => {
+                            let v: String = FromValue::from_value(value.clone());
+                            Some(Value::String(v))
+                        },
+                        ColumnType::MYSQL_TYPE_BIT =>unimplemented!(),
+                        ColumnType::MYSQL_TYPE_NEWDECIMAL => {
+                            let v: f64 = FromValue::from_value(value.clone());
+                            Some(Value::F64(v))
+                        },
+                        ColumnType::MYSQL_TYPE_ENUM => {
+                            let v: String = FromValue::from_value(value.clone());
+                            Some(Value::String(v))
+                        },
+                        ColumnType::MYSQL_TYPE_SET => {
+                            let v: String = FromValue::from_value(value.clone());
+                            Some(Value::String(v))
+                        },
+                        ColumnType::MYSQL_TYPE_TINY_BLOB => {
+                            let v: String = FromValue::from_value(value.clone());
+                            Some(Value::String(v))
+                        },
+                        ColumnType::MYSQL_TYPE_MEDIUM_BLOB => {
+                            let v: String = FromValue::from_value(value.clone());
+                            Some(Value::String(v))
+                        },
+                        ColumnType::MYSQL_TYPE_LONG_BLOB => {
+                            let v: String = FromValue::from_value(value.clone());
+                            Some(Value::String(v))
+                        },
+                        ColumnType::MYSQL_TYPE_BLOB => {
+                            let v: String = FromValue::from_value(value.clone());
+                            Some(Value::String(v))
+                        },
+                        ColumnType::MYSQL_TYPE_VAR_STRING => {
+                            let v: String = FromValue::from_value(value.clone());
+                            Some(Value::String(v))
+                        },
+                        ColumnType::MYSQL_TYPE_STRING => {
+                            let v: String = FromValue::from_value(value.clone());
+                            Some(Value::String(v))
+                        },
+                        ColumnType::MYSQL_TYPE_GEOMETRY => {
+                            let v: String = FromValue::from_value(value.clone());
+                            Some(Value::String(v))
+                        },
+                }//<--match column_type 
+            } //<-- Some(Value)
+              None => None,
         }
     }
 
@@ -396,7 +386,15 @@ impl Database for Mysql {
         let sql = "SELECT version()";
         let dao = try!(self.execute_sql_with_one_return(sql, &vec![]));
         match dao {
-            Some(dao) => Ok(dao.get("version()")),
+            Some(dao) => {
+                match dao.get("version()"){
+                    Some(version) => match version{
+                        &Value::String(ref version) => Ok(version.to_owned()),
+                        _ => unreachable!()
+                    },
+                        None => Err(DbError::new("Unable to get database version")),
+                }
+            }
             None => Err(DbError::new("Unable to get database version")),
         }
     }
@@ -462,7 +460,9 @@ impl Database for Mysql {
             let mut dao = Dao::new();
             for &(ref column_name, ref column_type) in &columns {
                 let rtype = Mysql::from_sql_to_rust_type(&row, index, column_type);
-                dao.set_value(&column_name, rtype);
+                if let Some(rtype) = rtype{
+                    dao.insert(column_name.to_owned(), rtype);
+                }
                 index += 1;
             }
             daos.push(dao);
@@ -610,7 +610,13 @@ impl DatabaseDev for Mysql {
         let schema_name: String = match self.execute_sql_with_one_return(sql, &vec![]) {
             Ok(dao) => {
                 match dao {
-                    Some(dao) => dao.get("schema()"),
+                    Some(dao) => match dao.get("schema()"){
+                        Some(schema) => match schema{
+                            &Value::String(ref schema) => schema.to_owned(),
+                            _ => unreachable!(),
+                        },
+                        None => "".to_owned(),
+                    },
                     None => panic!("Unable to get current schema.")
                 }
             },

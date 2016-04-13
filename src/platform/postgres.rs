@@ -95,7 +95,6 @@ impl Postgres {
 		match *dtype {
 			PgType::Uuid => {
 				let value = row.get_opt(index);
-				println!("value: {:#?}", value);
 				match value{
 					Some(value) =>
 						match value {
