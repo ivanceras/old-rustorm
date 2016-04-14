@@ -18,6 +18,7 @@ use mysql::conn::pool::MyPool;
 use chrono::naive::datetime::NaiveDateTime;
 use chrono::datetime::DateTime;
 use chrono::offset::utc::UTC;
+use chrono::offset::fixed::FixedOffset;
 
 use query::Operand;
 
@@ -125,8 +126,10 @@ impl Mysql{
                         ColumnType::MYSQL_TYPE_TIMESTAMP => {
                             let v: Timespec = FromValue::from_value(value.clone());
                             let t = NaiveDateTime::from_timestamp(v.sec, v.nsec as u32);
+							let utc = UTC::now();
                             debug!("time: {}",t);
-                            let t2 = DateTime::from_utc(t, UTC);
+							let fix = FixedOffset::east(1);
+                            let t2 = DateTime::from_utc(t, fix);
                             Some(Value::DateTime(t2))
                         },
                         ColumnType::MYSQL_TYPE_LONGLONG =>  {
@@ -140,27 +143,29 @@ impl Mysql{
                         ColumnType::MYSQL_TYPE_DATE => {
                             let v: Timespec = FromValue::from_value(value.clone());
                             let t = NaiveDateTime::from_timestamp(v.sec, v.nsec as u32);
-                            let t2 = DateTime::from_utc(t, UTC);
+							let fix = FixedOffset::east(1);
+                            let t2 = DateTime::from_utc(t, fix);
                             Some(Value::DateTime(t2))
                         },
                         ColumnType::MYSQL_TYPE_TIME => {
                             let v: Timespec = FromValue::from_value(value.clone());
                             let t = NaiveDateTime::from_timestamp(v.sec, v.nsec as u32);
-                            let t2 = DateTime::from_utc(t, UTC);
+							let fix = FixedOffset::east(1);
+                            let t2 = DateTime::from_utc(t, fix);
                             Some(Value::DateTime(t2))
                         },
                         ColumnType::MYSQL_TYPE_DATETIME => {
                             let v: Timespec = FromValue::from_value(value.clone());
-                            //let t = NaiveDateTime::from_timestamp(v.sec, v.nsec as u32);
-                            //Value::NaiveDateTime(t)
                             let t = NaiveDateTime::from_timestamp(v.sec, v.nsec as u32);
-                            let t2 = DateTime::from_utc(t, UTC);
+							let fix = FixedOffset::east(1);
+                            let t2 = DateTime::from_utc(t, fix);
                             Some(Value::DateTime(t2))
                         },
                         ColumnType::MYSQL_TYPE_YEAR => {
                             let v: Timespec = FromValue::from_value(value.clone());
                             let t = NaiveDateTime::from_timestamp(v.sec, v.nsec as u32);
-                            let t2 = DateTime::from_utc(t, UTC);
+							let fix = FixedOffset::east(1);
+                            let t2 = DateTime::from_utc(t, fix);
                             Some(Value::DateTime(t2))
                         },
                         ColumnType::MYSQL_TYPE_VARCHAR => {
