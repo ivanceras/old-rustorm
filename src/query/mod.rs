@@ -481,6 +481,9 @@ impl Query {
     pub fn add_filter(&mut self, filter: Filter){
         self.filters.push(filter);
     }
+	pub fn add_filters(&mut self, filters: &Vec<Filter>){
+		self.filters.extend_from_slice(filters)
+	}
 
     /// column = value
     pub fn filter_eq(&mut self, column: &str, value: &ToValue){

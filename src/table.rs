@@ -464,6 +464,9 @@ impl Table {
         columns
     }
 	
+/// below functions are advanced table manipulation functions
+/// and should be put into curtain
+
 	fn get_parent_table<'a>(&self, tables: &'a [Table]) -> Option<&'a Table>{
 		match &self.parent_table{
 			&Some(ref p_table) => {
@@ -671,11 +674,33 @@ impl Table {
     /// which doesn't make sense to be a stand alone window on its own
     /// characteristic: if it has only 1 has_one which is its owning parent table
     /// and no other direct or indirect referring table
-    pub fn is_owned(&self, tables: &[Table]) -> bool {
+    fn is_owned(&self, tables: &[Table]) -> bool {
         let has_one = self.referred_tables(tables);
         let has_many = self.referring_tables(tables);
         has_one.len() == 1 && has_many.is_empty()
     }
+
+	/// if table has 2 primary keys, 1 of the primary key is a foreign key the (parent) has_one table
+	/// 
+	fn is_semi_owned(&self, tables: &[Table]) -> bool {
+		let primary_and_foreign = self.primary_and_foreign_columns();
+		let has_ones = self.referred_tables(tables);
+		let n = primary_and_foreign.len();
+		if self.primary_columns().len() != 2 {
+			return false;
+		}
+		let mut semi_owner = 0;
+		for (column, has_one)  in has_ones{
+			if has_one.are_these_foreign_column_refer_to_primary_of_this_table(&primary_and_foreign){
+				semi_owner += 1;
+			}	
+		}
+		semi_owner > 0
+	}
+
+	pub fn is_owned_or_semi_owned(&self, tables: &[Table]) -> bool {
+		self.is_owned(tables) || self.is_semi_owned(tables)
+	}
 
     /// has many indirect
     /// when there is a linker table, bypass the 1:1 relation to the linker table
@@ -726,6 +751,28 @@ impl Table {
         indirect_referring_tables
     }
 
+
+	pub fn direct_tables<'a>(&self, tables: &'a [Table]) -> Vec<&'a Table> {
+		let mut direct_tables = vec![];
+		let referring = self.referring_tables(tables);
+		for (ref_table, _) in referring{
+			if !ref_table.is_owned(tables) && !ref_table.is_linker_table(){
+				direct_tables.push(ref_table)
+			}
+		}
+		direct_tables
+	}
+
+	pub fn indirect_tables<'a>(&self, tables: &'a [Table]) -> Vec<(&'a Table, &'a Table)> {
+		let mut indirect_tables = vec![];
+		let ind_referring = self.indirect_referring_tables(tables);
+		for (ind, linker) in ind_referring{
+			if !ind.is_owned(tables) && !ind.is_linker_table(){
+				indirect_tables.push( (ind, linker) )
+			}
+		}
+		indirect_tables
+	}
 
 
     /// get referring tables, and check if primary columns of these referring table
