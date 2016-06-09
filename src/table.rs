@@ -87,7 +87,8 @@ impl Column {
 
     pub fn displayname(&self) -> String {
         let clean_name = self.clean_name();
-        clean_name.replace("_", " ")
+        let clean_name = clean_name.replace("_", " ");
+        capitalize(&clean_name)
     }
 
     /// presentable display names, such as removing the ids if it ends with one
@@ -110,7 +111,7 @@ impl Column {
                     .to_owned();
             }
         }
-        clean_name
+        capitalize(&clean_name)
     }
 
 }
