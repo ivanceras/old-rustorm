@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["Error","Query Error"],["SqlType","Could have been SqlAction"]],"mod":[["builder",""],["column_name",""],["field",""],["filter",""],["function",""],["join",""],["operand",""],["order",""],["source",""],["table_name",""]],"struct":[["Query",""],["Range",""]]});

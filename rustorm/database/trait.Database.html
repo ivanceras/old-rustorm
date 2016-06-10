@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `Database` trait in crate `rustorm`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, Database">
+
+    <title>rustorm::database::Database - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+    
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='../index.html'>rustorm</a>::<wbr><a href='index.html'>database</a></p><script>window.sidebarCurrent = {name: 'Database', ty: 'trait', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content trait">
+<h1 class='fqn'><span class='in-band'>Trait <a href='../index.html'>rustorm</a>::<wbr><a href='index.html'>database</a>::<wbr><a class='trait' href=''>Database</a></span><span class='out-of-band'><span id='render-detail'>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a id='src-2919' class='srclink' href='../../src/rustorm/src/database.rs.html#148-710' title='goto source code'>[src]</a></span></h1>
+<pre class='rust trait'>pub trait Database {
+    fn <a href='#tymethod.version' class='fnname'>version</a>(&amp;self) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>, <a class='enum' href='../../rustorm/database/enum.DbError.html' title='rustorm::database::DbError'>DbError</a>&gt;;
+    fn <a href='#tymethod.begin' class='fnname'>begin</a>(&amp;self);
+    fn <a href='#tymethod.commit' class='fnname'>commit</a>(&amp;self);
+    fn <a href='#tymethod.rollback' class='fnname'>rollback</a>(&amp;self);
+    fn <a href='#tymethod.is_transacted' class='fnname'>is_transacted</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>;
+    fn <a href='#tymethod.is_closed' class='fnname'>is_closed</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>;
+    fn <a href='#tymethod.is_connected' class='fnname'>is_connected</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>;
+    fn <a href='#tymethod.close' class='fnname'>close</a>(&amp;self);
+    fn <a href='#tymethod.is_valid' class='fnname'>is_valid</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>;
+    fn <a href='#tymethod.reset' class='fnname'>reset</a>(&amp;self);
+    fn <a href='#tymethod.update' class='fnname'>update</a>(&amp;self, query: &amp;<a class='struct' href='../../rustorm/query/struct.Query.html' title='rustorm::query::Query'>Query</a>) -&gt; <a class='type' href='../../rustorm/dao/type.Dao.html' title='rustorm::dao::Dao'>Dao</a>;
+    fn <a href='#tymethod.delete' class='fnname'>delete</a>(&amp;self, query: &amp;<a class='struct' href='../../rustorm/query/struct.Query.html' title='rustorm::query::Query'>Query</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, <a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;;
+    fn <a href='#tymethod.execute_sql_with_return' class='fnname'>execute_sql_with_return</a>(&amp;self, sql: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>, params: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;[</a><a class='enum' href='../../rustorm/dao/enum.Value.html' title='rustorm::dao::Value'>Value</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='type' href='../../rustorm/dao/type.Dao.html' title='rustorm::dao::Dao'>Dao</a>&gt;, <a class='enum' href='../../rustorm/database/enum.DbError.html' title='rustorm::database::DbError'>DbError</a>&gt;;
+    fn <a href='#tymethod.execute_sql' class='fnname'>execute_sql</a>(&amp;self, sql: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>, param: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;[</a><a class='enum' href='../../rustorm/dao/enum.Value.html' title='rustorm::dao::Value'>Value</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, <a class='enum' href='../../rustorm/database/enum.DbError.html' title='rustorm::database::DbError'>DbError</a>&gt;;
+    fn <a href='#tymethod.sql_options' class='fnname'>sql_options</a>(&amp;self) -&gt; <a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='enum' href='../../rustorm/database/enum.SqlOption.html' title='rustorm::database::SqlOption'>SqlOption</a>&gt;;
+
+    fn <a href='#method.select' class='fnname'>select</a>(&amp;self, query: &amp;<a class='struct' href='../../rustorm/query/struct.Query.html' title='rustorm::query::Query'>Query</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='struct' href='../../rustorm/dao/struct.DaoResult.html' title='rustorm::dao::DaoResult'>DaoResult</a>, <a class='enum' href='../../rustorm/database/enum.DbError.html' title='rustorm::database::DbError'>DbError</a>&gt; { ... }
+    fn <a href='#method.insert' class='fnname'>insert</a>(&amp;self, query: &amp;<a class='struct' href='../../rustorm/query/struct.Query.html' title='rustorm::query::Query'>Query</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='type' href='../../rustorm/dao/type.Dao.html' title='rustorm::dao::Dao'>Dao</a>, <a class='enum' href='../../rustorm/database/enum.DbError.html' title='rustorm::database::DbError'>DbError</a>&gt; { ... }
+    fn <a href='#method.execute_with_return' class='fnname'>execute_with_return</a>(&amp;self, query: &amp;<a class='struct' href='../../rustorm/query/struct.Query.html' title='rustorm::query::Query'>Query</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='struct' href='../../rustorm/dao/struct.DaoResult.html' title='rustorm::dao::DaoResult'>DaoResult</a>, <a class='enum' href='../../rustorm/database/enum.DbError.html' title='rustorm::database::DbError'>DbError</a>&gt; { ... }
+    fn <a href='#method.execute_with_one_return' class='fnname'>execute_with_one_return</a>(&amp;self, query: &amp;<a class='struct' href='../../rustorm/query/struct.Query.html' title='rustorm::query::Query'>Query</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='type' href='../../rustorm/dao/type.Dao.html' title='rustorm::dao::Dao'>Dao</a>&gt;, <a class='enum' href='../../rustorm/database/enum.DbError.html' title='rustorm::database::DbError'>DbError</a>&gt; { ... }
+    fn <a href='#method.execute' class='fnname'>execute</a>(&amp;self, query: &amp;<a class='struct' href='../../rustorm/query/struct.Query.html' title='rustorm::query::Query'>Query</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, <a class='enum' href='../../rustorm/database/enum.DbError.html' title='rustorm::database::DbError'>DbError</a>&gt; { ... }
+    fn <a href='#method.execute_sql_with_one_return' class='fnname'>execute_sql_with_one_return</a>(&amp;self, sql: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>, params: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;[</a><a class='enum' href='../../rustorm/dao/enum.Value.html' title='rustorm::dao::Value'>Value</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='type' href='../../rustorm/dao/type.Dao.html' title='rustorm::dao::Dao'>Dao</a>&gt;, <a class='enum' href='../../rustorm/database/enum.DbError.html' title='rustorm::database::DbError'>DbError</a>&gt; { ... }
+    fn <a href='#method.build_query' class='fnname'>build_query</a>(&amp;self, query: &amp;<a class='struct' href='../../rustorm/query/struct.Query.html' title='rustorm::query::Query'>Query</a>, build_mode: <a class='enum' href='../../rustorm/database/enum.BuildMode.html' title='rustorm::database::BuildMode'>BuildMode</a>) -&gt; <a class='struct' href='../../rustorm/writer/struct.SqlFrag.html' title='rustorm::writer::SqlFrag'>SqlFrag</a> { ... }
+    fn <a href='#method.build_operand' class='fnname'>build_operand</a>(&amp;self, w: &amp;mut <a class='struct' href='../../rustorm/writer/struct.SqlFrag.html' title='rustorm::writer::SqlFrag'>SqlFrag</a>, parent_query: &amp;<a class='struct' href='../../rustorm/query/struct.Query.html' title='rustorm::query::Query'>Query</a>, operand: &amp;<a class='enum' href='../../rustorm/query/operand/enum.Operand.html' title='rustorm::query::operand::Operand'>Operand</a>) { ... }
+    fn <a href='#method.build_condition' class='fnname'>build_condition</a>(&amp;self, w: &amp;mut <a class='struct' href='../../rustorm/writer/struct.SqlFrag.html' title='rustorm::writer::SqlFrag'>SqlFrag</a>, parent_query: &amp;<a class='struct' href='../../rustorm/query/struct.Query.html' title='rustorm::query::Query'>Query</a>, cond: &amp;<a class='struct' href='../../rustorm/query/filter/struct.Condition.html' title='rustorm::query::filter::Condition'>Condition</a>) { ... }
+    fn <a href='#method.build_field' class='fnname'>build_field</a>(&amp;self, w: &amp;mut <a class='struct' href='../../rustorm/writer/struct.SqlFrag.html' title='rustorm::writer::SqlFrag'>SqlFrag</a>, parent_query: &amp;<a class='struct' href='../../rustorm/query/struct.Query.html' title='rustorm::query::Query'>Query</a>, field: &amp;<a class='struct' href='../../rustorm/query/field/struct.Field.html' title='rustorm::query::field::Field'>Field</a>) { ... }
+    fn <a href='#method.build_query_source' class='fnname'>build_query_source</a>(&amp;self, w: &amp;mut <a class='struct' href='../../rustorm/writer/struct.SqlFrag.html' title='rustorm::writer::SqlFrag'>SqlFrag</a>, parent_query: &amp;<a class='struct' href='../../rustorm/query/struct.Query.html' title='rustorm::query::Query'>Query</a>, query_source: &amp;<a class='enum' href='../../rustorm/query/source/enum.QuerySource.html' title='rustorm::query::source::QuerySource'>QuerySource</a>) { ... }
+    fn <a href='#method.build_source_field' class='fnname'>build_source_field</a>(&amp;self, w: &amp;mut <a class='struct' href='../../rustorm/writer/struct.SqlFrag.html' title='rustorm::writer::SqlFrag'>SqlFrag</a>, parent_query: &amp;<a class='struct' href='../../rustorm/query/struct.Query.html' title='rustorm::query::Query'>Query</a>, source_field: &amp;<a class='struct' href='../../rustorm/query/source/struct.SourceField.html' title='rustorm::query::source::SourceField'>SourceField</a>) { ... }
+    fn <a href='#method.build_filter' class='fnname'>build_filter</a>(&amp;self, w: &amp;mut <a class='struct' href='../../rustorm/writer/struct.SqlFrag.html' title='rustorm::writer::SqlFrag'>SqlFrag</a>, parent_query: &amp;<a class='struct' href='../../rustorm/query/struct.Query.html' title='rustorm::query::Query'>Query</a>, filter: &amp;<a class='struct' href='../../rustorm/query/filter/struct.Filter.html' title='rustorm::query::filter::Filter'>Filter</a>) { ... }
+    fn <a href='#method.build_filters' class='fnname'>build_filters</a>(&amp;self, w: &amp;mut <a class='struct' href='../../rustorm/writer/struct.SqlFrag.html' title='rustorm::writer::SqlFrag'>SqlFrag</a>, parent_query: &amp;<a class='struct' href='../../rustorm/query/struct.Query.html' title='rustorm::query::Query'>Query</a>, filters: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;[</a><a class='struct' href='../../rustorm/query/filter/struct.Filter.html' title='rustorm::query::filter::Filter'>Filter</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a>) { ... }
+    fn <a href='#method.build_enumerated_fields' class='fnname'>build_enumerated_fields</a>(&amp;self, w: &amp;mut <a class='struct' href='../../rustorm/writer/struct.SqlFrag.html' title='rustorm::writer::SqlFrag'>SqlFrag</a>, parent_query: &amp;<a class='struct' href='../../rustorm/query/struct.Query.html' title='rustorm::query::Query'>Query</a>, enumerated_fields: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;[</a><a class='struct' href='../../rustorm/query/field/struct.Field.html' title='rustorm::query::field::Field'>Field</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a>) { ... }
+    fn <a href='#method.build_select' class='fnname'>build_select</a>(&amp;self, query: &amp;<a class='struct' href='../../rustorm/query/struct.Query.html' title='rustorm::query::Query'>Query</a>, build_mode: <a class='enum' href='../../rustorm/database/enum.BuildMode.html' title='rustorm::database::BuildMode'>BuildMode</a>) -&gt; <a class='struct' href='../../rustorm/writer/struct.SqlFrag.html' title='rustorm::writer::SqlFrag'>SqlFrag</a> { ... }
+    fn <a href='#method.build_insert' class='fnname'>build_insert</a>(&amp;self, query: &amp;<a class='struct' href='../../rustorm/query/struct.Query.html' title='rustorm::query::Query'>Query</a>, build_mode: <a class='enum' href='../../rustorm/database/enum.BuildMode.html' title='rustorm::database::BuildMode'>BuildMode</a>) -&gt; <a class='struct' href='../../rustorm/writer/struct.SqlFrag.html' title='rustorm::writer::SqlFrag'>SqlFrag</a> { ... }
+    fn <a href='#method.build_update' class='fnname'>build_update</a>(&amp;self, query: &amp;<a class='struct' href='../../rustorm/query/struct.Query.html' title='rustorm::query::Query'>Query</a>, build_mode: <a class='enum' href='../../rustorm/database/enum.BuildMode.html' title='rustorm::database::BuildMode'>BuildMode</a>) -&gt; <a class='struct' href='../../rustorm/writer/struct.SqlFrag.html' title='rustorm::writer::SqlFrag'>SqlFrag</a> { ... }
+    fn <a href='#method.build_delete' class='fnname'>build_delete</a>(&amp;self, query: &amp;<a class='struct' href='../../rustorm/query/struct.Query.html' title='rustorm::query::Query'>Query</a>, build_mode: <a class='enum' href='../../rustorm/database/enum.BuildMode.html' title='rustorm::database::BuildMode'>BuildMode</a>) -&gt; <a class='struct' href='../../rustorm/writer/struct.SqlFrag.html' title='rustorm::writer::SqlFrag'>SqlFrag</a> { ... }
+}</pre><div class='docblock'><p>Generic Database interface
+This is the database interface which will should be implemented to you the specifics of each database platform
+At least all methods on this trait should be implemented for target deployment database
+A lower level API for manipulating objects in the database</p>
+
+<p>TODO: acquire only a connection until a query is about to be executed.
+generating query don&#39;t really need database connection just yet.</p>
+</div>
+            <h2 id='required-methods'>Required Methods</h2>
+            <div class='methods'>
+        <h3 id='tymethod.version' class='method stab '><code>fn <a href='#tymethod.version' class='fnname'>version</a>(&amp;self) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>, <a class='enum' href='../../rustorm/database/enum.DbError.html' title='rustorm::database::DbError'>DbError</a>&gt;</code></h3><div class='docblock'><p>return the version of the database
+lower version of database has fewer supported features</p>
+</div><h3 id='tymethod.begin' class='method stab '><code>fn <a href='#tymethod.begin' class='fnname'>begin</a>(&amp;self)</code></h3><div class='docblock'><p>begin database transaction</p>
+</div><h3 id='tymethod.commit' class='method stab '><code>fn <a href='#tymethod.commit' class='fnname'>commit</a>(&amp;self)</code></h3><div class='docblock'><p>commit database transaction</p>
+</div><h3 id='tymethod.rollback' class='method stab '><code>fn <a href='#tymethod.rollback' class='fnname'>rollback</a>(&amp;self)</code></h3><div class='docblock'><p>rollback data changes executed prior to calling the begin method</p>
+</div><h3 id='tymethod.is_transacted' class='method stab '><code>fn <a href='#tymethod.is_transacted' class='fnname'>is_transacted</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h3><div class='docblock'><p>determine if this transaction has been committed or rolledback</p>
+</div><h3 id='tymethod.is_closed' class='method stab '><code>fn <a href='#tymethod.is_closed' class='fnname'>is_closed</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h3><div class='docblock'><p>determine if the database connection closed</p>
+</div><h3 id='tymethod.is_connected' class='method stab '><code>fn <a href='#tymethod.is_connected' class='fnname'>is_connected</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h3><div class='docblock'><p>check if the database is still connected</p>
+</div><h3 id='tymethod.close' class='method stab '><code>fn <a href='#tymethod.close' class='fnname'>close</a>(&amp;self)</code></h3><div class='docblock'><p>close the database connection</p>
+</div><h3 id='tymethod.is_valid' class='method stab '><code>fn <a href='#tymethod.is_valid' class='fnname'>is_valid</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h3><div class='docblock'><p>determine if the database connection is still valid</p>
+</div><h3 id='tymethod.reset' class='method stab '><code>fn <a href='#tymethod.reset' class='fnname'>reset</a>(&amp;self)</code></h3><div class='docblock'><p>reset the database connection</p>
+</div><h3 id='tymethod.update' class='method stab '><code>fn <a href='#tymethod.update' class='fnname'>update</a>(&amp;self, query: &amp;<a class='struct' href='../../rustorm/query/struct.Query.html' title='rustorm::query::Query'>Query</a>) -&gt; <a class='type' href='../../rustorm/dao/type.Dao.html' title='rustorm::dao::Dao'>Dao</a></code></h3><div class='docblock'><p>update
+returns the updated Dao</p>
+</div><h3 id='tymethod.delete' class='method stab '><code>fn <a href='#tymethod.delete' class='fnname'>delete</a>(&amp;self, query: &amp;<a class='struct' href='../../rustorm/query/struct.Query.html' title='rustorm::query::Query'>Query</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, <a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;</code></h3><div class='docblock'><p>delete records
+returns the number of deleted records</p>
+</div><h3 id='tymethod.execute_sql_with_return' class='method stab '><code>fn <a href='#tymethod.execute_sql_with_return' class='fnname'>execute_sql_with_return</a>(&amp;self, sql: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>, params: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;[</a><a class='enum' href='../../rustorm/dao/enum.Value.html' title='rustorm::dao::Value'>Value</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='type' href='../../rustorm/dao/type.Dao.html' title='rustorm::dao::Dao'>Dao</a>&gt;, <a class='enum' href='../../rustorm/database/enum.DbError.html' title='rustorm::database::DbError'>DbError</a>&gt;</code></h3><div class='docblock'><p>execute insert with returning clause, update with returning clause</p>
+</div><h3 id='tymethod.execute_sql' class='method stab '><code>fn <a href='#tymethod.execute_sql' class='fnname'>execute_sql</a>(&amp;self, sql: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>, param: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;[</a><a class='enum' href='../../rustorm/dao/enum.Value.html' title='rustorm::dao::Value'>Value</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, <a class='enum' href='../../rustorm/database/enum.DbError.html' title='rustorm::database::DbError'>DbError</a>&gt;</code></h3><div class='docblock'><p>everything else, no required return other than error or affected number of records</p>
+</div><h3 id='tymethod.sql_options' class='method stab '><code>fn <a href='#tymethod.sql_options' class='fnname'>sql_options</a>(&amp;self) -&gt; <a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='enum' href='../../rustorm/database/enum.SqlOption.html' title='rustorm::database::SqlOption'>SqlOption</a>&gt;</code></h3></div>
+            <h2 id='provided-methods'>Provided Methods</h2>
+            <div class='methods'>
+        <h3 id='method.select' class='method stab '><code>fn <a href='#method.select' class='fnname'>select</a>(&amp;self, query: &amp;<a class='struct' href='../../rustorm/query/struct.Query.html' title='rustorm::query::Query'>Query</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='struct' href='../../rustorm/dao/struct.DaoResult.html' title='rustorm::dao::DaoResult'>DaoResult</a>, <a class='enum' href='../../rustorm/database/enum.DbError.html' title='rustorm::database::DbError'>DbError</a>&gt;</code></h3><div class='docblock'><p>select
+returns an array to the qualified records</p>
+</div><h3 id='method.insert' class='method stab '><code>fn <a href='#method.insert' class='fnname'>insert</a>(&amp;self, query: &amp;<a class='struct' href='../../rustorm/query/struct.Query.html' title='rustorm::query::Query'>Query</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='type' href='../../rustorm/dao/type.Dao.html' title='rustorm::dao::Dao'>Dao</a>, <a class='enum' href='../../rustorm/database/enum.DbError.html' title='rustorm::database::DbError'>DbError</a>&gt;</code></h3><div class='docblock'><p>insert
+insert an object, returns the inserted Dao value
+including the value generated via the defaults</p>
+</div><h3 id='method.execute_with_return' class='method stab '><code>fn <a href='#method.execute_with_return' class='fnname'>execute_with_return</a>(&amp;self, query: &amp;<a class='struct' href='../../rustorm/query/struct.Query.html' title='rustorm::query::Query'>Query</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='struct' href='../../rustorm/dao/struct.DaoResult.html' title='rustorm::dao::DaoResult'>DaoResult</a>, <a class='enum' href='../../rustorm/database/enum.DbError.html' title='rustorm::database::DbError'>DbError</a>&gt;</code></h3><div class='docblock'><p>execute query with return dao,
+use the enumerated column for data extraction when db doesn&#39;t support returning the records column names</p>
+</div><h3 id='method.execute_with_one_return' class='method stab '><code>fn <a href='#method.execute_with_one_return' class='fnname'>execute_with_one_return</a>(&amp;self, query: &amp;<a class='struct' href='../../rustorm/query/struct.Query.html' title='rustorm::query::Query'>Query</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='type' href='../../rustorm/dao/type.Dao.html' title='rustorm::dao::Dao'>Dao</a>&gt;, <a class='enum' href='../../rustorm/database/enum.DbError.html' title='rustorm::database::DbError'>DbError</a>&gt;</code></h3><div class='docblock'><p>execute query with 1 return dao</p>
+</div><h3 id='method.execute' class='method stab '><code>fn <a href='#method.execute' class='fnname'>execute</a>(&amp;self, query: &amp;<a class='struct' href='../../rustorm/query/struct.Query.html' title='rustorm::query::Query'>Query</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, <a class='enum' href='../../rustorm/database/enum.DbError.html' title='rustorm::database::DbError'>DbError</a>&gt;</code></h3><div class='docblock'><p>execute query with no return dao</p>
+</div><h3 id='method.execute_sql_with_one_return' class='method stab '><code>fn <a href='#method.execute_sql_with_one_return' class='fnname'>execute_sql_with_one_return</a>(&amp;self, sql: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>, params: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;[</a><a class='enum' href='../../rustorm/dao/enum.Value.html' title='rustorm::dao::Value'>Value</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='type' href='../../rustorm/dao/type.Dao.html' title='rustorm::dao::Dao'>Dao</a>&gt;, <a class='enum' href='../../rustorm/database/enum.DbError.html' title='rustorm::database::DbError'>DbError</a>&gt;</code></h3><h3 id='method.build_query' class='method stab '><code>fn <a href='#method.build_query' class='fnname'>build_query</a>(&amp;self, query: &amp;<a class='struct' href='../../rustorm/query/struct.Query.html' title='rustorm::query::Query'>Query</a>, build_mode: <a class='enum' href='../../rustorm/database/enum.BuildMode.html' title='rustorm::database::BuildMode'>BuildMode</a>) -&gt; <a class='struct' href='../../rustorm/writer/struct.SqlFrag.html' title='rustorm::writer::SqlFrag'>SqlFrag</a></code></h3><div class='docblock'><p>build a query, return the sql string and the parameters.
+use by select to build the select query
+build all types of query
+TODO: need to supply the number of parameters where to start the numbering of the number parameters</p>
+</div><h3 id='method.build_operand' class='method stab '><code>fn <a href='#method.build_operand' class='fnname'>build_operand</a>(&amp;self, w: &amp;mut <a class='struct' href='../../rustorm/writer/struct.SqlFrag.html' title='rustorm::writer::SqlFrag'>SqlFrag</a>, parent_query: &amp;<a class='struct' href='../../rustorm/query/struct.Query.html' title='rustorm::query::Query'>Query</a>, operand: &amp;<a class='enum' href='../../rustorm/query/operand/enum.Operand.html' title='rustorm::query::operand::Operand'>Operand</a>)</code></h3><div class='docblock'><p>build operand, i.e: columns, query, function, values</p>
+</div><h3 id='method.build_condition' class='method stab '><code>fn <a href='#method.build_condition' class='fnname'>build_condition</a>(&amp;self, w: &amp;mut <a class='struct' href='../../rustorm/writer/struct.SqlFrag.html' title='rustorm::writer::SqlFrag'>SqlFrag</a>, parent_query: &amp;<a class='struct' href='../../rustorm/query/struct.Query.html' title='rustorm::query::Query'>Query</a>, cond: &amp;<a class='struct' href='../../rustorm/query/filter/struct.Condition.html' title='rustorm::query::filter::Condition'>Condition</a>)</code></h3><h3 id='method.build_field' class='method stab '><code>fn <a href='#method.build_field' class='fnname'>build_field</a>(&amp;self, w: &amp;mut <a class='struct' href='../../rustorm/writer/struct.SqlFrag.html' title='rustorm::writer::SqlFrag'>SqlFrag</a>, parent_query: &amp;<a class='struct' href='../../rustorm/query/struct.Query.html' title='rustorm::query::Query'>Query</a>, field: &amp;<a class='struct' href='../../rustorm/query/field/struct.Field.html' title='rustorm::query::field::Field'>Field</a>)</code></h3><h3 id='method.build_query_source' class='method stab '><code>fn <a href='#method.build_query_source' class='fnname'>build_query_source</a>(&amp;self, w: &amp;mut <a class='struct' href='../../rustorm/writer/struct.SqlFrag.html' title='rustorm::writer::SqlFrag'>SqlFrag</a>, parent_query: &amp;<a class='struct' href='../../rustorm/query/struct.Query.html' title='rustorm::query::Query'>Query</a>, query_source: &amp;<a class='enum' href='../../rustorm/query/source/enum.QuerySource.html' title='rustorm::query::source::QuerySource'>QuerySource</a>)</code></h3><h3 id='method.build_source_field' class='method stab '><code>fn <a href='#method.build_source_field' class='fnname'>build_source_field</a>(&amp;self, w: &amp;mut <a class='struct' href='../../rustorm/writer/struct.SqlFrag.html' title='rustorm::writer::SqlFrag'>SqlFrag</a>, parent_query: &amp;<a class='struct' href='../../rustorm/query/struct.Query.html' title='rustorm::query::Query'>Query</a>, source_field: &amp;<a class='struct' href='../../rustorm/query/source/struct.SourceField.html' title='rustorm::query::source::SourceField'>SourceField</a>)</code></h3><h3 id='method.build_filter' class='method stab '><code>fn <a href='#method.build_filter' class='fnname'>build_filter</a>(&amp;self, w: &amp;mut <a class='struct' href='../../rustorm/writer/struct.SqlFrag.html' title='rustorm::writer::SqlFrag'>SqlFrag</a>, parent_query: &amp;<a class='struct' href='../../rustorm/query/struct.Query.html' title='rustorm::query::Query'>Query</a>, filter: &amp;<a class='struct' href='../../rustorm/query/filter/struct.Filter.html' title='rustorm::query::filter::Filter'>Filter</a>)</code></h3><h3 id='method.build_filters' class='method stab '><code>fn <a href='#method.build_filters' class='fnname'>build_filters</a>(&amp;self, w: &amp;mut <a class='struct' href='../../rustorm/writer/struct.SqlFrag.html' title='rustorm::writer::SqlFrag'>SqlFrag</a>, parent_query: &amp;<a class='struct' href='../../rustorm/query/struct.Query.html' title='rustorm::query::Query'>Query</a>, filters: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;[</a><a class='struct' href='../../rustorm/query/filter/struct.Filter.html' title='rustorm::query::filter::Filter'>Filter</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a>)</code></h3><div class='docblock'><p>build the filter clause or the where clause of the query
+TODO: add the sub filters</p>
+</div><h3 id='method.build_enumerated_fields' class='method stab '><code>fn <a href='#method.build_enumerated_fields' class='fnname'>build_enumerated_fields</a>(&amp;self, w: &amp;mut <a class='struct' href='../../rustorm/writer/struct.SqlFrag.html' title='rustorm::writer::SqlFrag'>SqlFrag</a>, parent_query: &amp;<a class='struct' href='../../rustorm/query/struct.Query.html' title='rustorm::query::Query'>Query</a>, enumerated_fields: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;[</a><a class='struct' href='../../rustorm/query/field/struct.Field.html' title='rustorm::query::field::Field'>Field</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a>)</code></h3><div class='docblock'><p>build the enumerated, distinct, *, columns</p>
+</div><h3 id='method.build_select' class='method stab '><code>fn <a href='#method.build_select' class='fnname'>build_select</a>(&amp;self, query: &amp;<a class='struct' href='../../rustorm/query/struct.Query.html' title='rustorm::query::Query'>Query</a>, build_mode: <a class='enum' href='../../rustorm/database/enum.BuildMode.html' title='rustorm::database::BuildMode'>BuildMode</a>) -&gt; <a class='struct' href='../../rustorm/writer/struct.SqlFrag.html' title='rustorm::writer::SqlFrag'>SqlFrag</a></code></h3><div class='docblock'><p>build the select statment from the query object</p>
+</div><h3 id='method.build_insert' class='method stab '><code>fn <a href='#method.build_insert' class='fnname'>build_insert</a>(&amp;self, query: &amp;<a class='struct' href='../../rustorm/query/struct.Query.html' title='rustorm::query::Query'>Query</a>, build_mode: <a class='enum' href='../../rustorm/database/enum.BuildMode.html' title='rustorm::database::BuildMode'>BuildMode</a>) -&gt; <a class='struct' href='../../rustorm/writer/struct.SqlFrag.html' title='rustorm::writer::SqlFrag'>SqlFrag</a></code></h3><div class='docblock'><p>TODO: when the number of values is greater than the number of columns
+wrap it into another set and make sure the values are in multiples of the the n columns
+<a href="http://www.postgresql.org/docs/9.0/static/dml-insert.html">http://www.postgresql.org/docs/9.0/static/dml-insert.html</a></p>
+</div><h3 id='method.build_update' class='method stab '><code>fn <a href='#method.build_update' class='fnname'>build_update</a>(&amp;self, query: &amp;<a class='struct' href='../../rustorm/query/struct.Query.html' title='rustorm::query::Query'>Query</a>, build_mode: <a class='enum' href='../../rustorm/database/enum.BuildMode.html' title='rustorm::database::BuildMode'>BuildMode</a>) -&gt; <a class='struct' href='../../rustorm/writer/struct.SqlFrag.html' title='rustorm::writer::SqlFrag'>SqlFrag</a></code></h3><h3 id='method.build_delete' class='method stab '><code>fn <a href='#method.build_delete' class='fnname'>build_delete</a>(&amp;self, query: &amp;<a class='struct' href='../../rustorm/query/struct.Query.html' title='rustorm::query::Query'>Query</a>, build_mode: <a class='enum' href='../../rustorm/database/enum.BuildMode.html' title='rustorm::database::BuildMode'>BuildMode</a>) -&gt; <a class='struct' href='../../rustorm/writer/struct.SqlFrag.html' title='rustorm::writer::SqlFrag'>SqlFrag</a></code></h3></div>
+        <h2 id='implementors'>Implementors</h2>
+        <ul class='item-list' id='implementors-list'>
+    <li><code>impl Database for <a class='struct' href='../../rustorm/platform/postgres/struct.Postgres.html' title='rustorm::platform::postgres::Postgres'>Postgres</a></code></li>
+</ul><script type="text/javascript" async
+                         src="../../implementors/rustorm/database/trait.Database.js">
+                 </script></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "rustorm";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script defer src="../../search-index.js"></script>
+</body>
+</html>

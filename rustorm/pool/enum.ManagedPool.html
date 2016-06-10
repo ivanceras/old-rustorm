@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `ManagedPool` enum in crate `rustorm`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, ManagedPool">
+
+    <title>rustorm::pool::ManagedPool - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+    
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='../index.html'>rustorm</a>::<wbr><a href='index.html'>pool</a></p><script>window.sidebarCurrent = {name: 'ManagedPool', ty: 'enum', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content enum">
+<h1 class='fqn'><span class='in-band'>Enum <a href='../index.html'>rustorm</a>::<wbr><a href='index.html'>pool</a>::<wbr><a class='enum' href=''>ManagedPool</a></span><span class='out-of-band'><span id='render-detail'>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a id='src-4363' class='srclink' href='../../src/rustorm/src/pool.rs.html#88-95' title='goto source code'>[src]</a></span></h1>
+<pre class='rust enum'>pub enum ManagedPool {
+    Postgres(<a class='struct' href='https://sfackler.github.io/r2d2/doc/v0.7.0/r2d2/struct.Pool.html' title='r2d2::Pool'>Pool</a>&lt;<a class='struct' href='https://sfackler.github.io/r2d2-postgres/doc/v0.10.1/r2d2_postgres/struct.PostgresConnectionManager.html' title='r2d2_postgres::PostgresConnectionManager'>PostgresConnectionManager</a>&gt;),
+    Oracle,
+}</pre><div class='docblock'><p>Postgres, Sqlite uses r2d2 connection manager,
+Mysql has its own connection pooling</p>
+</div><h2 class='variants'>Variants</h2>
+<table class='variants_table'><tr><td id='variant.Postgres'><code>Postgres</code></td><td></td><td></td></tr><tr><td id='variant.Oracle'><code>Oracle</code></td><td></td><td></td></tr></table><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl <a class='enum' href='../../rustorm/pool/enum.ManagedPool.html' title='rustorm::pool::ManagedPool'>ManagedPool</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-4367' class='srclink' href='../../src/rustorm/src/pool.rs.html#97-179' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.init' class='method'><code>fn <a href='#method.init' class='fnname'>init</a>(url: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>, pool_size: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;Self, <a class='enum' href='../../rustorm/database/enum.DbError.html' title='rustorm::database::DbError'>DbError</a>&gt;</code></h4>
+<div class='docblock'><p>initialize the pool</p>
+</div><h4 id='method.connect' class='method'><code>fn <a href='#method.connect' class='fnname'>connect</a>(&amp;self) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='enum' href='../../rustorm/pool/enum.Platform.html' title='rustorm::pool::Platform'>Platform</a>, <a class='enum' href='../../rustorm/database/enum.DbError.html' title='rustorm::database::DbError'>DbError</a>&gt;</code></h4>
+<div class='docblock'><p>a conection is created here</p>
+</div></div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "rustorm";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script defer src="../../search-index.js"></script>
+</body>
+</html>

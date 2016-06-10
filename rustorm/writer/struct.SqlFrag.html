@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `SqlFrag` struct in crate `rustorm`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, SqlFrag">
+
+    <title>rustorm::writer::SqlFrag - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+    
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='../index.html'>rustorm</a>::<wbr><a href='index.html'>writer</a></p><script>window.sidebarCurrent = {name: 'SqlFrag', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content struct">
+<h1 class='fqn'><span class='in-band'>Struct <a href='../index.html'>rustorm</a>::<wbr><a href='index.html'>writer</a>::<wbr><a class='struct' href=''>SqlFrag</a></span><span class='out-of-band'><span id='render-detail'>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a id='src-4128' class='srclink' href='../../src/rustorm/src/writer.rs.html#7-12' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct SqlFrag {
+    pub sql: <a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>,
+    pub params: <a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='enum' href='../../rustorm/dao/enum.Value.html' title='rustorm::dao::Value'>Value</a>&gt;,
+    pub sql_options: <a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='enum' href='../../rustorm/database/enum.SqlOption.html' title='rustorm::database::SqlOption'>SqlOption</a>&gt;,
+    pub build_mode: <a class='enum' href='../../rustorm/database/enum.BuildMode.html' title='rustorm::database::BuildMode'>BuildMode</a>,
+}</pre><div class='docblock'><p>sql fragment
+use this for writing SQL statements</p>
+</div><h2 class='fields'>Fields</h2>
+<table><tr class='stab '>
+                             <td id='structfield.sql'><code>sql</code></td><td></td></tr><tr class='stab '>
+                             <td id='structfield.params'><code>params</code></td><td></td></tr><tr class='stab '>
+                             <td id='structfield.sql_options'><code>sql_options</code></td><td></td></tr><tr class='stab '>
+                             <td id='structfield.build_mode'><code>build_mode</code></td><td></td></tr></table><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl <a class='struct' href='../../rustorm/writer/struct.SqlFrag.html' title='rustorm::writer::SqlFrag'>SqlFrag</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-4154' class='srclink' href='../../src/rustorm/src/writer.rs.html#31-152' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>(sql_options: <a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='enum' href='../../rustorm/database/enum.SqlOption.html' title='rustorm::database::SqlOption'>SqlOption</a>&gt;, build_mode: <a class='enum' href='../../rustorm/database/enum.BuildMode.html' title='rustorm::database::BuildMode'>BuildMode</a>) -&gt; Self</code></h4>
+<h4 id='method.append' class='method'><code>fn <a href='#method.append' class='fnname'>append</a>(&amp;mut self, str: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>) -&gt; &amp;mut Self</code></h4>
+<h4 id='method.appendln' class='method'><code>fn <a href='#method.appendln' class='fnname'>appendln</a>(&amp;mut self, str: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>) -&gt; &amp;mut Self</code></h4>
+<h4 id='method.tab' class='method'><code>fn <a href='#method.tab' class='fnname'>tab</a>(&amp;mut self) -&gt; &amp;mut Self</code></h4>
+<h4 id='method.tabs' class='method'><code>fn <a href='#method.tabs' class='fnname'>tabs</a>(&amp;mut self, n: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a>) -&gt; &amp;mut Self</code></h4>
+<h4 id='method.ln' class='method'><code>fn <a href='#method.ln' class='fnname'>ln</a>(&amp;mut self) -&gt; &amp;mut Self</code></h4>
+<h4 id='method.ln_tab' class='method'><code>fn <a href='#method.ln_tab' class='fnname'>ln_tab</a>(&amp;mut self) -&gt; &amp;mut Self</code></h4>
+<h4 id='method.ln_tabs' class='method'><code>fn <a href='#method.ln_tabs' class='fnname'>ln_tabs</a>(&amp;mut self, n: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a>) -&gt; &amp;mut Self</code></h4>
+<h4 id='method.comma' class='method'><code>fn <a href='#method.comma' class='fnname'>comma</a>(&amp;mut self) -&gt; &amp;mut Self</code></h4>
+<h4 id='method.sp' class='method'><code>fn <a href='#method.sp' class='fnname'>sp</a>(&amp;mut self) -&gt; &amp;mut Self</code></h4>
+<h4 id='method.spaces' class='method'><code>fn <a href='#method.spaces' class='fnname'>spaces</a>(&amp;mut self, n: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a>) -&gt; &amp;mut Self</code></h4>
+<h4 id='method.left_river' class='method'><code>fn <a href='#method.left_river' class='fnname'>left_river</a>(&amp;mut self, str: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>) -&gt; &amp;mut Self</code></h4>
+<div class='docblock'><p>write the string, aligning to the left side of the middle space (river)</p>
+</div><h4 id='method.right_river' class='method'><code>fn <a href='#method.right_river' class='fnname'>right_river</a>(&amp;mut self, str: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>) -&gt; &amp;mut Self</code></h4>
+<div class='docblock'><p>write the string, aligning to the right side of the middle space (river), leaving the left with empty string</p>
+</div><h4 id='method.commasp' class='method'><code>fn <a href='#method.commasp' class='fnname'>commasp</a>(&amp;mut self) -&gt; &amp;mut Self</code></h4>
+<h4 id='method.comment' class='method'><code>fn <a href='#method.comment' class='fnname'>comment</a>(&amp;mut self, comment: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>) -&gt; &amp;mut Self</code></h4>
+<h4 id='method.parameter' class='method'><code>fn <a href='#method.parameter' class='fnname'>parameter</a>(&amp;mut self, param: <a class='enum' href='../../rustorm/dao/enum.Value.html' title='rustorm::dao::Value'>Value</a>)</code></h4>
+<div class='docblock'><p>append parameter including the needed sql keywords</p>
+</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/fmt/trait.Display.html' title='core::fmt::Display'>Display</a> for <a class='struct' href='../../rustorm/writer/struct.SqlFrag.html' title='rustorm::writer::SqlFrag'>SqlFrag</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-4133' class='srclink' href='../../src/rustorm/src/writer.rs.html#14-29' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.fmt' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/fmt/trait.Display.html#tymethod.fmt' class='fnname'>fmt</a>(&amp;self, f: &amp;mut <a class='struct' href='https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html' title='core::fmt::Formatter'>Formatter</a>) -&gt; <a class='type' href='https://doc.rust-lang.org/nightly/core/fmt/type.Result.html' title='core::fmt::Result'>Result</a></code></h4>
+</div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "rustorm";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script defer src="../../search-index.js"></script>
+</body>
+</html>

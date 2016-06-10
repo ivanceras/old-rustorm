@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `QueryBuilder` struct in crate `rustorm`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, QueryBuilder">
+
+    <title>rustorm::query::builder::QueryBuilder - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../../../main.css">
+    
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='../../index.html'>rustorm</a>::<wbr><a href='../index.html'>query</a>::<wbr><a href='index.html'>builder</a></p><script>window.sidebarCurrent = {name: 'QueryBuilder', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content struct">
+<h1 class='fqn'><span class='in-band'>Struct <a href='../../index.html'>rustorm</a>::<wbr><a href='../index.html'>query</a>::<wbr><a href='index.html'>builder</a>::<wbr><a class='struct' href=''>QueryBuilder</a></span><span class='out-of-band'><span id='render-detail'>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a id='src-437' class='srclink' href='../../../src/rustorm/src/query/builder.rs.html#27-29' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct QueryBuilder {
+    // some fields omitted
+}</pre><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl <a class='struct' href='../../../rustorm/query/builder/struct.QueryBuilder.html' title='rustorm::query::builder::QueryBuilder'>QueryBuilder</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-445' class='srclink' href='../../../src/rustorm/src/query/builder.rs.html#52-247' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.WITH' class='method'><code>fn <a href='#method.WITH' class='fnname'>WITH</a>(&amp;mut self, query: <a class='struct' href='../../../rustorm/query/struct.Query.html' title='rustorm::query::Query'>Query</a>, alias: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>) -&gt; &amp;mut Self</code></h4>
+<div class='docblock'><p>if the database support CTE declareted query i.e WITH,
+then this query will be declared
+if database doesn&#39;t support WITH queries, then this query will be
+wrapped in the from_query
+build a builder for this</p>
+</div><h4 id='method.SELECT' class='method'><code>fn <a href='#method.SELECT' class='fnname'>SELECT</a>() -&gt; Self</code></h4>
+<h4 id='method.SELECT_ALL' class='method'><code>fn <a href='#method.SELECT_ALL' class='fnname'>SELECT_ALL</a>() -&gt; Self</code></h4>
+<h4 id='method.INSERT' class='method'><code>fn <a href='#method.INSERT' class='fnname'>INSERT</a>() -&gt; Self</code></h4>
+<h4 id='method.UPDATE' class='method'><code>fn <a href='#method.UPDATE' class='fnname'>UPDATE</a>(to_table_name: &amp;<a class='trait' href='../../../rustorm/query/table_name/trait.ToTableName.html' title='rustorm::query::table_name::ToTableName'>ToTableName</a>) -&gt; Self</code></h4>
+<h4 id='method.DELETE' class='method'><code>fn <a href='#method.DELETE' class='fnname'>DELETE</a>() -&gt; Self</code></h4>
+<h4 id='method.DISTINCT' class='method'><code>fn <a href='#method.DISTINCT' class='fnname'>DISTINCT</a>(&amp;mut self) -&gt; &amp;mut Self</code></h4>
+<div class='docblock'><p>add DISTINCT ie: SELECT DISTINCT</p>
+</div><h4 id='method.ALL' class='method'><code>fn <a href='#method.ALL' class='fnname'>ALL</a>(&amp;mut self) -&gt; &amp;mut Self</code></h4>
+<h4 id='method.SET' class='method'><code>fn <a href='#method.SET' class='fnname'>SET</a>(&amp;mut self, column: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>, to_value: &amp;<a class='trait' href='../../../rustorm/dao/trait.ToValue.html' title='rustorm::dao::ToValue'>ToValue</a>) -&gt; &amp;mut Self</code></h4>
+<h4 id='method.COLUMNS' class='method'><code>fn <a href='#method.COLUMNS' class='fnname'>COLUMNS</a>(&amp;mut self, to_operand: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;[</a>&amp;<a class='trait' href='../../../rustorm/query/operand/trait.ToOperand.html' title='rustorm::query::operand::ToOperand'>ToOperand</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a>) -&gt; &amp;mut Self</code></h4>
+<h4 id='method.VALUES' class='method'><code>fn <a href='#method.VALUES' class='fnname'>VALUES</a>(&amp;mut self, to_values: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;[</a>&amp;<a class='trait' href='../../../rustorm/dao/trait.ToValue.html' title='rustorm::dao::ToValue'>ToValue</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a>) -&gt; &amp;mut Self</code></h4>
+<h4 id='method.FROM' class='method'><code>fn <a href='#method.FROM' class='fnname'>FROM</a>(&amp;mut self, to_source_field: &amp;<a class='trait' href='../../../rustorm/query/source/trait.ToSourceField.html' title='rustorm::query::source::ToSourceField'>ToSourceField</a>) -&gt; &amp;mut Self</code></h4>
+<div class='docblock'><p>A more terse way to write the query
+only 1 table is supported yet</p>
+</div><h4 id='method.INTO' class='method'><code>fn <a href='#method.INTO' class='fnname'>INTO</a>(&amp;mut self, table: &amp;<a class='trait' href='../../../rustorm/query/table_name/trait.ToTableName.html' title='rustorm::query::table_name::ToTableName'>ToTableName</a>) -&gt; &amp;mut Self</code></h4>
+<div class='docblock'><p><code>into</code> is used in rust, os settled with <code>into_</code></p>
+</div><h4 id='method.TABLE' class='method'><code>fn <a href='#method.TABLE' class='fnname'>TABLE</a>(&amp;mut self, table: &amp;<a class='trait' href='../../../rustorm/query/table_name/trait.ToTableName.html' title='rustorm::query::table_name::ToTableName'>ToTableName</a>) -&gt; &amp;mut Self</code></h4>
+<div class='docblock'><p>can be used in behalf of into_, from,</p>
+</div><h4 id='method.JOIN' class='method'><code>fn <a href='#method.JOIN' class='fnname'>JOIN</a>(&amp;mut self, join: <a class='struct' href='../../../rustorm/query/join/struct.Join.html' title='rustorm::query::join::Join'>Join</a>) -&gt; &amp;mut Self</code></h4>
+<div class='docblock'><p>join a table on this query</p>
+</div><h4 id='method.LEFT_JOIN' class='method'><code>fn <a href='#method.LEFT_JOIN' class='fnname'>LEFT_JOIN</a>(&amp;mut self, join: <a class='struct' href='../../../rustorm/query/join/struct.Join.html' title='rustorm::query::join::Join'>Join</a>) -&gt; &amp;mut Self</code></h4>
+<div class='docblock'><p>join a table on this query</p>
+</div><h4 id='method.RIGHT_JOIN' class='method'><code>fn <a href='#method.RIGHT_JOIN' class='fnname'>RIGHT_JOIN</a>(&amp;mut self, join: <a class='struct' href='../../../rustorm/query/join/struct.Join.html' title='rustorm::query::join::Join'>Join</a>) -&gt; &amp;mut Self</code></h4>
+<h4 id='method.FULL_JOIN' class='method'><code>fn <a href='#method.FULL_JOIN' class='fnname'>FULL_JOIN</a>(&amp;mut self, join: <a class='struct' href='../../../rustorm/query/join/struct.Join.html' title='rustorm::query::join::Join'>Join</a>) -&gt; &amp;mut Self</code></h4>
+<h4 id='method.INNER_JOIN' class='method'><code>fn <a href='#method.INNER_JOIN' class='fnname'>INNER_JOIN</a>(&amp;mut self, join: <a class='struct' href='../../../rustorm/query/join/struct.Join.html' title='rustorm::query::join::Join'>Join</a>) -&gt; &amp;mut Self</code></h4>
+<h4 id='method.WHERE' class='method'><code>fn <a href='#method.WHERE' class='fnname'>WHERE</a>(&amp;mut self, filter: <a class='struct' href='../../../rustorm/query/filter/struct.Filter.html' title='rustorm::query::filter::Filter'>Filter</a>) -&gt; &amp;mut Self</code></h4>
+<h4 id='method.GROUP_BY' class='method'><code>fn <a href='#method.GROUP_BY' class='fnname'>GROUP_BY</a>(&amp;mut self, to_operand: &amp;<a class='trait' href='../../../rustorm/query/operand/trait.ToOperand.html' title='rustorm::query::operand::ToOperand'>ToOperand</a>) -&gt; &amp;mut Self</code></h4>
+<h4 id='method.HAVING' class='method'><code>fn <a href='#method.HAVING' class='fnname'>HAVING</a>(&amp;mut self, filter: <a class='struct' href='../../../rustorm/query/filter/struct.Filter.html' title='rustorm::query::filter::Filter'>Filter</a>) -&gt; &amp;mut Self</code></h4>
+<h4 id='method.ORDER_BY' class='method'><code>fn <a href='#method.ORDER_BY' class='fnname'>ORDER_BY</a>(&amp;mut self, to_order: &amp;<a class='trait' href='../../../rustorm/query/order/trait.ToOrder.html' title='rustorm::query::order::ToOrder'>ToOrder</a>) -&gt; &amp;mut Self</code></h4>
+<h4 id='method.LIMIT' class='method'><code>fn <a href='#method.LIMIT' class='fnname'>LIMIT</a>(&amp;mut self, n: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>) -&gt; &amp;mut Self</code></h4>
+<h4 id='method.OFFSET' class='method'><code>fn <a href='#method.OFFSET' class='fnname'>OFFSET</a>(&amp;mut self, o: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>) -&gt; &amp;mut Self</code></h4>
+<h4 id='method.build' class='method'><code>fn <a href='#method.build' class='fnname'>build</a>(&amp;mut self, db: &amp;<a class='trait' href='../../../rustorm/database/trait.Database.html' title='rustorm::database::Database'>Database</a>) -&gt; <a class='struct' href='../../../rustorm/writer/struct.SqlFrag.html' title='rustorm::writer::SqlFrag'>SqlFrag</a></code></h4>
+<div class='docblock'><p>build the query only, not executed, useful when debugging</p>
+</div><h4 id='method.collect_one' class='method'><code>fn <a href='#method.collect_one' class='fnname'>collect_one</a>&lt;T: <a class='trait' href='../../../rustorm/dao/trait.IsDao.html' title='rustorm::dao::IsDao'>IsDao</a> + <a class='trait' href='../../../rustorm/table/trait.IsTable.html' title='rustorm::table::IsTable'>IsTable</a>&gt;(&amp;mut self, db: &amp;<a class='trait' href='../../../rustorm/database/trait.Database.html' title='rustorm::database::Database'>Database</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;T, <a class='enum' href='../../../rustorm/database/enum.DbError.html' title='rustorm::database::DbError'>DbError</a>&gt;</code></h4>
+<h4 id='method.collect' class='method'><code>fn <a href='#method.collect' class='fnname'>collect</a>&lt;T: <a class='trait' href='../../../rustorm/dao/trait.IsDao.html' title='rustorm::dao::IsDao'>IsDao</a> + <a class='trait' href='../../../rustorm/table/trait.IsTable.html' title='rustorm::table::IsTable'>IsTable</a>&gt;(&amp;mut self, db: &amp;<a class='trait' href='../../../rustorm/database/trait.Database.html' title='rustorm::database::Database'>Database</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;T&gt;, <a class='enum' href='../../../rustorm/database/enum.DbError.html' title='rustorm::database::DbError'>DbError</a>&gt;</code></h4>
+</div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../../../";
+        window.currentCrate = "rustorm";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../../jquery.js"></script>
+    <script src="../../../main.js"></script>
+    
+    <script defer src="../../../search-index.js"></script>
+</body>
+</html>

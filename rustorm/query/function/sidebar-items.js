@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["COUNT","A database function COUNT"],["MAX","database function MAX"],["MIN","database function MIN"],["NOW","A database date function which returns the time when the query is executed"]],"struct":[["Function","function in a sql statement"]]});

@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["DELETE",""],["INSERT",""],["SELECT",""],["SELECT_ALL",""],["UPDATE",""]],"struct":[["QueryBuilder",""]]});

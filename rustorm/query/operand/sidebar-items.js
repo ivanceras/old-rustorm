@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["Operand","Operands can be columns, values, and query sources such as tables, functions, and other queries"]],"trait":[["ToOperand",""]]});

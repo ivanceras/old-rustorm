@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Column",""],["Foreign",""],["RefTable","all referenced table used in context"],["Table",""]],"trait":[["IsTable","trait for table definition"]]});

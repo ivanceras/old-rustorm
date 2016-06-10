@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["ColumnName",""]],"trait":[["ToColumnName",""]]});

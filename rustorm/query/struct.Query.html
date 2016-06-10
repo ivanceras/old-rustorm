@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `Query` struct in crate `rustorm`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, Query">
+
+    <title>rustorm::query::Query - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+    
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='../index.html'>rustorm</a>::<wbr><a href='index.html'>query</a></p><script>window.sidebarCurrent = {name: 'Query', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content struct">
+<h1 class='fqn'><span class='in-band'>Struct <a href='../index.html'>rustorm</a>::<wbr><a href='index.html'>query</a>::<wbr><a class='struct' href=''>Query</a></span><span class='out-of-band'><span id='render-detail'>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a id='src-1508' class='srclink' href='../../src/rustorm/src/query/mod.rs.html#95-149' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct Query {
+    pub sql_type: <a class='enum' href='../../rustorm/query/enum.SqlType.html' title='rustorm::query::SqlType'>SqlType</a>,
+    pub distinct: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>,
+    pub enumerate_all: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>,
+    pub declared_query: <a class='struct' href='https://doc.rust-lang.org/nightly/collections/btree/map/struct.BTreeMap.html' title='collections::btree::map::BTreeMap'>BTreeMap</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>, <a class='struct' href='../../rustorm/query/struct.Query.html' title='rustorm::query::Query'>Query</a>&gt;,
+    pub enumerated_fields: <a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='struct' href='../../rustorm/query/field/struct.Field.html' title='rustorm::query::field::Field'>Field</a>&gt;,
+    pub distinct_on_columns: <a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;,
+    pub from: <a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='struct' href='../../rustorm/query/source/struct.SourceField.html' title='rustorm::query::source::SourceField'>SourceField</a>&gt;,
+    pub joins: <a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='struct' href='../../rustorm/query/join/struct.Join.html' title='rustorm::query::join::Join'>Join</a>&gt;,
+    pub filters: <a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='struct' href='../../rustorm/query/filter/struct.Filter.html' title='rustorm::query::filter::Filter'>Filter</a>&gt;,
+    pub order_by: <a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='struct' href='../../rustorm/query/order/struct.Order.html' title='rustorm::query::order::Order'>Order</a>&gt;,
+    pub group_by: <a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='enum' href='../../rustorm/query/operand/enum.Operand.html' title='rustorm::query::operand::Operand'>Operand</a>&gt;,
+    pub having: <a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='struct' href='../../rustorm/query/filter/struct.Filter.html' title='rustorm::query::filter::Filter'>Filter</a>&gt;,
+    pub excluded_columns: <a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='struct' href='../../rustorm/query/column_name/struct.ColumnName.html' title='rustorm::query::column_name::ColumnName'>ColumnName</a>&gt;,
+    pub range: <a class='struct' href='../../rustorm/query/struct.Range.html' title='rustorm::query::Range'>Range</a>,
+    pub values: <a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='enum' href='../../rustorm/query/operand/enum.Operand.html' title='rustorm::query::operand::Operand'>Operand</a>&gt;,
+    pub enumerated_returns: <a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='struct' href='../../rustorm/query/field/struct.Field.html' title='rustorm::query::field::Field'>Field</a>&gt;,
+}</pre><h2 class='fields'>Fields</h2>
+<table><tr class='stab '>
+                             <td id='structfield.sql_type'><code>sql_type</code></td><td><div class='docblock'><p>sql type determine which type of query to form, some fields are not applicable to other types of query</p>
+</div></td></tr><tr class='stab '>
+                             <td id='structfield.distinct'><code>distinct</code></td><td><div class='docblock'><p>whether to select the records distinct</p>
+</div></td></tr><tr class='stab '>
+                             <td id='structfield.enumerate_all'><code>enumerate_all</code></td><td><div class='docblock'><p>whether to enumate all columns in involved models</p>
+</div></td></tr><tr class='stab '>
+                             <td id='structfield.declared_query'><code>declared_query</code></td><td></td></tr><tr class='stab '>
+                             <td id='structfield.enumerated_fields'><code>enumerated_fields</code></td><td><div class='docblock'><p>fields can be functions, column sql query, and even columns</p>
+</div></td></tr><tr class='stab '>
+                             <td id='structfield.distinct_on_columns'><code>distinct_on_columns</code></td><td><div class='docblock'><p>specify to use distinct ON set of columns</p>
+</div></td></tr><tr class='stab '>
+                             <td id='structfield.from'><code>from</code></td><td><div class='docblock'><p>where the focus of values of column selection
+this is the table to insert to, update to delete, create, drop
+whe used in select, this is the
+pub from_table:Option<TableName>,
+from field, where field can be a query, table, or function</p>
+</div></td></tr><tr class='stab '>
+                             <td id='structfield.joins'><code>joins</code></td><td><div class='docblock'><p>joining multiple tables</p>
+</div></td></tr><tr class='stab '>
+                             <td id='structfield.filters'><code>filters</code></td><td><div class='docblock'><p>filter records, ~ where statement of the query</p>
+</div></td></tr><tr class='stab '>
+                             <td id='structfield.order_by'><code>order_by</code></td><td><div class='docblock'><p>ordering of the records via the columns specified</p>
+</div></td></tr><tr class='stab '>
+                             <td id='structfield.group_by'><code>group_by</code></td><td><div class='docblock'><p>grouping columns to create an aggregate</p>
+</div></td></tr><tr class='stab '>
+                             <td id='structfield.having'><code>having</code></td><td><div class='docblock'><p>having field,</p>
+</div></td></tr><tr class='stab '>
+                             <td id='structfield.excluded_columns'><code>excluded_columns</code></td><td><div class='docblock'><p>exclude the mention of the columns in the SQL query, useful when ignoring changes in update/insert records</p>
+</div></td></tr><tr class='stab '>
+                             <td id='structfield.range'><code>range</code></td><td><div class='docblock'><p>caters both limit-&gt;offset and page-&gt;page_size
+setting page and page_size can not interchange the order</p>
+</div></td></tr><tr class='stab '>
+                             <td id='structfield.values'><code>values</code></td><td><div class='docblock'><p>The data values, used in bulk inserting, updating,</p>
+</div></td></tr><tr class='stab '>
+                             <td id='structfield.enumerated_returns'><code>enumerated_returns</code></td><td><div class='docblock'><p>the returning clause of the query when supported,</p>
+</div></td></tr></table><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl <a class='struct' href='../../rustorm/query/struct.Query.html' title='rustorm::query::Query'>Query</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-1565' class='srclink' href='../../src/rustorm/src/query/mod.rs.html#151-578' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>() -&gt; Self</code></h4>
+<div class='docblock'><p>the default query is select</p>
+</div><h4 id='method.select' class='method'><code>fn <a href='#method.select' class='fnname'>select</a>() -&gt; Self</code></h4>
+<h4 id='method.insert' class='method'><code>fn <a href='#method.insert' class='fnname'>insert</a>() -&gt; Self</code></h4>
+<h4 id='method.update' class='method'><code>fn <a href='#method.update' class='fnname'>update</a>() -&gt; Self</code></h4>
+<h4 id='method.delete' class='method'><code>fn <a href='#method.delete' class='fnname'>delete</a>() -&gt; Self</code></h4>
+<h4 id='method.enumerate_all' class='method'><code>fn <a href='#method.enumerate_all' class='fnname'>enumerate_all</a>(&amp;mut self)</code></h4>
+<h4 id='method.all' class='method'><code>fn <a href='#method.all' class='fnname'>all</a>(&amp;mut self)</code></h4>
+<h4 id='method.select_all' class='method'><code>fn <a href='#method.select_all' class='fnname'>select_all</a>() -&gt; Self</code></h4>
+<h4 id='method.column' class='method'><code>fn <a href='#method.column' class='fnname'>column</a>(&amp;mut self, column: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>)</code></h4>
+<div class='docblock'><p>all enumerated columns shall be called from this
+any conflict of columns from some other table will be automatically renamed
+columns that are not conflicts from some other table,
+but is the other conflicting column is not explicityly enumerated will not be renamed</p>
+</div><h4 id='method.columns' class='method'><code>fn <a href='#method.columns' class='fnname'>columns</a>(&amp;mut self, columns: <a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;&amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>&gt;)</code></h4>
+<h4 id='method.exclude_column' class='method'><code>fn <a href='#method.exclude_column' class='fnname'>exclude_column</a>(&amp;mut self, column: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>)</code></h4>
+<div class='docblock'><p>exclude columns when inserting/updating data
+also ignores the column when selecting records
+useful for manipulating thin records by excluding huge binary blobs such as images</p>
+</div><h4 id='method.exclude_columns' class='method'><code>fn <a href='#method.exclude_columns' class='fnname'>exclude_columns</a>(&amp;mut self, columns: <a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;&amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>&gt;)</code></h4>
+<h4 id='method.distinct_on_columns' class='method'><code>fn <a href='#method.distinct_on_columns' class='fnname'>distinct_on_columns</a>(&amp;mut self, columns: &amp;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;)</code></h4>
+<h4 id='method.value' class='method'><code>fn <a href='#method.value' class='fnname'>value</a>(&amp;mut self, value: &amp;<a class='trait' href='../../rustorm/dao/trait.ToValue.html' title='rustorm::dao::ToValue'>ToValue</a>)</code></h4>
+<h4 id='method.set' class='method'><code>fn <a href='#method.set' class='fnname'>set</a>(&amp;mut self, column: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>, value: &amp;<a class='trait' href='../../rustorm/dao/trait.ToValue.html' title='rustorm::dao::ToValue'>ToValue</a>)</code></h4>
+<div class='docblock'><p>set a value of a column when inserting/updating records</p>
+</div><h4 id='method.set_limit' class='method'><code>fn <a href='#method.set_limit' class='fnname'>set_limit</a>(&amp;mut self, limit: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>)</code></h4>
+<h4 id='method.set_offset' class='method'><code>fn <a href='#method.set_offset' class='fnname'>set_offset</a>(&amp;mut self, offset: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>)</code></h4>
+<h4 id='method.get_range' class='method'><code>fn <a href='#method.get_range' class='fnname'>get_range</a>(&amp;self) -&gt; <a class='struct' href='../../rustorm/query/struct.Range.html' title='rustorm::query::Range'>Range</a></code></h4>
+<h4 id='method.only_from' class='method'><code>fn <a href='#method.only_from' class='fnname'>only_from</a>(&amp;mut self, table: &amp;<a class='trait' href='../../rustorm/query/table_name/trait.ToTableName.html' title='rustorm::query::table_name::ToTableName'>ToTableName</a>)</code></h4>
+<div class='docblock'><p>enumerate only the columns that is coming from this table
+this will invalidate enumerate_all</p>
+</div><h4 id='method.from_query' class='method'><code>fn <a href='#method.from_query' class='fnname'>from_query</a>(&amp;mut self, query: <a class='struct' href='../../rustorm/query/struct.Query.html' title='rustorm::query::Query'>Query</a>, alias: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>)</code></h4>
+<div class='docblock'><p>a query to query from
+use WITH (query) t1 SELECT from t1 declaration in postgresql, sqlite
+use SELECT FROM (query) in oracle, mysql, others
+alias of the table</p>
+</div><h4 id='method.from' class='method'><code>fn <a href='#method.from' class='fnname'>from</a>(&amp;mut self, to_source_field: &amp;<a class='trait' href='../../rustorm/query/source/trait.ToSourceField.html' title='rustorm::query::source::ToSourceField'>ToSourceField</a>)</code></h4>
+<h4 id='method.table' class='method'><code>fn <a href='#method.table' class='fnname'>table</a>(&amp;mut self, to_source_field: &amp;<a class='trait' href='../../rustorm/query/source/trait.ToSourceField.html' title='rustorm::query::source::ToSourceField'>ToSourceField</a>)</code></h4>
+<h4 id='method.get_from_table' class='method'><code>fn <a href='#method.get_from_table' class='fnname'>get_from_table</a>(&amp;self) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='../../rustorm/query/table_name/struct.TableName.html' title='rustorm::query::table_name::TableName'>TableName</a>&gt;</code></h4>
+<div class='docblock'><p>returns the first table in the from clause</p>
+</div><h4 id='method.get_involved_tables' class='method'><code>fn <a href='#method.get_involved_tables' class='fnname'>get_involved_tables</a>(&amp;self) -&gt; <a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='struct' href='../../rustorm/query/table_name/struct.TableName.html' title='rustorm::query::table_name::TableName'>TableName</a>&gt;</code></h4>
+<h4 id='method.finalize' class='method'><code>fn <a href='#method.finalize' class='fnname'>finalize</a>(&amp;mut self) -&gt; &amp;Self</code></h4>
+<div class='docblock'><p>preprocess the missing fields of the query,
+such as mentioning the columns of the from_table
+enumerate the columns of the involved tables
+skipping those which are explicitly ignored
+the query will then be built and ready to be executed
+if no enumerated fields and no excluded columns
+do a select all</p>
+</div><h4 id='method.enumerate_from_table' class='method'><code>fn <a href='#method.enumerate_from_table' class='fnname'>enumerate_from_table</a>(&amp;mut self, table: &amp;<a class='struct' href='../../rustorm/query/table_name/struct.TableName.html' title='rustorm::query::table_name::TableName'>TableName</a>)</code></h4>
+<h4 id='method.get_renamed_columns' class='method'><code>fn <a href='#method.get_renamed_columns' class='fnname'>get_renamed_columns</a>(&amp;self) -&gt; <a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(</a><a class='struct' href='../../rustorm/query/column_name/struct.ColumnName.html' title='rustorm::query::column_name::ColumnName'>ColumnName</a>, <a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>)</a>&gt;</code></h4>
+<div class='docblock'><p>return the list of renamed columns, used in dao conversion to struc types</p>
+</div><h4 id='method.get_enumerated_columns' class='method'><code>fn <a href='#method.get_enumerated_columns' class='fnname'>get_enumerated_columns</a>(&amp;self) -&gt; <a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;&amp;<a class='struct' href='../../rustorm/query/column_name/struct.ColumnName.html' title='rustorm::query::column_name::ColumnName'>ColumnName</a>&gt;</code></h4>
+<div class='docblock'><p>return the list of enumerated columns
+will be used for updating records</p>
+</div><h4 id='method.add_filter' class='method'><code>fn <a href='#method.add_filter' class='fnname'>add_filter</a>(&amp;mut self, filter: <a class='struct' href='../../rustorm/query/filter/struct.Filter.html' title='rustorm::query::filter::Filter'>Filter</a>)</code></h4>
+<h4 id='method.add_filters' class='method'><code>fn <a href='#method.add_filters' class='fnname'>add_filters</a>(&amp;mut self, filters: &amp;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='struct' href='../../rustorm/query/filter/struct.Filter.html' title='rustorm::query::filter::Filter'>Filter</a>&gt;)</code></h4>
+<h4 id='method.filter_eq' class='method'><code>fn <a href='#method.filter_eq' class='fnname'>filter_eq</a>(&amp;mut self, column: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>, value: &amp;<a class='trait' href='../../rustorm/dao/trait.ToValue.html' title='rustorm::dao::ToValue'>ToValue</a>)</code></h4>
+<div class='docblock'><p>column = value</p>
+</div><h4 id='method.filter_lt' class='method'><code>fn <a href='#method.filter_lt' class='fnname'>filter_lt</a>(&amp;mut self, column: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>, value: &amp;<a class='trait' href='../../rustorm/dao/trait.ToValue.html' title='rustorm::dao::ToValue'>ToValue</a>)</code></h4>
+<div class='docblock'><p>column &lt; value</p>
+</div><h4 id='method.filter_lte' class='method'><code>fn <a href='#method.filter_lte' class='fnname'>filter_lte</a>(&amp;mut self, column: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>, value: &amp;<a class='trait' href='../../rustorm/dao/trait.ToValue.html' title='rustorm::dao::ToValue'>ToValue</a>)</code></h4>
+<div class='docblock'><p>column &lt;= value</p>
+</div><h4 id='method.filter_gt' class='method'><code>fn <a href='#method.filter_gt' class='fnname'>filter_gt</a>(&amp;mut self, column: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>, value: &amp;<a class='trait' href='../../rustorm/dao/trait.ToValue.html' title='rustorm::dao::ToValue'>ToValue</a>)</code></h4>
+<div class='docblock'><p>column &gt; value</p>
+</div><h4 id='method.filter_gte' class='method'><code>fn <a href='#method.filter_gte' class='fnname'>filter_gte</a>(&amp;mut self, column: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>, value: &amp;<a class='trait' href='../../rustorm/dao/trait.ToValue.html' title='rustorm::dao::ToValue'>ToValue</a>)</code></h4>
+<div class='docblock'><p>column &lt;= value</p>
+</div><h4 id='method.return_all' class='method'><code>fn <a href='#method.return_all' class='fnname'>return_all</a>(&amp;mut self)</code></h4>
+<h4 id='method.returns' class='method'><code>fn <a href='#method.returns' class='fnname'>returns</a>(&amp;mut self, columns: <a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;&amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>&gt;)</code></h4>
+<h4 id='method.enumerate_column_as_return' class='method'><code>fn <a href='#method.enumerate_column_as_return' class='fnname'>enumerate_column_as_return</a>(&amp;mut self, column: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>)</code></h4>
+<h4 id='method.build' class='method'><code>fn <a href='#method.build' class='fnname'>build</a>(&amp;mut self, db: &amp;<a class='trait' href='../../rustorm/database/trait.Database.html' title='rustorm::database::Database'>Database</a>) -&gt; <a class='struct' href='../../rustorm/writer/struct.SqlFrag.html' title='rustorm::writer::SqlFrag'>SqlFrag</a></code></h4>
+<div class='docblock'><p>build the query only, not executed, useful when debugging</p>
+</div><h4 id='method.debug_build' class='method'><code>fn <a href='#method.debug_build' class='fnname'>debug_build</a>(&amp;mut self, db: &amp;<a class='trait' href='../../rustorm/database/trait.Database.html' title='rustorm::database::Database'>Database</a>) -&gt; <a class='struct' href='../../rustorm/writer/struct.SqlFrag.html' title='rustorm::writer::SqlFrag'>SqlFrag</a></code></h4>
+<div class='docblock'><p>Warning: don&#39;t use this in production</p>
+</div><h4 id='method.retrieve' class='method'><code>fn <a href='#method.retrieve' class='fnname'>retrieve</a>(&amp;mut self, db: &amp;<a class='trait' href='../../rustorm/database/trait.Database.html' title='rustorm::database::Database'>Database</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='struct' href='../../rustorm/dao/struct.DaoResult.html' title='rustorm::dao::DaoResult'>DaoResult</a>, <a class='enum' href='../../rustorm/database/enum.DbError.html' title='rustorm::database::DbError'>DbError</a>&gt;</code></h4>
+<div class='docblock'><p>retrieve a generic types, type is unknown at runtime
+expects a return, such as select, insert/update with returning clause</p>
+</div><h4 id='method.retrieve_one' class='method'><code>fn <a href='#method.retrieve_one' class='fnname'>retrieve_one</a>(&amp;mut self, db: &amp;<a class='trait' href='../../rustorm/database/trait.Database.html' title='rustorm::database::Database'>Database</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='type' href='../../rustorm/dao/type.Dao.html' title='rustorm::dao::Dao'>Dao</a>&gt;, <a class='enum' href='../../rustorm/database/enum.DbError.html' title='rustorm::database::DbError'>DbError</a>&gt;</code></h4>
+<div class='docblock'><p>expects a return, such as select, insert/update with returning clause
+no casting of data to structs is done
+This is used when retrieving multiple models in 1 query, then casting the records to its equivalent structs</p>
+</div><h4 id='method.execute' class='method'><code>fn <a href='#method.execute' class='fnname'>execute</a>(&amp;mut self, db: &amp;<a class='trait' href='../../rustorm/database/trait.Database.html' title='rustorm::database::Database'>Database</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, <a class='enum' href='../../rustorm/database/enum.DbError.html' title='rustorm::database::DbError'>DbError</a>&gt;</code></h4>
+<div class='docblock'><p>delete, update without caring for the return</p>
+</div><h4 id='method.collect' class='method'><code>fn <a href='#method.collect' class='fnname'>collect</a>&lt;T: <a class='trait' href='../../rustorm/dao/trait.IsDao.html' title='rustorm::dao::IsDao'>IsDao</a> + <a class='trait' href='../../rustorm/table/trait.IsTable.html' title='rustorm::table::IsTable'>IsTable</a>&gt;(&amp;mut self, db: &amp;<a class='trait' href='../../rustorm/database/trait.Database.html' title='rustorm::database::Database'>Database</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;T&gt;, <a class='enum' href='../../rustorm/database/enum.DbError.html' title='rustorm::database::DbError'>DbError</a>&gt;</code></h4>
+<div class='docblock'><p>execute the query, then convert the result</p>
+</div><h4 id='method.collect_one' class='method'><code>fn <a href='#method.collect_one' class='fnname'>collect_one</a>&lt;T: <a class='trait' href='../../rustorm/dao/trait.IsDao.html' title='rustorm::dao::IsDao'>IsDao</a> + <a class='trait' href='../../rustorm/table/trait.IsTable.html' title='rustorm::table::IsTable'>IsTable</a>&gt;(&amp;mut self, db: &amp;<a class='trait' href='../../rustorm/database/trait.Database.html' title='rustorm::database::Database'>Database</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;T, <a class='enum' href='../../rustorm/database/enum.DbError.html' title='rustorm::database::DbError'>DbError</a>&gt;</code></h4>
+<div class='docblock'><p>execute the query then collect only 1 record</p>
+</div></div><h2 id='implementations'>Trait Implementations</h2><h3 id='derived_implementations'>Derived Implementations </h3><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html' title='core::fmt::Debug'>Debug</a> for <a class='struct' href='../../rustorm/query/struct.Query.html' title='rustorm::query::Query'>Query</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-1525' class='srclink' href='../../src/rustorm/src/query/mod.rs.html#93' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.fmt' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#tymethod.fmt' class='fnname'>fmt</a>(&amp;self, __arg_0: &amp;mut <a class='struct' href='https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html' title='core::fmt::Formatter'>Formatter</a>) -&gt; <a class='type' href='https://doc.rust-lang.org/nightly/core/fmt/type.Result.html' title='core::fmt::Result'>Result</a></code></h4>
+</div><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> for <a class='struct' href='../../rustorm/query/struct.Query.html' title='rustorm::query::Query'>Query</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-1546' class='srclink' href='../../src/rustorm/src/query/mod.rs.html#94' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.clone' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone' class='fnname'>clone</a>(&amp;self) -&gt; <a class='struct' href='../../rustorm/query/struct.Query.html' title='rustorm::query::Query'>Query</a></code></h4>
+<h4 id='method.clone_from' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from' class='fnname'>clone_from</a>(&amp;mut self, source: &amp;Self)</code><div class="since">1.0.0</div></h4>
+</div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "rustorm";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script defer src="../../search-index.js"></script>
+</body>
+</html>

@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["QuerySource","This fields can be used in the FROM field"]],"struct":[["SourceField","QuerySource fields can be renamed"]],"trait":[["ToSourceField",""]]});

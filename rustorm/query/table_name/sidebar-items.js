@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["TableName",""]],"trait":[["ToTableName","convert str, IsTable to TableName"]]});

@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["ManagedPool","Postgres, Sqlite uses r2d2 connection manager, Mysql has its own connection pooling"],["Platform","the sql builder for each of the database platform"]]});
