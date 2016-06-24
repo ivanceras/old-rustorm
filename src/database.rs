@@ -6,6 +6,7 @@ use query::{Connector, Equality, Operand, Field};
 use query::{Direction, Modifier, NullsWhere, JoinType};
 use query::{Filter, Condition};
 use query::SqlType;
+use query::Range;
 use std::error::Error;
 use std::fmt;
 use r2d2;
@@ -209,14 +210,39 @@ pub trait Database {
     fn execute_with_return(&self, query: &Query) -> Result<DaoResult, DbError> {
         let sql_frag = &self.build_query(query, BuildMode::Standard);
         let result = try!(self.execute_sql_with_return(&sql_frag.sql, &sql_frag.params));
+        let (page, page_size, total) = try!(self.get_query_stats(query));
         let dao_result = DaoResult {
             dao: result,
             renamed_columns: query.get_renamed_columns(),
-            total: None,
-            page: None,
-            page_size: None,
+            total: total,
+            page: page,
+            page_size: page_size 
         };
         Ok(dao_result)
+    }
+
+    /// get the query stats page, page_size and the total records
+    fn get_query_stats(&self, query: &Query)->Result<(Option<usize>, Option<usize>, Option<usize>), DbError>{
+        let page = if let Some(limit) = query.range.limit{
+                        if let Some(offset) = query.range.offset{
+                            Some(offset/limit)
+                        }else{None} 
+                    }else{None};
+
+        let mut count_query = query.to_owned();
+        count_query.enumerated_fields = vec![];//remove the enumerated fields
+        count_query.column("COUNT(*)");
+        count_query.range = Range::new();//remove the range
+
+        let count_result = try!(self.execute_with_one_return(&count_query));
+        let total = if let Some(count_result) = count_result{
+            let value = count_result.get("COUNT");
+            match value{
+                Some(&Value::U64(v)) => Some(v as usize),
+                _ => None
+            }
+        }else{ None };
+        Ok((page, query.range.limit, total))
     }
 
     /// execute query with 1 return dao

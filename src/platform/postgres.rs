@@ -656,7 +656,6 @@ impl DatabaseDev for Postgres {
         let stmt = conn.prepare(&sql).unwrap();
         for row in stmt.query(&[&schema, &table]).unwrap().iter() {
             let estimate: f32 = row.get("count_estimate");
-			println!("estimate: {}", estimate);
 			return Some(estimate as usize);
         }
         None
@@ -695,6 +694,7 @@ impl DatabaseDev for Postgres {
         let comment = self.get_table_comment(schema, table);
         let parent = self.get_parent_table(schema, table);
         let subclass = self.get_table_sub_class(schema, table);
+        let estimated_row_count = self.get_row_count_estimate(schema, table);
 
         //mutate columns to mark those which are inherited
         if parent.is_some() {
@@ -716,6 +716,7 @@ impl DatabaseDev for Postgres {
             comment: comment,
             columns: columns,
             is_view: is_view,
+            estimated_row_count: estimated_row_count
         }
     }
 

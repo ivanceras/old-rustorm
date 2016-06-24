@@ -113,6 +113,20 @@ impl Column {
         }
         capitalize(&clean_name)
     }
+    /// mailing_address_id -> address_id becomes Mailing Address
+    /// physical_address_id -> address_id becomes Physical Address
+    pub fn clean_lookupname(&self, table: &Table, lookup:&Table)-> String {
+        let fk_lookup = lookup.primary_columns();
+        let mut column_name = self.name.to_owned();
+        for fk in fk_lookup{
+           column_name = column_name.replace(&fk.name, "");
+        } 
+        let clean_name = column_name.replace(&lookup.name,"");
+        let clean_name = clean_name.trim_right_matches("_id");
+        let clean_name = clean_name.trim_right_matches("_");
+        let clean_name = format!("{} {} ",clean_name, lookup.displayname());
+        capitalize(&clean_name)
+    }
 
 }
 
@@ -233,6 +247,9 @@ pub struct Table {
 
     /// views can also be generated
     pub is_view: bool,
+
+    /// estimated row count if any
+    pub estimated_row_count: Option<usize>
 }
 impl fmt::Display for Table {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
