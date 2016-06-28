@@ -549,13 +549,30 @@ impl DatabaseDev for Sqlite {
     }
 
     fn get_row_count_estimate(&self, schema: &str, table: &str) -> Option<usize> {
-		unimplemented!()
+        let sql = format!("SELECT count (*) as count from {}",table);
+        let result = self.execute_sql_with_one_return(&sql, &vec![]);
+        match result{
+            Ok(Some(result)) => {
+                let value = result.get("count");
+                match value{
+                    Some(&Value::I64(v)) => Some(v as usize),
+                    Some(&Value::I32(v)) => Some(v as usize),
+                    Some(&Value::I16(v)) => Some(v as usize),
+                    Some(&Value::U64(v)) => Some(v as usize),
+                    Some(&Value::U32(v)) => Some(v as usize),
+                    Some(&Value::U16(v)) => Some(v as usize),
+                    _ => None
+                }
+            }
+            _ => None
+        }
 	}
 
     fn get_table_metadata(&self, schema: &str, table: &str, _is_view: bool) -> Table {
         debug!("extracting table meta data in sqlite");
         let sql = format!("PRAGMA table_info({});", table);
         let result = self.execute_sql_with_return(&sql, &vec![]);
+        let row_count = self.get_row_count_estimate(schema, table);
         debug!("result: {:#?}", result);
         match result {
             Ok(result) => {
@@ -633,6 +650,7 @@ impl DatabaseDev for Sqlite {
                     comment: table_comment,
                     columns: columns,
                     is_view: false,
+                    estimated_row_count:row_count 
                 }
             }
             Err(e) => {

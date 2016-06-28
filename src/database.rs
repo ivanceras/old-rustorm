@@ -231,14 +231,18 @@ pub trait Database {
 
         let mut count_query = query.to_owned();
         count_query.enumerated_fields = vec![];//remove the enumerated fields
-        count_query.column("COUNT(*)");
+        count_query.column("COUNT(*) AS COUNT");
         count_query.range = Range::new();//remove the range
-
         let count_result = try!(self.execute_with_one_return(&count_query));
+        println!("range: {:#?}",query.range);
+        println!("count result {:#?}", count_result);
         let total = if let Some(count_result) = count_result{
-            let value = count_result.get("COUNT");
+            let value = count_result.get("count");
             match value{
                 Some(&Value::U64(v)) => Some(v as usize),
+                Some(&Value::I64(v)) => Some(v as usize),
+                Some(&Value::U32(v)) => Some(v as usize),
+                Some(&Value::I32(v)) => Some(v as usize),
                 _ => None
             }
         }else{ None };
