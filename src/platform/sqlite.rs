@@ -409,8 +409,8 @@ impl Database for Sqlite {
             columns.push(c.to_owned());
         }
         debug!("columns : {:?}", columns);
-        let rows = try!(stmt.query(&param));
-        for row in rows {
+        let mut rows = try!(stmt.query(&param));
+        while let Some(row) = rows.next() {
             let row = try!(row);
             let mut index = 0;
             let mut dao = Dao::new();
