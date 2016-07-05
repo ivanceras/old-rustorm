@@ -573,7 +573,26 @@ impl DatabaseDev for Mysql {
         None
     }
     fn get_row_count_estimate(&self, schema: &str, table: &str) -> Option<usize> {
-		unimplemented!()
+        let sql = format!("SELECT TABLE_ROWS as count FROM INFORMATION_SCHEMA.TABLES
+                WHERE TABLE_NAME = '{}';",table);
+
+        match self.execute_sql_with_one_return(&sql, &vec![]) {
+            Ok(dao) => {
+                match dao {
+                    Some(dao) => match dao.get("count"){
+                        Some(schema) => match schema{
+                            &Value::I64(count) => Some(count as usize),
+                            &Value::I32(count) => Some(count as usize),
+                            &Value::I16(count) => Some(count as usize),
+                            _ => unreachable!(),
+                        },
+                        None => None
+                    },
+                    None => None
+                }
+            },
+            Err(_) => None
+        }
 	}
 
     fn get_table_sub_class(&self, schema: &str, table: &str) -> Vec<String> {
@@ -586,6 +605,7 @@ impl DatabaseDev for Mysql {
         let comment = self.get_table_comment(schema, table);
         let parent = self.get_parent_table(schema, table);
         let subclass = self.get_table_sub_class(schema, table);
+        let estimated_row_count = self.get_row_count_estimate(schema, table);
 
         //mutate columns to mark those which are inherited
         if parent.is_some() {
@@ -607,6 +627,7 @@ impl DatabaseDev for Mysql {
             comment: comment,
             columns: columns,
             is_view: is_view,
+            estimated_row_count: estimated_row_count
         }
     }
 
