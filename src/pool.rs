@@ -95,6 +95,7 @@ pub enum ManagedPool {
 }
 
 impl ManagedPool {
+    
     /// initialize the pool
     pub fn init(url: &str, pool_size: usize) -> Result<Self, DbError> {
         let config = DbConfig::from_url(url);

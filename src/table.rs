@@ -655,7 +655,7 @@ impl Table {
         }
         let has_many_indirect = self.indirect_referring_tables(all_tables);
 
-        for (hi, linker) in has_many_indirect {
+        for (hi, linker, via_column) in has_many_indirect {
             if !hi.is_linker_table() && !extension_tables.contains(&hi) &&
                 !included_has_many.contains(&hi) {
                     let ref_table = RefTable {
@@ -733,9 +733,9 @@ impl Table {
     /// returns the table that is indirectly referring to this table and its linker table
     pub fn indirect_referring_tables<'a>(&self,
                                          tables: &'a [Table])
-                                         -> Vec<(&'a Table, &'a Table)> {
+                                         -> Vec<(&'a Table, &'a Table, &'a Column)> {
         let mut indirect_referring_tables = Vec::new();
-        for (rt, _column) in self.referring_tables(tables) {
+        for (rt, column) in self.referring_tables(tables) {
             let rt_pk = rt.primary_columns();
             let rt_fk = rt.foreign_columns();
             let rt_uc = rt.uninherited_columns();
@@ -762,7 +762,7 @@ impl Table {
                 }
 
                 if cnt == 2 {
-                    indirect_referring_tables.push((other_table, rt))
+                    indirect_referring_tables.push((other_table, rt, column))
                 }
             }
         }
@@ -781,12 +781,12 @@ impl Table {
 		direct_tables
 	}
 
-	pub fn indirect_tables<'a>(&self, tables: &'a [Table]) -> Vec<(&'a Table, &'a Table)> {
+	pub fn indirect_tables<'a>(&self, tables: &'a [Table]) -> Vec<(&'a Table, &'a Table, &'a Column)> {
 		let mut indirect_tables = vec![];
 		let ind_referring = self.indirect_referring_tables(tables);
-		for (ind, linker) in ind_referring{
+		for (ind, linker, via_column) in ind_referring{
 			if !ind.is_owned(tables) && !ind.is_linker_table(){
-				indirect_tables.push( (ind, linker) )
+				indirect_tables.push( (ind, linker, via_column) )
 			}
 		}
 		indirect_tables
