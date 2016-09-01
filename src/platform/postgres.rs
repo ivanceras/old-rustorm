@@ -29,10 +29,9 @@ pub struct Postgres {
 /// PostgreSQL sql query,
 /// TODO: support version SqlOptions/specific syntax
 
-//static none: &'static Option<String> = &None;
+// static none: &'static Option<String> = &None;
 
 impl Postgres {
-
     /// create an instance, but without a connection yet,
     /// useful when just building sql queries specific to this platform
     /// inexpensive operation, so can have multiple instances
@@ -81,197 +80,211 @@ impl Postgres {
                 Value::NaiveDate(ref x) => params.push(x),
                 Value::NaiveTime(ref x) => params.push(x),
                 Value::NaiveDateTime(ref x) => params.push(x),
-                Value::Json(ref x) => {
-                       params.push(x)
-                }
+                Value::Json(ref x) => params.push(x),
             }
         }
         params
     }
-    
 
-	/// convert a record of a row into rust type
-	fn from_sql_to_rust_type(&self, dtype: &PgType, row: &Row, index: usize) -> Option<Value> {
-		match *dtype {
-			PgType::Uuid => {
-				let value = row.get_opt(index);
-				match value{
-					Some(value) =>
-						match value {
-							Ok(value) => Some(Value::Uuid(value)),
-								Err(e) => None,
-						},
-							  None => None
-				}
-			}
-			PgType::Varchar | PgType::Text | PgType::Bpchar => {
-				let value = row.get_opt(index);
-				match value{
-					Some(value) => 
-						match value {
-							Ok(value) => Some(Value::String(value)),
-								Err(e) => None,
-						},
-							  None => None
-				}
-			}
-			PgType::TimestampTZ | PgType::Timestamp => {
-				let value = row.get_opt(index);
-				match value{
-					Some(value) =>
-						match value {
-							Ok(value) => Some(Value::DateTime(value)),
-								Err(e) => None,
-						},
-							  None => None
-				}
-			}
-			PgType::Float4 => {
-				let value = row.get_opt(index);
-				match value {
-					Some(value) =>
-						match value {
-							Ok(value) => Some(Value::F32(value)),
-								Err(e) => None,
-						},
-							  None => None
-				}
-			}
-			PgType::Float8 => {
-				let value = row.get_opt(index);
-				match value {
-					Some(value) =>
-						match value {
-							Ok(value) => Some(Value::F64(value)),
-								Err(e) => None,
-						},
-							  None => None
-				}
-			}
-			PgType::Numeric => {
-				let value = row.get_opt(index);
-				match value{
-					Some(value) => 
-						match value {
-							Ok(value) => Some(Value::F64(value)),
-								Err(e) => None,
-						},
-							  None => None
-				}
-			}, 
-				PgType::Bool => {
-					let value = row.get_opt(index);
-					match value{
-						Some(value) => 
-							match value {
-								Ok(value) => Some(Value::Bool(value)),
-									Err(e) => None,
-							},
-								  None => None
-					}
-				}
-			PgType::Json => {
-				let value = row.get_opt(index);
-				match value{
-					Some(value) => 
-						match value {
-							Ok(value) => Some(Value::Json(value)),
-								Err(e) => None,
-						},
-							  None => None
-				}
-			}
-			PgType::Int2 => {
-				let value = row.get_opt(index);
-				match value{
-					Some(value) => 
-						match value {
-							Ok(value) => Some(Value::I16(value)),
-								Err(e) => None,
-						},
-							  None => None
-				}
-			}
-			PgType::Int4 => {
-				let value = row.get_opt(index);
-				match value{
-					Some(value) => 
-						match value {
-							Ok(value) => Some(Value::I32(value)),
-								Err(e) => None,
-						},
-							  None => None
-				}
-			}
-			PgType::Int8 => {
-				let value = row.get_opt(index);
-				match value{
-					Some(value) => 
-						match value {
-							Ok(value) => Some(Value::I64(value)),
-								Err(e) => None,
-						},
-							  None => None
-				}
-			}
-			PgType::Timetz => {
-				let value = row.get_opt(index);
-				match value{
-					Some(value) => 
-						match value {
-							Ok(value) => Some(Value::DateTime(value)),
-								Err(e) => None,
-						},
-							  None => None
-				}
-			}
-			PgType::Date => {
-				let value = row.get_opt(index);
-				match value{
-					Some(value) => 
-						match value {
-							Ok(value) => Some(Value::DateTime(value)),
-								Err(e) => None,
-						},
-							  None => None
-				}
-			}
-			PgType::Bytea => {
-				let value = row.get_opt(index);
-				match value{
-					Some(value) => 
-						match value {
-							Ok(value) => Some(Value::VecU8(value)),
-								Err(e) => None,
-						},
-							  None => None
-				}
-			}
-			PgType::Inet => {
-				let value = row.get_opt(index);
-				match value{
-					Some(value) => 
-						match value {
-							Ok(value) => Some(Value::String(value)),
-								Err(e) => None,
-						},
-							  None => None
-				}
-			}
-			PgType::Tsvector => {
-				let value = row.get_opt(index);
-				match value{
-					Some(value) => 
-						match value {
-							Ok(value) => Some(Value::String(value)),
-								Err(e) => None,
-						},
-							  None => None
-				}
-			}
-			_ => panic!("Type {:?} is not covered!", dtype),
-		}
-	}
+
+    /// convert a record of a row into rust type
+    fn from_sql_to_rust_type(&self, dtype: &PgType, row: &Row, index: usize) -> Option<Value> {
+        match *dtype {
+            PgType::Uuid => {
+                let value = row.get_opt(index);
+                match value {
+                    Some(value) => {
+                        match value {
+                            Ok(value) => Some(Value::Uuid(value)),
+                            Err(e) => None,
+                        }
+                    }
+                    None => None,
+                }
+            }
+            PgType::Varchar | PgType::Text | PgType::Bpchar => {
+                let value = row.get_opt(index);
+                match value {
+                    Some(value) => {
+                        match value {
+                            Ok(value) => Some(Value::String(value)),
+                            Err(e) => None,
+                        }
+                    }
+                    None => None,
+                }
+            }
+            PgType::TimestampTZ | PgType::Timestamp => {
+                let value = row.get_opt(index);
+                match value {
+                    Some(value) => {
+                        match value {
+                            Ok(value) => Some(Value::DateTime(value)),
+                            Err(e) => None,
+                        }
+                    }
+                    None => None,
+                }
+            }
+            PgType::Float4 => {
+                let value = row.get_opt(index);
+                match value {
+                    Some(value) => {
+                        match value {
+                            Ok(value) => Some(Value::F32(value)),
+                            Err(e) => None,
+                        }
+                    }
+                    None => None,
+                }
+            }
+            PgType::Float8 => {
+                let value = row.get_opt(index);
+                match value {
+                    Some(value) => {
+                        match value {
+                            Ok(value) => Some(Value::F64(value)),
+                            Err(e) => None,
+                        }
+                    }
+                    None => None,
+                }
+            }
+            PgType::Numeric => {
+                let value = row.get_opt(index);
+                match value {
+                    Some(value) => {
+                        match value {
+                            Ok(value) => Some(Value::F64(value)),
+                            Err(e) => None,
+                        }
+                    }
+                    None => None,
+                }
+            } 
+            PgType::Bool => {
+                let value = row.get_opt(index);
+                match value {
+                    Some(value) => {
+                        match value {
+                            Ok(value) => Some(Value::Bool(value)),
+                            Err(e) => None,
+                        }
+                    }
+                    None => None,
+                }
+            }
+            PgType::Json => {
+                let value = row.get_opt(index);
+                match value {
+                    Some(value) => {
+                        match value {
+                            Ok(value) => Some(Value::Json(value)),
+                            Err(e) => None,
+                        }
+                    }
+                    None => None,
+                }
+            }
+            PgType::Int2 => {
+                let value = row.get_opt(index);
+                match value {
+                    Some(value) => {
+                        match value {
+                            Ok(value) => Some(Value::I16(value)),
+                            Err(e) => None,
+                        }
+                    }
+                    None => None,
+                }
+            }
+            PgType::Int4 => {
+                let value = row.get_opt(index);
+                match value {
+                    Some(value) => {
+                        match value {
+                            Ok(value) => Some(Value::I32(value)),
+                            Err(e) => None,
+                        }
+                    }
+                    None => None,
+                }
+            }
+            PgType::Int8 => {
+                let value = row.get_opt(index);
+                match value {
+                    Some(value) => {
+                        match value {
+                            Ok(value) => Some(Value::I64(value)),
+                            Err(e) => None,
+                        }
+                    }
+                    None => None,
+                }
+            }
+            PgType::Timetz => {
+                let value = row.get_opt(index);
+                match value {
+                    Some(value) => {
+                        match value {
+                            Ok(value) => Some(Value::DateTime(value)),
+                            Err(e) => None,
+                        }
+                    }
+                    None => None,
+                }
+            }
+            PgType::Date => {
+                let value = row.get_opt(index);
+                match value {
+                    Some(value) => {
+                        match value {
+                            Ok(value) => Some(Value::DateTime(value)),
+                            Err(e) => None,
+                        }
+                    }
+                    None => None,
+                }
+            }
+            PgType::Bytea => {
+                let value = row.get_opt(index);
+                match value {
+                    Some(value) => {
+                        match value {
+                            Ok(value) => Some(Value::VecU8(value)),
+                            Err(e) => None,
+                        }
+                    }
+                    None => None,
+                }
+            }
+            PgType::Inet => {
+                let value = row.get_opt(index);
+                match value {
+                    Some(value) => {
+                        match value {
+                            Ok(value) => Some(Value::String(value)),
+                            Err(e) => None,
+                        }
+                    }
+                    None => None,
+                }
+            }
+            PgType::Tsvector => {
+                let value = row.get_opt(index);
+                match value {
+                    Some(value) => {
+                        match value {
+                            Ok(value) => Some(Value::String(value)),
+                            Err(e) => None,
+                        }
+                    }
+                    None => None,
+                }
+            }
+            _ => panic!("Type {:?} is not covered!", dtype),
+        }
+    }
 
 
     ///
@@ -337,7 +350,7 @@ impl Postgres {
             let name: String = row.get("name");
             let not_null: bool = row.get("notnull");
             let db_data_type: String = row.get("data_type");
-            //TODO: temporarily regex the data type to extract the size as well
+            // TODO: temporarily regex the data type to extract the size as well
             let re = match Regex::new("(.+)\\((.+)\\)") {
                 Ok(re) => re,
                 Err(err) => panic!("{}", err),
@@ -392,7 +405,7 @@ impl Postgres {
             };
             let (_, data_type) = self.dbtype_to_rust_type(&db_data_type);
             let column = Column {
-				table: Some(table.to_owned()),
+                table: Some(table.to_owned()),
                 name: name,
                 data_type: data_type,
                 db_data_type: db_data_type,
@@ -402,11 +415,11 @@ impl Postgres {
                 default: default,
                 not_null: not_null,
                 foreign: foreign,
-                is_inherited: false, /* will be corrected later in the get_meta_data */
+                is_inherited: false, // will be corrected later in the get_meta_data
             };
             columns.push(column);
         }
-        //unify due to the fact that postgresql return a separate row for
+        // unify due to the fact that postgresql return a separate row for
         // both primary and foreign columns
         self.unify_primary_and_foreign_column(&columns)
     }
@@ -415,15 +428,22 @@ impl Postgres {
         let sql = "
                 SELECT
                     pg_class.relname AS table,
-                    pg_namespace.nspname AS schema,
-                    obj_description(pg_class.oid) AS comment
+                    \
+                   pg_namespace.nspname AS schema,
+                    \
+                   obj_description(pg_class.oid) AS comment
                 FROM pg_class
-                    LEFT JOIN pg_namespace
-                        ON pg_namespace.oid = pg_class.relnamespace
+                    \
+                   LEFT JOIN pg_namespace
+                        ON pg_namespace.oid = \
+                   pg_class.relnamespace
                 WHERE
-                    pg_class.relkind IN ('r','v')
-                    AND pg_namespace.nspname NOT IN ('information_schema', 'pg_catalog', 'pg_toast')
-                    AND nspname = $1
+                    \
+                   pg_class.relkind IN ('r','v')
+                    AND pg_namespace.nspname NOT \
+                   IN ('information_schema', 'pg_catalog', 'pg_toast')
+                    AND \
+                   nspname = $1
                     AND relname = $2
                 ";
         let conn = self.get_connection();
@@ -451,7 +471,7 @@ impl Postgres {
                 foreign_columns.push(c.name.clone());
             }
         }
-        //if both primary and foreign, push only the modified foreign
+        // if both primary and foreign, push only the modified foreign
         for c in columns {
             if primary_columns.contains(&c.name) && foreign_columns.contains(&c.name) {
                 if c.foreign.is_some() {
@@ -466,7 +486,6 @@ impl Postgres {
         unified_columns
 
     }
-
 }
 
 
@@ -476,26 +495,23 @@ impl Database for Postgres {
         let dao = try!(self.execute_sql_with_one_return(sql, &vec![]));
         match dao {
             Some(dao) => {
-                match dao.get("server_version"){
+                match dao.get("server_version") {
                     Some(version) => {
-                        match version{
+                        match version {
                             &Value::String(ref version) => Ok(version.to_owned()),
-                            _ => Err(DbError::new("unexpected type"))
+                            _ => Err(DbError::new("unexpected type")),
                         }
-                    },
-                    None => Err(DbError::new("no version specified"))
+                    }
+                    None => Err(DbError::new("no version specified")),
                 }
-            },
+            }
             None => Err(DbError::new("Unable to get database version")),
         }
     }
 
-    fn begin(&self) {
-    }
-    fn commit(&self) {
-    }
-    fn rollback(&self) {
-    }
+    fn begin(&self) {}
+    fn commit(&self) {}
+    fn rollback(&self) {}
     fn is_transacted(&self) -> bool {
         false
     }
@@ -505,13 +521,11 @@ impl Database for Postgres {
     fn is_connected(&self) -> bool {
         false
     }
-    fn close(&self) {
-    }
+    fn close(&self) {}
     fn is_valid(&self) -> bool {
         false
     }
-    fn reset(&self) {
-    }
+    fn reset(&self) {}
 
     /// return this list of options, supported features in the database
     /// TODO: make this features version specific
@@ -556,9 +570,9 @@ impl Database for Postgres {
                 let column_name = c.name();
                 let dtype = c.type_();
                 let rtype = self.from_sql_to_rust_type(&dtype, &row, index);
-				if let Some(rtype) = rtype {
-                	dao.insert(column_name.to_owned(), rtype);
-				}
+                if let Some(rtype) = rtype {
+                    dao.insert(column_name.to_owned(), rtype);
+                }
                 index += 1;
             }
             daos.push(dao);
@@ -577,11 +591,9 @@ impl Database for Postgres {
         let result = try!(conn.execute(sql, &to_sql_types));
         Ok(result as usize)
     }
-
 }
 
 impl DatabaseDDL for Postgres {
-
     fn create_schema(&self, _schema: &str) {
         unimplemented!()
     }
@@ -606,12 +618,10 @@ impl DatabaseDDL for Postgres {
     fn set_primary_constraint(&self, _model: &Table) {
         unimplemented!()
     }
-
 }
 
 /// this can be condensed with using just extracting the table definition
 impl DatabaseDev for Postgres {
-
     fn get_parent_table(&self, schema: &str, table: &str) -> Option<String> {
         let sql = "
             SELECT
@@ -638,8 +648,8 @@ impl DatabaseDev for Postgres {
         None
     }
 
-	/// https://wiki.postgresql.org/wiki/Count_estimate
-	/// SELECT reltuples::BIGINT AS estimate FROM pg_class WHERE relname='schema_name.tbl';
+    /// https://wiki.postgresql.org/wiki/Count_estimate
+    /// SELECT reltuples::BIGINT AS estimate FROM pg_class WHERE relname='schema_name.tbl';
     fn get_row_count_estimate(&self, schema: &str, table: &str) -> Option<usize> {
         let sql = "
             SELECT
@@ -656,7 +666,7 @@ impl DatabaseDev for Postgres {
         let stmt = conn.prepare(&sql).unwrap();
         for row in stmt.query(&[&schema, &table]).unwrap().iter() {
             let estimate: f32 = row.get("count_estimate");
-			return Some(estimate as usize);
+            return Some(estimate as usize);
         }
         None
     }
@@ -696,7 +706,7 @@ impl DatabaseDev for Postgres {
         let subclass = self.get_table_sub_class(schema, table);
         let estimated_row_count = self.get_row_count_estimate(schema, table);
 
-        //mutate columns to mark those which are inherited
+        // mutate columns to mark those which are inherited
         if parent.is_some() {
             let inherited_columns = self.get_inherited_columns(schema, table);
             for i in inherited_columns {
@@ -716,7 +726,7 @@ impl DatabaseDev for Postgres {
             comment: comment,
             columns: columns,
             is_view: is_view,
-            estimated_row_count: estimated_row_count
+            estimated_row_count: estimated_row_count,
         }
     }
 
@@ -724,19 +734,28 @@ impl DatabaseDev for Postgres {
         let sql = "
                 SELECT
                     pg_class.relname AS table,
-                    pg_namespace.nspname AS schema,
-                    obj_description(pg_class.oid) AS comment,
+                    \
+                   pg_namespace.nspname AS schema,
+                    \
+                   obj_description(pg_class.oid) AS comment,
                     CASE
-                        WHEN pg_class.relkind = 'r' THEN false
-                        WHEN pg_class.relkind = 'v' THEN true
+                        \
+                   WHEN pg_class.relkind = 'r' THEN false
+                        WHEN \
+                   pg_class.relkind = 'v' THEN true
                     END AS is_view
-                FROM pg_class
+                \
+                   FROM pg_class
                     LEFT JOIN pg_namespace
-                        ON pg_namespace.oid = pg_class.relnamespace
+                        \
+                   ON pg_namespace.oid = pg_class.relnamespace
                 WHERE
-                    pg_class.relkind IN ('r','v')
-                    AND pg_namespace.nspname NOT IN ('information_schema', 'pg_catalog', 'pg_toast')
-                ORDER BY relname, nspname
+                    \
+                   pg_class.relkind IN ('r','v')
+                    AND pg_namespace.nspname NOT \
+                   IN ('information_schema', 'pg_catalog', 'pg_toast')
+                ORDER BY \
+                   relname, nspname
 
                 ";
         let conn = self.get_connection();
@@ -791,53 +810,32 @@ impl DatabaseDev for Postgres {
     /// will be used in source code generation
     fn dbtype_to_rust_type(&self, db_type: &str) -> (Vec<String>, Type) {
         match db_type {
-            "boolean" => {
-                (vec![], Type::Bool)
-            }
-            "char" => {
-                (vec![], Type::I8)
-            }
-            "smallint" | "smallserial" => {
-                (vec![], Type::I16)
-            }
-            "integer" | "int" | "serial" => {
-                (vec![], Type::I32)
-            }
-            "oid" => {
-                (vec![], Type::U32)
-            }
-            "bigint" | "bigserial" => {
-                (vec![], Type::I64)
-            }
-            "real" => {
-                (vec![], Type::F32)
-            }
+            "boolean" => (vec![], Type::Bool),
+            "char" => (vec![], Type::I8),
+            "smallint" | "smallserial" => (vec![], Type::I16),
+            "integer" | "int" | "serial" => (vec![], Type::I32),
+            "oid" => (vec![], Type::U32),
+            "bigint" | "bigserial" => (vec![], Type::I64),
+            "real" => (vec![], Type::F32),
             "numeric" => {
                 (vec![], Type::F64)
-                //panic!("No support for numeric yet, please use real or double precision")
+                // panic!("No support for numeric yet, please use real or double precision")
             }
-            "double precision" => {
-                (vec![], Type::F64)
-            }
-            "name" | "character" | "character varying" | "text" | "citext" | "bpchar" => {
-                (vec![], Type::String)
-            }
-            "bytea" => {
-                (vec![], Type::VecU8)
-            }
-            "json" | "jsonb" => {
-                (vec!["rustc_serialize::json::Json".to_owned()], Type::Json)
-            }
-            "uuid" => {
-                (vec!["uuid::Uuid".to_owned()], Type::Uuid)
-            }
+            "double precision" => (vec![], Type::F64),
+            "name" |
+            "character" |
+            "character varying" |
+            "text" |
+            "citext" |
+            "bpchar" => (vec![], Type::String),
+            "bytea" => (vec![], Type::VecU8),
+            "json" | "jsonb" => (vec!["rustc_serialize::json::Json".to_owned()], Type::Json),
+            "uuid" => (vec!["uuid::Uuid".to_owned()], Type::Uuid),
             "timestamp" => {
-                (vec!["chrono::naive::datetime::NaiveDateTime".to_owned()],
-                 Type::NaiveDateTime)
+                (vec!["chrono::naive::datetime::NaiveDateTime".to_owned()], Type::NaiveDateTime)
             }
             "timestamp without time zone" => {
-                (vec!["chrono::naive::datetime::NaiveDateTime".to_owned()],
-                 Type::NaiveDateTime)
+                (vec!["chrono::naive::datetime::NaiveDateTime".to_owned()], Type::NaiveDateTime)
             }
             "timestamp with time zone" => {
                 (vec!["chrono::datetime::DateTime".to_owned(),
@@ -849,23 +847,11 @@ impl DatabaseDev for Postgres {
                       "chrono::offset::utc::UTC".to_owned()],
                  Type::NaiveTime)
             }
-            "date" => {
-                (vec!["chrono::naive::date::NaiveDate".to_owned()],
-                 Type::NaiveDate)
-            }
-            "time" => {
-                (vec!["chrono::naive::time::NaiveTime".to_owned()],
-                 Type::NaiveTime)
-            }
-            "interval" => {
-                (vec![], Type::U32)
-            }
-            "inet[]" => {
-                (vec![], Type::String)
-            }
-            "tsvector" | "inet" => {
-                (vec![], Type::String)
-            }//or everything else should be string
+            "date" => (vec!["chrono::naive::date::NaiveDate".to_owned()], Type::NaiveDate),
+            "time" => (vec!["chrono::naive::time::NaiveTime".to_owned()], Type::NaiveTime),
+            "interval" => (vec![], Type::U32),
+            "inet[]" => (vec![], Type::String),
+            "tsvector" | "inet" => (vec![], Type::String),//or everything else should be string
             _ => panic!("Unable to get the equivalent data type for {}", db_type),
         }
     }
@@ -876,57 +862,26 @@ impl DatabaseDev for Postgres {
     /// FIXME, need to restore the exact data type as before
     fn rust_type_to_dbtype(&self, rust_type: &Type) -> String {
         match *rust_type {
-            Type::Bool => {
-                "boolean".to_owned()
+            Type::Bool => "boolean".to_owned(),
+            Type::I8 => "char".to_owned(),
+            Type::I16 => "smallint".to_owned(),
+            Type::I32 => "integer".to_owned(),
+            Type::U32 => "oid".to_owned(),
+            Type::I64 => "bigint".to_owned(),
+            Type::F32 => "real".to_owned(),
+            Type::F64 => "double precision".to_owned(),
+            Type::String => "character varying".to_owned(),
+            Type::VecU8 => "bytea".to_owned(),
+            Type::Json => "json".to_owned(),
+            Type::Uuid => "uuid".to_owned(),
+            Type::NaiveDateTime => "timestamp".to_owned(),
+            Type::DateTime => "timestamp with time zone".to_owned(),
+            Type::NaiveDate => "date".to_owned(),
+            Type::NaiveTime => "time".to_owned(),
+            _ => {
+                panic!("Unable to get the equivalent database data type for {:?}",
+                       rust_type)
             }
-            Type::I8 => {
-                "char".to_owned()
-            }
-            Type::I16 => {
-                "smallint".to_owned()
-            }
-            Type::I32 => {
-                "integer".to_owned()
-            }
-            Type::U32 => {
-                "oid".to_owned()
-            }
-            Type::I64 => {
-                "bigint".to_owned()
-            }
-            Type::F32 => {
-                "real".to_owned()
-            }
-            Type::F64 => {
-                "double precision".to_owned()
-            }
-            Type::String => {
-                "character varying".to_owned()
-            }
-            Type::VecU8 => {
-                "bytea".to_owned()
-            }
-            Type::Json => {
-                "json".to_owned()
-            }
-            Type::Uuid => {
-                "uuid".to_owned()
-            }
-            Type::NaiveDateTime => {
-                "timestamp".to_owned()
-            }
-            Type::DateTime => {
-                "timestamp with time zone".to_owned()
-            }
-            Type::NaiveDate => {
-                "date".to_owned()
-            }
-            Type::NaiveTime => {
-                "time".to_owned()
-            }
-            _ => panic!("Unable to get the equivalent database data type for {:?}",
-                        rust_type),
         }
     }
-
 }

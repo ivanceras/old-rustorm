@@ -47,7 +47,7 @@ impl Sqlite {
     pub fn get_connection(&self) -> &SqliteConnection {
         match self.pool {
             Some(ref pool) => &pool,
-            None => panic!("No connection for this database")
+            None => panic!("No connection for this database"),
         }
     }
 
@@ -67,56 +67,26 @@ impl Sqlite {
     fn rust_type_to_dbtype(&self, rust_type: &Type) -> String {
 
         let rust_type = match *rust_type {
-            Type::Bool => {
-                "boolean".to_owned()
+            Type::Bool => "boolean".to_owned(),
+            Type::I8 => "integer".to_owned(),
+            Type::I16 => "integer".to_owned(),
+            Type::I32 => "integer".to_owned(),
+            Type::U32 => "integer".to_owned(),
+            Type::I64 => "integer".to_owned(),
+            Type::F32 => "real".to_owned(),
+            Type::F64 => "real".to_owned(),
+            Type::String => "text".to_owned(),
+            Type::VecU8 => "blob".to_owned(),
+            Type::Json => "text".to_owned(),
+            Type::Uuid => "text".to_owned(),
+            Type::NaiveDateTime => "numeric".to_owned(),
+            Type::DateTime => "numeric".to_owned(),
+            Type::NaiveDate => "numeric".to_owned(),
+            Type::NaiveTime => "numeric".to_owned(),
+            _ => {
+                panic!("Unable to get the equivalent database data type for {:?}",
+                        rust_type)
             }
-           Type::I8 => {
-                "integer".to_owned()
-            }
-            Type::I16 => {
-                "integer".to_owned()
-            }
-            Type::I32 => {
-                "integer".to_owned()
-            }
-            Type::U32 => {
-                "integer".to_owned()
-            }
-            Type::I64 => {
-                "integer".to_owned()
-            }
-            Type::F32 => {
-                "real".to_owned()
-            }
-            Type::F64 => {
-                "real".to_owned()
-            }
-            Type::String => {
-                "text".to_owned()
-            }
-            Type::VecU8 => {
-                "blob".to_owned()
-            }
-            Type::Json => {
-                "text".to_owned()
-            }
-            Type::Uuid => {
-                "text".to_owned()
-            }
-            Type::NaiveDateTime => {
-                "numeric".to_owned()
-            }
-            Type::DateTime => {
-                "numeric".to_owned()
-            }
-            Type::NaiveDate => {
-                "numeric".to_owned()
-            }
-            Type::NaiveTime => {
-                "numeric".to_owned()
-            }
-            _ => panic!("Unable to get the equivalent database data type for {:?}",
-                        rust_type),
         };
         rust_type
 
@@ -126,35 +96,41 @@ impl Sqlite {
     fn get_foreign_keys(&self, _schema: &str, table: &str) -> Vec<Foreign> {
         debug!("Extracting foreign keys...");
         let sql = format!("PRAGMA foreign_key_list({});", table);
-        let result:Result<Vec<Dao>,DbError> = self.execute_sql_with_return(&sql, &vec![]);
+        let result: Result<Vec<Dao>, DbError> = self.execute_sql_with_return(&sql, &vec![]);
 
-        match result{
+        match result {
             Ok(result) => {
                 let mut foreigns = vec![];
-                for r in result{
+                for r in result {
                     let table: Option<&Value> = r.get("table");
-                    let table = match table{
-                        Some(table) => match table{
-                            &Value::String(ref table) => table.to_owned(),
+                    let table = match table {
+                        Some(table) => {
+                            match table {
+                                &Value::String(ref table) => table.to_owned(),
                                 _ => unreachable!(),
-                        },
-                            None => "".to_owned(),
+                            }
+                        }
+                        None => "".to_owned(),
                     };
                     let from: Option<&Value> = r.get("from");
-                    let from = match from{
-                        Some(from) => match from{
-                            &Value::String(ref from) => from.to_owned(),
+                    let from = match from {
+                        Some(from) => {
+                            match from {
+                                &Value::String(ref from) => from.to_owned(),
                                 _ => unreachable!(),
-                        },
-                            None => "".to_owned(),
+                            }
+                        }
+                        None => "".to_owned(),
                     };
                     let to: Option<&Value> = r.get("to");
-                    let to = match to{
-                        Some(to) => match to{
-                            &Value::String(ref to) => to.to_owned(),
+                    let to = match to {
+                        Some(to) => {
+                            match to {
+                                &Value::String(ref to) => to.to_owned(),
                                 _ => unreachable!(),
-                        },
-                            None => "".to_owned(),
+                            }
+                        }
+                        None => "".to_owned(),
                     };
                     debug!("table: {}", table);
                     debug!("from: {}", from);
@@ -167,19 +143,17 @@ impl Sqlite {
                     };
                     foreigns.push(foreign);
 
-                }  
-                foreigns
-            },
-                Err(e) => {
-                    vec![]
                 }
+                foreigns
+            }
+            Err(e) => vec![],
         }
 
     }
 
     pub fn extract_comments
-                            (create_sql: &str)
-                             -> Result<(Option<String>, BTreeMap<String, Option<String>>), DbError> {
+        (create_sql: &str)
+         -> Result<(Option<String>, BTreeMap<String, Option<String>>), DbError> {
         let re = try!(Regex::new(r".*CREATE\s+TABLE\s+(\S+)\s*\((?s)(.*)\).*"));
         debug!("create_sql: {:?}", create_sql);
         if re.is_match(&create_sql) {
@@ -192,9 +166,9 @@ impl Sqlite {
             let splinters: Vec<&str> = line_comma_re.split(all_columns).collect();
             debug!("splinters: {:#?}", splinters);
             let splinters: Vec<&str> = splinters.into_iter()
-                                                .map(|i| i.trim())
-                                                .filter(|&i| i != "")
-                                                .collect();
+                .map(|i| i.trim())
+                .filter(|&i| i != "")
+                .collect();
             debug!("filtered: {:#?}", splinters);
             let mut columns: Vec<String> = vec![];
             let mut comments: Vec<Option<String>> = vec![];
@@ -248,24 +222,26 @@ impl Sqlite {
         let sql = format!("SELECT sql FROM sqlite_master WHERE type = 'table' AND tbl_name = '{}'",
                 table);
         let result = self.execute_sql_with_return(&sql, &vec![]);
-        match result{
+        match result {
             Ok(result) => {
                 assert_eq!(result.len(), 1);
                 let ref dao = result[0];
-                match dao.get("sql"){
-                    Some(create_sql) => match create_sql{
-                        &Value::String(ref create_sql) => match Sqlite::extract_comments(&create_sql) {
-                            Ok((table_comment, _column_comments)) => {
-                                debug!("table_comment: {:?}", table_comment);
-                                table_comment
+                match dao.get("sql") {
+                    Some(create_sql) => {
+                        match create_sql {
+                            &Value::String(ref create_sql) => {
+                                match Sqlite::extract_comments(&create_sql) {
+                                    Ok((table_comment, _column_comments)) => {
+                                        debug!("table_comment: {:?}", table_comment);
+                                        table_comment
+                                    }
+                                    Err(_) => None,
+                                }
                             }
-                            Err(_) => {
-                                None
-                            }
-                        },
-                              _ => None
-                    },
-                        None => None
+                            _ => None,
+                        }
+                    }
+                    None => None,
                 }
 
             }
@@ -279,24 +255,26 @@ impl Sqlite {
                 table);
         let result = self.execute_sql_with_return(&sql, &vec![]);
         let map = BTreeMap::new();
-        match result{
+        match result {
             Ok(result) => {
                 assert_eq!(result.len(), 1);
                 let ref dao = result[0];
-                match dao.get("sql"){
-                    Some(create_sql) => match create_sql{
-                        &Value::String(ref create_sql) => {
-                            match Sqlite::extract_comments(&create_sql) {
-                                Ok((_table_comment, column_comments)) => {
-                                    debug!("column_comments: {:?}", column_comments);
-                                    column_comments
+                match dao.get("sql") {
+                    Some(create_sql) => {
+                        match create_sql {
+                            &Value::String(ref create_sql) => {
+                                match Sqlite::extract_comments(&create_sql) {
+                                    Ok((_table_comment, column_comments)) => {
+                                        debug!("column_comments: {:?}", column_comments);
+                                        column_comments
+                                    }
+                                    Err(_) => map, 
                                 }
-                                Err(_) => map 
                             }
+                            _ => map, 
                         }
-                        _ => map 
-                    },
-                        None => map,
+                    }
+                    None => map,
                 }
             }
             Err(e) => map,
@@ -331,12 +309,14 @@ impl Database for Sqlite {
         match dao {
             Some(dao) => {
                 let version: Option<&Value> = dao.get("version");
-                match version{
-                    Some(version) => match version{
-                        &Value::String(ref version) => Ok(version.to_owned()),
-                        _ => Err(DbError::new("no version"))
-                    },
-                    None => Err(DbError::new("no version"))
+                match version {
+                    Some(version) => {
+                        match version {
+                            &Value::String(ref version) => Ok(version.to_owned()),
+                            _ => Err(DbError::new("no version")),
+                        }
+                    }
+                    None => Err(DbError::new("no version")),
                 }
             }
             None => Err(DbError::new("Unable to get database version")),
@@ -417,7 +397,7 @@ impl Database for Sqlite {
             for col in &columns {
                 let rtype = self.from_sql_to_rust_type(&row, index);
                 debug!("{:?}", rtype);
-                if let Some(rtype) = rtype{
+                if let Some(rtype) = rtype {
                     dao.insert(col.to_owned(), rtype);
                 }
                 index += 1;
@@ -450,15 +430,10 @@ impl Database for Sqlite {
         let conn = self.get_connection();
         let result = conn.execute(sql, &to_sql_types);
         match result {
-            Ok(result) => {
-                Ok(result as usize)
-            }
-            Err(e) => {
-                Err(DbError::new(&format!("Something is wrong, {}", e)))
-            }
+            Ok(result) => Ok(result as usize),
+            Err(e) => Err(DbError::new(&format!("Something is wrong, {}", e))),
         }
     }
-
 }
 
 impl DatabaseDDL for Sqlite {
@@ -494,22 +469,22 @@ impl DatabaseDDL for Sqlite {
                 w.append(" PRIMARY KEY ");
             }
         }
-		let mut do_comma = true;//there has been colcommentsumns mentioned
-		for c in &table.columns {
-			if let Some(ref foreign) = c.foreign {
-				if do_comma {
-					w.commasp();
-				} else {
-					do_comma = true;
-				}
-				w.ln_tab();
-				w.append("FOREIGN KEY");
-				w.append(&format!("({})", c.name));
-				w.append(" REFERENCES ");
-				w.append(&format!("{}", foreign.table));
-				w.append(&format!("({})", foreign.column));
-			}
-		}
+        let mut do_comma = true;//there has been colcommentsumns mentioned
+        for c in &table.columns {
+            if let Some(ref foreign) = c.foreign {
+                if do_comma {
+                    w.commasp();
+                } else {
+                    do_comma = true;
+                }
+                w.ln_tab();
+                w.append("FOREIGN KEY");
+                w.append(&format!("({})", c.name));
+                w.append(" REFERENCES ");
+                w.append(&format!("{}", foreign.table));
+                w.append(&format!("({})", foreign.column));
+            }
+        }
         w.ln();
         w.append(")");
         w
@@ -551,22 +526,22 @@ impl DatabaseDev for Sqlite {
     fn get_row_count_estimate(&self, schema: &str, table: &str) -> Option<usize> {
         let sql = format!("SELECT count (*) as count from {}",table);
         let result = self.execute_sql_with_one_return(&sql, &vec![]);
-        match result{
+        match result {
             Ok(Some(result)) => {
                 let value = result.get("count");
-                match value{
+                match value {
                     Some(&Value::I64(v)) => Some(v as usize),
                     Some(&Value::I32(v)) => Some(v as usize),
                     Some(&Value::I16(v)) => Some(v as usize),
                     Some(&Value::U64(v)) => Some(v as usize),
                     Some(&Value::U32(v)) => Some(v as usize),
                     Some(&Value::U16(v)) => Some(v as usize),
-                    _ => None
+                    _ => None,
                 }
             }
-            _ => None
+            _ => None,
         }
-	}
+    }
 
     fn get_table_metadata(&self, schema: &str, table: &str, _is_view: bool) -> Table {
         debug!("extracting table meta data in sqlite");
@@ -582,41 +557,51 @@ impl DatabaseDev for Sqlite {
 
                 let mut columns = vec![];
                 for r in result {
-                    let column: String = match r.get("name"){
-                        Some(name) => match name{
-                            &Value::String(ref name) => name.to_owned(),
-                            _ => unreachable!(),
-                        },
-                        None => "".to_owned()
+                    let column: String = match r.get("name") {
+                        Some(name) => {
+                            match name {
+                                &Value::String(ref name) => name.to_owned(),
+                                _ => unreachable!(),
+                            }
+                        }
+                        None => "".to_owned(),
                     };
-                    let db_data_type: String = match r.get("type"){
-                        Some(db_data_type) => match db_data_type{
-                            &Value::String(ref db_data_type) => db_data_type.to_owned(),
-                            _ => unreachable!(),
-                        },
-                        None => "".to_owned()
+                    let db_data_type: String = match r.get("type") {
+                        Some(db_data_type) => {
+                            match db_data_type {
+                                &Value::String(ref db_data_type) => db_data_type.to_owned(),
+                                _ => unreachable!(),
+                            }
+                        }
+                        None => "".to_owned(),
                     };
 
-                    let default_value: String = match r.get("dflt_value"){
-                        Some(default_value) => match default_value{
-                            &Value::String(ref default_value) => default_value.to_owned(),
-                            _ => unreachable!(),
-                        },
-                        None => "".to_owned()
+                    let default_value: String = match r.get("dflt_value") {
+                        Some(default_value) => {
+                            match default_value {
+                                &Value::String(ref default_value) => default_value.to_owned(),
+                                _ => unreachable!(),
+                            }
+                        }
+                        None => "".to_owned(),
                     };
-                    let not_null: String = match r.get("notnull"){
-                        Some(not_null) => match not_null{
-                            &Value::String(ref not_null) => not_null.to_owned(),
-                            _ => unreachable!(),
-                        },
-                        None => "".to_owned()
+                    let not_null: String = match r.get("notnull") {
+                        Some(not_null) => {
+                            match not_null {
+                                &Value::String(ref not_null) => not_null.to_owned(),
+                                _ => unreachable!(),
+                            }
+                        }
+                        None => "".to_owned(),
                     };
-                    let pk: String = match r.get("pk"){
-                        Some(pk) => match pk{
-                            &Value::String(ref pk) => pk.to_owned(),
-                            _ => unreachable!(),
-                        },
-                        None => "".to_owned()
+                    let pk: String = match r.get("pk") {
+                        Some(pk) => {
+                            match pk {
+                                &Value::String(ref pk) => pk.to_owned(),
+                                _ => unreachable!(),
+                            }
+                        }
+                        None => "".to_owned(),
                     };
                     debug!("column: {}", column);
                     debug!("data_type: {}", db_data_type);
@@ -650,7 +635,7 @@ impl DatabaseDev for Sqlite {
                     comment: table_comment,
                     columns: columns,
                     is_view: false,
-                    estimated_row_count:row_count 
+                    estimated_row_count: row_count,
                 }
             }
             Err(e) => {
@@ -667,21 +652,21 @@ impl DatabaseDev for Sqlite {
                 let mut tables: Vec<(String, String, bool)> = Vec::new();
                 for r in result {
                     let schema = "".to_owned();
-                    let table: String = match r.get("tbl_name"){
-                        Some(table) => match table{
-                            &Value::String(ref table) => table.to_owned(),
-                            _ => unreachable!()
-                        },
-                        None => "".to_owned()
+                    let table: String = match r.get("tbl_name") {
+                        Some(table) => {
+                            match table {
+                                &Value::String(ref table) => table.to_owned(),
+                                _ => unreachable!(),
+                            }
+                        }
+                        None => "".to_owned(),
                     };
                     let is_view = false;
                     tables.push((schema, table, is_view))
                 }
                 tables
             }
-            Err(e) => {
-                panic!("Unable to get tables due to {}", e)
-            }
+            Err(e) => panic!("Unable to get tables due to {}", e),
         }
     }
 

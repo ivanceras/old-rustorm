@@ -21,7 +21,7 @@ use chrono::offset::fixed::FixedOffset;
 #[derive(Clone)]
 #[derive(PartialEq)]
 #[derive(RustcEncodable)]
-///supported generic datatypes for an ORM
+/// supported generic datatypes for an ORM
 pub enum Type {
     Bool,
     I8,
@@ -41,41 +41,41 @@ pub enum Type {
     DateTime,
     NaiveDate,
     NaiveTime,
-	NaiveDateTime,
+    NaiveDateTime,
 }
-impl Type{
-	/// get the string representation when used in rust code
-	pub fn to_str_repr(&self)->String{
-		match *self{
-			Type::Bool => "bool".to_owned(),
-			Type::I8 => "i8".to_owned(),
-			Type::I16 => "i16".to_owned(),
-			Type::I32 => "i32".to_owned(),
-			Type::I64 => "i64".to_owned(),
-			Type::U8 => "u8".to_owned(),
-			Type::U16 => "u16".to_owned(),
-			Type::U32 => "u32".to_owned(),
-			Type::U64 => "u64".to_owned(),
-			Type::F32 => "f32".to_owned(),
-			Type::F64 => "f64".to_owned(),
-			Type::String =>"String".to_owned(),
-			Type::VecU8 => "Vec<u8>".to_owned(),
-			Type::Json => "Json".to_owned(),
-			Type::Uuid => "Uuid".to_owned(),
-			Type::DateTime => "DateTime<UTC>".to_owned(),
-			Type::NaiveDate => "NaiveDate".to_owned(),
-			Type::NaiveTime => "NaiveTime".to_owned(),
-			Type::NaiveDateTime => "NaiveDateTime".to_owned(),
+impl Type {
+    /// get the string representation when used in rust code
+    pub fn to_str_repr(&self) -> String {
+        match *self {
+            Type::Bool => "bool".to_owned(),
+            Type::I8 => "i8".to_owned(),
+            Type::I16 => "i16".to_owned(),
+            Type::I32 => "i32".to_owned(),
+            Type::I64 => "i64".to_owned(),
+            Type::U8 => "u8".to_owned(),
+            Type::U16 => "u16".to_owned(),
+            Type::U32 => "u32".to_owned(),
+            Type::U64 => "u64".to_owned(),
+            Type::F32 => "f32".to_owned(),
+            Type::F64 => "f64".to_owned(),
+            Type::String => "String".to_owned(),
+            Type::VecU8 => "Vec<u8>".to_owned(),
+            Type::Json => "Json".to_owned(),
+            Type::Uuid => "Uuid".to_owned(),
+            Type::DateTime => "DateTime<UTC>".to_owned(),
+            Type::NaiveDate => "NaiveDate".to_owned(),
+            Type::NaiveTime => "NaiveTime".to_owned(),
+            Type::NaiveDateTime => "NaiveDateTime".to_owned(),
 
-		}
-	}
+        }
+    }
 }
 
 
 #[derive(Debug)]
 #[derive(Clone)]
 #[derive(PartialEq)]
-///supported generic datatypes for an ORM
+/// supported generic datatypes for an ORM
 pub enum Value {
     Bool(bool),
     I8(i8),
@@ -98,9 +98,8 @@ pub enum Value {
     NaiveDateTime(NaiveDateTime),
 }
 
-impl Value{
-	
-	pub fn get_type(&self)->Type{
+impl Value {
+    pub fn get_type(&self) -> Type {
         match *self {
             Value::Bool(_) => Type::Bool,
             Value::I8(_) => Type::I8,
@@ -122,52 +121,52 @@ impl Value{
             Value::NaiveDateTime(_) => Type::NaiveDateTime,
             Value::Json(_) => Type::Json,
         }
-	}
+    }
 
-	fn from_ser_value(ser_value: &SerValue)->Self{
-		match ser_value{
-			&SerValue::Bool(x) => Value::Bool(x),
-			&SerValue::I8(x) => Value::I8(x),
-			&SerValue::I16(x) => Value::I16(x),
-			&SerValue::I32(x) => Value::I32(x),
-			&SerValue::I64(x) => Value::I64(x),
-			&SerValue::U8(x) => Value::U8(x),
-			&SerValue::U16(x) => Value::U16(x),
-			&SerValue::U32(x) => Value::U32(x),
-			&SerValue::U64(x) => Value::U64(x),
-			&SerValue::F32(x) => Value::F32(x),
-			&SerValue::F64(x) => Value::F64(x),
-			&SerValue::String(ref x) => Value::String(x.to_owned()),
-			&SerValue::VecU8(ref x) => {
-				let vecu8 = x.from_base64().unwrap();
-				Value::VecU8(vecu8)
-			},
-			&SerValue::Uuid(x) => Value::Uuid(x),
-			&SerValue::DateTime(ref x) => {
-				let date = DateTime::parse_from_rfc3339(x).unwrap();
-				Value::DateTime(date)
-			},
-			&SerValue::NaiveDate(ref x) => {
-				//let date = DateTime::parse_from_str(x);
-				//Value::NaiveDate(date)
-				panic!("not yet here!");
-			},
-			&SerValue::NaiveTime(ref x) => {
-				//let time = NaiveTime::parse_from_str(x);
-				//Value::NaiveTime(time)
-				panic!("not yet here!");
-			},
-			&SerValue::NaiveDateTime(ref x) => {
-				//let time = NaiveTime::parse_from_str(x);
-				//Value::NaiveTime(time)
-				panic!("not yet here!");
-			},
-			&SerValue::Json(ref json) => {
-				let json = Json::from_str(json).unwrap();
-				Value::Json(json)
-			}
-		}
-	}
+    fn from_ser_value(ser_value: &SerValue) -> Self {
+        match ser_value {
+            &SerValue::Bool(x) => Value::Bool(x),
+            &SerValue::I8(x) => Value::I8(x),
+            &SerValue::I16(x) => Value::I16(x),
+            &SerValue::I32(x) => Value::I32(x),
+            &SerValue::I64(x) => Value::I64(x),
+            &SerValue::U8(x) => Value::U8(x),
+            &SerValue::U16(x) => Value::U16(x),
+            &SerValue::U32(x) => Value::U32(x),
+            &SerValue::U64(x) => Value::U64(x),
+            &SerValue::F32(x) => Value::F32(x),
+            &SerValue::F64(x) => Value::F64(x),
+            &SerValue::String(ref x) => Value::String(x.to_owned()),
+            &SerValue::VecU8(ref x) => {
+                let vecu8 = x.from_base64().unwrap();
+                Value::VecU8(vecu8)
+            }
+            &SerValue::Uuid(x) => Value::Uuid(x),
+            &SerValue::DateTime(ref x) => {
+                let date = DateTime::parse_from_rfc3339(x).unwrap();
+                Value::DateTime(date)
+            }
+            &SerValue::NaiveDate(ref x) => {
+                // let date = DateTime::parse_from_str(x);
+                // Value::NaiveDate(date)
+                panic!("not yet here!");
+            }
+            &SerValue::NaiveTime(ref x) => {
+                // let time = NaiveTime::parse_from_str(x);
+                // Value::NaiveTime(time)
+                panic!("not yet here!");
+            }
+            &SerValue::NaiveDateTime(ref x) => {
+                // let time = NaiveTime::parse_from_str(x);
+                // Value::NaiveTime(time)
+                panic!("not yet here!");
+            }
+            &SerValue::Json(ref json) => {
+                let json = Json::from_str(json).unwrap();
+                Value::Json(json)
+            }
+        }
+    }
 }
 
 
@@ -175,112 +174,107 @@ impl Value{
 /// custom implementation for value encoding to json,
 /// does not include unnecessary enum variants fields.
 impl Encodable for Value {
-
     fn encode<S: Encoder>(&self, s: &mut S) -> Result<(), S::Error> {
-		let ser_value = SerValue::from_value(&self);
-		ser_value.encode(s)
+        let ser_value = SerValue::from_value(&self);
+        ser_value.encode(s)
     }
 }
 
 /// serializable value to json, to avoid complexity
 /// in manipulating the clienside json things such as date,
-
 #[derive(RustcEncodable)]
 #[derive(RustcDecodable)]
-enum SerValue{
-	Bool(bool),
-	I8(i8),
-	I16(i16),
-	I32(i32),
-	I64(i64),
-	U8(u8),
-	U16(u16),
-	U32(u32),
-	U64(u64),
-	F32(f32),
-	F64(f64),
-	String(String),
-	VecU8(String), // blob in 64 bit
-	Uuid(Uuid),
-	DateTime(String), // in standard format string
-	NaiveDate(String),
-	NaiveTime(String),
-	NaiveDateTime(String),
-	Json(String),
+enum SerValue {
+    Bool(bool),
+    I8(i8),
+    I16(i16),
+    I32(i32),
+    I64(i64),
+    U8(u8),
+    U16(u16),
+    U32(u32),
+    U64(u64),
+    F32(f32),
+    F64(f64),
+    String(String),
+    VecU8(String), // blob in 64 bit
+    Uuid(Uuid),
+    DateTime(String), // in standard format string
+    NaiveDate(String),
+    NaiveTime(String),
+    NaiveDateTime(String),
+    Json(String),
 }
 
-impl SerValue{
-	
-	fn from_value(value:&Value)->Self{
-		match value{
-			&Value::Bool(x) => SerValue::Bool(x),
-			&Value::I8(x) => SerValue::I8(x),
-			&Value::I16(x) => SerValue::I16(x),
-			&Value::I32(x) => SerValue::I32(x),
-			&Value::I64(x) => SerValue::I64(x),
-			&Value::U8(x) => SerValue::U8(x),
-			&Value::U16(x) => SerValue::U16(x),
-			&Value::U32(x) => SerValue::U32(x),
-			&Value::U64(x) => SerValue::U64(x),
-			&Value::F32(x) => SerValue::F32(x),
-			&Value::F64(x) => SerValue::F64(x),
-			&Value::String(ref x) => SerValue::String(x.to_owned()),
-			&Value::VecU8(ref x) => {
-				let base64 = x.to_base64(STANDARD);
-				SerValue::VecU8(base64)
-			},
-			&Value::Uuid(x) => SerValue::Uuid(x),
-			&Value::DateTime(ref x) => {
-				let date_str = x.to_rfc3339();
-				SerValue::DateTime(date_str)
-			},
-			&Value::NaiveDate(ref x) => {
-				let date_str = format!("{}", x);
-				SerValue::NaiveDate(date_str)
-			},
-			&Value::NaiveTime(ref x) => {
-				let time_str = format!("{}", x);
-				SerValue::NaiveTime(time_str)
-			},
-			&Value::NaiveDateTime(ref x) => {
-				let time_str = format!("{}", x);
-				SerValue::NaiveTime(time_str)
-			},
-			&Value::Json(ref json) => {
-				let json_text = format!("{}", json.pretty());
-				SerValue::Json(json_text)
-			}
-		}
+impl SerValue {
+    fn from_value(value: &Value) -> Self {
+        match value {
+            &Value::Bool(x) => SerValue::Bool(x),
+            &Value::I8(x) => SerValue::I8(x),
+            &Value::I16(x) => SerValue::I16(x),
+            &Value::I32(x) => SerValue::I32(x),
+            &Value::I64(x) => SerValue::I64(x),
+            &Value::U8(x) => SerValue::U8(x),
+            &Value::U16(x) => SerValue::U16(x),
+            &Value::U32(x) => SerValue::U32(x),
+            &Value::U64(x) => SerValue::U64(x),
+            &Value::F32(x) => SerValue::F32(x),
+            &Value::F64(x) => SerValue::F64(x),
+            &Value::String(ref x) => SerValue::String(x.to_owned()),
+            &Value::VecU8(ref x) => {
+                let base64 = x.to_base64(STANDARD);
+                SerValue::VecU8(base64)
+            }
+            &Value::Uuid(x) => SerValue::Uuid(x),
+            &Value::DateTime(ref x) => {
+                let date_str = x.to_rfc3339();
+                SerValue::DateTime(date_str)
+            }
+            &Value::NaiveDate(ref x) => {
+                let date_str = format!("{}", x);
+                SerValue::NaiveDate(date_str)
+            }
+            &Value::NaiveTime(ref x) => {
+                let time_str = format!("{}", x);
+                SerValue::NaiveTime(time_str)
+            }
+            &Value::NaiveDateTime(ref x) => {
+                let time_str = format!("{}", x);
+                SerValue::NaiveTime(time_str)
+            }
+            &Value::Json(ref json) => {
+                let json_text = format!("{}", json.pretty());
+                SerValue::Json(json_text)
+            }
+        }
 
-	}
+    }
 }
 
-/// A quick solution to controlling the output of the decoded 
+/// A quick solution to controlling the output of the decoded
 /// json value at right amount of data structure nesting...
-impl Decodable for Value{
-    
-    fn decode<D: Decoder>(d: &mut D) -> Result<Self, D::Error>{
-		let ser_value = try!(SerValue::decode(d));
-		let value = Value::from_ser_value(&ser_value);
-		Ok(value)
+impl Decodable for Value {
+    fn decode<D: Decoder>(d: &mut D) -> Result<Self, D::Error> {
+        let ser_value = try!(SerValue::decode(d));
+        let value = Value::from_ser_value(&ser_value);
+        Ok(value)
     }
 }
 
 #[test]
-fn test_decode_value(){
-	let mut dao = Dao::new();
-	dao.insert("hello".to_owned(), Value::String("hi".to_owned()));
-	let dao_json = json::encode(&dao).unwrap();
-	println!("{:#?}", dao_json);
-	let dec:Dao = json::decode(&dao_json).unwrap();
-	println!("{:#?}", dec);
-	assert_eq!(dao, dec);
+fn test_decode_value() {
+    let mut dao = Dao::new();
+    dao.insert("hello".to_owned(), Value::String("hi".to_owned()));
+    let dao_json = json::encode(&dao).unwrap();
+    println!("{:#?}", dao_json);
+    let dec: Dao = json::decode(&dao_json).unwrap();
+    println!("{:#?}", dec);
+    assert_eq!(dao, dec);
 }
 
 
 
 impl fmt::Display for Value {
-
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
             Value::Bool(ref x) => write!(f, "'{}'", x),
@@ -310,7 +304,6 @@ impl fmt::Display for Value {
 /// trait for converting dao to model
 /// sized and clonable
 pub trait IsDao {
-
     /// convert dao to an instance of the corresponding struct of the model
     /// taking into considerating the renamed columns
     fn from_dao(dao: &Dao) -> Self;
@@ -322,7 +315,6 @@ pub trait IsDao {
 
 /// Ignore Column are columns that are redundant when displaying as API results
 pub trait ToCompact {
-
     /// list of redundant fields that will be removed when doing a compact serialization
     fn redundant_fields(&self) -> Vec<&str>;
 
@@ -343,7 +335,7 @@ pub trait ToCompact {
 #[derive(RustcDecodable)]
 pub struct DaoResult {
     pub dao: Vec<Dao>,
-    ///renamed columns for each table
+    /// renamed columns for each table
     /// ie. product => [(name, product_name),..];
     pub renamed_columns: Vec<(ColumnName, String)>,
 
@@ -406,25 +398,20 @@ pub type Dao = BTreeMap<String, Value>;
 pub type ParseError = String;
 
 
-trait DaoCorrections{
-    
-
+trait DaoCorrections {
     fn correct_renamed_columns(&mut self, renamed_columns: &Vec<(String, String)>);
 
     fn all_has_values(&self, non_nulls: &Vec<String>) -> bool;
-
 }
 
-impl DaoCorrections for Dao{
-
-
+impl DaoCorrections for Dao {
     fn correct_renamed_columns(&mut self, renamed_columns: &Vec<(String, String)>) {
         for &(ref column, ref rename) in renamed_columns {
-            let value:Option<Value> = match self.get(rename){
+            let value: Option<Value> = match self.get(rename) {
                 Some(value) => Some(value.to_owned()),
-                None => None
+                None => None,
             };
-            if let Some(value) = value{
+            if let Some(value) = value {
                 self.insert(column.to_owned(), value.clone());
             }
         }
@@ -433,11 +420,11 @@ impl DaoCorrections for Dao{
     fn all_has_values(&self, non_nulls: &Vec<String>) -> bool {
         for column in non_nulls {
             let value = self.get(column);
-			if let Some(value) = value{
-				// has value
-			}else{
-				return false;
-			}
+            if let Some(value) = value {
+                // has value
+            } else {
+                return false;
+            }
         }
         true
     }
@@ -449,10 +436,10 @@ pub trait ToValue {
     fn to_db_type(&self) -> Value;
 }
 
-impl ToValue for Value{
-	fn to_db_type(&self)->Value{
-		self.to_owned()
-	}
+impl ToValue for Value {
+    fn to_db_type(&self) -> Value {
+        self.to_owned()
+    }
 }
 
 
@@ -731,4 +718,3 @@ impl FromValue for Json {
         }
     }
 }
-

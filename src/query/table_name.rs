@@ -16,7 +16,6 @@ pub struct TableName {
 }
 
 impl TableName {
-
     pub fn from_str(str: &str) -> Self {
         if str.contains(".") {
             let splinters = str.split(".").collect::<Vec<&str>>();
@@ -41,7 +40,7 @@ impl TableName {
 
     pub fn complete_name(&self) -> String {
         match self.schema {
-            Some (ref schema) => format!("{}.{}", schema, self.name),
+            Some(ref schema) => format!("{}.{}", schema, self.name),
             None => self.name.to_owned(),
         }
     }
@@ -65,28 +64,26 @@ impl fmt::Display for TableName {
 
 /// convert str, IsTable to TableName
 pub trait ToTableName {
-
     fn to_table_name(&self) -> TableName;
-
 }
 
-impl <'a>ToTableName for &'a str {
-
+impl<'a> ToTableName for &'a str {
     fn to_table_name(&self) -> TableName {
         TableName::from_str(self)
     }
 }
 
-impl <F>ToTableName for F where F: Fn() -> Table{
-	fn to_table_name(&self) -> TableName{
-		let table = self();
-		debug!("table: {:?}", table);
-		table.to_table_name()
-	}
+impl<F> ToTableName for F
+    where F: Fn() -> Table
+{
+    fn to_table_name(&self) -> TableName {
+        let table = self();
+        debug!("table: {:?}", table);
+        table.to_table_name()
+    }
 }
 
 impl ToTableName for Table {
-
     /// contain the columns for later use when renaming is necessary
     fn to_table_name(&self) -> TableName {
         let mut columns = vec![];

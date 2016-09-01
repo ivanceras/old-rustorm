@@ -22,18 +22,18 @@ pub mod order;
 pub mod field;
 pub mod source;
 
-pub use self::column_name::{ColumnName,ToColumnName};
-pub use self::table_name::{TableName,ToTableName};
-pub use self::filter::{Filter,Condition,Equality,Connector,HasEquality};
+pub use self::column_name::{ColumnName, ToColumnName};
+pub use self::table_name::{TableName, ToTableName};
+pub use self::filter::{Filter, Condition, Equality, Connector, HasEquality};
 pub use self::builder::QueryBuilder;
 pub use self::function::COUNT;
 pub use self::function::Function;
-pub use self::join::{Join,JoinType,Modifier};
+pub use self::join::{Join, JoinType, Modifier};
 pub use self::operand::Operand;
-pub use self::order::{Order,ToOrder,HasDirection,NullsWhere,Direction};
-pub use self::field::{Field,ToField};
+pub use self::order::{Order, ToOrder, HasDirection, NullsWhere, Direction};
+pub use self::field::{Field, ToField};
 pub use self::source::SourceField;
-pub use self::source::{QuerySource,ToSourceField};
+pub use self::source::{QuerySource, ToSourceField};
 
 
 
@@ -65,27 +65,25 @@ pub enum Error {
 #[derive(PartialEq)]
 #[derive(Default)]
 #[derive(Clone)]
-pub struct Range{
+pub struct Range {
     pub limit: Option<usize>,
     pub offset: Option<usize>,
 }
 
-impl Range{
-
-    pub fn new()->Self{
-        Range{
+impl Range {
+    pub fn new() -> Self {
+        Range {
             limit: None,
-            offset: None
+            offset: None,
         }
     }
-    
-    pub fn set_limit(&mut self, limit: usize){
+
+    pub fn set_limit(&mut self, limit: usize) {
         self.limit = Some(limit);
     }
-    pub fn set_offset(&mut self, offset: usize){
+    pub fn set_offset(&mut self, offset: usize) {
         self.offset = Some(offset);
     }
-
 }
 
 
@@ -93,9 +91,8 @@ impl Range{
 #[derive(Debug)]
 #[derive(Clone)]
 pub struct Query {
-
-    ///sql type determine which type of query to form, some fields are not applicable to other types of query
-    pub sql_type:SqlType,
+    /// sql type determine which type of query to form, some fields are not applicable to other types of query
+    pub sql_type: SqlType,
 
     /// whether to select the records distinct
     pub distinct: bool,
@@ -105,51 +102,49 @@ pub struct Query {
 
     pub declared_query: BTreeMap<String, Query>,
 
-    ///fields can be functions, column sql query, and even columns
-    pub enumerated_fields:Vec<Field>,
+    /// fields can be functions, column sql query, and even columns
+    pub enumerated_fields: Vec<Field>,
 
     /// specify to use distinct ON set of columns
-    pub distinct_on_columns:Vec<String>,
-    
+    pub distinct_on_columns: Vec<String>,
+
     /// where the focus of values of column selection
     /// this is the table to insert to, update to delete, create, drop
     /// whe used in select, this is the
     /// pub from_table:Option<TableName>,
 
     /// from field, where field can be a query, table, or function
-    pub from:Vec<SourceField>,
+    pub from: Vec<SourceField>,
 
     /// joining multiple tables
-    pub joins:Vec<Join>,
+    pub joins: Vec<Join>,
 
     /// filter records, ~ where statement of the query
-    pub filters:Vec<Filter>,
-
+    pub filters: Vec<Filter>,
 
     /// ordering of the records via the columns specified
-    pub order_by:Vec<Order>,
+    pub order_by: Vec<Order>,
 
     /// grouping columns to create an aggregate
     pub group_by: Vec<Operand>,
 
-    /// having field, 
+    /// having field,
     pub having: Vec<Filter>,
 
     /// exclude the mention of the columns in the SQL query, useful when ignoring changes in update/insert records
-    pub excluded_columns:Vec<ColumnName>,
+    pub excluded_columns: Vec<ColumnName>,
 
     /// caters both limit->offset and page->page_size
     /// setting page and page_size can not interchange the order
     pub range: Range,
     /// The data values, used in bulk inserting, updating,
-    pub values:Vec<Operand>,
+    pub values: Vec<Operand>,
 
     /// the returning clause of the query when supported,
     pub enumerated_returns: Vec<Field>,
 }
 
 impl Query {
-
     /// the default query is select
     pub fn new() -> Self {
         Query {
@@ -199,16 +194,16 @@ impl Query {
         self.enumerate_all = true;
     }
 
-    pub fn all(&mut self){
+    pub fn all(&mut self) {
         self.column("*");
     }
-	pub fn select_all() -> Self {
+    pub fn select_all() -> Self {
         let mut q = Self::select();
         q.all();
         q
     }
 
-    fn enumerate(&mut self, column_name: ColumnName){
+    fn enumerate(&mut self, column_name: ColumnName) {
         let operand = Operand::ColumnName(column_name);
         let field = Field {
             operand: operand,
@@ -222,13 +217,13 @@ impl Query {
     /// columns that are not conflicts from some other table,
     /// but is the other conflicting column is not explicityly enumerated will not be renamed
     ///
-    pub fn column(&mut self, column: &str){
+    pub fn column(&mut self, column: &str) {
         let column_name = ColumnName::from_str(column);
         self.enumerate(column_name);
     }
 
 
-    pub fn columns(&mut self, columns: Vec<&str>){
+    pub fn columns(&mut self, columns: Vec<&str>) {
         for c in columns {
             self.column(c);
         }
@@ -238,83 +233,83 @@ impl Query {
     /// exclude columns when inserting/updating data
     /// also ignores the column when selecting records
     /// useful for manipulating thin records by excluding huge binary blobs such as images
-    pub fn exclude_column(&mut self, column: &str){
+    pub fn exclude_column(&mut self, column: &str) {
         let c = ColumnName::from_str(column);
         self.excluded_columns.push(c);
     }
-    pub fn exclude_columns(&mut self, columns: Vec<&str>){
+    pub fn exclude_columns(&mut self, columns: Vec<&str>) {
         for c in columns {
             self.exclude_column(c);
         }
     }
 
-    pub fn distinct_on_columns(&mut self, columns: &Vec<String>){
+    pub fn distinct_on_columns(&mut self, columns: &Vec<String>) {
         let columns = columns.clone();
         for c in columns {
             self.distinct_on_columns.push(c);
         }
     }
 
-    pub fn value(&mut self, value: &ToValue){
+    pub fn value(&mut self, value: &ToValue) {
         let value = value.to_db_type();
         self.values.push(Operand::Value(value));
     }
 
     /// set a value of a column when inserting/updating records
-    pub fn set(&mut self, column: &str, value: &ToValue){
+    pub fn set(&mut self, column: &str, value: &ToValue) {
         self.column(column);
         self.value(value);
     }
-    pub fn set_limit(&mut self, limit: usize){
+    pub fn set_limit(&mut self, limit: usize) {
         self.range.set_limit(limit);
     }
-    pub fn set_offset(&mut self, offset: usize){
+    pub fn set_offset(&mut self, offset: usize) {
         self.range.set_offset(offset);
     }
-    
-    pub fn get_range(&self)->Range{
+
+    pub fn get_range(&self) -> Range {
         self.range.to_owned()
     }
 
     /// enumerate only the columns that is coming from this table
     /// this will invalidate enumerate_all
-    pub fn only_from(&mut self, table: &ToTableName){
+    pub fn only_from(&mut self, table: &ToTableName) {
         self.enumerate_all = false;
         self.enumerate_from_table(&table.to_table_name());
     }
-    
+
 
 
     /// a query to query from
     /// use WITH (query) t1 SELECT from t1 declaration in postgresql, sqlite
     /// use SELECT FROM (query) in oracle, mysql, others
     /// alias of the table
-    pub fn from_query(&mut self, query: Query, alias: &str){
-		let sf = SourceField{
-			source: QuerySource::Query(query),
-			rename: Some(alias.to_owned())
-		};
+    pub fn from_query(&mut self, query: Query, alias: &str) {
+        let sf = SourceField {
+            source: QuerySource::Query(query),
+            rename: Some(alias.to_owned()),
+        };
         self.from.push(sf);
     }
 
-    pub fn from(&mut self, to_source_field: &ToSourceField){
-		self.from.append(&mut to_source_field.to_source_field());
+    pub fn from(&mut self, to_source_field: &ToSourceField) {
+        self.from.append(&mut to_source_field.to_source_field());
     }
 
-    pub fn table(&mut self, to_source_field: &ToSourceField){
-		self.from(to_source_field);
+    pub fn table(&mut self, to_source_field: &ToSourceField) {
+        self.from(to_source_field);
     }
     /// returns the first table in the from clause
     pub fn get_from_table(&self) -> Option<TableName> {
-		for fr in &self.from{
-			match &fr.source{
-				&QuerySource::TableName(ref table_name) => {
-					return Some(table_name.to_owned());
-				},
-				_ => {} 
-			}
-		}
-		None
+        for fr in &self.from {
+            match &fr.source {
+                &QuerySource::TableName(ref table_name) => {
+                    return Some(table_name.to_owned());
+                }
+                _ => {} 
+            }
+        }
+        None
     }
 
 
@@ -334,7 +329,7 @@ impl Query {
     }
 
     /// take the enumerated field that is a column that matched the name
-    fn rename_fields(&mut self, column: &str){
+    fn rename_fields(&mut self, column: &str) {
         let matched_indexes = self.match_fields_indexes(column);
         for index in matched_indexes {
             let field = self.enumerated_fields.remove(index);//remove it
@@ -368,7 +363,7 @@ impl Query {
 
         let involved_models = self.get_involved_tables();
         if involved_models.len() > 1 {
-            //enumerate all columns when there is a join
+            // enumerate all columns when there is a join
             if self.enumerate_all {
                 self.enumerate_involved_tables_columns(&involved_models);
             }
@@ -437,7 +432,7 @@ impl Query {
         conflicts
     }
     /// rename the fields that has a conflicting column
-    fn rename_conflicting_columns(&mut self){
+    fn rename_conflicting_columns(&mut self) {
         let conflicts = self.get_conflicting_columns();
         for c in conflicts {
             self.rename_fields(&c);
@@ -458,7 +453,7 @@ impl Query {
         None
     }
 
-    fn remove_from_enumerated(&mut self, column_name: &ColumnName){
+    fn remove_from_enumerated(&mut self, column_name: &ColumnName) {
         let index = self.index_of_field(column_name);
         if let Some(idx) = index {
             self.enumerated_fields.remove(idx);
@@ -478,47 +473,47 @@ impl Query {
     }
 
 
-    pub fn add_filter(&mut self, filter: Filter){
+    pub fn add_filter(&mut self, filter: Filter) {
         self.filters.push(filter);
     }
-	pub fn add_filters(&mut self, filters: &Vec<Filter>){
-		self.filters.extend_from_slice(filters)
-	}
+    pub fn add_filters(&mut self, filters: &Vec<Filter>) {
+        self.filters.extend_from_slice(filters)
+    }
 
     /// column = value
-    pub fn filter_eq(&mut self, column: &str, value: &ToValue){
+    pub fn filter_eq(&mut self, column: &str, value: &ToValue) {
         self.add_filter(Filter::new(column, Equality::EQ, value));
     }
     /// column < value
-    pub fn filter_lt(&mut self, column: &str, value: &ToValue){
+    pub fn filter_lt(&mut self, column: &str, value: &ToValue) {
         self.add_filter(Filter::new(column, Equality::LT, value));
     }
     /// column <= value
-    pub fn filter_lte(&mut self, column: &str, value: &ToValue){
+    pub fn filter_lte(&mut self, column: &str, value: &ToValue) {
         self.add_filter(Filter::new(column, Equality::LTE, value));
     }
 
     /// column > value
-    pub fn filter_gt(&mut self, column: &str, value: &ToValue){
+    pub fn filter_gt(&mut self, column: &str, value: &ToValue) {
         self.add_filter(Filter::new(column, Equality::GT, value));
     }
     /// column <= value
-    pub fn filter_gte(&mut self, column: &str, value: &ToValue){
+    pub fn filter_gte(&mut self, column: &str, value: &ToValue) {
         self.add_filter(Filter::new(column, Equality::GTE, value));
     }
 
 
-    pub fn return_all(&mut self){
+    pub fn return_all(&mut self) {
         self.enumerate_column_as_return("*");
     }
 
-    pub fn returns(&mut self, columns: Vec<&str>){
+    pub fn returns(&mut self, columns: Vec<&str>) {
         for c in columns {
             self.enumerate_column_as_return(c);
         }
     }
 
-    pub fn enumerate_column_as_return(&mut self, column: &str){
+    pub fn enumerate_column_as_return(&mut self, column: &str) {
         let column_name = ColumnName::from_str(column);
         let operand = Operand::ColumnName(column_name);
         let field = Field {
@@ -534,13 +529,13 @@ impl Query {
         db.build_query(self, BuildMode::Standard)
     }
 
-	/// Warning: don't use this in production
-	pub fn debug_build(&mut self, db: &Database)-> SqlFrag{
-		self.finalize();
-		db.build_query(self, BuildMode::Debug)
-	}
+    /// Warning: don't use this in production
+    pub fn debug_build(&mut self, db: &Database) -> SqlFrag {
+        self.finalize();
+        db.build_query(self, BuildMode::Debug)
+    }
 
-	///retrieve a generic types, type is unknown at runtime
+    /// retrieve a generic types, type is unknown at runtime
     /// expects a return, such as select, insert/update with returning clause
     pub fn retrieve(&mut self, db: &Database) -> Result<DaoResult, DbError> {
         self.finalize();

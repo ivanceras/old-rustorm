@@ -65,11 +65,11 @@ impl Platform {
     }
 }
 
-impl Deref for Platform{
-	type Target = Database;
+impl Deref for Platform {
+    type Target = Database;
 
-	fn deref(&self)->&Self::Target{
-		debug!("using deref...");
+    fn deref(&self) -> &Self::Target {
+        debug!("using deref...");
         match *self {
             Platform::Postgres(ref pg) => pg,
             #[cfg(feature = "sqlite")]
@@ -78,8 +78,7 @@ impl Deref for Platform{
             Platform::Mysql(ref my) => my,
             _ => unimplemented!(),
         }
-	}
-	
+    }
 }
 
 
@@ -95,7 +94,6 @@ pub enum ManagedPool {
 }
 
 impl ManagedPool {
-    
     /// initialize the pool
     pub fn init(url: &str, pool_size: usize) -> Result<Self, DbError> {
         let config = DbConfig::from_url(url);
@@ -152,9 +150,7 @@ impl ManagedPool {
                         let pg = Postgres::with_pooled_connection(conn);
                         Ok(Platform::Postgres(pg))
                     }
-                    Err(e) => {
-                        Err(DbError::new(&format!("Unable to connect due to {}", e)))
-                    }
+                    Err(e) => Err(DbError::new(&format!("Unable to connect due to {}", e))),
                 }
             }
             #[cfg(feature = "sqlite")]
@@ -164,9 +160,7 @@ impl ManagedPool {
                         let lite = Sqlite::with_pooled_connection(conn);
                         Ok(Platform::Sqlite(lite))
                     }
-                    Err(e) => {
-                        Err(DbError::new(&format!("Unable to connect due to {}", e)))
-                    }
+                    Err(e) => Err(DbError::new(&format!("Unable to connect due to {}", e))),
                 }
             }
             #[cfg(feature = "mysql")]

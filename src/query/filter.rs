@@ -1,6 +1,6 @@
 use query::Operand;
 use dao::ToValue;
-use query::{ColumnName,ToColumnName};
+use query::{ColumnName, ToColumnName};
 use dao::Value;
 use std::ops::BitAnd;
 use std::ops::BitOr;
@@ -39,7 +39,7 @@ pub enum Equality {
     IN,
     NOT_IN, // NOT_IN,
     LIKE,
-    ILIKE, //add ILIKE
+    ILIKE, // add ILIKE
     IS_NOT_NULL, // NOT_NULL,
     IS_NULL, // IS_NULL,
 }
@@ -49,11 +49,10 @@ pub enum Equality {
 pub struct Filter {
     pub connector: Connector,
     pub condition: Condition,
-    pub sub_filters: Vec<Filter>, 
+    pub sub_filters: Vec<Filter>,
 }
 
 impl Filter {
-
     /// user friendly, commonly use API
     pub fn new(column: &str, equality: Equality, value: &ToValue) -> Self {
         let right = Operand::Value(value.to_db_type());
@@ -69,37 +68,35 @@ impl Filter {
     }
 
 
-	pub fn AND(mut self, filter: Filter)->Self{
-		let mut filter = filter.clone();
-		filter.connector = Connector::And;
-		self.sub_filters.push(filter);
-		self
-	}
-	pub fn OR(mut self, filter: Filter)->Self{
-		let mut filter = filter.clone();
-		filter.connector = Connector::Or;
-		self.sub_filters.push(filter);
-		self
-	}
-
+    pub fn AND(mut self, filter: Filter) -> Self {
+        let mut filter = filter.clone();
+        filter.connector = Connector::And;
+        self.sub_filters.push(filter);
+        self
+    }
+    pub fn OR(mut self, filter: Filter) -> Self {
+        let mut filter = filter.clone();
+        filter.connector = Connector::Or;
+        self.sub_filters.push(filter);
+        self
+    }
 }
 
 
 
-pub trait HasEquality{
-	
-	fn EQ(&self, to_operand: &ToOperand)->Filter;
-	fn NEQ(&self, to_operand: &ToOperand)->Filter;
-	fn GT(&self, to_operand: &ToOperand)->Filter;
-	fn GTE(&self, to_operand: &ToOperand)->Filter;
-	fn LT(&self, to_operand: &ToOperand)->Filter;
-	fn LTE(&self, to_operand: &ToOperand)->Filter;
-	fn LIKE(&self, to_value: &ToValue)->Filter;
-	fn ILIKE(&self, to_value: &ToValue)->Filter;
-    fn IS_NULL(&self)->Filter;
-    fn IS_NOT_NULL(&self)->Filter;
-	fn IN(&self, to_operand: &ToOperand)->Filter;
-	fn NOT_IN(&self, to_operand: &ToOperand)->Filter;
+pub trait HasEquality {
+    fn EQ(&self, to_operand: &ToOperand) -> Filter;
+    fn NEQ(&self, to_operand: &ToOperand) -> Filter;
+    fn GT(&self, to_operand: &ToOperand) -> Filter;
+    fn GTE(&self, to_operand: &ToOperand) -> Filter;
+    fn LT(&self, to_operand: &ToOperand) -> Filter;
+    fn LTE(&self, to_operand: &ToOperand) -> Filter;
+    fn LIKE(&self, to_value: &ToValue) -> Filter;
+    fn ILIKE(&self, to_value: &ToValue) -> Filter;
+    fn IS_NULL(&self) -> Filter;
+    fn IS_NOT_NULL(&self) -> Filter;
+    fn IN(&self, to_operand: &ToOperand) -> Filter;
+    fn NOT_IN(&self, to_operand: &ToOperand) -> Filter;
 }
 
 macro_rules! fn_has_equality_operand{
@@ -154,8 +151,9 @@ macro_rules! fn_has_equality_nulls{
 }
 
 /// implementation of HasEquality for objects that can yield Operand
-impl <T>HasEquality for T where T:ToOperand{
-	
+impl<T> HasEquality for T
+    where T: ToOperand
+{
     fn_has_equality_operand!(EQ, Equality::EQ);
     fn_has_equality_operand!(NEQ, Equality::NEQ);
     fn_has_equality_operand!(GT, Equality::GT);
@@ -164,10 +162,8 @@ impl <T>HasEquality for T where T:ToOperand{
     fn_has_equality_operand!(LTE, Equality::LTE);
     fn_has_equality_operand!(IN, Equality::IN);
     fn_has_equality_operand!(NOT_IN, Equality::NOT_IN);
-	fn_has_equality_to_value!(LIKE, Equality::LIKE);
-	fn_has_equality_to_value!(ILIKE, Equality::ILIKE);
-	fn_has_equality_nulls!(IS_NULL, Equality::IS_NULL);
-	fn_has_equality_nulls!(IS_NOT_NULL, Equality::IS_NOT_NULL);
-
+    fn_has_equality_to_value!(LIKE, Equality::LIKE);
+    fn_has_equality_to_value!(ILIKE, Equality::ILIKE);
+    fn_has_equality_nulls!(IS_NULL, Equality::IS_NULL);
+    fn_has_equality_nulls!(IS_NOT_NULL, Equality::IS_NOT_NULL);
 }
-

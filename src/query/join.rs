@@ -31,30 +31,31 @@ pub struct Join {
 }
 
 
-pub trait ToJoin{
-	fn ON(&self, filter: Filter)->Join;
+pub trait ToJoin {
+    fn ON(&self, filter: Filter) -> Join;
 }
 
-impl <F>ToJoin for F where F: Fn()->Table{
-
-	fn ON(&self, filter: Filter)->Join{
-		let table = self();
-		Join{
-			modifier: None,
-			join_type: None,
-			table_name: table.to_table_name(),
-			on: filter,
-		}
-	}
+impl<F> ToJoin for F
+    where F: Fn() -> Table
+{
+    fn ON(&self, filter: Filter) -> Join {
+        let table = self();
+        Join {
+            modifier: None,
+            join_type: None,
+            table_name: table.to_table_name(),
+            on: filter,
+        }
+    }
 }
 
-impl <'a>ToJoin for &'a str{
-	fn ON(&self, filter: Filter)->Join{
-		Join{
-			modifier: None,
-			join_type: None,
-			table_name: self.to_table_name(),
-			on: filter,
-		}
-	}
+impl<'a> ToJoin for &'a str {
+    fn ON(&self, filter: Filter) -> Join {
+        Join {
+            modifier: None,
+            join_type: None,
+            table_name: self.to_table_name(),
+            on: filter,
+        }
+    }
 }

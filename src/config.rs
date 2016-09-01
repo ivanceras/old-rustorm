@@ -20,40 +20,42 @@ pub struct DbConfig {
 }
 
 impl DbConfig {
-
     /// TODO: get rid of the hacky way parsing database url
     /// https://github.com/servo/rust-url/issues/40
     pub fn from_url(url: &str) -> Option<Self> {
         let parsed = Url::parse(url);
-        match parsed{
+        match parsed {
             Ok(parsed) => {
-               Some(DbConfig{
+                Some(DbConfig {
                     platform: parsed.scheme().to_owned(),
                     username: {
                         let username = parsed.username();
-                        if username.is_empty(){
-                            None 
-                        }else{
-                           Some(username.to_owned())
+                        if username.is_empty() {
+                            None
+                        } else {
+                            Some(username.to_owned())
                         }
                     },
-                    password: parsed.password().map(|s|s.to_owned()),
+                    password: parsed.password().map(|s| s.to_owned()),
                     host: {
                         let host_str = parsed.host_str();
-                        match host_str{
-                            Some(ref host_str) =>
-                                if host_str.is_empty(){
+                        match host_str {
+                            Some(ref host_str) => {
+                                if host_str.is_empty() {
                                     None
-                                }else {Some(host_str.to_string())},
-                            None => None
-                       }
+                                } else {
+                                    Some(host_str.to_string())
+                                }
+                            }
+                            None => None,
+                        }
                     },
                     port: parsed.port(),
                     database: parsed.path().to_string().trim_left_matches("/").to_owned(),
                     ssl: false,
-               })
-            },
-            Err(e) => None
+                })
+            }
+            Err(e) => None,
         }
     }
 

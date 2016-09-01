@@ -57,7 +57,9 @@ impl fmt::Display for PlatformError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
             PlatformError::PostgresError(ref err) => write!(f, "PostgreSQL error: {}", err),
-            PlatformError::PostgresConnectError(ref err) => write!(f, "PostgreSQL connection error: {}", err),
+            PlatformError::PostgresConnectError(ref err) => {
+                write!(f, "PostgreSQL connection error: {}", err)
+            }
             #[cfg(feature = "mysql")]
             PlatformError::MySQLError(ref err) => write!(f, "MySQL error: {}", err),
             #[cfg(feature = "sqlite")]

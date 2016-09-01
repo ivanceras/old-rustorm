@@ -19,7 +19,7 @@ use regex::Error as RegexError;
 use rusqlite::SqliteError;
 use platform::PlatformError;
 use dao::Type;
-use query::source::{SourceField,QuerySource,ToSourceField};
+use query::source::{SourceField, QuerySource, ToSourceField};
 
 
 /// SqlOption, contains the info about the features and quirks of underlying database
@@ -45,11 +45,11 @@ pub enum SqlOption {
 /// specifies if the sql will be build in debug mode for debugging purposed
 #[derive(PartialEq)]
 #[derive(Clone)]
-pub enum BuildMode{
-	///build in debug mode
-	Debug,
-	/// build in standard mode
-	Standard,
+pub enum BuildMode {
+    /// build in debug mode
+    Debug,
+    /// build in standard mode
+    Standard,
 }
 
 #[derive(Debug)]
@@ -147,7 +147,6 @@ impl From<SqliteError> for DbError {
 /// generating query don't really need database connection just yet.
 
 pub trait Database {
-
     /// return the version of the database
     /// lower version of database has fewer supported features
     fn version(&self) -> Result<String, DbError>;
@@ -216,36 +215,44 @@ pub trait Database {
             renamed_columns: query.get_renamed_columns(),
             total: total,
             page: page,
-            page_size: page_size 
+            page_size: page_size,
         };
         Ok(dao_result)
     }
 
     /// get the query stats page, page_size and the total records
-    fn get_query_stats(&self, query: &Query)->Result<(Option<usize>, Option<usize>, Option<usize>), DbError>{
-        let page = if let Some(limit) = query.range.limit{
-                        if let Some(offset) = query.range.offset{
-                            Some(offset/limit)
-                        }else{None} 
-                    }else{None};
+    fn get_query_stats(&self,
+                       query: &Query)
+                       -> Result<(Option<usize>, Option<usize>, Option<usize>), DbError> {
+        let page = if let Some(limit) = query.range.limit {
+            if let Some(offset) = query.range.offset {
+                Some(offset / limit)
+            } else {
+                None
+            }
+        } else {
+            None
+        };
 
         let mut count_query = query.to_owned();
         count_query.enumerated_fields = vec![];//remove the enumerated fields
         count_query.column("COUNT(*) AS COUNT");
         count_query.range = Range::new();//remove the range
         let count_result = try!(self.execute_with_one_return(&count_query));
-        println!("range: {:#?}",query.range);
+        println!("range: {:#?}", query.range);
         println!("count result {:#?}", count_result);
-        let total = if let Some(count_result) = count_result{
+        let total = if let Some(count_result) = count_result {
             let value = count_result.get("count");
-            match value{
+            match value {
                 Some(&Value::U64(v)) => Some(v as usize),
                 Some(&Value::I64(v)) => Some(v as usize),
                 Some(&Value::U32(v)) => Some(v as usize),
                 Some(&Value::I32(v)) => Some(v as usize),
-                _ => None
+                _ => None,
             }
-        }else{ None };
+        } else {
+            None
+        };
         Ok((page, query.range.limit, total))
     }
 
@@ -302,9 +309,9 @@ pub trait Database {
                     w.append(&column_name.complete_name());
                 }
             }
-			Operand::QuerySource(ref query_source) => {
-				self.build_query_source(w, parent_query, query_source);
-			}
+            Operand::QuerySource(ref query_source) => {
+                self.build_query_source(w, parent_query, query_source);
+            }
             Operand::Value(ref value) => {
                 w.parameter(value.clone());
             }
@@ -323,7 +330,7 @@ pub trait Database {
                     w.append(")");
                 }
             }
-			Operand::None => () //dont do anything
+            Operand::None => (), //dont do anything
         }
     }
 
@@ -391,9 +398,12 @@ pub trait Database {
             None => (),
         }
     }
-	
-    fn build_query_source(&self, w: &mut SqlFrag, parent_query: &Query, query_source: &QuerySource) {
-		match *query_source{
+
+    fn build_query_source(&self,
+                          w: &mut SqlFrag,
+                          parent_query: &Query,
+                          query_source: &QuerySource) {
+        match *query_source {
             QuerySource::TableName(ref table_name) => {
                 if self.sql_options().contains(&SqlOption::UsesSchema) {
                     w.append(&table_name.complete_name());
@@ -402,8 +412,8 @@ pub trait Database {
                 }
             }
             QuerySource::Function(ref function) => {
-				w.sp();
-				w.append(&function.function);
+                w.sp();
+                w.append(&function.function);
                 w.append("(");
                 let mut do_comma = false;
                 for param in &function.params {
@@ -420,10 +430,13 @@ pub trait Database {
                 let sql_frag = &self.build_query(&_q, w.build_mode.clone());
                 w.append(&sql_frag.sql);
             }
-		}
-	}
+        }
+    }
 
-    fn build_source_field(&self, w: &mut SqlFrag, parent_query: &Query, source_field: &SourceField) {
+    fn build_source_field(&self,
+                          w: &mut SqlFrag,
+                          parent_query: &Query,
+                          source_field: &SourceField) {
         self.build_query_source(w, parent_query, &source_field.source);
         match source_field.rename {
             Some(ref rename) => {
@@ -439,7 +452,7 @@ pub trait Database {
             w.append("( ");
         }
         self.build_condition(w, parent_query, &filter.condition);
-		w.sp();	
+        w.sp();
         for filt in &filter.sub_filters {
             match filt.connector {
                 Connector::And => {
@@ -484,7 +497,8 @@ pub trait Database {
                 do_comma = true;
             }
             cnt += 1;
-            if cnt % 4 == 0 {//break at every 4 columns to encourage sql tuning/revising
+            if cnt % 4 == 0 {
+                // break at every 4 columns to encourage sql tuning/revising
                 w.left_river("");
             }
             self.build_field(w, parent_query, field);
@@ -500,11 +514,15 @@ pub trait Database {
 
         assert!(!query.from.is_empty(),
                 "There should be table, query, function to select from");
-		let mut do_comma = false;
-		for field in &query.from{
-			if do_comma {w.commasp();}else{do_comma = true;}
-			self.build_source_field(&mut w, query, field);
-		}
+        let mut do_comma = false;
+        for field in &query.from {
+            if do_comma {
+                w.commasp();
+            } else {
+                do_comma = true;
+            }
+            self.build_source_field(&mut w, query, field);
+        }
         if !query.joins.is_empty() {
             for join in &query.joins {
                 match join.modifier {
@@ -530,8 +548,8 @@ pub trait Database {
                 }
                 w.append("JOIN ");
                 w.append(&join.table_name.complete_name());
-				w.right_river("ON ");
-				self.build_filter(&mut w, query, &join.on);
+                w.right_river("ON ");
+                self.build_filter(&mut w, query, &join.on);
             }
         }
 
@@ -576,47 +594,47 @@ pub trait Database {
                 } else {
                     do_comma = true;
                 }
-				self.build_operand(&mut w, query, &order.operand);
+                self.build_operand(&mut w, query, &order.operand);
                 match &order.direction {
-					&Some(ref direction) => {
-						match direction{
-                    		&Direction::ASC => w.append(" ASC"),
-                    		&Direction::DESC => w.append(" DESC"),
-						}
-					},
-					&None => w.append("")
+                    &Some(ref direction) => {
+                        match direction {
+                            &Direction::ASC => w.append(" ASC"),
+                            &Direction::DESC => w.append(" DESC"),
+                        }
+                    }
+                    &None => w.append(""),
                 };
                 match &order.nulls_where {
-					&Some(ref nulls_where) => {
-						match nulls_where{
-                    		&NullsWhere::FIRST => w.append(" NULLS FIRST"),
-                    		&NullsWhere::LAST => w.append(" NULLS LAST"),
-						}
-					},
-					&None => w.append(""),
+                    &Some(ref nulls_where) => {
+                        match nulls_where {
+                            &NullsWhere::FIRST => w.append(" NULLS FIRST"),
+                            &NullsWhere::LAST => w.append(" NULLS LAST"),
+                        }
+                    }
+                    &None => w.append(""),
                 };
             }
         }
-        match query.range.limit{
+        match query.range.limit {
             Some(limit) => {
                 w.left_river("LIMIT ");
                 w.append(&format!("{}", limit));
-            },
-            None => ()
+            }
+            None => (),
         }
-        match query.range.offset{
+        match query.range.offset {
             Some(offset) => {
                 w.left_river("OFFSET ");
                 w.append(&format!("{}", offset));
-            },
+            }
             None => (),
         }
         w
     }
 
     /// TODO: when the number of values is greater than the number of columns
-	/// wrap it into another set and make sure the values are in multiples of the the n columns
-	/// http://www.postgresql.org/docs/9.0/static/dml-insert.html
+    /// wrap it into another set and make sure the values are in multiples of the the n columns
+    /// http://www.postgresql.org/docs/9.0/static/dml-insert.html
     fn build_insert(&self, query: &Query, build_mode: BuildMode) -> SqlFrag {
         let mut w = SqlFrag::new(self.sql_options(), build_mode);
         w.left_river("INSERT");
@@ -704,18 +722,18 @@ pub trait Database {
             self.build_filters(&mut w, query, &query.filters);
         }
         if !query.enumerated_returns.is_empty() {
-           if self.sql_options().contains(&SqlOption::SupportsReturningClause) {
-               w.left_river("RETURNING ");
-               let mut do_comma = false;
-               for field in &query.enumerated_returns {
-                   if do_comma {
-                       w.commasp();
-                   } else {
-                       do_comma = true;
-                   }
-                   self.build_field(&mut w, query, field);
-               }
-           }
+            if self.sql_options().contains(&SqlOption::SupportsReturningClause) {
+                w.left_river("RETURNING ");
+                let mut do_comma = false;
+                for field in &query.enumerated_returns {
+                    if do_comma {
+                        w.commasp();
+                    } else {
+                        do_comma = true;
+                    }
+                    self.build_field(&mut w, query, field);
+                }
+            }
         }
         w
     }
@@ -736,15 +754,14 @@ pub trait Database {
     }
 
     fn sql_options(&self) -> Vec<SqlOption>;
-
 }
 
 
 /// Deployment Database should implement this trait,
 /// to enable automated installation of the app, regardless what database platform
 /// the app is developed from.
-pub trait DatabaseDDL{
-    //////////////////////////////////////////
+pub trait DatabaseDDL {
+    /// ///////////////////////////////////////
     /// The following methods involves DDL(Data definition language) operation
     // //////////////////////////////////////
     /// create a database schema
@@ -776,8 +793,7 @@ pub trait DatabaseDDL{
 /// implement this for database that you use as your development platform, to extract meta data information
 /// about the tables and their relationship to each other
 pub trait DatabaseDev {
-
-////////////////////////////////////////
+    /// /////////////////////////////////////
     /// Database interface use for the development process
     // //////////////////////////////////////////
     /// applicable to later version of postgresql where there is inheritance
@@ -785,10 +801,10 @@ pub trait DatabaseDev {
 
     fn get_parent_table(&self, schema: &str, table: &str) -> Option<String>;
 
-	
+
     fn get_row_count_estimate(&self, schema: &str, table: &str) -> Option<usize>;
 
-    ////
+    /// /
     /// Build the Table object based on the extracted meta data info from database
     /// This is queries directly from the database, so this will be costly. Only used this on initialization processes
     ///
@@ -800,10 +816,9 @@ pub trait DatabaseDev {
     /// get the inherited columns of this table
     fn get_inherited_columns(&self, schema: &str, table: &str) -> Vec<String>;
 
-    ///get the equivalent postgresql database data type to rust data type
+    /// get the equivalent postgresql database data type to rust data type
     /// returns (module, type)
     fn dbtype_to_rust_type(&self, db_type: &str) -> (Vec<String>, Type);
 
     fn rust_type_to_dbtype(&self, rust_type: &Type) -> String;
-
 }
