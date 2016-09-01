@@ -1,6 +1,6 @@
 [package]
 name = "rustorm"
-version = "0.5.4"
+version = "0.5.5"
 authors = [ "Jovansonlee Cesar <ivanceras@gmail.com>" ]
 license = "MIT"
 description = "An ORM for rust"
@@ -27,7 +27,7 @@ features = ["rustc-serialize", "uuid", "chrono"]
 [dependencies]
 rustc-serialize = "0.3"
 serde_json = "0.7"
-uuid = {version = "0.2", features = ["serde", "rustc-serialize"] }
+uuid = {version = "0.3", features = ["serde", "rustc-serialize"] }
 log = "0.3"
 env_logger = "0.3"
 regex = "0.1"
