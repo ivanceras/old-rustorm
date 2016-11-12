@@ -425,27 +425,23 @@ impl Postgres {
     }
 
     fn get_table_comment(&self, schema: &str, table: &str) -> Option<String> {
-        let sql = "
+        let sql = r#"
                 SELECT
                     pg_class.relname AS table,
-                    \
                    pg_namespace.nspname AS schema,
-                    \
                    obj_description(pg_class.oid) AS comment
                 FROM pg_class
-                    \
                    LEFT JOIN pg_namespace
-                        ON pg_namespace.oid = \
+                        ON pg_namespace.oid = 
                    pg_class.relnamespace
                 WHERE
-                    \
                    pg_class.relkind IN ('r','v')
-                    AND pg_namespace.nspname NOT \
+                    AND pg_namespace.nspname NOT 
                    IN ('information_schema', 'pg_catalog', 'pg_toast')
-                    AND \
+                    AND 
                    nspname = $1
                     AND relname = $2
-                ";
+                "#;
         let conn = self.get_connection();
         let stmt = conn.prepare(&sql).unwrap();
         for row in stmt.query(&[&schema, &table]).unwrap().iter() {
@@ -731,33 +727,27 @@ impl DatabaseDev for Postgres {
     }
 
     fn get_all_tables(&self) -> Vec<(String, String, bool)> {
-        let sql = "
+        let sql = r#"
                 SELECT
                     pg_class.relname AS table,
-                    \
                    pg_namespace.nspname AS schema,
-                    \
                    obj_description(pg_class.oid) AS comment,
                     CASE
-                        \
                    WHEN pg_class.relkind = 'r' THEN false
-                        WHEN \
+                        WHEN
                    pg_class.relkind = 'v' THEN true
                     END AS is_view
-                \
                    FROM pg_class
                     LEFT JOIN pg_namespace
-                        \
                    ON pg_namespace.oid = pg_class.relnamespace
                 WHERE
-                    \
                    pg_class.relkind IN ('r','v')
-                    AND pg_namespace.nspname NOT \
+                    AND pg_namespace.nspname NOT
                    IN ('information_schema', 'pg_catalog', 'pg_toast')
-                ORDER BY \
+                ORDER BY 
                    relname, nspname
 
-                ";
+                "#;
         let conn = self.get_connection();
         let stmt = conn.prepare(&sql).unwrap();
         let mut tables: Vec<(String, String, bool)> = Vec::new();

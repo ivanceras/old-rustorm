@@ -23,6 +23,7 @@ use table::IsTable;
 use database::DbError;
 use query::ToField;
 use query::source::{QuerySource, ToSourceField, SourceField};
+use query::DeclaredQuery;
 
 pub struct QueryBuilder {
     query: Query,
@@ -56,7 +57,24 @@ impl QueryBuilder {
     /// wrapped in the from_query
     /// build a builder for this
     pub fn WITH(&mut self, query: Query, alias: &str) -> &mut Self {
-        self.query.declared_query.insert(alias.to_owned(), query);
+        let declared_query = DeclaredQuery{
+                name: alias.into(),
+                fields: vec![],
+                query: query,
+                is_recursive: false,
+            };
+        self.query.declared_query.push(declared_query);
+        self
+    }
+
+    pub fn WITH_RECURSIVE(&mut self, query: Query, alias: &str) -> &mut Self {
+        let declared_query = DeclaredQuery{
+                name: alias.into(),
+                fields: vec![],
+                query: query,
+                is_recursive: true,
+            };
+        self.query.declared_query.push(declared_query);
         self
     }
 

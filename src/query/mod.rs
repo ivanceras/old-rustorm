@@ -87,6 +87,15 @@ impl Range {
 }
 
 
+#[derive(Debug)]
+#[derive(Clone)]
+pub struct DeclaredQuery{
+    name: String,
+    fields: Vec<String>,
+    query: Query,
+    is_recursive: bool
+}
+
 
 #[derive(Debug)]
 #[derive(Clone)]
@@ -100,7 +109,7 @@ pub struct Query {
     /// whether to enumate all columns in involved models
     pub enumerate_all: bool,
 
-    pub declared_query: BTreeMap<String, Query>,
+    pub declared_query: Vec<DeclaredQuery>,
 
     /// fields can be functions, column sql query, and even columns
     pub enumerated_fields: Vec<Field>,
@@ -151,7 +160,7 @@ impl Query {
             sql_type: SqlType::SELECT,
             distinct: false,
             enumerate_all: false,
-            declared_query: BTreeMap::new(),
+            declared_query: vec![],
             enumerated_fields: vec![],
             distinct_on_columns: vec![],
             filters: vec![],
