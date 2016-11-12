@@ -151,6 +151,9 @@ pub struct Query {
 
     /// the returning clause of the query when supported,
     pub enumerated_returns: Vec<Field>,
+
+    /// enable query stats
+    pub enable_query_stat: bool,
 }
 
 impl Query {
@@ -173,6 +176,7 @@ impl Query {
             from: vec![],
             values: vec![],
             enumerated_returns: vec![],
+            enable_query_stat: true,
         }
     }
 

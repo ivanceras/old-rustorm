@@ -209,15 +209,26 @@ pub trait Database {
     fn execute_with_return(&self, query: &Query) -> Result<DaoResult, DbError> {
         let sql_frag = &self.build_query(query, BuildMode::Standard);
         let result = try!(self.execute_sql_with_return(&sql_frag.sql, &sql_frag.params));
-        let (page, page_size, total) = try!(self.get_query_stats(query));
-        let dao_result = DaoResult {
-            dao: result,
-            renamed_columns: query.get_renamed_columns(),
-            total: total,
-            page: page,
-            page_size: page_size,
-        };
-        Ok(dao_result)
+        if query.enable_query_stat{
+            let (page, page_size, total) = try!(self.get_query_stats(query));
+            let dao_result = DaoResult {
+                dao: result,
+                renamed_columns: query.get_renamed_columns(),
+                total: total,
+                page: page,
+                page_size: page_size,
+            };
+            Ok(dao_result)
+        }else{
+            let dao_result = DaoResult {
+                dao: result,
+                renamed_columns: query.get_renamed_columns(),
+                total: None,
+                page: None,
+                page_size: None,
+            };
+            Ok(dao_result)
+        }
     }
 
     /// get the query stats page, page_size and the total records
@@ -237,7 +248,10 @@ pub trait Database {
         let mut count_query = query.to_owned();
         count_query.enumerated_fields = vec![];//remove the enumerated fields
         count_query.column("COUNT(*) AS COUNT");
+        count_query.order_by = vec![];
         count_query.range = Range::new();//remove the range
+        let debug_sql = &self.build_query(&count_query, BuildMode::Debug);
+        println!("STAT QUERY: {}", debug_sql);
         let count_result = try!(self.execute_with_one_return(&count_query));
         println!("range: {:#?}", query.range);
         println!("count result {:#?}", count_result);
