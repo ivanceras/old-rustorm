@@ -1,7 +1,7 @@
 use r2d2::Pool;
 use r2d2_postgres::PostgresConnectionManager;
 use r2d2::Config;
-use postgres::SslMode;
+use r2d2_postgres::SslMode;
 use config::DbConfig;
 use database::{Database, DatabaseDDL, DatabaseDev};
 use platform::Postgres;
@@ -65,11 +65,11 @@ impl Platform {
     }
 }
 
-impl Deref for Platform{
-	type Target = Database;
+impl Deref for Platform {
+    type Target = Database;
 
-	fn deref(&self)->&Self::Target{
-		println!("using deref...");
+    fn deref(&self) -> &Self::Target {
+        debug!("using deref...");
         match *self {
             Platform::Postgres(ref pg) => pg,
             #[cfg(feature = "sqlite")]
@@ -78,8 +78,7 @@ impl Deref for Platform{
             Platform::Mysql(ref my) => my,
             _ => unimplemented!(),
         }
-	}
-	
+    }
 }
 
 
@@ -104,7 +103,7 @@ impl ManagedPool {
                 match platform {
                     "postgres" => {
                         let manager = try!(PostgresConnectionManager::new(url, SslMode::None));
-                        println!("Creating a connection with a pool size of {}", pool_size);
+                        debug!("Creating a connection with a pool size of {}", pool_size);
                         let config = Config::builder().pool_size(pool_size as u32).build();
                         let pool = try!(Pool::new(config, manager));
                         Ok(ManagedPool::Postgres(pool))
@@ -112,7 +111,7 @@ impl ManagedPool {
 
                     #[cfg(feature = "sqlite")]
                     "sqlite" => {
-                        let manager = try!(SqliteConnectionManager::new(&config.database));
+                        let manager = SqliteConnectionManager::new(&config.database);
                         let config = Config::builder().pool_size(pool_size as u32).build();
                         let pool = try!(Pool::new(config, manager));
                         Ok(ManagedPool::Sqlite(pool))
@@ -151,9 +150,7 @@ impl ManagedPool {
                         let pg = Postgres::with_pooled_connection(conn);
                         Ok(Platform::Postgres(pg))
                     }
-                    Err(e) => {
-                        Err(DbError::new(&format!("Unable to connect due to {}", e)))
-                    }
+                    Err(e) => Err(DbError::new(&format!("Unable to connect due to {}", e))),
                 }
             }
             #[cfg(feature = "sqlite")]
@@ -163,9 +160,7 @@ impl ManagedPool {
                         let lite = Sqlite::with_pooled_connection(conn);
                         Ok(Platform::Sqlite(lite))
                     }
-                    Err(e) => {
-                        Err(DbError::new(&format!("Unable to connect due to {}", e)))
-                    }
+                    Err(e) => Err(DbError::new(&format!("Unable to connect due to {}", e))),
                 }
             }
             #[cfg(feature = "mysql")]

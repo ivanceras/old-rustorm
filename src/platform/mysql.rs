@@ -16,7 +16,12 @@ use mysql::value::from_row;
 use mysql::conn::Stmt;
 use mysql::conn::pool::MyPool;
 use chrono::naive::datetime::NaiveDateTime;
+use chrono::datetime::DateTime;
+use chrono::offset::utc::UTC;
+use chrono::offset::fixed::FixedOffset;
+
 use query::Operand;
+
 
 use database::{Database, DatabaseDev, DatabaseDDL, DbError};
 use time::Timespec;
@@ -25,7 +30,7 @@ use dao::Type;
 pub struct Mysql {
     pool: Option<MyPool>,
 }
-impl Mysql{
+impl Mysql {
     pub fn new() -> Self {
         Mysql { pool: None }
     }
@@ -41,46 +46,46 @@ impl Mysql{
                 Value::Bool(ref x) => {
                     let v = x.into_value();
                     params.push(v);
-                },
+                }
                 Value::String(ref x) => {
                     params.push(MyValue::Bytes(x.as_bytes().to_owned()));
-                },
+                }
                 Value::I8(ref x) => {
                     let v = x.into_value();
                     params.push(v);
-                },
-                 Value::I16(ref x) => {
+                }
+                Value::I16(ref x) => {
                     let v = x.into_value();
                     params.push(v);
-                },
+                }
                 Value::I32(ref x) => {
                     let v = x.into_value();
                     params.push(v);
-                },
+                }
                 Value::I64(ref x) => {
                     let v = x.into_value();
                     params.push(v);
-                },
+                }
                 Value::U8(ref x) => {
                     let v = x.into_value();
                     params.push(v);
-                },
+                }
                 Value::U32(ref x) => {
                     let v = x.into_value();
                     params.push(v);
-                },
+                }
                 Value::U64(ref x) => {
                     let v = x.into_value();
                     params.push(v);
-                },
+                }
                 Value::F32(ref x) => {
                     let v = x.into_value();
                     params.push(v);
-                },
+                }
                 Value::F64(ref x) => {
                     let v = x.into_value();
                     params.push(v);
-                },
+                }
                 _ => panic!("not yet here {:?}", t),
             }
         }
@@ -88,128 +93,132 @@ impl Mysql{
     }
 
     /// convert a record of a row into rust type
-    fn from_sql_to_rust_type(row: &[MyValue], index: usize, column_type: &ColumnType) -> Value {
+    fn from_sql_to_rust_type(row: &[MyValue],
+                             index: usize,
+                             column_type: &ColumnType)
+                             -> Option<Value> {
         let value = row.get(index);
         match value {
             Some(value) => {
-                    println!("sql to rust {:?} type: {:?}", value, column_type);
-                    match *value{
-                        MyValue::NULL => {
-                            Value::None(Type::String)// should put Type::Unknown
-                        },
-                        
-                        _ => {
-                            match *column_type{
-                                ColumnType::MYSQL_TYPE_DECIMAL => {
-                                    let v: f64 = FromValue::from_value(value.clone());
-                                    Value::F64(v)
-                                },
-                                ColumnType::MYSQL_TYPE_TINY =>{
-                                    let v: i8 = FromValue::from_value(value.clone());
-                                    Value::I8(v)
-                                },
-                                ColumnType::MYSQL_TYPE_SHORT => {
-                                    let v: i16 = FromValue::from_value(value.clone());
-                                    Value::I16(v)
-                                },
-                                ColumnType::MYSQL_TYPE_LONG => {
-                                    let v: i64 = FromValue::from_value(value.clone());
-                                    Value::I64(v)
-                                },
-                                ColumnType::MYSQL_TYPE_FLOAT =>{
-                                    let v: f32 = FromValue::from_value(value.clone());
-                                    Value::F32(v)
-                                },
-                                ColumnType::MYSQL_TYPE_DOUBLE => {
-                                    let v: f64 = FromValue::from_value(value.clone());
-                                    Value::F64(v)
-                                },
-                                ColumnType::MYSQL_TYPE_NULL => Value::None(Type::String),
-                                ColumnType::MYSQL_TYPE_TIMESTAMP => {
-                                    let v: Timespec = FromValue::from_value(value.clone());
-                                    let t = NaiveDateTime::from_timestamp(v.sec, v.nsec as u32);
-                                    println!("time: {}",t);
-                                    Value::NaiveDateTime(t)
-                                },
-                                ColumnType::MYSQL_TYPE_LONGLONG =>  {
-                                    let v: i64 = FromValue::from_value(value.clone());
-                                    Value::I64(v)
-                                },
-                                ColumnType::MYSQL_TYPE_INT24 => {
-                                    let v: i32 = FromValue::from_value(value.clone());
-                                    Value::I32(v)
-                                },
-                                ColumnType::MYSQL_TYPE_DATE => {
-                                    let v: Timespec = FromValue::from_value(value.clone());
-                                    let t = NaiveDateTime::from_timestamp(v.sec, v.nsec as u32);
-                                    Value::NaiveDateTime(t)
-                                },
-                                ColumnType::MYSQL_TYPE_TIME => {
-                                    let v: Timespec = FromValue::from_value(value.clone());
-                                    let t = NaiveDateTime::from_timestamp(v.sec, v.nsec as u32);
-                                    Value::NaiveDateTime(t)
-                                },
-                                ColumnType::MYSQL_TYPE_DATETIME => {
-                                    let v: Timespec = FromValue::from_value(value.clone());
-                                    let t = NaiveDateTime::from_timestamp(v.sec, v.nsec as u32);
-                                    Value::NaiveDateTime(t)
-                                },
-                                ColumnType::MYSQL_TYPE_YEAR => {
-                                    let v: Timespec = FromValue::from_value(value.clone());
-                                    let t = NaiveDateTime::from_timestamp(v.sec, v.nsec as u32);
-                                    Value::NaiveDateTime(t)
-                                },
-                                ColumnType::MYSQL_TYPE_VARCHAR => {
-                                    let v: String = FromValue::from_value(value.clone());
-                                    Value::String(v)
-                                },
-                                ColumnType::MYSQL_TYPE_BIT =>unimplemented!(),
-                                ColumnType::MYSQL_TYPE_NEWDECIMAL => {
-                                    let v: f64 = FromValue::from_value(value.clone());
-                                    Value::F64(v)
-                                },
-                                ColumnType::MYSQL_TYPE_ENUM => {
-                                    let v: String = FromValue::from_value(value.clone());
-                                    Value::String(v)
-                                },
-                                ColumnType::MYSQL_TYPE_SET => {
-                                    let v: String = FromValue::from_value(value.clone());
-                                    Value::String(v)
-                                },
-                                ColumnType::MYSQL_TYPE_TINY_BLOB => {
-                                    let v: String = FromValue::from_value(value.clone());
-                                    Value::String(v)
-                                },
-                                ColumnType::MYSQL_TYPE_MEDIUM_BLOB => {
-                                    let v: String = FromValue::from_value(value.clone());
-                                    Value::String(v)
-                                },
-                                ColumnType::MYSQL_TYPE_LONG_BLOB => {
-                                    let v: String = FromValue::from_value(value.clone());
-                                    Value::String(v)
-                                },
-                                ColumnType::MYSQL_TYPE_BLOB => {
-                                    let v: String = FromValue::from_value(value.clone());
-                                    Value::String(v)
-                                },
-                                ColumnType::MYSQL_TYPE_VAR_STRING => {
-                                    let v: String = FromValue::from_value(value.clone());
-                                    Value::String(v)
-                                },
-                                ColumnType::MYSQL_TYPE_STRING => {
-                                    let v: String = FromValue::from_value(value.clone());
-                                    Value::String(v)
-                                },
-                                ColumnType::MYSQL_TYPE_GEOMETRY => {
-                                    let v: String = FromValue::from_value(value.clone());
-                                    Value::String(v)
-                                },
-                            }
-                        }
+                match *column_type {
+                    ColumnType::MYSQL_TYPE_DECIMAL => {
+                        let v: f64 = FromValue::from_value(value.clone());
+                        Some(Value::F64(v))
                     }
-                    
-                },
-            None => Value::None(Type::String),
+                    ColumnType::MYSQL_TYPE_TINY => {
+                        let v: i8 = FromValue::from_value(value.clone());
+                        Some(Value::I8(v))
+                    }
+                    ColumnType::MYSQL_TYPE_SHORT => {
+                        let v: i16 = FromValue::from_value(value.clone());
+                        Some(Value::I16(v))
+                    }
+                    ColumnType::MYSQL_TYPE_LONG => {
+                        let v: i64 = FromValue::from_value(value.clone());
+                        Some(Value::I64(v))
+                    }
+                    ColumnType::MYSQL_TYPE_FLOAT => {
+                        let v: f32 = FromValue::from_value(value.clone());
+                        Some(Value::F32(v))
+                    }
+                    ColumnType::MYSQL_TYPE_DOUBLE => {
+                        let v: f64 = FromValue::from_value(value.clone());
+                        Some(Value::F64(v))
+                    }
+                    ColumnType::MYSQL_TYPE_NULL => None,
+                    ColumnType::MYSQL_TYPE_TIMESTAMP => {
+                        let v: Timespec = FromValue::from_value(value.clone());
+                        let t = NaiveDateTime::from_timestamp(v.sec, v.nsec as u32);
+                        let utc = UTC::now();
+                        debug!("time: {}",t);
+                        let fix = FixedOffset::east(1);
+                        let t2 = DateTime::from_utc(t, fix);
+                        Some(Value::DateTime(t2))
+                    }
+                    ColumnType::MYSQL_TYPE_LONGLONG => {
+                        let v: i64 = FromValue::from_value(value.clone());
+                        Some(Value::I64(v))
+                    }
+                    ColumnType::MYSQL_TYPE_INT24 => {
+                        let v: i32 = FromValue::from_value(value.clone());
+                        Some(Value::I32(v))
+                    }
+                    ColumnType::MYSQL_TYPE_DATE => {
+                        let v: Timespec = FromValue::from_value(value.clone());
+                        let t = NaiveDateTime::from_timestamp(v.sec, v.nsec as u32);
+                        let fix = FixedOffset::east(1);
+                        let t2 = DateTime::from_utc(t, fix);
+                        Some(Value::DateTime(t2))
+                    }
+                    ColumnType::MYSQL_TYPE_TIME => {
+                        let v: Timespec = FromValue::from_value(value.clone());
+                        let t = NaiveDateTime::from_timestamp(v.sec, v.nsec as u32);
+                        let fix = FixedOffset::east(1);
+                        let t2 = DateTime::from_utc(t, fix);
+                        Some(Value::DateTime(t2))
+                    }
+                    ColumnType::MYSQL_TYPE_DATETIME => {
+                        let v: Timespec = FromValue::from_value(value.clone());
+                        let t = NaiveDateTime::from_timestamp(v.sec, v.nsec as u32);
+                        let fix = FixedOffset::east(1);
+                        let t2 = DateTime::from_utc(t, fix);
+                        Some(Value::DateTime(t2))
+                    }
+                    ColumnType::MYSQL_TYPE_YEAR => {
+                        let v: Timespec = FromValue::from_value(value.clone());
+                        let t = NaiveDateTime::from_timestamp(v.sec, v.nsec as u32);
+                        let fix = FixedOffset::east(1);
+                        let t2 = DateTime::from_utc(t, fix);
+                        Some(Value::DateTime(t2))
+                    }
+                    ColumnType::MYSQL_TYPE_VARCHAR => {
+                        let v: String = FromValue::from_value(value.clone());
+                        Some(Value::String(v))
+                    }
+                    ColumnType::MYSQL_TYPE_BIT => unimplemented!(),
+                    ColumnType::MYSQL_TYPE_NEWDECIMAL => {
+                        let v: f64 = FromValue::from_value(value.clone());
+                        Some(Value::F64(v))
+                    }
+                    ColumnType::MYSQL_TYPE_ENUM => {
+                        let v: String = FromValue::from_value(value.clone());
+                        Some(Value::String(v))
+                    }
+                    ColumnType::MYSQL_TYPE_SET => {
+                        let v: String = FromValue::from_value(value.clone());
+                        Some(Value::String(v))
+                    }
+                    ColumnType::MYSQL_TYPE_TINY_BLOB => {
+                        let v: String = FromValue::from_value(value.clone());
+                        Some(Value::String(v))
+                    }
+                    ColumnType::MYSQL_TYPE_MEDIUM_BLOB => {
+                        let v: String = FromValue::from_value(value.clone());
+                        Some(Value::String(v))
+                    }
+                    ColumnType::MYSQL_TYPE_LONG_BLOB => {
+                        let v: String = FromValue::from_value(value.clone());
+                        Some(Value::String(v))
+                    }
+                    ColumnType::MYSQL_TYPE_BLOB => {
+                        let v: String = FromValue::from_value(value.clone());
+                        Some(Value::String(v))
+                    }
+                    ColumnType::MYSQL_TYPE_VAR_STRING => {
+                        let v: String = FromValue::from_value(value.clone());
+                        Some(Value::String(v))
+                    }
+                    ColumnType::MYSQL_TYPE_STRING => {
+                        let v: String = FromValue::from_value(value.clone());
+                        Some(Value::String(v))
+                    }
+                    ColumnType::MYSQL_TYPE_GEOMETRY => {
+                        let v: String = FromValue::from_value(value.clone());
+                        Some(Value::String(v))
+                    }
+                }//<--match column_type
+            } //<-- Some(Value)
+            None => None,
         }
     }
 
@@ -219,65 +228,35 @@ impl Mysql{
     /// FIXME, need to restore the exact data type as before
     fn rust_type_to_dbtype(&self, rust_type: &Type) -> String {
         match *rust_type {
-            Type::Bool => {
-                "bool".to_owned()
+            Type::Bool => "bool".to_owned(),
+            Type::I8 => "tinyint(1)".to_owned(),
+            Type::I16 => "integer".to_owned(),
+            Type::I32 => "integer".to_owned(),
+            Type::U32 => "integer".to_owned(),
+            Type::I64 => "integer".to_owned(),
+            Type::F32 => "real".to_owned(),
+            Type::F64 => "real".to_owned(),
+            Type::String => "text".to_owned(),
+            Type::VecU8 => "blob".to_owned(),
+            Type::Json => "text".to_owned(),
+            Type::Uuid => "varchar(36)".to_owned(),
+            Type::NaiveDateTime => "timestamp".to_owned(),
+            Type::DateTime => "timestamp".to_owned(),
+            Type::NaiveDate => "date".to_owned(),
+            Type::NaiveTime => "time".to_owned(),
+            _ => {
+                panic!("Unable to get the equivalent database data type for {:?}",
+                        rust_type)
             }
-            Type::I8 => {
-                "tinyint(1)".to_owned()
-            }
-            Type::I16 => {
-                "integer".to_owned()
-            }
-            Type::I32 => {
-                "integer".to_owned()
-            }
-            Type::U32 => {
-                "integer".to_owned()
-            }
-            Type::I64 => {
-                "integer".to_owned()
-            }
-            Type::F32 => {
-                "real".to_owned()
-            }
-            Type::F64 => {
-                "real".to_owned()
-            }
-            Type::String => {
-                "text".to_owned()
-            }
-            Type::VecU8 => {
-                "blob".to_owned()
-            }
-            Type::Json => {
-                "text".to_owned()
-            }
-            Type::Uuid => {
-                "varchar(36)".to_owned()
-            }
-            Type::NaiveDateTime => {
-                "timestamp".to_owned()
-            }
-            Type::DateTime => {
-                "timestamp".to_owned()
-            }
-            Type::NaiveDate => {
-                "date".to_owned()
-            }
-            Type::NaiveTime => {
-                "time".to_owned()
-            }
-            _ => panic!("Unable to get the equivalent database data type for {:?}",
-                        rust_type),
         }
     }
 
-	fn get_table_columns(&self, schema: &str, table: &str) -> Vec<Column> {
+    fn get_table_columns(&self, schema: &str, table: &str) -> Vec<Column> {
         let sql = format!("select column_name, data_type from information_schema.columns where table_schema='{}' and table_name='{}'", schema, table);
         assert!(self.pool.is_some());
         let mut stmt = match self.get_prepared_statement(&sql) {
             Ok(stmt) => stmt,
-            Err(_) => panic!("prepare statement error.")
+            Err(_) => panic!("prepare statement error."),
         };
         let mut columns = Vec::new();
         for row in stmt.execute(()).unwrap() {
@@ -287,7 +266,7 @@ impl Mysql{
             // let name: String = row.get("column_name");
             // let not_null: bool = row.get("is_nullable");
             // let db_data_type: String = row.get("data_type");
-            //TODO: temporarily regex the data type to extract the size as well
+            // TODO: temporarily regex the data type to extract the size as well
             let re = match Regex::new("(.+)\\((.+)\\)") {
                 Ok(re) => re,
                 Err(err) => panic!("{}", err),
@@ -324,13 +303,13 @@ impl Mysql{
             //     Err(_) => None,
             // };
             let foreign_schema: Option<String> = None;
-            
+
             // let foreign_column: Option<String> = match row.get_opt("foreign_column") {
             //     Ok(x) => Some(x),
             //     Err(_) => None,
             // };
             let foreign_column: Option<String> = None;
-            
+
             // let foreign_table: Option<String> = match row.get_opt("foreign_table") {
             //     Ok(x) => Some(x),
             //     Err(_) => None,
@@ -350,6 +329,7 @@ impl Mysql{
             };
             let (_, data_type) = self.dbtype_to_rust_type(&db_data_type);
             let column = Column {
+                table: Some(table.to_owned()),
                 name: name,
                 data_type: data_type,
                 db_data_type: db_data_type,
@@ -359,17 +339,17 @@ impl Mysql{
                 default: default,
                 not_null: not_null,
                 foreign: foreign,
-                is_inherited: false, /* will be corrected later in the get_meta_data */
+                is_inherited: false, // will be corrected later in the get_meta_data
             };
             columns.push(column);
         }
-        
+
         columns
-        
+
     }
 
     fn get_table_comment(&self, schema: &str, table: &str) -> Option<String> {
-        
+
         None
     }
 
@@ -384,7 +364,17 @@ impl Database for Mysql {
         let sql = "SELECT version()";
         let dao = try!(self.execute_sql_with_one_return(sql, &vec![]));
         match dao {
-            Some(dao) => Ok(dao.get("version()")),
+            Some(dao) => {
+                match dao.get("version()") {
+                    Some(version) => {
+                        match version {
+                            &Value::String(ref version) => Ok(version.to_owned()),
+                            _ => unreachable!(),
+                        }
+                    }
+                    None => Err(DbError::new("Unable to get database version")),
+                }
+            }
             None => Err(DbError::new("Unable to get database version")),
         }
     }
@@ -407,8 +397,7 @@ impl Database for Mysql {
     fn is_connected(&self) -> bool {
         false
     }
-    fn close(&self) {
-    }
+    fn close(&self) {}
     fn is_valid(&self) -> bool {
         false
     }
@@ -431,15 +420,15 @@ impl Database for Mysql {
     }
 
     fn execute_sql_with_return(&self, sql: &str, params: &[Value]) -> Result<Vec<Dao>, DbError> {
-        println!("SQL: \n{}", sql);
-        println!("param: {:?}", params);
+        debug!("SQL: \n{}", sql);
+        debug!("param: {:?}", params);
         assert!(self.pool.is_some());
         let mut stmt = try!(self.get_prepared_statement(sql));
         let mut columns = vec![];
         for col in stmt.columns_ref().unwrap() {
             let column_name = String::from_utf8(col.name.clone()).unwrap();
-            println!("column type: {:?}", col.column_type);
-            columns.push( (column_name, col.column_type) );
+            debug!("column type: {:?}", col.column_type);
+            columns.push((column_name, col.column_type));
         }
         let mut daos = vec![];
         let param = Mysql::from_rust_type_tosql(params);
@@ -450,7 +439,9 @@ impl Database for Mysql {
             let mut dao = Dao::new();
             for &(ref column_name, ref column_type) in &columns {
                 let rtype = Mysql::from_sql_to_rust_type(&row, index, column_type);
-                dao.set_value(&column_name, rtype);
+                if let Some(rtype) = rtype {
+                    dao.insert(column_name.to_owned(), rtype);
+                }
                 index += 1;
             }
             daos.push(dao);
@@ -474,17 +465,16 @@ impl Database for Mysql {
     /// returns only the number of affected records or errors
     /// can be used with DDL operations (CREATE, DELETE, ALTER, DROP)
     fn execute_sql(&self, sql: &str, params: &[Value]) -> Result<usize, DbError> {
-        println!("SQL: \n{}", sql);
-        println!("param: {:?}", params);
+        debug!("SQL: \n{}", sql);
+        debug!("param: {:?}", params);
         let to_sql_types = Mysql::from_rust_type_tosql(params);
         assert!(self.pool.is_some());
         let result = try!(self.pool.as_ref().unwrap().prep_exec(sql, &to_sql_types));
         Ok(result.affected_rows() as usize)
     }
-
 }
 
-impl DatabaseDDL for Mysql{
+impl DatabaseDDL for Mysql {
     fn create_schema(&self, _schema: &str) {
         unimplemented!()
     }
@@ -520,7 +510,7 @@ impl DatabaseDDL for Mysql{
     fn create_table(&self, table: &Table) {
         let frag = self.build_create_table(table);
         match self.execute_sql(&frag.sql, &vec![]) {
-            Ok(_) => println!("created table.."),
+            Ok(_) => debug!("created table.."),
             Err(e) => panic!("table not created {}", e),
         }
     }
@@ -549,11 +539,36 @@ impl DatabaseDDL for Mysql{
 
 
 
-    
-impl DatabaseDev for Mysql {
 
+impl DatabaseDev for Mysql {
     fn get_parent_table(&self, schema: &str, table: &str) -> Option<String> {
         None
+    }
+    fn get_row_count_estimate(&self, schema: &str, table: &str) -> Option<usize> {
+        let sql = format!("SELECT TABLE_ROWS as count FROM INFORMATION_SCHEMA.TABLES
+                WHERE TABLE_NAME = '{}';",table);
+
+        match self.execute_sql_with_one_return(&sql, &vec![]) {
+            Ok(dao) => {
+                match dao {
+                    Some(dao) => {
+                        match dao.get("count") {
+                            Some(schema) => {
+                                match schema {
+                                    &Value::I64(count) => Some(count as usize),
+                                    &Value::I32(count) => Some(count as usize),
+                                    &Value::I16(count) => Some(count as usize),
+                                    _ => unreachable!(),
+                                }
+                            }
+                            None => None,
+                        }
+                    }
+                    None => None,
+                }
+            }
+            Err(_) => None,
+        }
     }
 
     fn get_table_sub_class(&self, schema: &str, table: &str) -> Vec<String> {
@@ -566,8 +581,9 @@ impl DatabaseDev for Mysql {
         let comment = self.get_table_comment(schema, table);
         let parent = self.get_parent_table(schema, table);
         let subclass = self.get_table_sub_class(schema, table);
+        let estimated_row_count = self.get_row_count_estimate(schema, table);
 
-        //mutate columns to mark those which are inherited
+        // mutate columns to mark those which are inherited
         if parent.is_some() {
             let inherited_columns = self.get_inherited_columns(schema, table);
             for i in inherited_columns {
@@ -587,6 +603,7 @@ impl DatabaseDev for Mysql {
             comment: comment,
             columns: columns,
             is_view: is_view,
+            estimated_row_count: estimated_row_count,
         }
     }
 
@@ -595,18 +612,28 @@ impl DatabaseDev for Mysql {
         let schema_name: String = match self.execute_sql_with_one_return(sql, &vec![]) {
             Ok(dao) => {
                 match dao {
-                    Some(dao) => dao.get("schema()"),
-                    None => panic!("Unable to get current schema.")
+                    Some(dao) => {
+                        match dao.get("schema()") {
+                            Some(schema) => {
+                                match schema {
+                                    &Value::String(ref schema) => schema.to_owned(),
+                                    _ => unreachable!(),
+                                }
+                            }
+                            None => "".to_owned(),
+                        }
+                    }
+                    None => panic!("Unable to get current schema."),
                 }
-            },
-            Err(_) => panic!("can not get current schema.")
+            }
+            Err(_) => panic!("can not get current schema."),
         };
-        
+
         let sql = format!("select table_name from information_schema.tables where table_schema='{}' and table_type='base table'", schema_name);
         assert!(self.pool.is_some());
         let mut stmt = match self.get_prepared_statement(&sql) {
             Ok(stmt) => stmt,
-            Err(_) => panic!("prepare statement error.")
+            Err(_) => panic!("prepare statement error."),
         };
         let mut tables: Vec<(String, String, bool)> = Vec::new();
         for row in stmt.execute(()).unwrap() {
@@ -627,46 +654,24 @@ impl DatabaseDev for Mysql {
     /// will be used in source code generation
     fn dbtype_to_rust_type(&self, db_type: &str) -> (Vec<String>, Type) {
         match db_type {
-            "bool" => {
-                (vec![], Type::Bool)
-            }
-            "tinyint" => {
-                (vec![], Type::I8)
-            }
-            "smallint"  => {
-                (vec![], Type::I16)
-            }
-            "integer" | "int" => {
-                (vec![], Type::I32)
-            }
-            "bigint" => {
-                (vec![], Type::I64)
-            }
-            "float" => {
-                (vec![], Type::F32)
-            }
-            "double" | "decimal" => {
-                (vec![], Type::F64)
-            }
-            "char" | "varchar" | "text" => {
-                (vec![], Type::String)
-            }
-            "blob" => {
-                (vec![], Type::VecU8)
-            }
+            "bool" => (vec![], Type::Bool),
+            "tinyint" => (vec![], Type::I8),
+            "smallint" => (vec![], Type::I16),
+            "integer" | "int" => (vec![], Type::I32),
+            "bigint" => (vec![], Type::I64),
+            "float" => (vec![], Type::F32),
+            "double" | "decimal" => (vec![], Type::F64),
+            "char" | "varchar" | "text" => (vec![], Type::String),
+            "blob" => (vec![], Type::VecU8),
             "timestamp" | "datetime" => {
                 (vec!["chrono::datetime::DateTime".to_owned(),
                       "chrono::offset::utc::UTC".to_owned()],
-                 Type::NaiveDateTime)
+                 Type::DateTime)
+                // (vec!["chrono::naive::date::NaiveDateTime".to_owned()],
+                // Type::NaiveDateTime)
             }
-            "date" => {
-                (vec!["chrono::naive::date::NaiveDate".to_owned()],
-                 Type::NaiveDate)
-            }
-            "time" => {
-                (vec!["chrono::naive::time::NaiveTime".to_owned()],
-                 Type::NaiveTime)
-            }
+            "date" => (vec!["chrono::naive::date::NaiveDate".to_owned()], Type::NaiveDate),
+            "time" => (vec!["chrono::naive::time::NaiveTime".to_owned()], Type::NaiveTime),
             _ => panic!("Unable to get the equivalent data type for {}", db_type),
         }
     }
@@ -677,57 +682,26 @@ impl DatabaseDev for Mysql {
     /// FIXME, need to restore the exact data type as before
     fn rust_type_to_dbtype(&self, rust_type: &Type) -> String {
         match *rust_type {
-            Type::Bool => {
-                "bool".to_owned()
+            Type::Bool => "bool".to_owned(),
+            Type::I8 => "tinyint(1)".to_owned(),
+            Type::I16 => "integer".to_owned(),
+            Type::I32 => "integer".to_owned(),
+            Type::U32 => "integer".to_owned(),
+            Type::I64 => "integer".to_owned(),
+            Type::F32 => "real".to_owned(),
+            Type::F64 => "real".to_owned(),
+            Type::String => "text".to_owned(),
+            Type::VecU8 => "blob".to_owned(),
+            Type::Json => "text".to_owned(),
+            Type::Uuid => "varchar(36)".to_owned(),
+            Type::NaiveDateTime => "timestamp".to_owned(),
+            Type::DateTime => "timestamp".to_owned(),
+            Type::NaiveDate => "date".to_owned(),
+            Type::NaiveTime => "time".to_owned(),
+            _ => {
+                panic!("Unable to get the equivalent database data type for {:?}",
+                        rust_type)
             }
-            Type::I8 => {
-                "tinyint(1)".to_owned()
-            }
-            Type::I16 => {
-                "integer".to_owned()
-            }
-            Type::I32 => {
-                "integer".to_owned()
-            }
-            Type::U32 => {
-                "integer".to_owned()
-            }
-            Type::I64 => {
-                "integer".to_owned()
-            }
-            Type::F32 => {
-                "real".to_owned()
-            }
-            Type::F64 => {
-                "real".to_owned()
-            }
-            Type::String => {
-                "text".to_owned()
-            }
-            Type::VecU8 => {
-                "blob".to_owned()
-            }
-            Type::Json => {
-                "text".to_owned()
-            }
-            Type::Uuid => {
-                "varchar(36)".to_owned()
-            }
-            Type::NaiveDateTime => {
-                "timestamp".to_owned()
-            }
-            Type::DateTime => {
-                "timestamp".to_owned()
-            }
-            Type::NaiveDate => {
-                "date".to_owned()
-            }
-            Type::NaiveTime => {
-                "time".to_owned()
-            }
-            _ => panic!("Unable to get the equivalent database data type for {:?}",
-                        rust_type),
         }
     }
-
 }

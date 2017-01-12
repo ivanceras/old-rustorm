@@ -20,7 +20,6 @@ pub struct ColumnName {
 }
 
 impl ColumnName {
-
     pub fn from_str(column: &str) -> Self {
         if column.contains(".") {
             let splinters = column.split(".").collect::<Vec<&str>>();
@@ -44,8 +43,10 @@ impl ColumnName {
     pub fn default_rename(&self) -> String {
         match self.table {
             Some(ref s) => format!("{}.{}", s, self.column),
-            None => panic!("Unable to rename {} since table is not specified",
-                           self.column),
+            None => {
+                panic!("Unable to rename {} since table is not specified",
+                           self.column)
+            }
         }
     }
 
@@ -69,28 +70,27 @@ impl ColumnName {
     pub fn is_conflicted(&self, other: &ColumnName) -> bool {
         self.column == other.column
     }
-
 }
 
 
 pub trait ToColumnName {
-	fn to_column_name(&self)->ColumnName;
+    fn to_column_name(&self) -> ColumnName;
 }
 
-impl ToColumnName for Column{
-	fn to_column_name(&self)->ColumnName{	
-		ColumnName{
-			table: self.table.to_owned(),
-			column: self.name.to_owned(),
-			schema: None,
-		}
-	}
+impl ToColumnName for Column {
+    fn to_column_name(&self) -> ColumnName {
+        ColumnName {
+            table: self.table.to_owned(),
+            column: self.name.to_owned(),
+            schema: None,
+        }
+    }
 }
 
-impl <'a>ToColumnName for &'a str{
-	fn to_column_name(&self)->ColumnName{
-		ColumnName::from_str(self)
-	}	
+impl<'a> ToColumnName for &'a str {
+    fn to_column_name(&self) -> ColumnName {
+        ColumnName::from_str(self)
+    }
 }
 
 
@@ -109,4 +109,3 @@ impl PartialEq for ColumnName {
         self.column != other.column || self.table != other.table || self.schema != other.schema
     }
 }
-

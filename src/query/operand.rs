@@ -20,10 +20,10 @@ use chrono::naive::time::NaiveTime;
 use chrono::naive::datetime::NaiveDateTime;
 use chrono::offset::utc::UTC;
 use rustc_serialize::json::Json;
+use chrono::offset::fixed::FixedOffset;
 
-pub trait ToOperand{
-	
-	fn to_operand(&self)->Operand;
+pub trait ToOperand {
+    fn to_operand(&self) -> Operand;
 }
 
 
@@ -32,23 +32,26 @@ pub trait ToOperand{
 #[derive(Clone)]
 pub enum Operand {
     ColumnName(ColumnName),
-	QuerySource(QuerySource),
+    QuerySource(QuerySource),
     Value(Value),
     Vec(Vec<Operand>),
+    None,
 }
 /// work around for &ToOperand argument for Operand
-impl ToOperand for Operand{
-	fn to_operand(&self)->Operand{
-		self.to_owned()
-	}
+impl ToOperand for Operand {
+    fn to_operand(&self) -> Operand {
+        self.to_owned()
+    }
 }
 
 
 
-impl <F>ToOperand for F where F:Fn()->Column{
-	fn to_operand(&self)->Operand{
-		Operand::ColumnName(self().to_column_name())
-	}	
+impl<F> ToOperand for F
+    where F: Fn() -> Column
+{
+    fn to_operand(&self) -> Operand {
+        Operand::ColumnName(self().to_column_name())
+    }
 }
 
 /// implementation to convert Function that returns Column to yield an Operand
@@ -84,11 +87,11 @@ impl_to_operand_for_fn_column!(12);
 
 
 
-impl ToOperand for [&'static str;1]{
-	fn to_operand(&self)->Operand{
-	    Operand::ColumnName(self[0].to_column_name())
-	}
-} 
+impl ToOperand for [&'static str; 1] {
+    fn to_operand(&self) -> Operand {
+        Operand::ColumnName(self[0].to_column_name())
+    }
+}
 
 macro_rules! impl_to_operand_for_static_str_array{
     ($x:expr) => (
@@ -117,14 +120,15 @@ impl_to_operand_for_static_str_array!(10);
 impl_to_operand_for_static_str_array!(11);
 impl_to_operand_for_static_str_array!(12);
 
-//TODO: Determine why does conflict to impl ToOperand for Fn()->Column
-/*
-impl <T>ToOperand for T where T:ToValue{
-	fn to_operand(&self)->Operand{
-		Operand::Value(self.to_db_type())
-	}
-}
-*/
+// TODO: Determine why does conflict to impl ToOperand for Fn()->Column
+//
+// impl <T>ToOperand for T where T:ToValue{
+// fn to_operand(&self)->Operand{
+// Operand::Value(self.to_db_type())
+// }
+// }
+//
+
 
 
 
@@ -132,16 +136,23 @@ impl <T>ToOperand for T where T:ToValue{
 // all other types are values
 
 // Note: &'static str is treated as Column
-impl ToOperand for &'static str{
-	fn to_operand(&self)->Operand{
-		Operand::ColumnName(self.to_column_name())
-	}
-} 
+impl ToOperand for &'static str {
+    fn to_operand(&self) -> Operand {
+        Operand::ColumnName(self.to_column_name())
+    }
+}
 
 /// String is treated as Value::String
-impl ToOperand for String{
-    fn to_operand(&self)->Operand{
+impl ToOperand for String {
+    fn to_operand(&self) -> Operand {
         Operand::Value(Value::String(self.to_owned()))
+    }
+}
+
+impl ToOperand for Json {
+    fn to_operand(&self) -> Operand {
+        let json_string = format!("{}", self.pretty());
+        Operand::Value(self.to_db_type())
     }
 }
 
@@ -171,9 +182,7 @@ impl_to_operand_for_to_value!(f32, F32);
 impl_to_operand_for_to_value!(f64, F64);
 impl_to_operand_for_to_value!(Vec<u8>, VecU8);
 impl_to_operand_for_to_value!(Uuid,  Uuid);
-impl_to_operand_for_to_value!(DateTime<UTC>, DateTime);
+impl_to_operand_for_to_value!(DateTime<FixedOffset>, DateTime);
 impl_to_operand_for_to_value!(NaiveDate, NaiveDate);
 impl_to_operand_for_to_value!(NaiveTime, NaiveTime);
 impl_to_operand_for_to_value!(NaiveDateTime, NaiveDateTime);
-impl_to_operand_for_to_value!(BTreeMap<String,Value>, Object);
-impl_to_operand_for_to_value!(Json, Json);

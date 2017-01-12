@@ -6,43 +6,41 @@ use query::Operand;
 pub struct Foreign {
     pub schema: Option<String>,
     pub table: String,
-    pub column: String, 
+    pub column: String,
 }
 
-impl Foreign{
-	
-	pub fn from_str(schema_table: &str, column: &str) -> Self{
-		if schema_table.contains("."){
-			let splinters = schema_table.split(".").collect::<Vec<&str>>();
-			assert!(splinters.len() == 2, "There should only be 2 parts");
-			let schema = splinters[0].to_owned();
-			let table = splinters[1].to_owned();
-			Foreign{
-				schema: Some(schema),
-				table: table,
-				column: column.to_owned(),
-			}
-		}else{
-			Foreign{
-				schema: None,
-				table: schema_table.to_owned(),
-				column: column.to_owned(),
-			}
-		}
-	}
-
-    pub fn complete_table_name(&self) -> String {
-        match self.schema {
-            Some (ref schema) => format!("{}.{}", schema, self.table),
-            None => self.table.to_owned(),
+impl Foreign {
+    pub fn from_str(schema_table: &str, column: &str) -> Self {
+        if schema_table.contains(".") {
+            let splinters = schema_table.split(".").collect::<Vec<&str>>();
+            assert!(splinters.len() == 2, "There should only be 2 parts");
+            let schema = splinters[0].to_owned();
+            let table = splinters[1].to_owned();
+            Foreign {
+                schema: Some(schema),
+                table: table,
+                column: column.to_owned(),
+            }
+        } else {
+            Foreign {
+                schema: None,
+                table: schema_table.to_owned(),
+                column: column.to_owned(),
+            }
         }
     }
 
+    pub fn complete_table_name(&self) -> String {
+        match self.schema {
+            Some(ref schema) => format!("{}.{}", schema, self.table),
+            None => self.table.to_owned(),
+        }
+    }
 }
 
 #[derive(Debug, Clone)]
 pub struct Column {
-	pub table: Option<String>,
+    pub table: Option<String>,
     pub name: String,
     /// the generic data type, ie: u32, f64, string
     pub data_type: Type,
@@ -54,26 +52,31 @@ pub struct Column {
     pub comment: Option<String>,
     pub not_null: bool,
     pub foreign: Option<Foreign>,
-    ///determines if the column is inherited from the parent table
+    /// determines if the column is inherited from the parent table
     pub is_inherited: bool,
 }
 
 impl Column {
-
     fn is_keyword(str: &str) -> bool {
         let keyword = ["type", "yield", "macro"];
         keyword.contains(&str)
     }
-    
-    pub fn nullable(&self) -> bool{
+
+    pub fn nullable(&self) -> bool {
         !self.not_null
     }
 
+    pub fn complete_name(&self) -> String {
+        match self.table {
+            Some(ref table) => format!("{}.{}", table, self.name),
+            None => self.name.to_owned(),
+        }
+    }
 
-    ///some column names may be a rust reserve keyword, so have to correct them
+    /// some column names may be a rust reserve keyword, so have to correct them
     pub fn corrected_name(&self) -> String {
         if Self::is_keyword(&self.name) {
-            println!("Warning: {} is rust reserved keyword", self.name);
+            warn!("Warning: {} is rust reserved keyword", self.name);
             return format!("{}_", self.name);
         }
         self.name.to_owned()
@@ -81,7 +84,8 @@ impl Column {
 
     pub fn displayname(&self) -> String {
         let clean_name = self.clean_name();
-        clean_name.replace("_", " ")
+        let clean_name = clean_name.replace("_", " ");
+        capitalize(&clean_name)
     }
 
     /// presentable display names, such as removing the ids if it ends with one
@@ -104,9 +108,22 @@ impl Column {
                     .to_owned();
             }
         }
-        clean_name
+        capitalize(&clean_name)
     }
-
+    /// mailing_address_id -> address_id becomes Mailing Address
+    /// physical_address_id -> address_id becomes Physical Address
+    pub fn clean_lookupname(&self, table: &Table, lookup: &Table) -> String {
+        let fk_lookup = lookup.primary_columns();
+        let mut column_name = self.name.to_owned();
+        for fk in fk_lookup {
+            column_name = column_name.replace(&fk.name, "");
+        }
+        let clean_name = column_name.replace(&lookup.name, "");
+        let clean_name = clean_name.trim_right_matches("_id");
+        let clean_name = clean_name.trim_right_matches("_");
+        let clean_name = format!("{} {} ", clean_name, lookup.displayname());
+        capitalize(&clean_name)
+    }
 }
 
 
@@ -146,8 +163,7 @@ pub struct RefTable<'a> {
 }
 
 /// FIXME need more terse and ergonomic handling of conflicting member names
-impl <'a>RefTable<'a> {
-
+impl<'a> RefTable<'a> {
     /// return the appropriate member name of this reference
     /// when used with the table in context
     /// will have to use another name if the comed up name
@@ -202,30 +218,33 @@ impl <'a>RefTable<'a> {
 #[derive(Clone)]
 #[derive(Default)]
 pub struct Table {
-    ///which schema this belongs
+    /// which schema this belongs
     pub schema: Option<String>,
 
-    ///the table name
+    /// the table name
     pub name: String,
 
-    ///the parent table of this table when inheriting (>= postgresql 9.3)
+    /// the parent table of this table when inheriting (>= postgresql 9.3)
     /// [FIXME] need to tell which schema this parent table belongs
     /// there might be same table in different schemas
     pub parent_table: Option<String>,
 
-    ///what are the other table that inherits this
+    /// what are the other table that inherits this
     /// [FIXME] need to tell which schema this parent table belongs
     /// there might be same table in different schemas
     pub sub_table: Vec<String>,
 
-    ///comment of this table
+    /// comment of this table
     pub comment: Option<String>,
 
-    ///columns of this table
+    /// columns of this table
     pub columns: Vec<Column>,
 
     /// views can also be generated
     pub is_view: bool,
+
+    /// estimated row count if any
+    pub estimated_row_count: Option<usize>,
 }
 impl fmt::Display for Table {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
@@ -245,32 +264,31 @@ impl PartialEq for Table {
 
 
 impl Table {
-
-	/// create table with name	
-	pub fn with_name(schema_table: &str)->Self{
-		if schema_table.contains("."){
-			let splinters = schema_table.split(".").collect::<Vec<&str>>();
-			assert!(splinters.len() == 2, "There should only be 2 parts");
-			let schema = splinters[0].to_owned();
-			let table = splinters[1].to_owned();
-			Table{
-				schema: Some(schema),
-				name: table,
-				..Default::default()
-			}
-		}else{
-			Table{
-				schema: None,
-				name: schema_table.to_owned(),
-				..Default::default()
-			}
-		}
-	}
+    /// create table with name
+    pub fn with_name(schema_table: &str) -> Self {
+        if schema_table.contains(".") {
+            let splinters = schema_table.split(".").collect::<Vec<&str>>();
+            assert!(splinters.len() == 2, "There should only be 2 parts");
+            let schema = splinters[0].to_owned();
+            let table = splinters[1].to_owned();
+            Table {
+                schema: Some(schema),
+                name: table,
+                ..Default::default()
+            }
+        } else {
+            Table {
+                schema: None,
+                name: schema_table.to_owned(),
+                ..Default::default()
+            }
+        }
+    }
 
     /// return the long name of the table using schema.table_name
     pub fn complete_name(&self) -> String {
         match self.schema {
-            Some (ref schema) => format!("{}.{}", schema, self.name),
+            Some(ref schema) => format!("{}.{}", schema, self.name),
             None => self.name.to_owned(),
         }
     }
@@ -425,15 +443,15 @@ impl Table {
         }
         false
     }
-	/// return true when all columns are primary columns
-	/// false if at least 1 is not a primary column
+    /// return true when all columns are primary columns
+    /// false if at least 1 is not a primary column
     pub fn are_primary_columns(&self, column_names: &Vec<String>) -> bool {
         for c in column_names {
-        	if !self.is_primary(&c){
-				return false;
-			}
-		}
-       	true 
+            if !self.is_primary(&c) {
+                return false;
+            }
+        }
+        true
     }
     /// return all the unique keys of this table
     pub fn unique_columns(&self) -> Vec<&Column> {
@@ -457,63 +475,76 @@ impl Table {
         columns.sort_by(|a, b| a.name.cmp(&b.name));
         columns
     }
-	
-	fn get_parent_table<'a>(&self, tables: &'a [Table]) -> Option<&'a Table>{
-		match &self.parent_table{
-			&Some(ref p_table) => {
-				let tmp_table = Table::with_name(&p_table);
-				Some(Self::get_table(&tmp_table.schema, &tmp_table.name, tables))
-			},
-			&None => None
-		}
-	}
 
-	/// tell whether this column exist on the parent column as well.
-	/// does the calculation through the structure, may not correctly reflect the database
-	fn is_inherited_column(self, column: &str, tables: &[Table])->bool{
-		match self.get_parent_table(tables){
-			Some(parent_table) =>{
-				for column in &self.columns{
-					if parent_table.has_column_name(&column.name){
-						return true;
-					}
-				}
-				false
-			},
-			None => false,
-		}
-	}
+    /// below functions are advanced table manipulation functions
+    /// and should be put into curtain
 
-	fn same_schema(&self, table: &Table)->bool{
-		match &self.schema{
-			&None => match &table.schema{
-				&None => true,
-				&Some(_) => false,
-			},
-			&Some(ref schema) => match &table.schema{
-				&None => false,
-				&Some(ref tschema) => (schema == tschema)
-			}
-		}
-	}
+    fn get_parent_table<'a>(&self, tables: &'a [Table]) -> Option<&'a Table> {
+        match &self.parent_table {
+            &Some(ref p_table) => {
+                let tmp_table = Table::with_name(&p_table);
+                Some(Self::get_table(&tmp_table.schema, &tmp_table.name, tables))
+            }
+            &None => None,
+        }
+    }
+
+    /// tell whether this column exist on the parent column as well.
+    /// does the calculation through the structure, may not correctly reflect the database
+    fn is_inherited_column(self, column: &str, tables: &[Table]) -> bool {
+        match self.get_parent_table(tables) {
+            Some(parent_table) => {
+                for column in &self.columns {
+                    if parent_table.has_column_name(&column.name) {
+                        return true;
+                    }
+                }
+                false
+            }
+            None => false,
+        }
+    }
+
+    fn same_schema(&self, table: &Table) -> bool {
+        match &self.schema {
+            &None => {
+                match &table.schema {
+                    &None => true,
+                    &Some(_) => false,
+                }
+            }
+            &Some(ref schema) => {
+                match &table.schema {
+                    &None => false,
+                    &Some(ref tschema) => (schema == tschema),
+                }
+            }
+        }
+    }
 
     /// return the first match of table name regardless of which schema it belongs to.
     /// get the table definition using the table name from an array of table object
     /// [FIXME] Needs to have a more elegant solution by using HashMap
-    pub fn get_table<'a>(schema: &Option<String>, table_name: &str, tables: &'a [Table]) -> &'a Table {
+    pub fn get_table<'a>(schema: &Option<String>,
+                         table_name: &str,
+                         tables: &'a [Table])
+                         -> &'a Table {
         for t in tables {
-            if t.name == table_name && 
-				match schema{
-					&Some(ref schema) => match &t.schema{
-						&Some(ref tschema) => (schema == tschema), 
-						&None => false
-					},	
-					&None => match t.schema{
-						Some(_) => false,
-						None => true
-					} 
-				} 
-		    {
+            if t.name == table_name &&
+               match schema {
+                &Some(ref schema) => {
+                    match &t.schema {
+                        &Some(ref tschema) => (schema == tschema), 
+                        &None => false,
+                    }
+                }	
+                &None => {
+                    match t.schema {
+                        Some(_) => false,
+                        None => true,
+                    }
+                } 
+            } {
                 return t;
             }
         }
@@ -562,13 +593,13 @@ impl Table {
     pub fn get_all_applicable_reference<'a>(&'a self, all_tables: &'a [Table]) -> Vec<RefTable> {
         let mut applicable_ref = vec![];
         if self.is_linker_table() {
-            //println!("Skipping reference listing for table {}, Linker table should not contain objects", self);
+            // println!("Skipping reference listing for table {}, Linker table should not contain objects", self);
             return vec![];
         }
         let all_ref = self.get_all_referenced_table(all_tables);
         for ref_table in all_ref {
             if self.is_extension_of(ref_table.table, all_tables) {
-                //println!("skipping master table {} since {} is just an extension to it ",ref_table.table, self);
+                // println!("skipping master table {} since {} is just an extension to it ",ref_table.table, self);
             } else {
                 applicable_ref.push(ref_table)
             }
@@ -610,45 +641,45 @@ impl Table {
 
         let has_many_direct = self.referring_tables(all_tables);
         let mut included_has_many = vec![];
-        for (hd,column) in has_many_direct {
+        for (hd, column) in has_many_direct {
             if !hd.is_linker_table() && !extension_tables.contains(&hd) &&
-                !included_has_many.contains(&hd) {
-                    let ref_table = RefTable {
-                        table: hd,
-                        column: Some(column),
-                        linker_table: None,
-                        is_has_one: false,
-                        is_ext: false,
-                        is_has_many: true,
-                        is_direct: true,
-                    };
-                    referenced_tables.push(ref_table);
-                    included_has_many.push(hd);
-                }
+               !included_has_many.contains(&hd) {
+                let ref_table = RefTable {
+                    table: hd,
+                    column: Some(column),
+                    linker_table: None,
+                    is_has_one: false,
+                    is_ext: false,
+                    is_has_many: true,
+                    is_direct: true,
+                };
+                referenced_tables.push(ref_table);
+                included_has_many.push(hd);
+            }
         }
         let has_many_indirect = self.indirect_referring_tables(all_tables);
 
-        for (hi, linker) in has_many_indirect {
+        for (hi, linker, via_column) in has_many_indirect {
             if !hi.is_linker_table() && !extension_tables.contains(&hi) &&
-                !included_has_many.contains(&hi) {
-                    let ref_table = RefTable {
-                        table: hi,
-                        column: None,
-                        linker_table: Some(linker),
-                        is_has_one: false,
-                        is_ext: false,
-                        is_has_many: true,
-                        is_direct: false,
-                    };
+               !included_has_many.contains(&hi) {
+                let ref_table = RefTable {
+                    table: hi,
+                    column: None,
+                    linker_table: Some(linker),
+                    is_has_one: false,
+                    is_ext: false,
+                    is_has_many: true,
+                    is_direct: false,
+                };
 
-                    referenced_tables.push(ref_table);
-                    included_has_many.push(hi);
-                }
+                referenced_tables.push(ref_table);
+                included_has_many.push(hi);
+            }
         }
         referenced_tables
     }
 
-    ///determine if this table is a linker table
+    /// determine if this table is a linker table
     /// FIXME: make sure that there are 2 different tables referred to it
     pub fn is_linker_table(&self) -> bool {
         let pk = self.primary_columns();
@@ -665,10 +696,32 @@ impl Table {
     /// which doesn't make sense to be a stand alone window on its own
     /// characteristic: if it has only 1 has_one which is its owning parent table
     /// and no other direct or indirect referring table
-    pub fn is_owned(&self, tables: &[Table]) -> bool {
+    fn is_owned(&self, tables: &[Table]) -> bool {
         let has_one = self.referred_tables(tables);
         let has_many = self.referring_tables(tables);
         has_one.len() == 1 && has_many.is_empty()
+    }
+
+    /// if table has 2 primary keys, 1 of the primary key is a foreign key the (parent) has_one table
+    ///
+    fn is_semi_owned(&self, tables: &[Table]) -> bool {
+        let primary_and_foreign = self.primary_and_foreign_columns();
+        let has_ones = self.referred_tables(tables);
+        let n = primary_and_foreign.len();
+        if self.primary_columns().len() != 2 {
+            return false;
+        }
+        let mut semi_owner = 0;
+        for (column, has_one) in has_ones {
+            if has_one.are_these_foreign_column_refer_to_primary_of_this_table(&primary_and_foreign){
+				semi_owner += 1;
+			}
+        }
+        semi_owner > 0
+    }
+
+    pub fn is_owned_or_semi_owned(&self, tables: &[Table]) -> bool {
+        self.is_owned(tables) || self.is_semi_owned(tables)
     }
 
     /// has many indirect
@@ -684,19 +737,19 @@ impl Table {
     /// returns the table that is indirectly referring to this table and its linker table
     pub fn indirect_referring_tables<'a>(&self,
                                          tables: &'a [Table])
-                                         -> Vec<(&'a Table, &'a Table)> {
+                                         -> Vec<(&'a Table, &'a Table, &'a Column)> {
         let mut indirect_referring_tables = Vec::new();
-        for (rt, _column) in self.referring_tables(tables) {
+        for (rt, column) in self.referring_tables(tables) {
             let rt_pk = rt.primary_columns();
             let rt_fk = rt.foreign_columns();
             let rt_uc = rt.uninherited_columns();
             if rt_pk.len() == 2 && rt_fk.len() == 2 && rt_uc.len() == 2 {
-                //println!("{} is a candidate linker table for {}", rt.name, self.name);
+                // println!("{} is a candidate linker table for {}", rt.name, self.name);
                 let ref_tables = rt.referred_tables(tables);
                 let (_, t0) = ref_tables[0];
                 let (_, t1) = ref_tables[1];
                 let other_table;
-                //if self.name == t0.name && self.schema == t0.schema{
+                // if self.name == t0.name && self.schema == t0.schema{
                 if self == t0 {
                     other_table = t1;
                 } else {
@@ -713,13 +766,37 @@ impl Table {
                 }
 
                 if cnt == 2 {
-                    indirect_referring_tables.push((other_table, rt))
+                    indirect_referring_tables.push((other_table, rt, column))
                 }
             }
         }
         indirect_referring_tables
     }
 
+
+    pub fn direct_tables<'a>(&self, tables: &'a [Table]) -> Vec<&'a Table> {
+        let mut direct_tables = vec![];
+        let referring = self.referring_tables(tables);
+        for (ref_table, _) in referring {
+            if !ref_table.is_owned(tables) && !ref_table.is_linker_table() {
+                direct_tables.push(ref_table)
+            }
+        }
+        direct_tables
+    }
+
+    pub fn indirect_tables<'a>(&self,
+                               tables: &'a [Table])
+                               -> Vec<(&'a Table, &'a Table, &'a Column)> {
+        let mut indirect_tables = vec![];
+        let ind_referring = self.indirect_referring_tables(tables);
+        for (ind, linker, via_column) in ind_referring {
+            if !ind.is_owned(tables) && !ind.is_linker_table() {
+                indirect_tables.push((ind, linker, via_column))
+            }
+        }
+        indirect_tables
+    }
 
 
     /// get referring tables, and check if primary columns of these referring table
@@ -732,14 +809,14 @@ impl Table {
         for (rt, _) in self.referring_tables(tables) {
             let pkfk = rt.primary_and_foreign_columns();
             let rt_pk = rt.primary_columns();
-            //if the referring tables's foreign columns are also its primary columns
-            //that refer to the primary columns of this table
-            //then that table is just an extension table of this table
+            // if the referring tables's foreign columns are also its primary columns
+            // that refer to the primary columns of this table
+            // then that table is just an extension table of this table
             if rt_pk == pkfk && !pkfk.is_empty() &&
                 //if all fk refer to the primary of this table
                 self.are_these_foreign_column_refer_to_primary_of_this_table(&pkfk) {
-                    extension_tables.push(rt);
-                }
+                extension_tables.push(rt);
+            }
         }
         extension_tables
     }
@@ -759,7 +836,7 @@ impl Table {
         let fk = self.foreign_columns();
         for f in fk {
             if pk.contains(&f) {
-                //println!("{}.{} is both primary and foreign", self.name, f.name);
+                // println!("{}.{} is both primary and foreign", self.name, f.name);
                 both.push(f);
             }
         }
@@ -773,17 +850,20 @@ impl Table {
             let schema = foreign.schema;
             let column = foreign.column;
             if self.name == table && self.is_primary(&column) &&
-				match schema{
-					Some(ref schema) => match &self.schema{
-						&Some(ref tschema) => (schema == tschema), 
-						&None => false
-					},	
-					None => match &self.schema{
-						&Some(_) => false,
-						&None => true
-					} 
-				} 
-			{
+               match schema {
+                Some(ref schema) => {
+                    match &self.schema {
+                        &Some(ref tschema) => (schema == tschema), 
+                        &None => false,
+                    }
+                }	
+                None => {
+                    match &self.schema {
+                        &Some(_) => false,
+                        &None => true,
+                    }
+                } 
+            } {
                 return true;
             }
         }
@@ -802,9 +882,7 @@ impl Table {
         qualified
     }
 
-    fn are_these_foreign_column_refer_to_primary_of_this_table(&self,
-                                                               rt_fk: &[&Column])
-                                                               -> bool {
+    fn are_these_foreign_column_refer_to_primary_of_this_table(&self, rt_fk: &[&Column]) -> bool {
         let mut cnt = 0;
         for fk in rt_fk {
             if self.is_foreign_column_refer_to_primary_of_this_table(fk) {
@@ -813,7 +891,6 @@ impl Table {
         }
         cnt == rt_fk.len()
     }
-
 }
 
 

@@ -111,3 +111,9 @@ pub struct Product{
     base64: String,
 }
 
+
+
+
+## April 12, 2016
+
+* Refactor DAO to alias only to type Dao = BTreeMap<String, Value>
