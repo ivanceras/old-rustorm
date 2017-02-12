@@ -38,6 +38,7 @@ Follow me on twitter: [@ivanceras](https://twitter.com/ivanceras)
 ## Related project
 
 
- * [diesel](https://github.com/sgrif/diesel)
+ * [diesel](https://github.com/diesel-rs/diesel)
+ 
 
 
