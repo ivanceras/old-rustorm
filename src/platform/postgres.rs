@@ -11,18 +11,17 @@ use postgres::types::ToSql;
 use writer::SqlFrag;
 use postgres::rows::Row;
 use database::SqlOption;
-use r2d2::PooledConnection;
-use r2d2_postgres::PostgresConnectionManager;
 use rustc_serialize::json::Json;
 use dao::Type;
 use postgres::types::IsNull;
 use uuid::Uuid;
 use query::Operand;
 use postgres as pg;
+use postgres::Connection as PgConnection;
 
-pub struct Postgres {
-    /// a connection pool is provided
-    pub pool: Option<PooledConnection<PostgresConnectionManager>>,
+pub struct Postgres<'a> {
+    /// a connection conn is provided
+    pub conn: Option<&'a PgConnection>,
 }
 
 /// Build the Query into a SQL statements that is a valid
@@ -31,24 +30,24 @@ pub struct Postgres {
 
 // static none: &'static Option<String> = &None;
 
-impl Postgres {
+impl <'a>Postgres<'a> {
     /// create an instance, but without a connection yet,
     /// useful when just building sql queries specific to this platform
     /// inexpensive operation, so can have multiple instances
     pub fn new() -> Self {
-        Postgres { pool: None }
+        Postgres { conn: None }
     }
 
 
-    pub fn with_pooled_connection(pool: PooledConnection<PostgresConnectionManager>) -> Self {
-        Postgres { pool: Some(pool) }
+    pub fn with_connection(conn:&'a PgConnection ) -> Self {
+        Postgres { conn: Some(conn) }
     }
 
 
 
-    pub fn get_connection(&self) -> &Connection {
-        match self.pool {
-            Some(ref pool) => &pool,
+    pub fn get_connection(&self) -> &PgConnection {
+        match self.conn {
+            Some(ref conn) => &conn,
             None => panic!("No connection for this database"),
         }
     }
@@ -485,7 +484,7 @@ impl Postgres {
 }
 
 
-impl Database for Postgres {
+impl <'a>Database for Postgres<'a> {
     fn version(&self) -> Result<String, DbError> {
         let sql = "SHOW server_version";
         let dao = try!(self.execute_sql_with_one_return(sql, &vec![]));
@@ -589,7 +588,7 @@ impl Database for Postgres {
     }
 }
 
-impl DatabaseDDL for Postgres {
+impl <'a>DatabaseDDL for Postgres<'a> {
     fn create_schema(&self, _schema: &str) {
         unimplemented!()
     }
@@ -617,7 +616,7 @@ impl DatabaseDDL for Postgres {
 }
 
 /// this can be condensed with using just extracting the table definition
-impl DatabaseDev for Postgres {
+impl <'a>DatabaseDev for Postgres<'a> {
     fn get_parent_table(&self, schema: &str, table: &str) -> Option<String> {
         let sql = "
             SELECT

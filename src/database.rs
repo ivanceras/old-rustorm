@@ -9,9 +9,8 @@ use query::SqlType;
 use query::Range;
 use std::error::Error;
 use std::fmt;
-use r2d2;
+#[cfg(feature = "postgres")]
 use postgres::error::Error as PgError;
-use postgres::error::ConnectError as PgConnectError;
 #[cfg(feature = "mysql")]
 use mysql::error::MyError;
 use regex::Error as RegexError;
@@ -55,7 +54,6 @@ pub enum BuildMode {
 #[derive(Debug)]
 pub enum DbError {
     Error(String),
-    PoolError(r2d2::InitializationError),
     PlatformError(PlatformError),
 }
 
@@ -69,7 +67,6 @@ impl Error for DbError {
     fn description(&self) -> &str {
         match *self {
             DbError::Error(ref description) => description,
-            DbError::PoolError(ref err) => err.description(),
             DbError::PlatformError(ref err) => err.description(),
         }
     }
@@ -77,7 +74,6 @@ impl Error for DbError {
     fn cause(&self) -> Option<&Error> {
         match *self {
             DbError::Error(_) => None,
-            DbError::PoolError(ref err) => Some(err),
             DbError::PlatformError(ref err) => Some(err),
         }
     }
@@ -86,18 +82,12 @@ impl Error for DbError {
 impl fmt::Display for DbError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
-            DbError::PoolError(ref err) => write!(f, "Pool error: {}", err),
             DbError::PlatformError(ref err) => write!(f, "PostgreSQL error: {}", err),
             DbError::Error(_) => write!(f, "{}", self.description()),
         }
     }
 }
 
-impl From<r2d2::InitializationError> for DbError {
-    fn from(err: r2d2::InitializationError) -> Self {
-        DbError::PoolError(err)
-    }
-}
 
 impl From<PlatformError> for DbError {
     fn from(err: PlatformError) -> Self {
@@ -112,6 +102,7 @@ impl From<RegexError> for DbError {
 }
 
 
+#[cfg(feature = "postgres")]
 impl From<PgError> for DbError {
     fn from(err: PgError) -> Self {
         DbError::PlatformError(From::from(err))
@@ -119,11 +110,6 @@ impl From<PgError> for DbError {
 }
 
 
-impl From<PgConnectError> for DbError {
-    fn from(err: PgConnectError) -> Self {
-        DbError::PlatformError(From::from(err))
-    }
-}
 #[cfg(feature = "mysql")]
 impl From<MyError> for DbError {
     fn from(err: MyError) -> Self {

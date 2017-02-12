@@ -1,9 +1,11 @@
+#[cfg(feature = "postgres")]
 pub mod postgres;
 #[cfg(feature = "sqlite")]
 pub mod sqlite;
 #[cfg(feature = "mysql")]
 pub mod mysql;
 
+#[cfg(feature = "postgres")]
 pub use self::postgres::Postgres;
 #[cfg(feature = "sqlite")]
 pub use self::sqlite::Sqlite;
@@ -12,8 +14,8 @@ pub use self::mysql::Mysql;
 
 use std::error::Error;
 use std::fmt;
+#[cfg(feature = "postgres")]
 use postgres::error::Error as PgError;
-use postgres::error::ConnectError as PgConnectError;
 #[cfg(feature = "mysql")]
 use mysql::error::MyError;
 #[cfg(feature = "sqlite")]
@@ -21,8 +23,8 @@ use rusqlite::SqliteError;
 
 #[derive(Debug)]
 pub enum PlatformError {
+    #[cfg(feature = "postgres")]
     PostgresError(PgError),
-    PostgresConnectError(PgConnectError),
     #[cfg(feature = "mysql")]
     MySQLError(MyError),
     #[cfg(feature = "sqlite")]
@@ -32,8 +34,8 @@ pub enum PlatformError {
 impl Error for PlatformError {
     fn description(&self) -> &str {
         match *self {
+            #[cfg(feature = "postgres")]
             PlatformError::PostgresError(ref err) => err.description(),
-            PlatformError::PostgresConnectError(ref err) => err.description(),
             #[cfg(feature = "mysql")]
             PlatformError::MySQLError(ref err) => err.description(),
             #[cfg(feature = "sqlite")]
@@ -43,8 +45,8 @@ impl Error for PlatformError {
 
     fn cause(&self) -> Option<&Error> {
         match *self {
+            #[cfg(feature = "postgres")]
             PlatformError::PostgresError(ref err) => Some(err),
-            PlatformError::PostgresConnectError(ref err) => Some(err),
             #[cfg(feature = "mysql")]
             PlatformError::MySQLError(ref err) => Some(err),
             #[cfg(feature = "sqlite")]
@@ -56,10 +58,8 @@ impl Error for PlatformError {
 impl fmt::Display for PlatformError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
+            #[cfg(feature = "postgres")]
             PlatformError::PostgresError(ref err) => write!(f, "PostgreSQL error: {}", err),
-            PlatformError::PostgresConnectError(ref err) => {
-                write!(f, "PostgreSQL connection error: {}", err)
-            }
             #[cfg(feature = "mysql")]
             PlatformError::MySQLError(ref err) => write!(f, "MySQL error: {}", err),
             #[cfg(feature = "sqlite")]
@@ -68,17 +68,13 @@ impl fmt::Display for PlatformError {
     }
 }
 
+#[cfg(feature = "postgres")]
 impl From<PgError> for PlatformError {
     fn from(err: PgError) -> Self {
         PlatformError::PostgresError(err)
     }
 }
 
-impl From<PgConnectError> for PlatformError {
-    fn from(err: PgConnectError) -> Self {
-        PlatformError::PostgresConnectError(err)
-    }
-}
 
 #[cfg(feature = "mysql")]
 impl From<MyError> for PlatformError {

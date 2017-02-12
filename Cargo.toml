@@ -13,7 +13,7 @@ keywords = ["orm", "database", "sql"]
 name = "rustorm"
 
 [features]
-sqlite = ["rusqlite","r2d2_sqlite"]
+sqlite = ["rusqlite"]
 
 [dependencies.chrono]
 version = "0.2"
@@ -21,6 +21,7 @@ features = ["rustc-serialize"]
 
 [dependencies.postgres]
 version = "0.11"
+optional = true
 features = ["rustc-serialize", "uuid", "chrono"]
 
 
@@ -33,8 +34,5 @@ env_logger = "0.3"
 regex = "0.1"
 url = "1.1"
 time = "0.1"
-r2d2 = "0.7"
-r2d2_postgres = "0.10"
 rusqlite = { version = "0.7", optional = true }
 mysql = {version = "1.2", optional = true }
-r2d2_sqlite = {version = "0.1", optional = true}

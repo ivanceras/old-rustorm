@@ -20,8 +20,6 @@ pub struct DbConfig {
 }
 
 impl DbConfig {
-    /// TODO: get rid of the hacky way parsing database url
-    /// https://github.com/servo/rust-url/issues/40
     pub fn from_url(url: &str) -> Option<Self> {
         let parsed = Url::parse(url);
         match parsed {

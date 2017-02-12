@@ -5,33 +5,31 @@ use dao::Value;
 use database::{Database, DatabaseDev, BuildMode};
 use writer::SqlFrag;
 use database::SqlOption;
-use rusqlite::SqliteConnection;
 use rusqlite::types::ToSql;
 use rusqlite::SqliteRow;
 use table::{Table, Column, Foreign};
 use database::DatabaseDDL;
 use database::DbError;
-use r2d2::PooledConnection;
-use r2d2_sqlite::SqliteConnectionManager;
 use regex::Regex;
 use std::collections::BTreeMap;
 use dao::Type;
 use query::Operand;
+use rusqlite::Connection as SqliteConnection;
 
-pub struct Sqlite {
-    pool: Option<PooledConnection<SqliteConnectionManager>>,
+pub struct Sqlite<'a> {
+    conn: Option<&'a SqliteConnection>,
 }
 
-impl Sqlite {
+impl <'a>Sqlite<'a> {
     pub fn new() -> Self {
-        Sqlite { pool: None }
+        Sqlite { conn: None }
     }
 
-    pub fn with_pooled_connection(pool: PooledConnection<SqliteConnectionManager>) -> Self {
-        Sqlite { pool: Some(pool) }
+    pub fn with_connection(conn: &'a SqliteConnection) -> Self {
+        Sqlite { conn: Some(conn) }
     }
 
-    fn from_rust_type_tosql<'a>(&self, types: &'a [Value]) -> Vec<&'a ToSql> {
+    fn from_rust_type_tosql<'v>(&self, types: &'v [Value]) -> Vec<&'v ToSql> {
         let mut params: Vec<&ToSql> = vec![];
         for t in types {
             match t {
@@ -45,8 +43,8 @@ impl Sqlite {
     }
 
     pub fn get_connection(&self) -> &SqliteConnection {
-        match self.pool {
-            Some(ref pool) => &pool,
+        match self.conn {
+            Some(ref conn) => &conn,
             None => panic!("No connection for this database"),
         }
     }
@@ -302,7 +300,7 @@ impl Sqlite {
     }
 }
 
-impl Database for Sqlite {
+impl <'a>Database for Sqlite<'a> {
     fn version(&self) -> Result<String, DbError> {
         let sql = "SELECT sqlite_version() AS version";
         let dao = try!(self.execute_sql_with_one_return(sql, &vec![]));
@@ -436,7 +434,7 @@ impl Database for Sqlite {
     }
 }
 
-impl DatabaseDDL for Sqlite {
+impl <'a>DatabaseDDL for Sqlite<'a> {
     fn create_schema(&self, _schema: &str) {
         panic!("sqlite does not support schema")
     }
@@ -514,7 +512,7 @@ impl DatabaseDDL for Sqlite {
     }
 }
 
-impl DatabaseDev for Sqlite {
+impl <'a>DatabaseDev for Sqlite<'a> {
     fn get_table_sub_class(&self, _schema: &str, _table: &str) -> Vec<String> {
         unimplemented!()
     }
