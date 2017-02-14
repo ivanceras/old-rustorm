@@ -17,6 +17,7 @@ use regex::Regex;
 use std::collections::BTreeMap;
 use dao::Type;
 use query::Operand;
+use query::{Select,Insert,Update,Delete};
 
 pub struct Sqlite {
     pool: Option<PooledConnection<SqliteConnectionManager>>,
@@ -358,8 +359,8 @@ impl Database for Sqlite {
         ]
     }
 
-    fn insert(&self, query: &Query) -> Result<Dao, DbError> {
-        let sql_frag = self.build_insert(query, BuildMode::Standard);
+    fn insert(&self, query: &Insert) -> Result<Dao, DbError> {
+        let sql_frag = self.build_insert(query, &BuildMode::Standard);
         match self.execute_sql_with_one_return(&sql_frag.sql, &sql_frag.params) {
             Ok(Some(result)) => Ok(result),
             Ok(None) => Err(DbError::new("No result from insert")),
@@ -448,7 +449,7 @@ impl DatabaseDDL for Sqlite {
     fn build_create_table(&self, table: &Table) -> SqlFrag {
 
 
-        let mut w = SqlFrag::new(self.sql_options(), BuildMode::Standard);
+        let mut w = SqlFrag::new(self.sql_options(), &BuildMode::Standard);
         w.append("CREATE TABLE ");
         w.append(&table.name);
         w.append("(");

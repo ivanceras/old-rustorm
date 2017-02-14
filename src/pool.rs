@@ -4,6 +4,7 @@ use r2d2::Config;
 use r2d2_postgres::SslMode;
 use config::DbConfig;
 use database::{Database, DatabaseDDL, DatabaseDev};
+#[cfg(feature = "postgres")]
 use platform::Postgres;
 #[cfg(feature = "sqlite")]
 use platform::Sqlite;
@@ -22,10 +23,10 @@ use r2d2_sqlite::SqliteConnectionManager;
 
 /// the sql builder for each of the database platform
 pub enum Platform {
+    #[cfg(feature = "postgres")]
     Postgres(Postgres),
     #[cfg(feature = "sqlite")]
     Sqlite(Sqlite),
-    Oracle,
     #[cfg(feature = "mysql")]
     Mysql(Mysql),
 }
@@ -33,34 +34,34 @@ pub enum Platform {
 impl Platform {
     pub fn as_ref(&self) -> &Database {
         match *self {
+            #[cfg(feature = "postgres")]
             Platform::Postgres(ref pg) => pg,
             #[cfg(feature = "sqlite")]
             Platform::Sqlite(ref lite) => lite,
             #[cfg(feature = "mysql")]
             Platform::Mysql(ref my) => my,
-            _ => unimplemented!(),
         }
     }
 
     pub fn as_ddl(&self) -> &DatabaseDDL {
         match *self {
+            #[cfg(feature = "postgres")]
             Platform::Postgres(ref pg) => pg,
             #[cfg(feature = "sqlite")]
             Platform::Sqlite(ref lite) => lite,
             #[cfg(feature = "mysql")]
             Platform::Mysql(ref my) => my,
-            _ => unimplemented!(),
         }
     }
 
     pub fn as_dev(&self) -> &DatabaseDev {
         match *self {
+            #[cfg(feature = "postgres")]
             Platform::Postgres(ref pg) => pg,
             #[cfg(feature = "sqlite")]
             Platform::Sqlite(ref lite) => lite,
             #[cfg(feature = "mysql")]
             Platform::Mysql(ref my) => my,
-            _ => unimplemented!(),
         }
     }
 }
@@ -71,12 +72,12 @@ impl Deref for Platform {
     fn deref(&self) -> &Self::Target {
         debug!("using deref...");
         match *self {
+            #[cfg(feature = "postgres")]
             Platform::Postgres(ref pg) => pg,
             #[cfg(feature = "sqlite")]
             Platform::Sqlite(ref lite) => lite,
             #[cfg(feature = "mysql")]
             Platform::Mysql(ref my) => my,
-            _ => unimplemented!(),
         }
     }
 }
@@ -85,10 +86,10 @@ impl Deref for Platform {
 /// Postgres, Sqlite uses r2d2 connection manager,
 /// Mysql has its own connection pooling
 pub enum ManagedPool {
+    #[cfg(feature = "postgres")]
     Postgres(Pool<PostgresConnectionManager>),
     #[cfg(feature = "sqlite")]
     Sqlite(Pool<SqliteConnectionManager>),
-    Oracle,
     #[cfg(feature = "mysql")]
     Mysql(Option<MyPool>),
 }
@@ -101,6 +102,7 @@ impl ManagedPool {
             Some(config) => {
                 let platform: &str = &config.platform;
                 match platform {
+                    #[cfg(feature = "postgres")]
                     "postgres" => {
                         let manager = try!(PostgresConnectionManager::new(url, SslMode::None));
                         debug!("Creating a connection with a pool size of {}", pool_size);
@@ -144,6 +146,7 @@ impl ManagedPool {
     /// a conection is created here
     pub fn connect(&self) -> Result<Platform, DbError> {
         match *self {
+            #[cfg(feature = "postgres")]
             ManagedPool::Postgres(ref pool) => {
                 match pool.get() {
                     Ok(conn) => {
@@ -168,7 +171,6 @@ impl ManagedPool {
                 let my = Mysql::with_pooled_connection(pool.clone().unwrap());// I hope cloning doesn't really clone the pool, just the Arc
                 Ok(Platform::Mysql(my))
             }
-            _ => Err(DbError::new("Any other database is not yet supported")),
         }
     }
 }

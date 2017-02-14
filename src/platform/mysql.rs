@@ -484,7 +484,7 @@ impl DatabaseDDL for Mysql {
     }
 
     fn build_create_table(&self, table: &Table) -> SqlFrag {
-        let mut w = SqlFrag::new(self.sql_options(), BuildMode::Standard);
+        let mut w = SqlFrag::new(self.sql_options(), &BuildMode::Standard);
         w.append("CREATE TABLE ");
         w.append(&table.name);
         w.append("(");

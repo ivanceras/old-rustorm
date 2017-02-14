@@ -1,7 +1,7 @@
 use query::Operand;
 use query::Field;
 use query::TableName;
-use query::Query;
+use query::{Query,Select};
 use query::Function;
 use query::column_name::{ColumnName, ToColumnName};
 use table::Column;
@@ -15,7 +15,7 @@ use query::operand::ToOperand;
 #[derive(Clone)]
 pub enum QuerySource {
     TableName(TableName),
-    Query(Query),
+    Query(Select),
     Function(Function),
 }
 
