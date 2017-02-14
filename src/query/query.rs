@@ -14,7 +14,7 @@ use database::BuildMode;
 use query::{ColumnName, ToColumnName};
 use query::{TableName, ToTableName};
 use query::{Filter, Condition, Equality, Connector, HasEquality};
-use query::QueryBuilder;
+//use query::QueryBuilder;
 use query::COUNT;
 use query::Function;
 use query::{Join, JoinType, Modifier};
@@ -23,6 +23,7 @@ use query::{Order, ToOrder, HasDirection, NullsWhere, Direction};
 use query::{Field, ToField};
 use query::SourceField;
 use query::{QuerySource, ToSourceField};
+use table::Column;
 
 /// Could have been SqlAction
 #[derive(Debug)]
@@ -36,6 +37,35 @@ pub enum SqlType {
     DELETE,
 }
 
+pub enum Query{
+    Select(Select),
+    Insert(Insert),
+    Update(Update),
+    Delete(Delete),
+}
+
+impl Query{
+    /// build the query only, not executed, useful when debugging
+    pub fn build(&mut self, db: &Database) -> SqlFrag {
+        let query = self.finalize();
+        db.build_query(&query, &BuildMode::Standard)
+    }
+
+    /// Warning: don't use this in production
+    pub fn debug_build(&mut self, db: &Database) -> SqlFrag {
+        let query = self.finalize();
+        db.build_query(&query, &BuildMode::Debug)
+    }
+
+    fn finalize(&mut self) -> Self{
+        match *self{
+            Query::Select(ref mut select) => {
+                Query::Select(select.finalize().clone())
+            },
+            _ => panic!()
+        }
+    }
+}
 
 
 /// Query Error
@@ -78,14 +108,14 @@ impl Range {
 pub struct DeclaredQuery{
     pub name: String,
     pub fields: Vec<String>,
-    pub query: Query,
+    pub query: Select,
     pub is_recursive: bool
 }
 
 
 #[derive(Debug)]
 #[derive(Clone)]
-pub struct Query {
+pub struct Select {
     /// sql type determine which type of query to form, some fields are not applicable to other types of query
     pub sql_type: SqlType,
 
@@ -142,10 +172,10 @@ pub struct Query {
     pub enable_query_stat: bool,
 }
 
-impl Query {
+impl Select {
     /// the default query is select
     pub fn new() -> Self {
-        Query {
+        Select{
             sql_type: SqlType::SELECT,
             distinct: false,
             enumerate_all: false,
@@ -168,23 +198,23 @@ impl Query {
 
 
     pub fn select() -> Self {
-        let mut q = Query::new();
+        let mut q = Select::new();
         q.sql_type = SqlType::SELECT;
         q
     }
 
     pub fn insert() -> Self {
-        let mut q = Query::new();
+        let mut q = Select::new();
         q.sql_type = SqlType::INSERT;
         q
     }
     pub fn update() -> Self {
-        let mut q = Query::new();
+        let mut q = Select::new();
         q.sql_type = SqlType::UPDATE;
         q
     }
     pub fn delete() -> Self {
-        let mut q = Query::new();
+        let mut q = Select::new();
         q.sql_type = SqlType::DELETE;
         q
     }
@@ -283,7 +313,7 @@ impl Query {
     /// use WITH (query) t1 SELECT from t1 declaration in postgresql, sqlite
     /// use SELECT FROM (query) in oracle, mysql, others
     /// alias of the table
-    pub fn from_query(&mut self, query: Query, alias: &str) {
+    pub fn from_query(&mut self, query: Select, alias: &str) {
         let sf = SourceField {
             source: QuerySource::Query(query),
             rename: Some(alias.to_owned()),
@@ -522,17 +552,6 @@ impl Query {
         self.enumerated_returns.push(field);
     }
 
-    /// build the query only, not executed, useful when debugging
-    pub fn build(&mut self, db: &Database) -> SqlFrag {
-        self.finalize();
-        db.build_query(self, BuildMode::Standard)
-    }
-
-    /// Warning: don't use this in production
-    pub fn debug_build(&mut self, db: &Database) -> SqlFrag {
-        self.finalize();
-        db.build_query(self, BuildMode::Debug)
-    }
 
     /// retrieve a generic types, type is unknown at runtime
     /// expects a return, such as select, insert/update with returning clause
@@ -570,3 +589,76 @@ impl Query {
         }
     }
 }
+ 
+ pub enum Data{
+    Values(Vec<Operand>),
+    Query(Select),
+ }
+
+pub struct Insert{
+    pub into: TableName,
+    pub columns: Vec<ColumnName>,
+    pub data: Data,
+    pub return_columns: Vec<ColumnName>
+}
+pub struct Update{
+    pub table: Table,
+    pub columns: Vec<ColumnName>,
+    pub values: Vec<Operand>,
+    pub filters: Vec<Filter>,
+    pub return_columns: Vec<ColumnName>
+}
+pub struct Delete{
+    pub from_table: TableName,
+    pub filters: Vec<Filter>
+}
+
+pub struct CreateTable{
+    table: TableName,
+    column: Vec<Column>
+}
+
+pub struct DropTable{
+    table: TableName,
+    force: bool,
+}
+
+pub struct CreateSchema{
+    schema: String,
+}
+
+pub struct DropSchema{
+    schema: String,
+    force: bool
+}
+
+pub struct CreateFunction{
+    function: Function
+}
+
+//TODO: add/drop index
+// on update, on delete, on insert
+pub struct AlterTable{
+    table: String,
+}
+
+enum TableOrColumn{
+    Table(TableName),
+    Column(ColumnName)
+}
+
+pub struct Comment{
+    target: TableOrColumn,
+    comment: String
+}
+
+pub struct CopyTable{
+    table: String,
+    dao: Vec<Operand>
+}
+
+
+pub struct CreateExtension{
+    extension: String,
+}
+

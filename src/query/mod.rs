@@ -1,7 +1,7 @@
 pub mod column_name;
 pub mod table_name;
 pub mod filter;
-pub mod builder;
+//pub mod builder;
 pub mod function;
 pub mod join;
 pub mod operand;
@@ -13,7 +13,7 @@ pub mod query;
 pub use self::column_name::{ColumnName, ToColumnName};
 pub use self::table_name::{TableName, ToTableName};
 pub use self::filter::{Filter, Condition, Equality, Connector, HasEquality};
-pub use self::builder::QueryBuilder;
+//pub use self::builder::QueryBuilder;
 pub use self::function::COUNT;
 pub use self::function::Function;
 pub use self::join::{Join, JoinType, Modifier};
@@ -23,7 +23,10 @@ pub use self::field::{Field, ToField};
 pub use self::source::SourceField;
 pub use self::source::{QuerySource, ToSourceField};
 
-pub use self::query::{Query,Range,DeclaredQuery,SqlType,Error};
+pub use self::query::{Range,DeclaredQuery,SqlType,Error};
+pub use self::query::{Select,Insert,Update,Delete};
+pub use self::query::Query;
+
 
 
 
