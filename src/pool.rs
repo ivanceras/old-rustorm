@@ -16,10 +16,62 @@ use mysql::conn::pool::MyPool;
 use mysql::conn::MyOpts;
 use database::DbError;
 use std::ops::Deref;
+use std::collections::HashMap;
+use std::sync::{Arc,Mutex,RwLock};
 
 #[cfg(feature = "sqlite")]
 use r2d2_sqlite::SqliteConnectionManager;
 
+
+lazy_static! {
+    pub static ref DB_POOL: Arc<RwLock<HashMap<PoolConfig, ManagedPool>>> = 
+            Arc::new(RwLock::new(HashMap::new()));
+}
+
+// 1 pool per connection name
+// check the connection name supplied
+// has the same db_url configuration
+// different connection name
+// will have different connection pool
+#[derive(PartialEq,Eq)]
+#[derive(Hash)]
+#[derive(Clone)]
+pub struct PoolConfig{
+    connection_name: String, 
+    db_url: String,
+    pool_size: u32,
+}
+
+
+/// no connection name supplied
+/// pool size is 10;
+pub fn db_with_url(db_url: &str) -> Result<Platform, DbError> {
+    let config = PoolConfig{
+        connection_name: "GLOBAL".to_string(),
+        db_url: db_url.to_string(),
+        pool_size: 10
+    };
+    db_with_config(&config)
+}
+
+pub fn db_with_config(config: &PoolConfig) -> Result<Platform, DbError> {
+    let has_pool = DB_POOL.read().unwrap().get(&config).is_some();
+    if has_pool{
+        DB_POOL.read().unwrap().get(&config).unwrap().connect()
+    }else{
+        create_new(&config)
+    }
+}
+
+fn create_new(config: &PoolConfig) -> Result<Platform, DbError> {
+    println!("not an existing pool, creating one");
+    let pool = ManagedPool::init(&config.db_url, config.pool_size as usize)?;
+    let conn = pool.connect();
+    println!("inserting to the Pool");
+    DB_POOL.write().unwrap().insert(config.clone(), pool);
+    println!("inserted!");
+    conn
+}
 
 /// the sql builder for each of the database platform
 pub enum Platform {
@@ -32,6 +84,25 @@ pub enum Platform {
 }
 
 impl Platform {
+
+    /// create a postgresql
+    /// database instance
+    /// without doing a connection
+    #[cfg(feature = "postgres")]
+    pub fn pg() -> Self {
+       Platform::Postgres(Postgres::new()) 
+    }
+
+    #[cfg(feature = "sqlite")]
+    pub fn sqlite() -> Self {
+        Platform::Sqlite(Sqlite::new())
+    }
+
+    #[cfg(feature = "mysql")]
+    pub fn mysql() -> Self {
+        Platform::Mysql(Mysql::new())
+    }
+
     pub fn as_ref(&self) -> &Database {
         match *self {
             #[cfg(feature = "postgres")]
