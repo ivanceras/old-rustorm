@@ -1,9 +1,7 @@
-use query::Operand;
-use query::ColumnName;
-use query::ToTableName;
 use query::operand::ToOperand;
 use query::source::{SourceField, QuerySource, ToSourceField};
 use query::table_name::TableName;
+use query::operand::Operand;
 
 
 

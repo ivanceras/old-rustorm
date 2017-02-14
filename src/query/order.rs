@@ -1,7 +1,5 @@
-use table::Column;
 use query::Operand;
 use query::operand::ToOperand;
-use query::ColumnName;
 
 
 #[derive(Debug)]

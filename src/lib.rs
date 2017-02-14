@@ -4,6 +4,7 @@
 //!
 //!
 
+//#![deny(warnings)]
 extern crate rustc_serialize;
 extern crate postgres;
 #[cfg(feature = "sqlite")]

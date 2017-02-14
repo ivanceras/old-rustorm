@@ -1,14 +1,6 @@
 use query::ColumnName;
-use query::TableName;
-use query::Function;
-use query::Query;
 use dao::Value;
-use query::Filter;
 use table::Column;
-use query::HasEquality;
-use query::Condition;
-use query::Equality;
-use query::Connector;
 use dao::ToValue;
 use query::source::QuerySource;
 use query::column_name::ToColumnName;
