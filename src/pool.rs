@@ -25,7 +25,6 @@ pub enum Platform {
     Postgres(Postgres),
     #[cfg(feature = "sqlite")]
     Sqlite(Sqlite),
-    Oracle,
     #[cfg(feature = "mysql")]
     Mysql(Mysql),
 }
@@ -38,7 +37,6 @@ impl Platform {
             Platform::Sqlite(ref lite) => lite,
             #[cfg(feature = "mysql")]
             Platform::Mysql(ref my) => my,
-            _ => unimplemented!(),
         }
     }
 
@@ -49,7 +47,6 @@ impl Platform {
             Platform::Sqlite(ref lite) => lite,
             #[cfg(feature = "mysql")]
             Platform::Mysql(ref my) => my,
-            _ => unimplemented!(),
         }
     }
 
@@ -60,7 +57,6 @@ impl Platform {
             Platform::Sqlite(ref lite) => lite,
             #[cfg(feature = "mysql")]
             Platform::Mysql(ref my) => my,
-            _ => unimplemented!(),
         }
     }
 }
@@ -76,7 +72,6 @@ impl Deref for Platform {
             Platform::Sqlite(ref lite) => lite,
             #[cfg(feature = "mysql")]
             Platform::Mysql(ref my) => my,
-            _ => unimplemented!(),
         }
     }
 }
@@ -88,7 +83,6 @@ pub enum ManagedPool {
     Postgres(Pool<PostgresConnectionManager>),
     #[cfg(feature = "sqlite")]
     Sqlite(Pool<SqliteConnectionManager>),
-    Oracle,
     #[cfg(feature = "mysql")]
     Mysql(Option<MyPool>),
 }
@@ -168,7 +162,6 @@ impl ManagedPool {
                 let my = Mysql::with_pooled_connection(pool.clone().unwrap());// I hope cloning doesn't really clone the pool, just the Arc
                 Ok(Platform::Mysql(my))
             }
-            _ => Err(DbError::new("Any other database is not yet supported")),
         }
     }
 }
