@@ -57,13 +57,14 @@ impl Query{
         db.build_query(&query, &BuildMode::Debug)
     }
 
-    fn finalize(&mut self) -> Self{
-        match *self{
-            Query::Select(ref mut select) => {
-                Query::Select(select.finalize().clone())
+    fn finalize(&mut self) -> &Self{
+        match self{
+            &mut Query::Select(ref mut select) => {
+                *select = select.finalize().clone(); 
             },
             _ => panic!()
         }
+        self
     }
 }
 
