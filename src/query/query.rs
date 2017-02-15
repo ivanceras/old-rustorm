@@ -1,26 +1,22 @@
-
-use dao::{Value, ToValue};
+use query::Operand;
+use dao::ToValue;
 use table::Table;
-use std::collections::BTreeMap;
 use database::Database;
 use dao::DaoResult;
 use dao::IsDao;
 use dao::Dao;
 use table::IsTable;
 use writer::SqlFrag;
-use std::fmt;
 use database::DbError;
 use database::BuildMode;
-use query::{ColumnName, ToColumnName};
+use query::ColumnName;
 use query::{TableName, ToTableName};
-use query::{Filter, Condition, Equality, Connector, HasEquality};
+use query::{Filter, Equality};
 //use query::QueryBuilder;
-use query::COUNT;
 use query::Function;
-use query::{Join, JoinType, Modifier};
-use query::Operand;
-use query::{Order, ToOrder, HasDirection, NullsWhere, Direction};
-use query::{Field, ToField};
+use query::Join;
+use query::Order;
+use query::Field;
 use query::SourceField;
 use query::{QuerySource, ToSourceField};
 use table::Column;
@@ -615,51 +611,51 @@ pub struct Delete{
 }
 
 pub struct CreateTable{
-    table: TableName,
-    column: Vec<Column>
+    pub table: TableName,
+    pub column: Vec<Column>
 }
 
 pub struct DropTable{
-    table: TableName,
-    force: bool,
+    pub table: TableName,
+    pub force: bool,
 }
 
 pub struct CreateSchema{
-    schema: String,
+    pub schema: String,
 }
 
 pub struct DropSchema{
-    schema: String,
-    force: bool
+    pub schema: String,
+    pub force: bool
 }
 
 pub struct CreateFunction{
-    function: Function
+    pub function: Function
 }
 
 //TODO: add/drop index
 // on update, on delete, on insert
 pub struct AlterTable{
-    table: String,
+    pub table: String,
 }
 
-enum TableOrColumn{
+pub enum TableOrColumn{
     Table(TableName),
     Column(ColumnName)
 }
 
 pub struct Comment{
-    target: TableOrColumn,
-    comment: String
+    pub target: TableOrColumn,
+    pub comment: String
 }
 
 pub struct CopyTable{
-    table: String,
-    dao: Vec<Operand>
+    pub table: String,
+    pub dao: Vec<Operand>
 }
 
 
 pub struct CreateExtension{
-    extension: String,
+    pub extension: String,
 }
 

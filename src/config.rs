@@ -1,4 +1,4 @@
-use url::{Url, Host};
+use url::{Url};
 
 
 
@@ -55,7 +55,7 @@ impl DbConfig {
                     ssl: false,
                 })
             }
-            Err(e) => None,
+            Err(_) => None,
         }
     }
 

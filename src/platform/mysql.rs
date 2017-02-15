@@ -17,7 +17,6 @@ use mysql::conn::Stmt;
 use mysql::conn::pool::MyPool;
 use chrono::naive::datetime::NaiveDateTime;
 use chrono::datetime::DateTime;
-use chrono::offset::utc::UTC;
 use chrono::offset::fixed::FixedOffset;
 
 use query::Operand;
@@ -129,8 +128,6 @@ impl Mysql {
                     ColumnType::MYSQL_TYPE_TIMESTAMP => {
                         let v: Timespec = FromValue::from_value(value.clone());
                         let t = NaiveDateTime::from_timestamp(v.sec, v.nsec as u32);
-                        let utc = UTC::now();
-                        debug!("time: {}",t);
                         let fix = FixedOffset::east(1);
                         let t2 = DateTime::from_utc(t, fix);
                         Some(Value::DateTime(t2))
@@ -240,10 +237,7 @@ impl Mysql {
             Type::VecU8 => "blob".to_owned(),
             Type::Json => "text".to_owned(),
             Type::Uuid => "varchar(36)".to_owned(),
-            Type::NaiveDateTime => "timestamp".to_owned(),
             Type::DateTime => "timestamp".to_owned(),
-            Type::NaiveDate => "date".to_owned(),
-            Type::NaiveTime => "time".to_owned(),
             _ => {
                 panic!("Unable to get the equivalent database data type for {:?}",
                         rust_type)
@@ -349,7 +343,7 @@ impl Mysql {
     }
 
     fn get_table_comment(&self, schema: &str, table: &str) -> Option<String> {
-
+        println!("{} {}", schema, table);
         None
     }
 
@@ -542,9 +536,10 @@ impl DatabaseDDL for Mysql {
 
 impl DatabaseDev for Mysql {
     fn get_parent_table(&self, schema: &str, table: &str) -> Option<String> {
+        println!("{} {}", schema, table);
         None
     }
-    fn get_row_count_estimate(&self, schema: &str, table: &str) -> Option<usize> {
+    fn get_row_count_estimate(&self, _: &str, table: &str) -> Option<usize> {
         let sql = format!("SELECT TABLE_ROWS as count FROM INFORMATION_SCHEMA.TABLES
                 WHERE TABLE_NAME = '{}';",table);
 
@@ -554,10 +549,10 @@ impl DatabaseDev for Mysql {
                     Some(dao) => {
                         match dao.get("count") {
                             Some(schema) => {
-                                match schema {
-                                    &Value::I64(count) => Some(count as usize),
-                                    &Value::I32(count) => Some(count as usize),
-                                    &Value::I16(count) => Some(count as usize),
+                                match *schema {
+                                    Value::I64(count) => Some(count as usize),
+                                    Value::I32(count) => Some(count as usize),
+                                    Value::I16(count) => Some(count as usize),
                                     _ => unreachable!(),
                                 }
                             }
@@ -572,6 +567,7 @@ impl DatabaseDev for Mysql {
     }
 
     fn get_table_sub_class(&self, schema: &str, table: &str) -> Vec<String> {
+        println!("{} {}", schema, table);
         vec![]
     }
 
@@ -646,6 +642,7 @@ impl DatabaseDev for Mysql {
 
 
     fn get_inherited_columns(&self, schema: &str, table: &str) -> Vec<String> {
+        println!("{} {}", schema, table);
         vec![]
     }
 
@@ -670,8 +667,6 @@ impl DatabaseDev for Mysql {
                 // (vec!["chrono::naive::date::NaiveDateTime".to_owned()],
                 // Type::NaiveDateTime)
             }
-            "date" => (vec!["chrono::naive::date::NaiveDate".to_owned()], Type::NaiveDate),
-            "time" => (vec!["chrono::naive::time::NaiveTime".to_owned()], Type::NaiveTime),
             _ => panic!("Unable to get the equivalent data type for {}", db_type),
         }
     }
@@ -694,10 +689,7 @@ impl DatabaseDev for Mysql {
             Type::VecU8 => "blob".to_owned(),
             Type::Json => "text".to_owned(),
             Type::Uuid => "varchar(36)".to_owned(),
-            Type::NaiveDateTime => "timestamp".to_owned(),
             Type::DateTime => "timestamp".to_owned(),
-            Type::NaiveDate => "date".to_owned(),
-            Type::NaiveTime => "time".to_owned(),
             _ => {
                 panic!("Unable to get the equivalent database data type for {:?}",
                         rust_type)

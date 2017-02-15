@@ -1,6 +1,4 @@
-
 use query::Operand;
-use query::{ColumnName, ToColumnName};
 use query::operand::ToOperand;
 use query::source::QuerySource;
 

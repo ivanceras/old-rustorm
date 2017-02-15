@@ -13,12 +13,8 @@ use postgres::rows::Row;
 use database::SqlOption;
 use r2d2::PooledConnection;
 use r2d2_postgres::PostgresConnectionManager;
-use rustc_serialize::json::Json;
 use dao::Type;
-use postgres::types::IsNull;
-use uuid::Uuid;
 use query::Operand;
-use postgres as pg;
 
 pub struct Postgres {
     /// a connection pool is provided
@@ -77,9 +73,6 @@ impl Postgres {
                 Value::VecU8(ref x) => params.push(x),
                 Value::Uuid(ref x) => params.push(x),
                 Value::DateTime(ref x) => params.push(x),
-                Value::NaiveDate(ref x) => params.push(x),
-                Value::NaiveTime(ref x) => params.push(x),
-                Value::NaiveDateTime(ref x) => params.push(x),
                 Value::Json(ref x) => params.push(x),
             }
         }
@@ -96,7 +89,7 @@ impl Postgres {
                     Some(value) => {
                         match value {
                             Ok(value) => Some(Value::Uuid(value)),
-                            Err(e) => None,
+                            Err(_) => None,
                         }
                     }
                     None => None,
@@ -108,7 +101,7 @@ impl Postgres {
                     Some(value) => {
                         match value {
                             Ok(value) => Some(Value::String(value)),
-                            Err(e) => None,
+                            Err(_) => None,
                         }
                     }
                     None => None,
@@ -120,7 +113,7 @@ impl Postgres {
                     Some(value) => {
                         match value {
                             Ok(value) => Some(Value::DateTime(value)),
-                            Err(e) => None,
+                            Err(_) => None,
                         }
                     }
                     None => None,
@@ -132,7 +125,7 @@ impl Postgres {
                     Some(value) => {
                         match value {
                             Ok(value) => Some(Value::F32(value)),
-                            Err(e) => None,
+                            Err(_) => None,
                         }
                     }
                     None => None,
@@ -144,7 +137,7 @@ impl Postgres {
                     Some(value) => {
                         match value {
                             Ok(value) => Some(Value::F64(value)),
-                            Err(e) => None,
+                            Err(_) => None,
                         }
                     }
                     None => None,
@@ -156,7 +149,7 @@ impl Postgres {
                     Some(value) => {
                         match value {
                             Ok(value) => Some(Value::F64(value)),
-                            Err(e) => None,
+                            Err(_) => None,
                         }
                     }
                     None => None,
@@ -168,7 +161,7 @@ impl Postgres {
                     Some(value) => {
                         match value {
                             Ok(value) => Some(Value::Bool(value)),
-                            Err(e) => None,
+                            Err(_) => None,
                         }
                     }
                     None => None,
@@ -180,7 +173,7 @@ impl Postgres {
                     Some(value) => {
                         match value {
                             Ok(value) => Some(Value::Json(value)),
-                            Err(e) => None,
+                            Err(_) => None,
                         }
                     }
                     None => None,
@@ -192,7 +185,7 @@ impl Postgres {
                     Some(value) => {
                         match value {
                             Ok(value) => Some(Value::I16(value)),
-                            Err(e) => None,
+                            Err(_) => None,
                         }
                     }
                     None => None,
@@ -204,7 +197,7 @@ impl Postgres {
                     Some(value) => {
                         match value {
                             Ok(value) => Some(Value::I32(value)),
-                            Err(e) => None,
+                            Err(_) => None,
                         }
                     }
                     None => None,
@@ -216,7 +209,7 @@ impl Postgres {
                     Some(value) => {
                         match value {
                             Ok(value) => Some(Value::I64(value)),
-                            Err(e) => None,
+                            Err(_) => None,
                         }
                     }
                     None => None,
@@ -228,7 +221,7 @@ impl Postgres {
                     Some(value) => {
                         match value {
                             Ok(value) => Some(Value::DateTime(value)),
-                            Err(e) => None,
+                            Err(_) => None,
                         }
                     }
                     None => None,
@@ -240,7 +233,7 @@ impl Postgres {
                     Some(value) => {
                         match value {
                             Ok(value) => Some(Value::DateTime(value)),
-                            Err(e) => None,
+                            Err(_) => None,
                         }
                     }
                     None => None,
@@ -252,7 +245,7 @@ impl Postgres {
                     Some(value) => {
                         match value {
                             Ok(value) => Some(Value::VecU8(value)),
-                            Err(e) => None,
+                            Err(_) => None,
                         }
                     }
                     None => None,
@@ -264,7 +257,7 @@ impl Postgres {
                     Some(value) => {
                         match value {
                             Ok(value) => Some(Value::String(value)),
-                            Err(e) => None,
+                            Err(_) => None,
                         }
                     }
                     None => None,
@@ -276,7 +269,7 @@ impl Postgres {
                     Some(value) => {
                         match value {
                             Ok(value) => Some(Value::String(value)),
-                            Err(e) => None,
+                            Err(_) => None,
                         }
                     }
                     None => None,
@@ -821,24 +814,11 @@ impl DatabaseDev for Postgres {
             "bytea" => (vec![], Type::VecU8),
             "json" | "jsonb" => (vec!["rustc_serialize::json::Json".to_owned()], Type::Json),
             "uuid" => (vec!["uuid::Uuid".to_owned()], Type::Uuid),
-            "timestamp" => {
-                (vec!["chrono::naive::datetime::NaiveDateTime".to_owned()], Type::NaiveDateTime)
-            }
-            "timestamp without time zone" => {
-                (vec!["chrono::naive::datetime::NaiveDateTime".to_owned()], Type::NaiveDateTime)
-            }
             "timestamp with time zone" => {
                 (vec!["chrono::datetime::DateTime".to_owned(),
                       "chrono::offset::utc::UTC".to_owned()],
                  Type::DateTime)
             }
-            "time with time zone" => {
-                (vec!["chrono::naive::time::NaiveTime".to_owned(),
-                      "chrono::offset::utc::UTC".to_owned()],
-                 Type::NaiveTime)
-            }
-            "date" => (vec!["chrono::naive::date::NaiveDate".to_owned()], Type::NaiveDate),
-            "time" => (vec!["chrono::naive::time::NaiveTime".to_owned()], Type::NaiveTime),
             "interval" => (vec![], Type::U32),
             "inet[]" => (vec![], Type::String),
             "tsvector" | "inet" => (vec![], Type::String),//or everything else should be string
@@ -864,10 +844,7 @@ impl DatabaseDev for Postgres {
             Type::VecU8 => "bytea".to_owned(),
             Type::Json => "json".to_owned(),
             Type::Uuid => "uuid".to_owned(),
-            Type::NaiveDateTime => "timestamp".to_owned(),
             Type::DateTime => "timestamp with time zone".to_owned(),
-            Type::NaiveDate => "date".to_owned(),
-            Type::NaiveTime => "time".to_owned(),
             _ => {
                 panic!("Unable to get the equivalent database data type for {:?}",
                        rust_type)

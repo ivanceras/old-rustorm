@@ -1,11 +1,13 @@
 use r2d2::Pool;
-use r2d2_postgres::PostgresConnectionManager;
 use r2d2::Config;
-use r2d2_postgres::SslMode;
 use config::DbConfig;
 use database::{Database, DatabaseDDL, DatabaseDev};
 #[cfg(feature = "postgres")]
 use platform::Postgres;
+#[cfg(feature = "postgres")]
+use r2d2_postgres::PostgresConnectionManager;
+#[cfg(feature = "postgres")]
+use r2d2_postgres::SslMode;
 #[cfg(feature = "sqlite")]
 use platform::Sqlite;
 #[cfg(feature = "mysql")]
@@ -17,7 +19,7 @@ use mysql::conn::MyOpts;
 use database::DbError;
 use std::ops::Deref;
 use std::collections::HashMap;
-use std::sync::{Arc,Mutex,RwLock};
+use std::sync::{Arc, RwLock};
 
 #[cfg(feature = "sqlite")]
 use r2d2_sqlite::SqliteConnectionManager;
@@ -63,6 +65,7 @@ pub fn db_with_config(config: &PoolConfig) -> Result<Platform, DbError> {
     }
 }
 
+/// creates a new ManagedPool for this database platform
 fn create_new(config: &PoolConfig) -> Result<Platform, DbError> {
     println!("not an existing pool, creating one");
     let pool = ManagedPool::init(&config.db_url, config.pool_size as usize)?;

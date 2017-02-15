@@ -25,6 +25,7 @@ use query::ToField;
 use query::source::{QuerySource, ToSourceField, SourceField};
 use query::DeclaredQuery;
 
+
 pub struct QueryBuilder {
     query: Query,
 }

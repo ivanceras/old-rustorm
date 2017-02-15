@@ -1,13 +1,8 @@
-use query::Operand;
-use query::Field;
 use query::TableName;
-use query::{Query,Select};
+use query::Select;
 use query::Function;
-use query::column_name::{ColumnName, ToColumnName};
-use table::Column;
-use table::Table;
 use query::table_name::ToTableName;
-use query::operand::ToOperand;
+use table::Table;
 
 
 /// This fields can be used in the FROM field
