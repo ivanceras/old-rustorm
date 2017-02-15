@@ -21,6 +21,7 @@ use query::SourceField;
 use query::{QuerySource, ToSourceField};
 use table::Column;
 
+/*
 /// Could have been SqlAction
 #[derive(Debug)]
 #[derive(Clone)]
@@ -32,6 +33,7 @@ pub enum SqlType {
     UPDATE,
     DELETE,
 }
+*/
 
 pub enum Query{
     Select(Select),
@@ -113,9 +115,6 @@ pub struct DeclaredQuery{
 #[derive(Debug)]
 #[derive(Clone)]
 pub struct Select {
-    /// sql type determine which type of query to form, some fields are not applicable to other types of query
-    pub sql_type: SqlType,
-
     /// whether to select the records distinct
     pub distinct: bool,
 
@@ -173,7 +172,6 @@ impl Select {
     /// the default query is select
     pub fn new() -> Self {
         Select{
-            sql_type: SqlType::SELECT,
             distinct: false,
             enumerate_all: false,
             declared_query: vec![],
@@ -194,39 +192,12 @@ impl Select {
     }
 
 
-    pub fn select() -> Self {
-        let mut q = Select::new();
-        q.sql_type = SqlType::SELECT;
-        q
-    }
-
-    pub fn insert() -> Self {
-        let mut q = Select::new();
-        q.sql_type = SqlType::INSERT;
-        q
-    }
-    pub fn update() -> Self {
-        let mut q = Select::new();
-        q.sql_type = SqlType::UPDATE;
-        q
-    }
-    pub fn delete() -> Self {
-        let mut q = Select::new();
-        q.sql_type = SqlType::DELETE;
-        q
-    }
-
     pub fn enumerate_all(&mut self) {
         self.enumerate_all = true;
     }
 
     pub fn all(&mut self) {
         self.column("*");
-    }
-    pub fn select_all() -> Self {
-        let mut q = Self::select();
-        q.all();
-        q
     }
 
     fn enumerate(&mut self, column_name: ColumnName) {
