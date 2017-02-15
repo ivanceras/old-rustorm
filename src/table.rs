@@ -112,7 +112,7 @@ impl Column {
     }
     /// mailing_address_id -> address_id becomes Mailing Address
     /// physical_address_id -> address_id becomes Physical Address
-    pub fn clean_lookupname(&self, table: &Table, lookup: &Table) -> String {
+    pub fn clean_lookupname(&self, _: &Table, lookup: &Table) -> String {
         let fk_lookup = lookup.primary_columns();
         let mut column_name = self.name.to_owned();
         for fk in fk_lookup {
@@ -476,6 +476,7 @@ impl Table {
         columns
     }
 
+/*
     /// below functions are advanced table manipulation functions
     /// and should be put into curtain
 
@@ -488,10 +489,12 @@ impl Table {
             &None => None,
         }
     }
+    */
 
+/*
     /// tell whether this column exist on the parent column as well.
     /// does the calculation through the structure, may not correctly reflect the database
-    fn is_inherited_column(self, column: &str, tables: &[Table]) -> bool {
+    fn is_inherited_column(self, tables: &[Table]) -> bool {
         match self.get_parent_table(tables) {
             Some(parent_table) => {
                 for column in &self.columns {
@@ -504,6 +507,8 @@ impl Table {
             None => false,
         }
     }
+*/
+/*
 
     fn same_schema(&self, table: &Table) -> bool {
         match &self.schema {
@@ -521,6 +526,7 @@ impl Table {
             }
         }
     }
+    */
 
     /// return the first match of table name regardless of which schema it belongs to.
     /// get the table definition using the table name from an array of table object
@@ -659,7 +665,7 @@ impl Table {
         }
         let has_many_indirect = self.indirect_referring_tables(all_tables);
 
-        for (hi, linker, via_column) in has_many_indirect {
+        for (hi, linker, _) in has_many_indirect {
             if !hi.is_linker_table() && !extension_tables.contains(&hi) &&
                !included_has_many.contains(&hi) {
                 let ref_table = RefTable {
@@ -707,12 +713,11 @@ impl Table {
     fn is_semi_owned(&self, tables: &[Table]) -> bool {
         let primary_and_foreign = self.primary_and_foreign_columns();
         let has_ones = self.referred_tables(tables);
-        let n = primary_and_foreign.len();
         if self.primary_columns().len() != 2 {
             return false;
         }
         let mut semi_owner = 0;
-        for (column, has_one) in has_ones {
+        for (_, has_one) in has_ones {
             if has_one.are_these_foreign_column_refer_to_primary_of_this_table(&primary_and_foreign){
 				semi_owner += 1;
 			}

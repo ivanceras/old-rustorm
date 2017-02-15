@@ -1,8 +1,6 @@
-use query::TableName;
 use table::Table;
-use query::Condition;
 use query::Filter;
-use query::table_name::ToTableName;
+use query::table_name::{TableName,ToTableName};
 
 
 #[derive(Debug)]

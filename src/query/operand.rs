@@ -1,24 +1,11 @@
 use query::ColumnName;
-use query::TableName;
-use query::Function;
-use query::Query;
 use dao::Value;
-use query::Filter;
 use table::Column;
-use query::HasEquality;
-use query::Condition;
-use query::Equality;
-use query::Connector;
 use dao::ToValue;
 use query::source::QuerySource;
 use query::column_name::ToColumnName;
-use std::collections::BTreeMap;
 use uuid::Uuid;
 use chrono::datetime::DateTime;
-use chrono::naive::date::NaiveDate;
-use chrono::naive::time::NaiveTime;
-use chrono::naive::datetime::NaiveDateTime;
-use chrono::offset::utc::UTC;
 use rustc_serialize::json::Json;
 use chrono::offset::fixed::FixedOffset;
 
@@ -151,7 +138,6 @@ impl ToOperand for String {
 
 impl ToOperand for Json {
     fn to_operand(&self) -> Operand {
-        let json_string = format!("{}", self.pretty());
         Operand::Value(self.to_db_type())
     }
 }
@@ -183,6 +169,3 @@ impl_to_operand_for_to_value!(f64, F64);
 impl_to_operand_for_to_value!(Vec<u8>, VecU8);
 impl_to_operand_for_to_value!(Uuid,  Uuid);
 impl_to_operand_for_to_value!(DateTime<FixedOffset>, DateTime);
-impl_to_operand_for_to_value!(NaiveDate, NaiveDate);
-impl_to_operand_for_to_value!(NaiveTime, NaiveTime);
-impl_to_operand_for_to_value!(NaiveDateTime, NaiveDateTime);

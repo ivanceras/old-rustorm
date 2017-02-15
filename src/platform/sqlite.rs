@@ -5,9 +5,9 @@ use dao::Value;
 use database::{Database, DatabaseDev, BuildMode};
 use writer::SqlFrag;
 use database::SqlOption;
-use rusqlite::SqliteConnection;
+use rusqlite::Connection as SqliteConnection;
 use rusqlite::types::ToSql;
-use rusqlite::SqliteRow;
+use rusqlite::Row as SqliteRow;
 use table::{Table, Column, Foreign};
 use database::DatabaseDDL;
 use database::DbError;
@@ -17,6 +17,7 @@ use regex::Regex;
 use std::collections::BTreeMap;
 use dao::Type;
 use query::Operand;
+use query::Insert;
 
 pub struct Sqlite {
     pool: Option<PooledConnection<SqliteConnectionManager>>,
@@ -79,10 +80,7 @@ impl Sqlite {
             Type::VecU8 => "blob".to_owned(),
             Type::Json => "text".to_owned(),
             Type::Uuid => "text".to_owned(),
-            Type::NaiveDateTime => "numeric".to_owned(),
-            Type::DateTime => "numeric".to_owned(),
-            Type::NaiveDate => "numeric".to_owned(),
-            Type::NaiveTime => "numeric".to_owned(),
+            Type::DateTime => "datetime".to_owned(),
             _ => {
                 panic!("Unable to get the equivalent database data type for {:?}",
                         rust_type)
@@ -146,7 +144,7 @@ impl Sqlite {
                 }
                 foreigns
             }
-            Err(e) => vec![],
+            Err(_) => vec![],
         }
 
     }
@@ -277,7 +275,7 @@ impl Sqlite {
                     None => map,
                 }
             }
-            Err(e) => map,
+            Err(_) => map,
         }
     }
 
@@ -358,8 +356,8 @@ impl Database for Sqlite {
         ]
     }
 
-    fn insert(&self, query: &Query) -> Result<Dao, DbError> {
-        let sql_frag = self.build_insert(query, BuildMode::Standard);
+    fn insert(&self, query: &Insert) -> Result<Dao, DbError> {
+        let sql_frag = self.build_insert(query, &BuildMode::Standard);
         match self.execute_sql_with_one_return(&sql_frag.sql, &sql_frag.params) {
             Ok(Some(result)) => Ok(result),
             Ok(None) => Err(DbError::new("No result from insert")),
@@ -448,7 +446,7 @@ impl DatabaseDDL for Sqlite {
     fn build_create_table(&self, table: &Table) -> SqlFrag {
 
 
-        let mut w = SqlFrag::new(self.sql_options(), BuildMode::Standard);
+        let mut w = SqlFrag::new(self.sql_options(), &BuildMode::Standard);
         w.append("CREATE TABLE ");
         w.append(&table.name);
         w.append("(");
@@ -523,7 +521,7 @@ impl DatabaseDev for Sqlite {
         unimplemented!()
     }
 
-    fn get_row_count_estimate(&self, schema: &str, table: &str) -> Option<usize> {
+    fn get_row_count_estimate(&self, _: &str, table: &str) -> Option<usize> {
         let sql = format!("SELECT count (*) as count from {}",table);
         let result = self.execute_sql_with_one_return(&sql, &vec![]);
         match result {

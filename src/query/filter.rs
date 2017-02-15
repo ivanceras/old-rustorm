@@ -1,11 +1,7 @@
 use query::Operand;
 use dao::ToValue;
-use query::{ColumnName, ToColumnName};
-use dao::Value;
-use std::ops::BitAnd;
-use std::ops::BitOr;
+use query::{ToColumnName};
 use query::operand::ToOperand;
-use dao::Type;
 
 /// expression has left operand,
 /// equality and right operand
@@ -68,13 +64,13 @@ impl Filter {
     }
 
 
-    pub fn AND(mut self, filter: Filter) -> Self {
+    pub fn and(mut self, filter: Filter) -> Self {
         let mut filter = filter.clone();
         filter.connector = Connector::And;
         self.sub_filters.push(filter);
         self
     }
-    pub fn OR(mut self, filter: Filter) -> Self {
+    pub fn or(mut self, filter: Filter) -> Self {
         let mut filter = filter.clone();
         filter.connector = Connector::Or;
         self.sub_filters.push(filter);

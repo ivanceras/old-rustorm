@@ -1,8 +1,6 @@
 use query::ColumnName;
 use std::fmt;
 use table::Table;
-use query::Join;
-use query::Filter;
 
 
 #[derive(Clone)]

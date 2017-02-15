@@ -30,12 +30,12 @@ impl fmt::Display for SqlFrag {
 
 impl SqlFrag {
     #[inline]
-    pub fn new(sql_options: Vec<SqlOption>, build_mode: BuildMode) -> Self {
+    pub fn new(sql_options: Vec<SqlOption>, build_mode: &BuildMode) -> Self {
         SqlFrag {
             sql: String::new(),
             params: vec![],
             sql_options: sql_options,
-            build_mode: build_mode,
+            build_mode: build_mode.clone(),
         }
     }
 

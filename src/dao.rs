@@ -1,16 +1,11 @@
 use std::collections::BTreeMap;
 use uuid::Uuid;
 use chrono::datetime::DateTime;
-use chrono::naive::date::NaiveDate;
-use chrono::naive::time::NaiveTime;
-use chrono::naive::datetime::NaiveDateTime;
-use chrono::offset::utc::UTC;
 use std::fmt;
 use query::ColumnName;
 use table::IsTable;
 use rustc_serialize::{Encodable, Encoder, Decodable, Decoder};
-use rustc_serialize::json::{self, ToJson, Json};
-use rustc_serialize::DecoderHelpers;
+use rustc_serialize::json::Json;
 use rustc_serialize::base64::STANDARD;
 use rustc_serialize::base64::ToBase64;
 use rustc_serialize::base64::FromBase64;
@@ -39,9 +34,6 @@ pub enum Type {
     Json,
     Uuid,
     DateTime,
-    NaiveDate,
-    NaiveTime,
-    NaiveDateTime,
 }
 impl Type {
     /// get the string representation when used in rust code
@@ -63,10 +55,6 @@ impl Type {
             Type::Json => "Json".to_owned(),
             Type::Uuid => "Uuid".to_owned(),
             Type::DateTime => "DateTime<UTC>".to_owned(),
-            Type::NaiveDate => "NaiveDate".to_owned(),
-            Type::NaiveTime => "NaiveTime".to_owned(),
-            Type::NaiveDateTime => "NaiveDateTime".to_owned(),
-
         }
     }
 }
@@ -93,9 +81,6 @@ pub enum Value {
     Json(Json),
     Uuid(Uuid),
     DateTime(DateTime<FixedOffset>),
-    NaiveDate(NaiveDate),
-    NaiveTime(NaiveTime),
-    NaiveDateTime(NaiveDateTime),
 }
 
 impl Value {
@@ -116,52 +101,34 @@ impl Value {
             Value::VecU8(_) => Type::VecU8,
             Value::Uuid(_) => Type::Uuid,
             Value::DateTime(_) => Type::DateTime,
-            Value::NaiveDate(_) => Type::NaiveDate,
-            Value::NaiveTime(_) => Type::NaiveTime,
-            Value::NaiveDateTime(_) => Type::NaiveDateTime,
             Value::Json(_) => Type::Json,
         }
     }
 
     fn from_ser_value(ser_value: &SerValue) -> Self {
-        match ser_value {
-            &SerValue::Bool(x) => Value::Bool(x),
-            &SerValue::I8(x) => Value::I8(x),
-            &SerValue::I16(x) => Value::I16(x),
-            &SerValue::I32(x) => Value::I32(x),
-            &SerValue::I64(x) => Value::I64(x),
-            &SerValue::U8(x) => Value::U8(x),
-            &SerValue::U16(x) => Value::U16(x),
-            &SerValue::U32(x) => Value::U32(x),
-            &SerValue::U64(x) => Value::U64(x),
-            &SerValue::F32(x) => Value::F32(x),
-            &SerValue::F64(x) => Value::F64(x),
-            &SerValue::String(ref x) => Value::String(x.to_owned()),
-            &SerValue::VecU8(ref x) => {
-                let vecu8 = x.from_base64().unwrap();
-                Value::VecU8(vecu8)
+        match *ser_value {
+            SerValue::Bool(x) => Value::Bool(x),
+            SerValue::I8(x) => Value::I8(x),
+            SerValue::I16(x) => Value::I16(x),
+            SerValue::I32(x) => Value::I32(x),
+            SerValue::I64(x) => Value::I64(x),
+            SerValue::U8(x) => Value::U8(x),
+            SerValue::U16(x) => Value::U16(x),
+            SerValue::U32(x) => Value::U32(x),
+            SerValue::U64(x) => Value::U64(x),
+            SerValue::F32(x) => Value::F32(x),
+            SerValue::F64(x) => Value::F64(x),
+            SerValue::String(ref x) => Value::String(x.to_owned()),
+            SerValue::VecU8(ref x) => {
+               let vecu8 = x.from_base64().unwrap();
+               Value::VecU8(vecu8)
             }
-            &SerValue::Uuid(x) => Value::Uuid(x),
-            &SerValue::DateTime(ref x) => {
+            SerValue::Uuid(x) => Value::Uuid(x),
+            SerValue::DateTime(ref x) => {
                 let date = DateTime::parse_from_rfc3339(x).unwrap();
                 Value::DateTime(date)
             }
-            &SerValue::NaiveDate(ref x) => {
-                // let date = DateTime::parse_from_str(x);
-                // Value::NaiveDate(date)
-                panic!("not yet here!");
-            }
-            &SerValue::NaiveTime(ref x) => {
-                // let time = NaiveTime::parse_from_str(x);
-                // Value::NaiveTime(time)
-                panic!("not yet here!");
-            }
-            &SerValue::NaiveDateTime(ref x) => {
-                // let time = NaiveTime::parse_from_str(x);
-                // Value::NaiveTime(time)
-                panic!("not yet here!");
-            }
-            &SerValue::Json(ref json) => {
+            SerValue::Json(ref json) => {
                 let json = Json::from_str(json).unwrap();
                 Value::Json(json)
             }
@@ -200,9 +167,6 @@ enum SerValue {
     VecU8(String), // blob in 64 bit
     Uuid(Uuid),
     DateTime(String), // in standard format string
-    NaiveDate(String),
-    NaiveTime(String),
-    NaiveDateTime(String),
     Json(String),
 }
 
@@ -229,18 +193,6 @@ impl SerValue {
             &Value::DateTime(ref x) => {
                 let date_str = x.to_rfc3339();
                 SerValue::DateTime(date_str)
-            }
-            &Value::NaiveDate(ref x) => {
-                let date_str = format!("{}", x);
-                SerValue::NaiveDate(date_str)
-            }
-            &Value::NaiveTime(ref x) => {
-                let time_str = format!("{}", x);
-                SerValue::NaiveTime(time_str)
-            }
-            &Value::NaiveDateTime(ref x) => {
-                let time_str = format!("{}", x);
-                SerValue::NaiveTime(time_str)
             }
             &Value::Json(ref json) => {
                 let json_text = format!("{}", json.pretty());
@@ -292,9 +244,6 @@ impl fmt::Display for Value {
             Value::VecU8(ref x) => write!(f, "'{:?}'", x),
             Value::Uuid(ref x) => write!(f, "'{}'", x),
             Value::DateTime(ref x) => write!(f, "'{}'", x),
-            Value::NaiveDate(ref x) => write!(f, "'{}'", x),
-            Value::NaiveTime(ref x) => write!(f, "'{}'", x),
-            Value::NaiveDateTime(ref x) => write!(f, "'{}'", x),
             Value::Json(ref x) => write!(f, "'{:?}'", x),
         }
     }
@@ -420,7 +369,7 @@ impl DaoCorrections for Dao {
     fn all_has_values(&self, non_nulls: &Vec<String>) -> bool {
         for column in non_nulls {
             let value = self.get(column);
-            if let Some(value) = value {
+            if let Some(_) = value {
                 // has value
             } else {
                 return false;
@@ -523,23 +472,6 @@ impl ToValue for Uuid {
 impl ToValue for DateTime<FixedOffset> {
     fn to_db_type(&self) -> Value {
         Value::DateTime(self.clone())
-    }
-}
-
-impl ToValue for NaiveDate {
-    fn to_db_type(&self) -> Value {
-        Value::NaiveDate(self.clone())
-    }
-}
-
-impl ToValue for NaiveTime {
-    fn to_db_type(&self) -> Value {
-        Value::NaiveTime(self.clone())
-    }
-}
-impl ToValue for NaiveDateTime {
-    fn to_db_type(&self) -> Value {
-        Value::NaiveDateTime(self.clone())
     }
 }
 
@@ -678,33 +610,6 @@ impl FromValue for DateTime<FixedOffset> {
     fn from_type(ty: Value) -> Self {
         match ty {
             Value::DateTime(x) => x,
-            _ => panic!("error!"),
-        }
-    }
-}
-
-impl FromValue for NaiveTime {
-    fn from_type(ty: Value) -> Self {
-        match ty {
-            Value::NaiveTime(x) => x,
-            _ => panic!("error!"),
-        }
-    }
-}
-
-impl FromValue for NaiveDate {
-    fn from_type(ty: Value) -> Self {
-        match ty {
-            Value::NaiveDate(x) => x,
-            _ => panic!("error!"),
-        }
-    }
-}
-
-impl FromValue for NaiveDateTime {
-    fn from_type(ty: Value) -> Self {
-        match ty {
-            Value::NaiveDateTime(x) => x,
             _ => panic!("error!"),
         }
     }

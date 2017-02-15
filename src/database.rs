@@ -5,7 +5,6 @@ use writer::SqlFrag;
 use query::{Connector, Equality, Operand, Field};
 use query::{Direction, Modifier, NullsWhere, JoinType};
 use query::{Filter, Condition};
-use query::SqlType;
 use query::Range;
 use std::error::Error;
 use std::fmt;
@@ -16,10 +15,13 @@ use postgres::error::ConnectError as PgConnectError;
 use mysql::error::MyError;
 use regex::Error as RegexError;
 #[cfg(feature = "sqlite")]
-use rusqlite::SqliteError;
+use rusqlite::Error as SqliteError;
 use platform::PlatformError;
 use dao::Type;
-use query::source::{SourceField, QuerySource, ToSourceField};
+use query::source::{SourceField, QuerySource};
+use query::{Select,Insert,Update,Delete};
+use query::query::Data;
+use query::ColumnName;
 
 
 /// SqlOption, contains the info about the features and quirks of underlying database
@@ -180,15 +182,15 @@ pub trait Database {
 
     /// select
     /// returns an array to the qualified records
-    fn select(&self, query: &Query) -> Result<DaoResult, DbError> {
+    fn select(&self, query: &Select) -> Result<DaoResult, DbError> {
         self.execute_with_return(query)
     }
 
     /// insert
     /// insert an object, returns the inserted Dao value
     /// including the value generated via the defaults
-    fn insert(&self, query: &Query) -> Result<Dao, DbError> {
-        let sql_frag = self.build_insert(query, BuildMode::Standard);
+    fn insert(&self, query: &Insert) -> Result<Dao, DbError> {
+        let sql_frag = self.build_insert(query, &BuildMode::Standard);
         match self.execute_sql_with_one_return(&sql_frag.sql, &sql_frag.params) {
             Ok(Some(result)) => Ok(result),
             Ok(None) => Err(DbError::new("No result from insert")),
@@ -206,8 +208,8 @@ pub trait Database {
 
     /// execute query with return dao,
     /// use the enumerated column for data extraction when db doesn't support returning the records column names
-    fn execute_with_return(&self, query: &Query) -> Result<DaoResult, DbError> {
-        let sql_frag = &self.build_query(query, BuildMode::Standard);
+    fn execute_with_return(&self, query: &Select) -> Result<DaoResult, DbError> {
+        let sql_frag = &self.build_select(query, &BuildMode::Standard);
         let result = try!(self.execute_sql_with_return(&sql_frag.sql, &sql_frag.params));
         if query.enable_query_stat{
             let (page, page_size, total) = try!(self.get_query_stats(query));
@@ -233,7 +235,7 @@ pub trait Database {
 
     /// get the query stats page, page_size and the total records
     fn get_query_stats(&self,
-                       query: &Query)
+                       query: &Select)
                        -> Result<(Option<usize>, Option<usize>, Option<usize>), DbError> {
         let page = if let Some(limit) = query.range.limit {
             if let Some(offset) = query.range.offset {
@@ -250,7 +252,7 @@ pub trait Database {
         count_query.column("COUNT(*) AS COUNT");
         count_query.order_by = vec![];
         count_query.range = Range::new();//remove the range
-        let debug_sql = &self.build_query(&count_query, BuildMode::Debug);
+        let debug_sql = &self.build_select(&count_query, &BuildMode::Debug);
         println!("STAT QUERY: {}", debug_sql);
         let count_result = try!(self.execute_with_one_return(&count_query));
         println!("range: {:#?}", query.range);
@@ -271,14 +273,14 @@ pub trait Database {
     }
 
     /// execute query with 1 return dao
-    fn execute_with_one_return(&self, query: &Query) -> Result<Option<Dao>, DbError> {
-        let sql_frag = &self.build_query(query, BuildMode::Standard);
+    fn execute_with_one_return(&self, query: &Select) -> Result<Option<Dao>, DbError> {
+        let sql_frag = &self.build_select(query, &BuildMode::Standard);
         self.execute_sql_with_one_return(&sql_frag.sql, &sql_frag.params)
     }
 
     /// execute query with no return dao
-    fn execute(&self, query: &Query) -> Result<usize, DbError> {
-        let sql_frag = &self.build_query(query, BuildMode::Standard);
+    fn execute(&self, query: &Select) -> Result<usize, DbError> {
+        let sql_frag = &self.build_select(query, &BuildMode::Standard);
         self.execute_sql(&sql_frag.sql, &sql_frag.params)
     }
 
@@ -304,27 +306,27 @@ pub trait Database {
     /// use by select to build the select query
     /// build all types of query
     /// TODO: need to supply the number of parameters where to start the numbering of the number parameters
-    fn build_query(&self, query: &Query, build_mode: BuildMode) -> SqlFrag {
-        match query.sql_type {
-            SqlType::SELECT => self.build_select(query, build_mode),
-            SqlType::INSERT => self.build_insert(query, build_mode),
-            SqlType::UPDATE => self.build_update(query, build_mode),
-            SqlType::DELETE => self.build_delete(query, build_mode),
+    fn build_query(&self, query: &Query, build_mode: &BuildMode) -> SqlFrag {
+        match *query {
+            Query::Select(ref select) => self.build_select(select, build_mode),
+            Query::Insert(ref insert) => self.build_insert(insert, build_mode),
+            Query::Update(ref update) => self.build_update(update, build_mode),
+            Query::Delete(ref delete) => self.build_delete(delete, build_mode),
         }
     }
 
     /// build operand, i.e: columns, query, function, values
-    fn build_operand(&self, w: &mut SqlFrag, parent_query: &Query, operand: &Operand) {
+    fn build_operand(&self, w: &mut SqlFrag, use_complete_name: bool, operand: &Operand) {
         match *operand {
             Operand::ColumnName(ref column_name) => {
-                if parent_query.joins.is_empty() {
+                if use_complete_name {
                     w.append(&column_name.column);
                 } else {
                     w.append(&column_name.complete_name());
                 }
             }
             Operand::QuerySource(ref query_source) => {
-                self.build_query_source(w, parent_query, query_source);
+                self.build_query_source(w, query_source);
             }
             Operand::Value(ref value) => {
                 w.parameter(value.clone());
@@ -339,7 +341,7 @@ pub trait Database {
                         } else {
                             do_comma = true;
                         }
-                        self.build_operand(w, parent_query, op);
+                        self.build_operand(w, use_complete_name, op);
                     }
                     w.append(")");
                 }
@@ -348,49 +350,49 @@ pub trait Database {
         }
     }
 
-    fn build_condition(&self, w: &mut SqlFrag, parent_query: &Query, cond: &Condition) {
-        self.build_operand(w, parent_query, &cond.left);
+    fn build_condition(&self, w: &mut SqlFrag, use_complete_name: bool, cond: &Condition) {
+        self.build_operand(w, use_complete_name, &cond.left);
         w.append(" ");
         match cond.equality {
             Equality::EQ => {
                 w.append("= ");
-                self.build_operand(w, parent_query, &cond.right);
+                self.build_operand(w, use_complete_name, &cond.right);
             }
             Equality::NEQ => {
                 w.append("!= ");
-                self.build_operand(w, parent_query, &cond.right);
+                self.build_operand(w, use_complete_name, &cond.right);
             }
             Equality::LT => {
                 w.append("< ");
-                self.build_operand(w, parent_query, &cond.right);
+                self.build_operand(w, use_complete_name, &cond.right);
             }
             Equality::LTE => {
                 w.append("<= ");
-                self.build_operand(w, parent_query, &cond.right);
+                self.build_operand(w, use_complete_name, &cond.right);
             }
             Equality::GT => {
                 w.append("> ");
-                self.build_operand(w, parent_query, &cond.right);
+                self.build_operand(w, use_complete_name, &cond.right);
             }
             Equality::GTE => {
                 w.append(">= ");
-                self.build_operand(w, parent_query, &cond.right);
+                self.build_operand(w, use_complete_name, &cond.right);
             }
             Equality::IN => {
                 w.append("IN ");
-                self.build_operand(w, parent_query, &cond.right);
+                self.build_operand(w, use_complete_name, &cond.right);
             }
             Equality::NOT_IN => {
                 w.append("NOT IN ");
-                self.build_operand(w, parent_query, &cond.right);
+                self.build_operand(w, use_complete_name, &cond.right);
             }
             Equality::LIKE => {
                 w.append("LIKE ");
-                self.build_operand(w, parent_query, &cond.right);
+                self.build_operand(w, use_complete_name, &cond.right);
             }
             Equality::ILIKE => {
                 w.append("ILIKE ");
-                self.build_operand(w, parent_query, &cond.right);
+                self.build_operand(w, use_complete_name, &cond.right);
             }
             Equality::IS_NOT_NULL => {
                 w.append("IS NOT NULL");
@@ -402,8 +404,8 @@ pub trait Database {
         }
     }
 
-    fn build_field(&self, w: &mut SqlFrag, parent_query: &Query, field: &Field) {
-        self.build_operand(w, parent_query, &field.operand);
+    fn build_field(&self, w: &mut SqlFrag, use_complete_name: bool, field: &Field) {
+        self.build_operand(w, use_complete_name, &field.operand);
         match field.name {
             Some(ref name) => {
                 w.append(" AS ");
@@ -415,7 +417,6 @@ pub trait Database {
 
     fn build_query_source(&self,
                           w: &mut SqlFrag,
-                          parent_query: &Query,
                           query_source: &QuerySource) {
         match *query_source {
             QuerySource::TableName(ref table_name) => {
@@ -436,12 +437,12 @@ pub trait Database {
                     } else {
                         do_comma = true;
                     }
-                    self.build_operand(w, parent_query, param);
+                    self.build_operand(w, false, param);
                 }
                 w.append(")");
             }
             QuerySource::Query(ref _q) => {
-                let sql_frag = &self.build_query(&_q, w.build_mode.clone());
+                let sql_frag = &self.build_select(&_q, &w.build_mode);
                 w.append(&sql_frag.sql);
             }
         }
@@ -449,9 +450,8 @@ pub trait Database {
 
     fn build_source_field(&self,
                           w: &mut SqlFrag,
-                          parent_query: &Query,
                           source_field: &SourceField) {
-        self.build_query_source(w, parent_query, &source_field.source);
+        self.build_query_source(w, &source_field.source);
         match source_field.rename {
             Some(ref rename) => {
                 w.append(" AS ");
@@ -461,11 +461,11 @@ pub trait Database {
         }
     }
 
-    fn build_filter(&self, w: &mut SqlFrag, parent_query: &Query, filter: &Filter) {
+    fn build_filter(&self, w: &mut SqlFrag, use_complete_name: bool, filter: &Filter) {
         if !filter.sub_filters.is_empty() {
             w.append("( ");
         }
-        self.build_condition(w, parent_query, &filter.condition);
+        self.build_condition(w, use_complete_name, &filter.condition);
         w.sp();
         for filt in &filter.sub_filters {
             match filt.connector {
@@ -476,7 +476,7 @@ pub trait Database {
                     w.append("OR ");
                 }
             }
-            self.build_filter(w, parent_query, filt);// build sub filters as well
+            self.build_filter(w, use_complete_name, filt);// build sub filters as well
         }
         if !filter.sub_filters.is_empty() {
             w.append(" )");
@@ -485,7 +485,7 @@ pub trait Database {
 
     /// build the filter clause or the where clause of the query
     /// TODO: add the sub filters
-    fn build_filters(&self, w: &mut SqlFrag, parent_query: &Query, filters: &[Filter]) {
+    fn build_filters(&self, w: &mut SqlFrag, use_complete_name: bool, filters: &[Filter]) {
         let mut do_and = false;
         for filter in filters {
             if do_and {
@@ -493,14 +493,14 @@ pub trait Database {
             } else {
                 do_and = true;
             }
-            self.build_filter(w, parent_query, filter);
+            self.build_filter(w, use_complete_name, filter);
         }
     }
 
     /// build the enumerated, distinct, *, columns
     fn build_enumerated_fields(&self,
                                w: &mut SqlFrag,
-                               parent_query: &Query,
+                               use_complete_name: bool, 
                                enumerated_fields: &[Field]) {
         let mut do_comma = false;
         let mut cnt = 0;
@@ -515,15 +515,16 @@ pub trait Database {
                 // break at every 4 columns to encourage sql tuning/revising
                 w.left_river("");
             }
-            self.build_field(w, parent_query, field);
+            self.build_field(w, use_complete_name, field);
         }
     }
 
     /// build the select statment from the query object
-    fn build_select(&self, query: &Query, build_mode: BuildMode) -> SqlFrag {
+    fn build_select(&self, query: &Select, build_mode: &BuildMode) -> SqlFrag {
+        let use_complete_name = query.joins.is_empty();
         let mut w = SqlFrag::new(self.sql_options(), build_mode);
         w.left_river("SELECT");
-        self.build_enumerated_fields(&mut w, query, &query.enumerated_fields); //TODO: add support for column_sql, fields, functions
+        self.build_enumerated_fields(&mut w, use_complete_name, &query.enumerated_fields); //TODO: add support for column_sql, fields, functions
         w.left_river("FROM");
 
         assert!(!query.from.is_empty(),
@@ -535,7 +536,7 @@ pub trait Database {
             } else {
                 do_comma = true;
             }
-            self.build_source_field(&mut w, query, field);
+            self.build_source_field(&mut w, field);
         }
         if !query.joins.is_empty() {
             for join in &query.joins {
@@ -563,13 +564,13 @@ pub trait Database {
                 w.append("JOIN ");
                 w.append(&join.table_name.complete_name());
                 w.right_river("ON ");
-                self.build_filter(&mut w, query, &join.on);
+                self.build_filter(&mut w, use_complete_name, &join.on);
             }
         }
 
         if !query.filters.is_empty() {
             w.left_river("WHERE ");
-            self.build_filters(&mut w, query, &query.filters);
+            self.build_filters(&mut w, use_complete_name, &query.filters);
         }
 
         if !query.group_by.is_empty() {
@@ -581,7 +582,7 @@ pub trait Database {
                 } else {
                     do_comma = true;
                 }
-                self.build_operand(&mut w, query, operand);
+                self.build_operand(&mut w, use_complete_name, operand);
                 w.append(" ");
             }
         }
@@ -595,7 +596,7 @@ pub trait Database {
                 } else {
                     do_comma = true;
                 }
-                self.build_filter(&mut w, query, hav);
+                self.build_filter(&mut w, use_complete_name, hav);
             }
         }
 
@@ -608,7 +609,7 @@ pub trait Database {
                 } else {
                     do_comma = true;
                 }
-                self.build_operand(&mut w, query, &order.operand);
+                self.build_operand(&mut w, use_complete_name, &order.operand);
                 match &order.direction {
                     &Some(ref direction) => {
                         match direction {
@@ -649,74 +650,74 @@ pub trait Database {
     /// TODO: when the number of values is greater than the number of columns
     /// wrap it into another set and make sure the values are in multiples of the the n columns
     /// http://www.postgresql.org/docs/9.0/static/dml-insert.html
-    fn build_insert(&self, query: &Query, build_mode: BuildMode) -> SqlFrag {
+    fn build_insert(&self, query: &Insert, build_mode: &BuildMode) -> SqlFrag {
+        let use_complete_name = false;
         let mut w = SqlFrag::new(self.sql_options(), build_mode);
         w.left_river("INSERT");
         w.append("INTO ");
-        let into_table = query.get_from_table();
-        assert!(into_table.is_some(), "There should be table to insert to");
-        if let Some(table_name) = into_table {
-            if self.sql_options().contains(&SqlOption::UsesSchema) {
-                w.append(&table_name.complete_name());
-            } else {
-                w.append(&table_name.name);
-            }
+        if self.sql_options().contains(&SqlOption::UsesSchema) {
+            w.append(&query.into.complete_name());
+        } else {
+            w.append(&query.into.name);
         }
-
-
         w.append("( ");
-        self.build_enumerated_fields(&mut w, query, &query.enumerated_fields); //TODO: add support for column_sql, fields, functions
+        self.build_column_names(&mut w, use_complete_name, &query.columns);
         w.append(" ) ");
-        assert!(!query.values.is_empty(),
-                "values should not be empty, when inserting records");
-        if !query.values.is_empty() {
-            w.left_river("VALUES");
-            w.append("(");
-            let mut do_comma = false;
-            for vo in &query.values {
-                if do_comma {
-                    w.commasp();
-                } else {
-                    do_comma = true;
-                }
-                self.build_operand(&mut w, query, vo);
-            }
-            w.append(") ");
-        }
-        if !query.enumerated_returns.is_empty() {
-            if self.sql_options().contains(&SqlOption::SupportsReturningClause) {
-                w.left_river("RETURNING");
+        match query.data{
+            Data::Values(ref values) => {
+                w.left_river("VALUES");
+                w.append("(");
                 let mut do_comma = false;
-                for field in &query.enumerated_returns {
+                for vo in values {
                     if do_comma {
                         w.commasp();
                     } else {
                         do_comma = true;
                     }
-                    self.build_field(&mut w, query, field);
+                    self.build_operand(&mut w, use_complete_name, vo);
                 }
+                w.append(") ");
+            },
+            Data::Query(ref data_query) => {
+               let sql_frag = self.build_select(data_query, build_mode);
+               w.append(&sql_frag.sql);
+            }
+        }
+        if !query.return_columns.is_empty() {
+            if self.sql_options().contains(&SqlOption::SupportsReturningClause) {
+                w.left_river("RETURNING");
+                self.build_column_names(&mut w, use_complete_name, &query.return_columns);
             }
         }
         w.ln();
         w
     }
 
+    fn build_column_names(&self, w: &mut SqlFrag, use_complete_name: bool, column_names: &Vec<ColumnName>){
+        let mut do_comma = false;
+        for c in column_names {
+            if do_comma{w.commasp();}else{do_comma = true;}
+            if use_complete_name{
+                w.append(&c.complete_name());
+            }else{
+                w.append(&c.column);
+            }
+        }
+    }
 
-    fn build_update(&self, query: &Query, build_mode: BuildMode) -> SqlFrag {
+
+    fn build_update(&self, query: &Update,  build_mode: &BuildMode) -> SqlFrag {
+        let use_complete_name = false;
         let mut w = SqlFrag::new(self.sql_options(), build_mode);
         w.left_river("UPDATE ");
-        let from_table = query.get_from_table();
-        assert!(from_table.is_some(), "There should be table to update from");
-        if let Some(ref from) = from_table {
-            w.append(&from.complete_name());
-        }
-        let enumerated_columns = query.get_enumerated_columns();
+        w.append(&query.table.complete_name());
         let mut do_comma = false;
-        if !enumerated_columns.is_empty() {
+        if !query.columns.is_empty() {
             w.left_river("SET ");
         }
         let mut column_index = 0;
-        for ec in &enumerated_columns {
+        assert_eq!(query.columns.len(), query.values.len());
+        for ec in &query.columns {
             if do_comma {
                 w.commasp();
             } else {
@@ -725,44 +726,31 @@ pub trait Database {
             w.append(&ec.column);
             w.append(" = ");
             let value = &query.values[column_index];
-            if let &Operand::Value(ref value) = value {
-                w.parameter(value.clone());
-            }
+            self.build_operand(&mut w, use_complete_name, value);
             column_index += 1;
         }
 
         if !query.filters.is_empty() {
             w.left_river("WHERE ");
-            self.build_filters(&mut w, query, &query.filters);
+            self.build_filters(&mut w, use_complete_name, &query.filters);
         }
-        if !query.enumerated_returns.is_empty() {
+        if !query.return_columns.is_empty() {
             if self.sql_options().contains(&SqlOption::SupportsReturningClause) {
                 w.left_river("RETURNING ");
-                let mut do_comma = false;
-                for field in &query.enumerated_returns {
-                    if do_comma {
-                        w.commasp();
-                    } else {
-                        do_comma = true;
-                    }
-                    self.build_field(&mut w, query, field);
-                }
+                self.build_column_names(&mut w, use_complete_name, &query.return_columns) 
             }
         }
         w
     }
 
-    fn build_delete(&self, query: &Query, build_mode: BuildMode) -> SqlFrag {
+    fn build_delete(&self, query: &Delete, build_mode: &BuildMode) -> SqlFrag {
+        let use_complete_name = false;
         let mut w = SqlFrag::new(self.sql_options(), build_mode);
         w.left_river("DELETE FROM ");
-        let from_table = query.get_from_table();
-        assert!(from_table.is_some(), "There should be table to delete from");
-        if let Some(ref from) = from_table {
-            w.append(&from.complete_name());
-        }
+        w.append(&query.from_table.complete_name());
         if !query.filters.is_empty() {
             w.left_river("WHERE ");
-            self.build_filters(&mut w, query, &query.filters);
+            self.build_filters(&mut w, use_complete_name, &query.filters);
         }
         w
     }

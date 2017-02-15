@@ -4,6 +4,8 @@
 //!
 //!
 
+#![deny(warnings)]
+#![allow(non_snake_case)]
 extern crate rustc_serialize;
 extern crate postgres;
 #[cfg(feature = "sqlite")]
@@ -19,8 +21,8 @@ extern crate r2d2_postgres;
 #[cfg(feature = "sqlite")]
 extern crate r2d2_sqlite;
 extern crate time;
-#[macro_use]
-extern crate log;
+#[macro_use] extern crate log;
+#[macro_use] extern crate lazy_static;
 
 
 
@@ -32,4 +34,3 @@ pub mod platform;
 pub mod table;
 pub mod writer;
 pub mod config;
-pub mod pool;

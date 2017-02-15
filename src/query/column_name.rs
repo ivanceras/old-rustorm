@@ -1,13 +1,5 @@
-use query::HasEquality;
-use dao::ToValue;
-use query::Filter;
-use query::Equality;
 use std::fmt;
 use table::Column;
-use query::Condition;
-use query::Operand;
-use query::Connector;
-use query::operand::ToOperand;
 
 #[derive(Clone)]
 #[derive(Debug)]
