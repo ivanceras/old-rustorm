@@ -1,4 +1,6 @@
+#[allow(unused)]
 use r2d2::Pool;
+#[allow(unused)]
 use r2d2::Config;
 use config::DbConfig;
 use database::{Database, DatabaseDDL, DatabaseDev};
@@ -47,6 +49,7 @@ pub struct PoolConfig{
 
 /// no connection name supplied
 /// pool size is 10;
+#[cfg(any(feature = "postres",feature = "sqlite", feature ="mysql"))]
 pub fn db_with_url(db_url: &str) -> Result<Platform, DbError> {
     let config = PoolConfig{
         connection_name: "GLOBAL".to_string(),
@@ -56,6 +59,7 @@ pub fn db_with_url(db_url: &str) -> Result<Platform, DbError> {
     db_with_config(&config)
 }
 
+#[cfg(any(feature = "postres",feature = "sqlite", feature ="mysql"))]
 pub fn db_with_config(config: &PoolConfig) -> Result<Platform, DbError> {
     let has_pool = DB_POOL.read().unwrap().get(&config).is_some();
     if has_pool{
@@ -66,6 +70,7 @@ pub fn db_with_config(config: &PoolConfig) -> Result<Platform, DbError> {
 }
 
 /// creates a new ManagedPool for this database platform
+#[cfg(any(feature = "postres",feature = "sqlite", feature ="mysql"))]
 fn create_new(config: &PoolConfig) -> Result<Platform, DbError> {
     println!("not an existing pool, creating one");
     let pool = ManagedPool::init(&config.db_url, config.pool_size as usize)?;
@@ -170,8 +175,10 @@ pub enum ManagedPool {
 
 impl ManagedPool {
     /// initialize the pool
+    #[allow(unused)]
     pub fn init(url: &str, pool_size: usize) -> Result<Self, DbError> {
         let config = DbConfig::from_url(url);
+        let pool_size = pool_size as u32;
         match config {
             Some(config) => {
                 let platform: &str = &config.platform;
@@ -180,7 +187,7 @@ impl ManagedPool {
                     "postgres" => {
                         let manager = try!(PostgresConnectionManager::new(url, SslMode::None));
                         debug!("Creating a connection with a pool size of {}", pool_size);
-                        let config = Config::builder().pool_size(pool_size as u32).build();
+                        let config = Config::builder().pool_size(pool_size).build();
                         let pool = try!(Pool::new(config, manager));
                         Ok(ManagedPool::Postgres(pool))
                     }
@@ -188,7 +195,7 @@ impl ManagedPool {
                     #[cfg(feature = "sqlite")]
                     "sqlite" => {
                         let manager = SqliteConnectionManager::new(&config.database);
-                        let config = Config::builder().pool_size(pool_size as u32).build();
+                        let config = Config::builder().pool_size(pool_size).build();
                         let pool = try!(Pool::new(config, manager));
                         Ok(ManagedPool::Sqlite(pool))
                     }
@@ -202,7 +209,7 @@ impl ManagedPool {
                             tcp_port: config.port.unwrap_or(3306),
                             ..Default::default()
                         };
-                        let pool = try!(MyPool::new_manual(0, pool_size, opts));
+                        let pool = try!(MyPool::new_manual(0, pool_size as usize, opts));
                         Ok(ManagedPool::Mysql(Some(pool)))
                     }
 

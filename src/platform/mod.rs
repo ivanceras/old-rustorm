@@ -1,9 +1,12 @@
+pub mod pool;
+#[cfg(feature = "postgres")]
 pub mod postgres;
 #[cfg(feature = "sqlite")]
 pub mod sqlite;
 #[cfg(feature = "mysql")]
 pub mod mysql;
 
+#[cfg(feature = "postgres")]
 pub use self::postgres::Postgres;
 #[cfg(feature = "sqlite")]
 pub use self::sqlite::Sqlite;

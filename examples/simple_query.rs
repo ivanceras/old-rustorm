@@ -5,9 +5,9 @@ use rustorm::query::Filter;
 use rustorm::query::Select;
 use rustorm::query::Equality::EQ;
 use rustorm::database::BuildMode;
-use rustorm::pool::Platform;
+use rustorm::platform::pool::Platform;
 use rustorm::platform::Postgres;
-use rustorm::pool;
+use rustorm::platform::pool;
 
 fn main(){
     println!("connecting....");
