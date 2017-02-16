@@ -1,4 +1,5 @@
 use query::Operand;
+use query::operand::ToOperand;
 use dao::ToValue;
 use table::Table;
 use database::Database;
@@ -10,6 +11,7 @@ use writer::SqlFrag;
 use database::DbError;
 use database::BuildMode;
 use query::ColumnName;
+use query::column_name::ToColumnName;
 use query::{TableName, ToTableName};
 use query::{Filter, Equality};
 //use query::QueryBuilder;
@@ -21,19 +23,6 @@ use query::SourceField;
 use query::{QuerySource, ToSourceField};
 use table::Column;
 
-/*
-/// Could have been SqlAction
-#[derive(Debug)]
-#[derive(Clone)]
-#[derive(PartialEq)]
-pub enum SqlType {
-    // DML
-    SELECT,
-    INSERT,
-    UPDATE,
-    DELETE,
-}
-*/
 
 pub enum Query{
     Select(Select),
@@ -569,6 +558,63 @@ pub struct Insert{
     pub data: Data,
     pub return_columns: Vec<ColumnName>
 }
+
+impl Insert{
+    
+    pub fn into(table: &ToTableName) -> Self{
+        Insert{
+            into: table.to_table_name(),
+            columns: vec![],
+            data: Data::Values(vec![]),
+            return_columns: vec![]
+        }
+    }
+
+    pub fn columns(&mut self, columns: Vec<&str>){
+        for c in columns{
+            self.column(c);
+        }
+    }
+
+    pub fn column(&mut self, column: &str){
+        self.columns.push(column.to_column_name())
+    }
+
+    pub fn values(&mut self, operands: Vec<&ToOperand>){
+        for op in operands{
+            self.value(op); 
+        }
+    }
+    
+    pub fn value(&mut self, operand: &ToOperand){
+        match self.data{
+            Data::Values(ref mut values) => {
+                (*values).push(operand.to_operand());
+            },
+            Data::Query(_) => panic!("can not add value to query")
+        }
+    }
+
+    pub fn return_columns(&mut self, columns: Vec<&str>){
+        self.return_columns.clear();
+        for c in columns{
+            self.return_column(c);
+        }
+    }
+
+    fn return_column(&mut self, column: &str){
+        self.return_columns.push(column.to_column_name());
+    }
+
+    pub fn return_all(&mut self){
+        self.return_columns(vec!["*"]);
+    }
+
+    pub fn debug_build(&mut self, db: &Database) -> SqlFrag {
+        db.build_insert(&self, &BuildMode::Debug)
+    }
+}
+
 pub struct Update{
     pub table: Table,
     pub columns: Vec<ColumnName>,

@@ -49,7 +49,7 @@ pub struct PoolConfig{
 
 /// no connection name supplied
 /// pool size is 10;
-#[cfg(any(feature = "postres",feature = "sqlite", feature ="mysql"))]
+#[cfg(any(feature = "postgres",feature = "sqlite", feature ="mysql"))]
 pub fn db_with_url(db_url: &str) -> Result<Platform, DbError> {
     let config = PoolConfig{
         connection_name: "GLOBAL".to_string(),
@@ -59,7 +59,7 @@ pub fn db_with_url(db_url: &str) -> Result<Platform, DbError> {
     db_with_config(&config)
 }
 
-#[cfg(any(feature = "postres",feature = "sqlite", feature ="mysql"))]
+#[cfg(any(feature = "postgres",feature = "sqlite", feature ="mysql"))]
 pub fn db_with_config(config: &PoolConfig) -> Result<Platform, DbError> {
     let has_pool = DB_POOL.read().unwrap().get(&config).is_some();
     if has_pool{
@@ -70,7 +70,7 @@ pub fn db_with_config(config: &PoolConfig) -> Result<Platform, DbError> {
 }
 
 /// creates a new ManagedPool for this database platform
-#[cfg(any(feature = "postres",feature = "sqlite", feature ="mysql"))]
+#[cfg(any(feature = "postgres",feature = "sqlite", feature ="mysql"))]
 fn create_new(config: &PoolConfig) -> Result<Platform, DbError> {
     println!("not an existing pool, creating one");
     let pool = ManagedPool::init(&config.db_url, config.pool_size as usize)?;
