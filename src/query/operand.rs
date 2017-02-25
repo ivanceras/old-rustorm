@@ -31,15 +31,13 @@ impl ToOperand for Operand {
     }
 }
 
+impl ToOperand for Value{
 
-
-impl<F> ToOperand for F
-    where F: Fn() -> Column
-{
     fn to_operand(&self) -> Operand {
-        Operand::ColumnName(self().to_column_name())
+        Operand::Value(self.to_owned())
     }
 }
+
 
 /// implementation to convert Function that returns Column to yield an Operand
 macro_rules! impl_to_operand_for_fn_column{

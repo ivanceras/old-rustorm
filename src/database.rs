@@ -200,11 +200,15 @@ pub trait Database {
 
     /// update
     /// returns the updated Dao
-    fn update(&self, query: &Query) -> Dao;
+    fn update(&self, query: &Update) -> Result<Dao,DbError>{
+        let sql_frag = self.build_update(query, &BuildMode::Standard);
+        match self.execute_sql_with_one_return(&sql_frag.sql, &sql_frag.params) {
+            Ok(Some(result)) => Ok(result),
+            Ok(None) => Err(DbError::new("No result from insert")),
+            Err(e) => Err(e),
+        }
+    }
 
-    /// delete records
-    /// returns the number of deleted records
-    fn delete(&self, query: &Query) -> Result<usize, String>;
 
     /// execute query with return dao,
     /// use the enumerated column for data extraction when db doesn't support returning the records column names
@@ -278,9 +282,10 @@ pub trait Database {
         self.execute_sql_with_one_return(&sql_frag.sql, &sql_frag.params)
     }
 
-    /// execute query with no return dao
-    fn execute(&self, query: &Select) -> Result<usize, DbError> {
-        let sql_frag = &self.build_select(query, &BuildMode::Standard);
+    /// delete records
+    /// returns the number of deleted records
+    fn delete(&self, query: &Delete) -> Result<usize, DbError> {
+        let sql_frag = &self.build_delete(query, &BuildMode::Standard);
         self.execute_sql(&sql_frag.sql, &sql_frag.params)
     }
 

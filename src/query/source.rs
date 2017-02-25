@@ -60,6 +60,16 @@ impl ToSourceField for Table {
     }
 }
 
+impl ToSourceField for TableName {
+    fn to_source_field(&self) -> Vec<SourceField> {
+        let qs = QuerySource::TableName(self.to_owned());
+        vec![SourceField{
+			source: qs,
+			rename: None,
+		}]
+    }
+}
+
 impl ToSourceField for QuerySource {
     fn to_source_field(&self) -> Vec<SourceField> {
         vec![

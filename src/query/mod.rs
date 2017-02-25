@@ -11,7 +11,7 @@ pub mod source;
 pub mod query;
 
 pub use self::column_name::{ColumnName, ToColumnName};
-pub use self::table_name::{TableName, ToTableName};
+pub use self::table_name::{TableName, ToTableName,IsTable};
 pub use self::filter::{Filter, Condition, Equality, Connector, HasEquality};
 pub use self::function::COUNT;
 pub use self::function::Function;

@@ -3,13 +3,14 @@ use uuid::Uuid;
 use chrono::datetime::DateTime;
 use std::fmt;
 use query::ColumnName;
-use table::IsTable;
 use rustc_serialize::{Encodable, Encoder, Decodable, Decoder};
 use rustc_serialize::json::Json;
 use rustc_serialize::base64::STANDARD;
 use rustc_serialize::base64::ToBase64;
 use rustc_serialize::base64::FromBase64;
-use chrono::offset::fixed::FixedOffset;
+use query::IsTable;
+use chrono::UTC;
+use chrono::FixedOffset;
 
 
 #[derive(Debug)]
@@ -314,17 +315,14 @@ impl DaoResult {
     /// cast the dao to the specific struct instance
     /// do not include if non nullable parts contains null
     pub fn cast<T: IsTable + IsDao>(&self) -> Vec<T> {
-        let table = T::table();
-        let non_nulls = table.non_nullable_columns();
+        let table = T::table_name();
         let mut obj = vec![];
         let renamed_columns = self.get_renamed_columns(&table.name);
         for dao in &self.dao {
             let mut dao_clone = dao.clone();
             dao_clone.correct_renamed_columns(&renamed_columns);
-            if dao_clone.all_has_values(&non_nulls) {
-                let p = T::from_dao(&dao_clone);
-                obj.push(p);
-            }
+            let p = T::from_dao(&dao_clone);
+            obj.push(p);
         }
         obj
     }
@@ -475,6 +473,14 @@ impl ToValue for DateTime<FixedOffset> {
     }
 }
 
+impl ToValue for DateTime<UTC> {
+    fn to_db_type(&self) -> Value {
+        let offset = FixedOffset::east(0);
+        let ndt = self.with_timezone(&offset);
+        Value::DateTime(ndt)
+    }
+}
+
 impl ToValue for Json {
     fn to_db_type(&self) -> Value {
         Value::Json(self.clone())
@@ -610,6 +616,18 @@ impl FromValue for DateTime<FixedOffset> {
     fn from_type(ty: Value) -> Self {
         match ty {
             Value::DateTime(x) => x,
+            _ => panic!("error!"),
+        }
+    }
+}
+
+impl FromValue for DateTime<UTC> {
+    fn from_type(ty: Value) -> Self {
+        match ty {
+            Value::DateTime(x) => {
+                let ndt = x.naive_utc(); 
+                DateTime::from_utc(ndt,UTC)
+            },
             _ => panic!("error!"),
         }
     }

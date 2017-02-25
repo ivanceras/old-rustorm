@@ -65,12 +65,23 @@ pub trait ToTableName {
     fn to_table_name(&self) -> TableName;
 }
 
+pub trait IsTable{
+    fn table_name() -> TableName;
+}
+
+impl ToTableName for TableName{
+    fn to_table_name(&self) -> TableName{
+        self.clone()
+    }
+}
+
 impl<'a> ToTableName for &'a str {
     fn to_table_name(&self) -> TableName {
         TableName::from_str(self)
     }
 }
 
+/*
 impl<F> ToTableName for F
     where F: Fn() -> Table
 {
@@ -80,6 +91,7 @@ impl<F> ToTableName for F
         table.to_table_name()
     }
 }
+*/
 
 impl ToTableName for Table {
     /// contain the columns for later use when renaming is necessary

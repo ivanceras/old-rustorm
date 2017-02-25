@@ -143,10 +143,6 @@ impl PartialEq for Column {
     }
 }
 
-/// trait for table definition
-pub trait IsTable {
-    fn table() -> Table;
-}
 
 /// all referenced table used in context
 #[allow(dead_code)]

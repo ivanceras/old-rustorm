@@ -1,12 +1,10 @@
 use query::Operand;
 use query::operand::ToOperand;
 use dao::ToValue;
-use table::Table;
 use database::Database;
 use dao::DaoResult;
 use dao::IsDao;
 use dao::Dao;
-use table::IsTable;
 use writer::SqlFrag;
 use database::DbError;
 use database::BuildMode;
@@ -22,6 +20,7 @@ use query::Field;
 use query::SourceField;
 use query::{QuerySource, ToSourceField};
 use table::Column;
+use query::IsTable;
 
 
 pub enum Query{
@@ -459,8 +458,8 @@ impl Select {
     }
 
 
-    pub fn add_filter(&mut self, filter: Filter) {
-        self.filters.push(filter);
+    pub fn add_filter(&mut self, filter: &Filter) {
+        self.filters.push(filter.clone());
     }
     pub fn add_filters(&mut self, filters: &Vec<Filter>) {
         self.filters.extend_from_slice(filters)
@@ -468,24 +467,24 @@ impl Select {
 
     /// column = value
     pub fn filter_eq(&mut self, column: &str, value: &ToValue) {
-        self.add_filter(Filter::new(column, Equality::EQ, value));
+        self.add_filter(&Filter::new(column, Equality::EQ, value));
     }
     /// column < value
     pub fn filter_lt(&mut self, column: &str, value: &ToValue) {
-        self.add_filter(Filter::new(column, Equality::LT, value));
+        self.add_filter(&Filter::new(column, Equality::LT, value));
     }
     /// column <= value
     pub fn filter_lte(&mut self, column: &str, value: &ToValue) {
-        self.add_filter(Filter::new(column, Equality::LTE, value));
+        self.add_filter(&Filter::new(column, Equality::LTE, value));
     }
 
     /// column > value
     pub fn filter_gt(&mut self, column: &str, value: &ToValue) {
-        self.add_filter(Filter::new(column, Equality::GT, value));
+        self.add_filter(&Filter::new(column, Equality::GT, value));
     }
     /// column <= value
     pub fn filter_gte(&mut self, column: &str, value: &ToValue) {
-        self.add_filter(Filter::new(column, Equality::GTE, value));
+        self.add_filter(&Filter::new(column, Equality::GTE, value));
     }
 
 
@@ -525,11 +524,6 @@ impl Select {
         db.execute_with_one_return(self)
     }
 
-    /// delete, update without caring for the return
-    pub fn execute(&mut self, db: &Database) -> Result<usize, DbError> {
-        self.finalize();
-        db.execute(self)
-    }
 
     /// execute the query, then convert the result
     pub fn collect<T: IsDao + IsTable>(&mut self, db: &Database) -> Result<Vec<T>, DbError> {
@@ -613,18 +607,83 @@ impl Insert{
     pub fn debug_build(&mut self, db: &Database) -> SqlFrag {
         db.build_insert(&self, &BuildMode::Debug)
     }
+
+    pub fn insert<D: IsDao>(&mut self, db: &Database) -> Result<D, DbError>{
+        let result = db.insert(self);
+        match result{
+            Ok(res) => Ok(D::from_dao(&res)),
+            Err(e) => Err(e),
+        }
+    }
+
 }
 
 pub struct Update{
-    pub table: Table,
+    pub table: TableName,
     pub columns: Vec<ColumnName>,
     pub values: Vec<Operand>,
     pub filters: Vec<Filter>,
     pub return_columns: Vec<ColumnName>
 }
+
+impl Update{
+    
+    pub fn table(table: &ToTableName) -> Self{
+        Update{
+            table: table.to_table_name(),
+            columns: vec![],
+            values: vec![],
+            filters: vec![],
+            return_columns: vec![],
+        }
+    }
+
+    pub fn filter(&mut self, filter: Filter){
+        self.filters.push(filter);
+    }
+    
+    pub fn columns(&mut self, columns: &Vec<ColumnName>){
+        self.columns = columns.to_owned();
+    }
+
+    pub fn value(&mut self, operand: &ToOperand){
+        self.values.push(operand.to_operand());
+    }
+
+    pub fn return_all(&mut self){
+        self.return_columns = vec![ColumnName::from_str("*")];
+    }
+
+    pub fn update<D: IsDao>(&mut self, db: &Database) -> Result<D, DbError>{
+        let result = db.update(self);
+        match result{
+            Ok(res) => Ok(D::from_dao(&res)),
+            Err(e) => Err(e),
+        }
+    }
+}
+
 pub struct Delete{
     pub from_table: TableName,
     pub filters: Vec<Filter>
+}
+
+impl Delete{
+
+    pub fn from(table: &ToTableName) -> Self{
+        Delete{
+            from_table: table.to_table_name(),
+            filters: vec![]
+        }
+    }
+
+    pub fn add_filter(&mut self, filter: &Filter){
+        self.filters.push(filter.clone())
+    }
+
+    pub fn execute(&self, db: &Database) -> Result<usize, DbError> {
+        db.delete(self)
+    }
 }
 
 pub struct CreateTable{

@@ -1,4 +1,3 @@
-use query::Query;
 use table::{Table, Column, Foreign};
 use dao::Dao;
 
@@ -498,9 +497,15 @@ impl Database for Postgres {
         }
     }
 
-    fn begin(&self) {}
-    fn commit(&self) {}
-    fn rollback(&self) {}
+    fn begin(&self) {
+       let _ = self.execute_sql("BEGIN", &[]); 
+    }
+    fn commit(&self) {
+       let _ = self.execute_sql("COMMIT", &[]); 
+    }
+    fn rollback(&self) {
+       let _ = self.execute_sql("ROLLBACK", &[]); 
+    }
     fn is_transacted(&self) -> bool {
         false
     }
@@ -535,13 +540,6 @@ impl Database for Postgres {
         ]
     }
 
-
-    fn update(&self, _query: &Query) -> Dao {
-        unimplemented!()
-    }
-    fn delete(&self, _query: &Query) -> Result<usize, String> {
-        unimplemented!()
-    }
 
     fn execute_sql_with_return(&self, sql: &str, params: &[Value]) -> Result<Vec<Dao>, DbError> {
         debug!("SQL: \n{}", sql);
