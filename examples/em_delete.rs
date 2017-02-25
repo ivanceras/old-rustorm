@@ -29,12 +29,7 @@ fn main() {
     };
     let db = pool::db_with_url("postgres://postgres:p0stgr3s@localhost/mock").unwrap();
     let em = EntityManager::new(&*db);
-    let filter = Filter::new("email", Equality::EQ, &"asdsadasd".to_string());
-    let users:Vec<Users> = em.get_all_with_filter(&filter).unwrap();
-    for i in users{
-        println!("{:?}", i);
-    }
-
-    let u = em.get_one::<Users>(&filter).unwrap();
-    println!("got: {:?}", u);
+    let filter = Filter::new("email", Equality::EQ, &"ivanceras@gmail.com".to_string());
+    let ret:usize = em.delete::<Users>(&filter).unwrap();
+    println!("deleted : {} record(s)", ret);
 }
