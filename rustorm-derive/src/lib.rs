@@ -1,3 +1,4 @@
+#![deny(warnings)]
 extern crate proc_macro;
 extern crate syn;
 #[macro_use]
@@ -39,7 +40,7 @@ fn impl_is_dao(ast: &syn::MacroInput) -> quote::Tokens {
         syn::Body::Enum(_) => panic!("#[derive(NumFields)] can only be used with structs"),
     };
     let from_fields:Vec<quote::Tokens> =
-            fields.iter().map(|&(field,ty)| {
+            fields.iter().map(|&(field,_ty)| {
                         quote!{
                             #field: {
                                     let v = dao.get(stringify!(#field)).unwrap();
@@ -49,7 +50,7 @@ fn impl_is_dao(ast: &syn::MacroInput) -> quote::Tokens {
                     }).collect::<Vec<_>>();
 
     let to_dao:Vec<quote::Tokens> =
-            fields.iter().map(|&(field,ty)| {
+            fields.iter().map(|&(field,_ty)| {
                         quote!{
                             dao.insert(stringify!(#field).to_string(), self.#field.to_db_type());
                         }
@@ -90,13 +91,13 @@ pub fn to_table_name(input: TokenStream) -> TokenStream {
 fn get_table_attr(attrs: &Vec<syn::Attribute>)->Option<String>{
     for att in attrs{
         println!("{:?}", att);
-        let m = match att.value{
+        match att.value{
             Word(_) => continue,
             List(_,_) => continue,
             NameValue(ref name, ref value) => {
                 if name == "table"{
                     match *value{
-                        syn::Lit::Str(ref s,ref style) => {
+                        syn::Lit::Str(ref s,ref _style) => {
                             return Some(s.to_owned())
                         }
                         _ => continue
@@ -122,7 +123,7 @@ fn impl_to_table_name(ast: &syn::MacroInput) -> quote::Tokens {
                 syn::VariantData::Struct(ref fields) => {
                     fields.iter().map(|f| {
                                 let ident = f.ident.as_ref().unwrap();
-                                let ty = &f.ty;
+                                let _ty = &f.ty;
                                 ident
                             }).collect::<Vec<_>>()
                 },
