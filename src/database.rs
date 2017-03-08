@@ -162,23 +162,6 @@ pub trait Database {
     /// rollback data changes executed prior to calling the begin method
     fn rollback(&self);
 
-    /// determine if this transaction has been committed or rolledback
-    fn is_transacted(&self) -> bool;
-
-    /// determine if the database connection closed
-    fn is_closed(&self) -> bool;
-
-    /// check if the database is still connected
-    fn is_connected(&self) -> bool;
-
-    /// close the database connection
-    fn close(&self);
-
-    /// determine if the database connection is still valid
-    fn is_valid(&self) -> bool;
-
-    /// reset the database connection
-    fn reset(&self);
 
     /// select
     /// returns an array to the qualified records

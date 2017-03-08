@@ -34,8 +34,7 @@ impl <'a>EntityManager<'a> {
     pub fn get_all<T>(&self) -> Result<Vec<T>, DbError>
         where T: IsTable + IsDao {
         let table = T::table_name();
-        let mut q = Select::new();
-        q.all();
+        let mut q = Select::all();
         q.from(&table);
         q.collect(self.db)
     }
@@ -47,8 +46,7 @@ impl <'a>EntityManager<'a> {
     pub fn get_all_with_filter<T>(&self, filter: &Filter) -> Result<Vec<T>, DbError>
         where T: IsTable + IsDao {
         let table = T::table_name();
-        let mut q = Select::new();
-        q.all();
+        let mut q = Select::all();
         q.from(&table);
         q.add_filter(filter);
         q.collect(self.db)
@@ -58,8 +56,7 @@ impl <'a>EntityManager<'a> {
     pub fn get_one<T>(&self, filter: &Filter) -> Result<T, DbError>
         where T: IsTable + IsDao {
         let table = T::table_name();
-        let mut q = Select::new();
-        q.all();
+        let mut q = Select::all();
         q.from(&table);
         q.add_filter(filter);
         q.collect_one(self.db)
@@ -87,11 +84,6 @@ impl <'a>EntityManager<'a> {
             }
         }
         q.insert(self.db)
-    }
-
-    /// this is called when there is a problem with the transaction
-    pub fn reset(&self) {
-        self.db.reset()
     }
 
     /// starts a database transaction
@@ -131,7 +123,7 @@ impl <'a>EntityManager<'a> {
                 None => (),
             }
         }
-        query.filter(filter);
+        query.add_filter(&filter);
         query.return_all();
         query.update(self.db)
     }

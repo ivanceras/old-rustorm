@@ -1,12 +1,12 @@
 [package]
 name = "rustorm"
-version = "0.6.0"
+version = "0.6.1"
 authors = [ "Jovansonlee Cesar <ivanceras@gmail.com>" ]
 license = "MIT"
 description = "An ORM for rust"
 readme = "README.md"
 repository = "https://github.com/ivanceras/rustorm"
-documentation = "https://ivanceras.github.io/rustorm/rustorm/"
+documentation = "https://docs.rs/rustorm"
 keywords = ["orm", "database", "sql"]
 
 [lib]

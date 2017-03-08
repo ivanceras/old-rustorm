@@ -1,6 +1,4 @@
-use query::Query;
 use dao::Dao;
-
 use dao::Value;
 use database::{Database, DatabaseDev, BuildMode};
 use writer::SqlFrag;
@@ -18,6 +16,8 @@ use std::collections::BTreeMap;
 use dao::Type;
 use query::Operand;
 use query::Insert;
+use query::Update;
+use query::Delete;
 
 pub struct Sqlite {
     pool: Option<PooledConnection<SqliteConnectionManager>>,
@@ -320,32 +320,15 @@ impl Database for Sqlite {
             None => Err(DbError::new("Unable to get database version")),
         }
     }
+
     fn begin(&self) {
-        unimplemented!()
+       let _ = self.execute_sql("BEGIN TRANSACTION", &[]); 
     }
     fn commit(&self) {
-        unimplemented!()
+       let _ = self.execute_sql("COMMIT TRANSACTION", &[]); 
     }
     fn rollback(&self) {
-        unimplemented!()
-    }
-    fn is_transacted(&self) -> bool {
-        false
-    }
-    fn is_closed(&self) -> bool {
-        false
-    }
-    fn is_connected(&self) -> bool {
-        false
-    }
-    fn close(&self) {
-        unimplemented!()
-    }
-    fn is_valid(&self) -> bool {
-        false
-    }
-    fn reset(&self) {
-        unimplemented!()
+       let _ = self.execute_sql("ROLLBACK TRANSACTION", &[]); 
     }
 
     /// return this list of options, supported features in the database
@@ -364,11 +347,17 @@ impl Database for Sqlite {
             Err(e) => Err(e),
         }
     }
-    fn update(&self, _query: &Query) -> Dao {
-        unimplemented!()
+    fn update(&self, query: &Update) -> Result<Dao,DbError> {
+        let sql_frag = self.build_update(query, &BuildMode::Standard);
+        match self.execute_sql_with_one_return(&sql_frag.sql, &sql_frag.params) {
+            Ok(Some(result)) => Ok(result),
+            Ok(None) => Err(DbError::new("No result from insert")),
+            Err(e) => Err(e),
+        }
     }
-    fn delete(&self, _query: &Query) -> Result<usize, String> {
-        unimplemented!()
+    fn delete(&self, query: &Delete) -> Result<usize, DbError> {
+        let sql_frag = &self.build_delete(query, &BuildMode::Standard);
+        self.execute_sql(&sql_frag.sql, &sql_frag.params)
     }
 
     /// sqlite does not return the columns mentioned in the query,

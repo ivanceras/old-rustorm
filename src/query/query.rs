@@ -30,28 +30,13 @@ pub enum Query{
     Delete(Delete),
 }
 
-impl Query{
+pub trait IsQuery{
     /// build the query only, not executed, useful when debugging
-    pub fn build(&mut self, db: &Database) -> SqlFrag {
-        let query = self.finalize();
-        db.build_query(&query, &BuildMode::Standard)
-    }
+    fn build(&mut self, db: &Database) -> SqlFrag;
 
     /// Warning: don't use this in production
-    pub fn debug_build(&mut self, db: &Database) -> SqlFrag {
-        let query = self.finalize();
-        db.build_query(&query, &BuildMode::Debug)
-    }
+    fn debug_build(&mut self, db: &Database) -> SqlFrag;
 
-    fn finalize(&mut self) -> &Self{
-        match self{
-            &mut Query::Select(ref mut select) => {
-                *select = select.finalize().clone(); 
-            },
-            _ => panic!()
-        }
-        self
-    }
 }
 
 
@@ -184,7 +169,13 @@ impl Select {
         self.enumerate_all = true;
     }
 
-    pub fn all(&mut self) {
+    pub fn all() -> Self {
+        let mut q = Self::new();
+        q.column_star();
+        q
+    }
+
+    fn column_star(&mut self){
         self.column("*");
     }
 
@@ -240,11 +231,6 @@ impl Select {
         self.values.push(Operand::Value(value));
     }
 
-    /// set a value of a column when inserting/updating records
-    pub fn set(&mut self, column: &str, value: &ToValue) {
-        self.column(column);
-        self.value(value);
-    }
     pub fn set_limit(&mut self, limit: usize) {
         self.range.set_limit(limit);
     }
@@ -359,7 +345,7 @@ impl Select {
             self.remove_from_enumerated(&i);
         }
         if self.excluded_columns.is_empty() && self.enumerated_fields.is_empty() {
-            self.all();
+            self.column_star();
         }
         self
     }
@@ -540,6 +526,19 @@ impl Select {
         }
     }
 }
+
+impl IsQuery for Select{
+    
+    fn build(&mut self, db: &Database) -> SqlFrag{
+        self.finalize();
+        db.build_select(self, &BuildMode::Standard) 
+    }
+    
+    fn debug_build(&mut self, db: &Database) -> SqlFrag{
+        self.finalize();
+        db.build_select(self, &BuildMode::Debug) 
+    }
+}
  
  pub enum Data{
     Values(Vec<Operand>),
@@ -616,6 +615,11 @@ impl Insert{
         }
     }
 
+    /// set a value of a column when inserting/updating records
+    pub fn set(&mut self, column: &str, value: &ToValue) {
+        self.column(&column);
+        self.value(&Operand::Value(value.to_db_type()));
+    }
 }
 
 pub struct Update{
@@ -638,8 +642,12 @@ impl Update{
         }
     }
 
-    pub fn filter(&mut self, filter: Filter){
-        self.filters.push(filter);
+    pub fn add_filter(&mut self, filter: &Filter){
+        self.filters.push(filter.clone());
+    }
+
+    pub fn add_filters(&mut self, filters: &Vec<Filter>){
+        self.filters.extend_from_slice(filters);
     }
     
     pub fn columns(&mut self, columns: &Vec<ColumnName>){
@@ -654,6 +662,15 @@ impl Update{
         self.return_columns = vec![ColumnName::from_str("*")];
     }
 
+    pub fn column(&mut self, column: &ToColumnName){
+        self.columns.push(column.to_column_name());
+    }
+
+    /// set a value of a column when inserting/updating records
+    pub fn set(&mut self, column: &str, value: &ToValue) {
+        self.column(&column);
+        self.value(&Operand::Value(value.to_db_type()));
+    }
     pub fn update<D: IsDao>(&mut self, db: &Database) -> Result<D, DbError>{
         let result = db.update(self);
         match result{
@@ -680,9 +697,22 @@ impl Delete{
     pub fn add_filter(&mut self, filter: &Filter){
         self.filters.push(filter.clone())
     }
+    pub fn add_filters(&mut self, filter: Vec<Filter>){
+        self.filters.extend(filter)
+    }
 
     pub fn execute(&self, db: &Database) -> Result<usize, DbError> {
         db.delete(self)
+    }
+}
+
+impl IsQuery for Delete{
+    fn build(&mut self, db: &Database) -> SqlFrag{
+        db.build_delete(self, &BuildMode::Standard)
+    }
+
+    fn debug_build(&mut self, db: &Database) -> SqlFrag {
+        db.build_delete(self, &BuildMode::Debug)
     }
 }
 

@@ -1,4 +1,3 @@
-use query::Query;
 use dao::Dao;
 use table::{Table, Column, Foreign};
 
@@ -25,6 +24,8 @@ use query::Operand;
 use database::{Database, DatabaseDev, DatabaseDDL, DbError};
 use time::Timespec;
 use dao::Type;
+use query::Update;
+use query::Delete;
 
 pub struct Mysql {
     pool: Option<MyPool>,
@@ -374,30 +375,15 @@ impl Database for Mysql {
     }
 
     fn begin(&self) {
-        unimplemented!()
+       let _ = self.execute_sql("START TRANSACTION", &[]); 
     }
     fn commit(&self) {
-        unimplemented!()
+       let _ = self.execute_sql("COMMIT", &[]); 
     }
     fn rollback(&self) {
-        unimplemented!()
+       let _ = self.execute_sql("ROLLBACK", &[]); 
     }
-    fn is_transacted(&self) -> bool {
-        false
-    }
-    fn is_closed(&self) -> bool {
-        false
-    }
-    fn is_connected(&self) -> bool {
-        false
-    }
-    fn close(&self) {}
-    fn is_valid(&self) -> bool {
-        false
-    }
-    fn reset(&self) {
-        unimplemented!()
-    }
+
 
     /// return this list of options, supported features in the database
     fn sql_options(&self) -> Vec<SqlOption> {
@@ -406,10 +392,11 @@ impl Database for Mysql {
         ]
     }
 
-    fn update(&self, _query: &Query) -> Dao {
+    fn update(&self, _query: &Update) -> Result<Dao, DbError> {
         unimplemented!()
     }
-    fn delete(&self, _query: &Query) -> Result<usize, String> {
+
+    fn delete(&self, _query: &Delete) -> Result<usize, DbError> {
         unimplemented!()
     }
 

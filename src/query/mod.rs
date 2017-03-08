@@ -1,7 +1,6 @@
 pub mod column_name;
 pub mod table_name;
 pub mod filter;
-//pub mod builder;
 pub mod function;
 pub mod join;
 pub mod operand;
@@ -25,6 +24,7 @@ pub use self::source::{QuerySource, ToSourceField};
 pub use self::query::{Range,DeclaredQuery,Error};
 pub use self::query::{Select,Insert,Update,Delete};
 pub use self::query::Query;
+pub use self::query::IsQuery;
 
 
 

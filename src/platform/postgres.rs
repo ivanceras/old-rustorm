@@ -506,20 +506,6 @@ impl Database for Postgres {
     fn rollback(&self) {
        let _ = self.execute_sql("ROLLBACK", &[]); 
     }
-    fn is_transacted(&self) -> bool {
-        false
-    }
-    fn is_closed(&self) -> bool {
-        false
-    }
-    fn is_connected(&self) -> bool {
-        false
-    }
-    fn close(&self) {}
-    fn is_valid(&self) -> bool {
-        false
-    }
-    fn reset(&self) {}
 
     /// return this list of options, supported features in the database
     /// TODO: make this features version specific
@@ -817,6 +803,11 @@ impl DatabaseDev for Postgres {
                       "chrono::offset::utc::UTC".to_owned()],
                  Type::DateTime)
             }
+            "time with time zone" => {
+                (vec!["chrono::datetime::DateTime".to_owned(),
+                      "chrono::offset::utc::UTC".to_owned()],
+                 Type::DateTime)
+            },
             "interval" => (vec![], Type::U32),
             "inet[]" => (vec![], Type::String),
             "tsvector" | "inet" => (vec![], Type::String),//or everything else should be string
