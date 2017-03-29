@@ -57,6 +57,7 @@ impl ToSourceField for SourceField {
     }
 }
 
+
 // TODO use Iterator<Item=T> for implementing all other loopable types
 macro_rules! impl_to_source_field_for_source_field{
 	($x:expr) => (
@@ -115,6 +116,16 @@ impl<T> ToField for T
                  operand: operand,
                  name: None,
              }]
+    }
+}
+
+impl Into<Field> for Operand{
+    
+    fn into(self) -> Field{
+        Field {
+            operand: self,
+            name: None
+        }
     }
 }
 

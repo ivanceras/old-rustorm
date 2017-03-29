@@ -216,11 +216,12 @@ impl Decodable for Value {
 
 #[test]
 fn test_decode_value() {
+    extern crate rustc_serialize;
     let mut dao = Dao::new();
     dao.insert("hello".to_owned(), Value::String("hi".to_owned()));
-    let dao_json = json::encode(&dao).unwrap();
+    let dao_json = rustc_serialize::json::encode(&dao).unwrap();
     println!("{:#?}", dao_json);
-    let dec: Dao = json::decode(&dao_json).unwrap();
+    let dec: Dao = rustc_serialize::json::decode(&dao_json).unwrap();
     println!("{:#?}", dec);
     assert_eq!(dao, dec);
 }

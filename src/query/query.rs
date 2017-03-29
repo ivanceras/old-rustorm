@@ -21,6 +21,7 @@ use query::SourceField;
 use query::{QuerySource, ToSourceField};
 use table::Column;
 use query::IsTable;
+use std::convert::From;
 
 
 pub enum Query{
@@ -179,8 +180,8 @@ impl Select {
         self.column("*");
     }
 
-    fn enumerate(&mut self, column_name: ColumnName) {
-        let operand = Operand::ColumnName(column_name);
+    fn enumerate<C>(&mut self, column_name: C) where C: Into<ColumnName>{
+        let operand = Operand::ColumnName(column_name.into());
         let field = Field {
             operand: operand,
             name: None,
@@ -194,7 +195,7 @@ impl Select {
     /// but is the other conflicting column is not explicityly enumerated will not be renamed
     ///
     pub fn column(&mut self, column: &str) {
-        let column_name = ColumnName::from_str(column);
+        let column_name = ColumnName::from(column);
         self.enumerate(column_name);
     }
 
@@ -210,7 +211,7 @@ impl Select {
     /// also ignores the column when selecting records
     /// useful for manipulating thin records by excluding huge binary blobs such as images
     pub fn exclude_column(&mut self, column: &str) {
-        let c = ColumnName::from_str(column);
+        let c = ColumnName::from(column);
         self.excluded_columns.push(c);
     }
     pub fn exclude_columns(&mut self, columns: Vec<&str>) {
@@ -485,7 +486,7 @@ impl Select {
     }
 
     pub fn enumerate_column_as_return(&mut self, column: &str) {
-        let column_name = ColumnName::from_str(column);
+        let column_name = ColumnName::from(column);
         let operand = Operand::ColumnName(column_name);
         let field = Field {
             operand: operand,
@@ -659,7 +660,7 @@ impl Update{
     }
 
     pub fn return_all(&mut self){
-        self.return_columns = vec![ColumnName::from_str("*")];
+        self.return_columns = vec![ColumnName::from("*")];
     }
 
     pub fn column(&mut self, column: &ToColumnName){
