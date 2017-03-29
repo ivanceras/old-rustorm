@@ -34,10 +34,4 @@ before_script:
 after_success: 
   - travis-cargo coveralls --no-sudo --verify
 script:
-  - |
-      travis-cargo build &&
-      travis-cargo test &&
-      travis-cargo bench &&
-      travis-cargo --only stable doc
-  - cargo test
   - cargo test --features "postgres sqlite mysql"
