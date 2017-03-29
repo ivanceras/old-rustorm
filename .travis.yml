@@ -39,5 +39,5 @@ script:
       travis-cargo test &&
       travis-cargo bench &&
       travis-cargo --only stable doc
-- cargo test
-- cargo test --features "postgres sqlite mysql"
+  - cargo test
+  - cargo test --features "postgres sqlite mysql"

@@ -36,6 +36,8 @@ pub enum Type {
     Uuid,
     DateTime,
 }
+
+/*
 impl Type {
     /// get the string representation when used in rust code
     pub fn to_str_repr(&self) -> String {
@@ -59,6 +61,7 @@ impl Type {
         }
     }
 }
+*/
 
 
 #[derive(Debug)]
@@ -85,6 +88,7 @@ pub enum Value {
 }
 
 impl Value {
+/*
     pub fn get_type(&self) -> Type {
         match *self {
             Value::Bool(_) => Type::Bool,
@@ -105,6 +109,7 @@ impl Value {
             Value::Json(_) => Type::Json,
         }
     }
+    */
 
     fn from_ser_value(ser_value: &SerValue) -> Self {
         match *ser_value {
