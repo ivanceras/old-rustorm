@@ -5,7 +5,7 @@ use rustorm::query::Filter;
 use rustorm::query::Select;
 use rustorm::query::Equality::EQ;
 use rustorm::database::BuildMode;
-use rustorm::pool::Platform;
+use rustorm::platform::pool::Platform;
 use rustorm::platform::Postgres;
 
 #[test]
@@ -15,7 +15,7 @@ fn test_pg(){
     let mut query = Select::new();
     query.from(&"users".to_string());
     let filter = Filter::new("username", EQ, &"Hello".to_string());
-    query.add_filter(filter);   
+    query.add_filter(&filter);   
     let sql = pg.build_select(&query, &BuildMode::Debug); 
     println!("{}", sql);
     let expected = r#"
@@ -33,7 +33,7 @@ fn test_sqlite(){
     let mut query = Select::new();
     query.from(&"users".to_string());
     let filter = Filter::new("username", EQ, &"Hello".to_string());
-    query.add_filter(filter);   
+    query.add_filter(&filter);   
     let sql = pg.build_select(&query, &BuildMode::Debug); 
     println!("{}", sql);
     let expected = r#"
@@ -52,7 +52,7 @@ fn test_mysql(){
     let mut query = Select::new();
     query.from(&"users".to_string());
     let filter = Filter::new("username", EQ, &"Hello".to_string());
-    query.add_filter(filter);   
+    query.add_filter(&filter);   
     let sql = pg.build_select(&query, &BuildMode::Debug); 
     println!("{}", sql);
     let expected = r#"

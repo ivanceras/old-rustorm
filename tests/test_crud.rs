@@ -31,8 +31,8 @@ fn test_delete() {
     let db = pool::db_with_url("postgres://postgres:p0stgr3s@localhost/mock").unwrap();
     let em = EntityManager::new(&*db);
     let filter = Filter::new("email", Equality::EQ, &"ivanceras@gmail.com".to_string());
-    em.insert(user);
+    em.insert::<Users,Users>(&user);
     let ret:usize = em.delete::<Users>(&filter).unwrap();
-    assert_eq!(ret, 1)
+    assert_eq!(ret, 1);
     println!("deleted : {} record(s)", ret);
 }
