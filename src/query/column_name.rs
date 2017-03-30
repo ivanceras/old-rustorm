@@ -11,9 +11,11 @@ pub struct ColumnName {
     pub schema: Option<String>,
 }
 
-impl <'a>From<&'a str> for ColumnName{
 
-    fn from(column: &'a str) -> Self{
+impl <S:Into<String>>From<S> for ColumnName{
+   
+   fn from(s: S) -> Self {
+        let column: String = s.into();
         if column.contains(".") {
             let splinters = column.split(".").collect::<Vec<&str>>();
             assert!(splinters.len() == 2, "There should only be 2 splinters");
@@ -31,33 +33,12 @@ impl <'a>From<&'a str> for ColumnName{
                 schema: None,
             }
         }
-    }
-
+   }
 }
+
 
 impl ColumnName {
 
-    /*
-    pub fn from_str(column: &str) -> Self {
-        if column.contains(".") {
-            let splinters = column.split(".").collect::<Vec<&str>>();
-            assert!(splinters.len() == 2, "There should only be 2 splinters");
-            let table_split = splinters[0].to_owned();
-            let column_split = splinters[1].to_owned();
-            ColumnName {
-                column: column_split.to_owned(),
-                table: Some(table_split.to_owned()),
-                schema: None,
-            }
-        } else {
-            ColumnName {
-                column: column.to_owned(),
-                table: None,
-                schema: None,
-            }
-        }
-    }
-    */
 
     pub fn default_rename(&self) -> String {
         match self.table {
