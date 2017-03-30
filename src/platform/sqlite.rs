@@ -19,6 +19,12 @@ use query::Insert;
 use query::Update;
 use query::Delete;
 
+
+pub fn establish_connection(db_path: &str) -> Result<SqliteConnection, DbError> {
+    SqliteConnection::open(db_path)
+        .map_err(|e|{e.into()})
+}
+
 pub struct Sqlite {
     pool: Option<PooledConnection<SqliteConnectionManager>>,
 }

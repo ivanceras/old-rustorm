@@ -17,6 +17,8 @@ use mysql::conn::pool::MyPool;
 use chrono::naive::datetime::NaiveDateTime;
 use chrono::datetime::DateTime;
 use chrono::offset::fixed::FixedOffset;
+use mysql::conn::{MyConn,MyOpts};
+use config::DbConfig;
 
 use query::Operand;
 
@@ -26,6 +28,20 @@ use time::Timespec;
 use dao::Type;
 use query::Update;
 use query::Delete;
+
+
+pub fn establish_connection(config: &DbConfig) -> Result<MyConn, DbError> {
+    let opts = MyOpts {
+        user: config.username.clone(),
+        pass: config.password.clone(),
+        db_name: Some(config.database.clone()),
+        tcp_addr: Some(config.host.clone().unwrap().to_string()),
+        tcp_port: config.port.unwrap_or(3306),
+        ..Default::default()
+    };
+    MyConn::new(opts)
+        .map_err(|e|{e.into()})
+}
 
 pub struct Mysql {
     pool: Option<MyPool>,

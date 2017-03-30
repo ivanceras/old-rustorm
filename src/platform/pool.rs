@@ -60,6 +60,40 @@ pub fn db_with_url(db_url: &str) -> Result<Platform, DbError> {
 }
 
 #[cfg(any(feature = "postgres",feature = "sqlite", feature ="mysql"))]
+pub fn test_connection(db_url: &str) -> Result<(), DbError>{
+    let config = DbConfig::from_url(db_url);
+    match config {
+        Some(config) => {
+            let platform: &str = &config.platform;
+            match platform {
+                #[cfg(feature = "postgres")]
+                "postgres" => {
+                    ::platform::postgres::establish_connection(db_url)?;
+                    Ok(())
+                }
+
+                #[cfg(feature = "sqlite")]
+                "sqlite" => {
+                    ::platform::sqlite::establish_connection(db_url)?;
+                    Ok(())
+                }
+                #[cfg(feature = "mysql")]
+                "mysql" => {
+                    ::platform::mysql::establish_connection(&config)?;
+                    Ok(())
+                }
+
+                _ => unimplemented!(),
+            }
+        }
+        None => {
+            println!("Unable to parse url");
+            Err(DbError::new("Error parsing url"))
+        }
+    }
+}
+
+#[cfg(any(feature = "postgres",feature = "sqlite", feature ="mysql"))]
 pub fn db_with_config(config: &PoolConfig) -> Result<Platform, DbError> {
     let has_pool = DB_POOL.read().unwrap().get(&config).is_some();
     if has_pool{

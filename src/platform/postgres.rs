@@ -1,7 +1,8 @@
 use table::{Table, Column, Foreign};
 use dao::Dao;
 
-use postgres::Connection;
+use postgres::SslMode;
+use postgres::Connection as PgConnection;
 use regex::Regex;
 use dao::Value;
 use database::{Database, DatabaseDev, DatabaseDDL, DbError};
@@ -15,6 +16,12 @@ use r2d2_postgres::PostgresConnectionManager;
 use dao::Type;
 use query::Operand;
 
+
+pub fn establish_connection(db_url: &str) -> Result<PgConnection, DbError>{
+    PgConnection::connect(db_url, SslMode::None)
+        .map_err(|e|{e.into()})
+}
+
 pub struct Postgres {
     /// a connection pool is provided
     pub pool: Option<PooledConnection<PostgresConnectionManager>>,
@@ -24,7 +31,6 @@ pub struct Postgres {
 /// PostgreSQL sql query,
 /// TODO: support version SqlOptions/specific syntax
 
-// static none: &'static Option<String> = &None;
 
 impl Postgres {
     /// create an instance, but without a connection yet,
@@ -41,7 +47,7 @@ impl Postgres {
 
 
 
-    pub fn get_connection(&self) -> &Connection {
+    pub fn get_connection(&self) -> &PgConnection {
         match self.pool {
             Some(ref pool) => &pool,
             None => panic!("No connection for this database"),
