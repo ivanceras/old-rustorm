@@ -6,6 +6,7 @@
 
 #![deny(warnings)]
 #![allow(non_snake_case)]
+#[cfg(test)] #[macro_use] extern crate pretty_assertions;
 extern crate rustc_serialize;
 extern crate postgres;
 #[cfg(feature = "sqlite")]
