@@ -27,14 +27,14 @@ features = ["rustc-serialize", "uuid", "chrono"]
 [dependencies]
 rustc-serialize = "0.3"
 serde_json = "0.7"
-uuid = {version = "0.3", features = ["serde", "rustc-serialize"] }
+uuid = {version = "0.4", features = ["serde", "rustc-serialize"] }
 log = "0.3"
 env_logger = "0.3"
 regex = "0.1"
 url = "1.1"
 time = "0.1"
 r2d2 = "0.7"
-r2d2_postgres = "0.10"
+r2d2_postgres = {version = "0.10"}
 rusqlite = { version = "0.10", optional = true }
 mysql = {version = "1.2", optional = true }
 r2d2_sqlite = {version = "0.1", optional = true}
